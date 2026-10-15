@@ -1,6 +1,6 @@
 # Accessibility
 
-Kodeida is a game about learning, and we want it to be usable by as many people as possible. This file describes what works on the website today, what doesn't yet, and how to tell us about barriers. The game app does not exist yet; accessibility will be part of its design from the first version.
+Kodeida is a game about learning, and we want it to be usable by as many people as possible. This file describes what works on the website today, what doesn't yet, and how to tell us about barriers. The game app (`app/`) has its first level; accessibility is part of its design from the start.
 
 ## Supported environments
 
@@ -16,6 +16,13 @@ Kodeida is a game about learning, and we want it to be usable by as many people 
 - The world map can be driven with the ← → keys once focused.
 - The onboarding text has a visible scroll indicator in addition to the native scrollbar.
 - On touch devices the "one section per screen" snapping is turned off so the page scrolls normally.
+
+## The game app (pre-alpha)
+
+- Buttons, tabs and the language switch are native controls with visible keyboard focus. **Ctrl/⌘ + Enter** runs the code on the example, **Ctrl/⌘ + Shift + Enter** runs all tests.
+- Character lines (Mykyta, Dido, Juno, the Sibyl) are announced through a live region; test results are plain text.
+- The world animation respects `prefers-reduced-motion`: heroes jump to their positions instead of walking.
+- Not done yet: a text description of each animation step for screen readers, English interface, adjustable font size.
 
 ## Known limitations
 

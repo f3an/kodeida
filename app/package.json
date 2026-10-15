@@ -1,0 +1,39 @@
+{
+  "name": "kodeida",
+  "productName": "Kodeida",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A game where your code moves the hero.",
+  "license": "Apache-2.0",
+  "author": "Ihor Cherniavskyi",
+  "main": "electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "start": "npm run build && electron .",
+    "electron:dev": "KODEIDA_DEV_URL=http://localhost:5173 electron .",
+    "selftest": "node scripts/selftest.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/fira-code": "5.3.0",
+    "@fontsource/manrope": "5.3.0",
+    "@fontsource/unbounded": "5.3.0",
+    "monaco-editor": "0.57.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sucrase": "3.35.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "electron": "44.7.2",
+    "typescript": "7.0.2",
+    "vite": "8.3.4"
+  },
+  "overrides": {
+    "dompurify": "3.4.17"
+  }
+}

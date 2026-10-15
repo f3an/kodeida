@@ -2,7 +2,7 @@
 
 By taking part you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Accessibility barriers are bugs — see [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
-Kodeida is at the **concept** stage: the story, worlds, characters and website exist, the game code does not yet. That shapes what kind of help is most useful right now.
+Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist, and the game app has its first playable level. That shapes what kind of help is most useful right now.
 
 ## What helps most today
 
@@ -11,10 +11,11 @@ Kodeida is at the **concept** stage: the story, worlds, characters and website e
 - **Pixel art** — new characters, variants, scene details. Everything is drawn in code, see below.
 - **Translations** — the landing page is Ukrainian and English; the artbook is Ukrainian only for now.
 - **Accessibility and UX feedback** on the website.
-- **Technical design** for the MVP: the sandboxed code runner and the "code → event log → animation" pipeline (see the roadmap in the [README](README.md#roadmap)).
+- **Feedback on the first level** — play *Dido's Task* in `app/` and tell us where you got stuck. The technical plan is in [docs/MVP.md](docs/MVP.md).
 
 ## Project layout
 
+- `app/` — the game (Electron + React + TypeScript + Monaco). `src/engine` runs player code in a Worker and judges it, `src/levels` holds levels as data, `src/world` draws the worlds. Run `npm run selftest` and `npm run typecheck` before sending changes.
 - `site/` — the website (no build step). `app.js` holds the pixel-art renderer, all scenes and the i18n dictionary; `style.css` holds the light and dark themes.
 - `docs/` — design documents: `NOTES.md` (idea, decisions, plan), `BRAND.md`, `LORE.md`, `STORY.md`, `ONBOARDING.md`.
 

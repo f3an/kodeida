@@ -3,7 +3,8 @@
 [![Deploy GitHub Pages](https://github.com/f3an/kodeida/actions/workflows/pages.yml/badge.svg)](https://github.com/f3an/kodeida/actions/workflows/pages.yml)
 [![Code: Apache 2.0](https://img.shields.io/badge/code-Apache%202.0-blue.svg)](LICENSE)
 [![Content: CC BY-SA 4.0](https://img.shields.io/badge/content-CC%20BY--SA%204.0-lightgrey.svg)](LICENSE-CONTENT.md)
-![Status: concept](https://img.shields.io/badge/status-concept-orange.svg)
+[![CI](https://github.com/f3an/kodeida/actions/workflows/ci.yml/badge.svg)](https://github.com/f3an/kodeida/actions/workflows/ci.yml)
+![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)
 
 **A game where your code moves the hero.** Together with Aeneas and Mykyta the Fox you learn the techniques behind LeetCode-style problems — two pointers, hash maps, graphs, dynamic programming — in worlds taken from Ukrainian literature. No AI hints: you write the code, the world runs it step by step.
 
@@ -14,6 +15,7 @@
 - [The idea](#the-idea)
 - [Status](#status)
 - [What's in this repository](#whats-in-this-repository)
+- [Run the game](#run-the-game)
 - [Run the site locally](#run-the-site-locally)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -34,11 +36,17 @@ Planned languages: TypeScript and JavaScript first, then Python, then C#, C++ an
 
 ## Status
 
-**Concept / pre-alpha.** What exists today is the design: story, 16 worlds mapped to techniques, a 13-scene onboarding, characters and their pixel-art, a UI mock-up, and the website. The game code has not been started yet — see the [roadmap](#roadmap).
+**Pre-alpha.** The design is done: story, 16 worlds mapped to techniques, a 13-scene onboarding, characters and their pixel-art, a UI mock-up, and the website. The game app in `app/` has its first playable level — *Dido's Task* (Container With Most Water) with a sandboxed runner, an animated world, tests and the Wolf comparison. The technical plan is in [docs/MVP.md](docs/MVP.md); see also the [roadmap](#roadmap).
 
 ## What's in this repository
 
 ```
+app/                  the game: Electron + React + TypeScript + Monaco
+  electron/           main process (window, app:// protocol, CSP)
+  src/engine/         sandbox Worker, runner, judge — no UI
+  src/levels/         levels as data
+  src/world/          pixel-art renderer (shared with the site) and world scenes
+  src/ui/             editor, panels, world view
 site/                 the website, deployed to GitHub Pages
   index.html          landing page (UA / EN)
   artbook.html        artbook: animations, progress, screens, UI kit, onboarding, identity
@@ -46,6 +54,7 @@ site/                 the website, deployed to GitHub Pages
   style.css           shared styles, light and dark themes
 docs/
   NOTES.md            the original idea, decisions and plan
+  MVP.md              technical plan of the MVP
   BRAND.md            brand book: name, mascot, palette, voice
   LORE.md             world, characters, the Crystal Pysanka, onboarding outline
   STORY.md            the full campaign: 6 songs, 16 worlds, problems per world
@@ -53,6 +62,18 @@ docs/
 ```
 
 All characters and scenes are drawn in code (`site/app.js`): small sprites are rasterised from shapes, upscaled with Scale2x and shaded with cel lines. There are no image assets.
+
+## Run the game
+
+Requires Node.js 22 or newer.
+
+```bash
+cd app
+npm install
+npm run dev            # in the browser: http://localhost:5173
+npm start              # build and open the Electron app
+npm run selftest       # engine checks without a browser
+```
 
 ## Run the site locally
 
@@ -68,7 +89,7 @@ Every push to `main` that touches `site/` redeploys GitHub Pages via [`.github/w
 
 ## Roadmap
 
-1. **Technical plan for the MVP** — the "code → event log → animation" pipeline; a sandboxed runner in a Web Worker with timeouts.
+1. ✅ **Technical plan for the MVP** ([docs/MVP.md](docs/MVP.md)) and the first playable level: sandboxed runner in a Web Worker with timeouts, "code → event log → animation", tests and the Wolf comparison.
 2. **MVP** — Electron + React + Monaco; onboarding, worlds 0–2 (Ashes of Troy, Sea of Aeolus, Dido's Carthage); TypeScript and JavaScript.
 3. **First playtest** with 10–20 people. The metric: can they solve the real *Container With Most Water* afterwards, without the game?
 4. **Python** in the app (Pyodide), then **all 16 worlds**, the Book of Tricks and the embroidered-shirt progress.
@@ -76,7 +97,7 @@ Every push to `main` that touches `site/` redeploys GitHub Pages via [`.github/w
 
 ## Contributing
 
-Ideas, art, story, translations and accessibility feedback are welcome right now; code contributions will open up with the MVP. Start with [CONTRIBUTING.md](CONTRIBUTING.md). By taking part you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
+Ideas, art, story, translations and accessibility feedback are welcome right now. The app is young and changes fast; for code, open an issue first so we can agree on the approach. Start with [CONTRIBUTING.md](CONTRIBUTING.md). By taking part you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 Want to propose a new world? Use the **World idea** issue template: one work of Ukrainian literature in the public domain, one technique.
 
@@ -91,5 +112,5 @@ Characters and settings are based on public-domain texts: Ivan Kotliarevsky (*En
 
 ## License
 
-- **Code** (everything in `site/`, workflows, future app code): [Apache License 2.0](LICENSE).
+- **Code** (everything in `app/` and `site/`, workflows): [Apache License 2.0](LICENSE).
 - **Content** (story, lore, brand and design documents in `docs/`): [CC BY-SA 4.0](LICENSE-CONTENT.md).
