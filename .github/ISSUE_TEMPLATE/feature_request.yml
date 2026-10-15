@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest an improvement to the website, the game design or the learning experience
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What would you like to do or learn that Kodeida doesn't support today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does this fit?
+      multiple: true
+      options:
+        - Learning design (techniques, exercises, hints)
+        - Story, characters, dialogue
+        - Pixel art, scenes, animation
+        - Website
+        - Accessibility
+        - Translations
+        - Game app (future)
+        - Other

@@ -1,0 +1,60 @@
+name: Bug report
+description: Something on the website (or later, in the game) isn't working as expected
+labels: ['bug']
+body:
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options:
+        - Landing page
+        - Artbook
+        - Design documents (docs/)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: section
+    attributes:
+      label: Section
+      description: Which block — e.g. "World map", "Characters", "Onboarding".
+      placeholder: 'World map'
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: 'Chrome 140 on macOS 16, or Safari on iPhone'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: settings
+    attributes:
+      label: Settings
+      multiple: true
+      options:
+        - Light theme
+        - Dark theme
+        - English
+        - Ukrainian
+        - Reduced motion on
+        - Touch device
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what actually happened? A screenshot helps a lot.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the landing page
+        2. Scroll to ...
+        3. ...

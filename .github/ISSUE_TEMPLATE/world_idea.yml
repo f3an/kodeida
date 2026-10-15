@@ -1,0 +1,54 @@
+name: World idea
+description: Propose a new world — one work of Ukrainian literature, one technique
+labels: ['world-idea', 'content']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Each world in Kodeida comes from a public-domain work of Ukrainian literature (or a folk tale) and teaches exactly one technique.
+        Designs must be original — please don't base them on film or cartoon adaptations.
+
+  - type: input
+    id: work
+    attributes:
+      label: Work and author
+      placeholder: '«Котигорошко», народна казка'
+    validations:
+      required: true
+
+  - type: input
+    id: pd
+    attributes:
+      label: Why it's in the public domain
+      description: Author's year of death (must be more than 70 years ago) or "folk tale".
+      placeholder: 'Folk tale'
+    validations:
+      required: true
+
+  - type: input
+    id: technique
+    attributes:
+      label: Technique it teaches
+      placeholder: 'Prefix sums'
+    validations:
+      required: true
+
+  - type: textarea
+    id: mapping
+    attributes:
+      label: How the story maps to the technique
+      description: What is broken in this world, what do Aeneas and Mykyta do, what are the warm-up exercises?
+    validations:
+      required: true
+
+  - type: input
+    id: problem
+    attributes:
+      label: Final LeetCode-style problem
+      placeholder: 'Range Sum Query — Immutable (303)'
+
+  - type: textarea
+    id: characters
+    attributes:
+      label: Local characters
+      description: Who lives in this world and what do they ask for? Locals stay in their own world.

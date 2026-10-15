@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231c2c66'/%3E%3Cpath d='M7 2H5v4L3 8l2 2v4h2' fill='none' stroke='%23f2d27a' stroke-width='1.6'/%3E%3Cellipse cx='11' cy='8.5' rx='3' ry='4' fill='%23d4ecf3' stroke='%23b3202a'/%3E%3C/svg%3E">
+<script>try{history.scrollRestoration="manual";}catch(e){}try{var t=localStorage.getItem("kd-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Артбук Кодеїди</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="artbook">
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="wrap">
+<nav class="sitenav" aria-label="Сайт"><a class="brand" href="./">{Кодеїда</a><a href="./">Гра</a><a href="artbook.html" class="on" aria-current="page">Артбук</a></nav>
+<nav class="secnav" id="secnav" aria-label="Розділи"></nav>
+<div class="themesw" id="theme" role="group" aria-label="Тема"><button type="button" data-t="system" title="Як у системі" aria-label="Як у системі">◐</button><button type="button" data-t="light" title="Світла тема" aria-label="Світла тема">☀</button><button type="button" data-t="dark" title="Темна тема" aria-label="Темна тема">☾</button></div>
+  <header class="sheet sec ab-intro" id="ab-top" data-title="Артбук"><div class="fit">
+    <div class="eyebrow reveal">Артбук · концепт v0.3</div>
+    <h1 class="ab-h1">Як влаштована <span class="brace">{</span>Кодеїда</h1>
+    <p class="sub reveal" style="--i:1">Усе, що не потрапило на головну: анімації героїв, вишиванка-прогрес, Кришталева Писанка, карта екранів, UI-кіт, онбординг на 13 сцен, айдентика, іконка і голос гри.</p>
+    <div class="cta reveal" style="--i:2"><a class="kb run" href="./">← На головну</a><a class="kb" href="#anim">Почати з анімацій ↓</a></div>
+    <ol class="ab-toc reveal" style="--i:3"><li><a href="#anim">Анімації</a></li><li><a href="#shirt">Прогрес</a></li><li><a href="#pysanka">Писанка</a></li><li><a href="#flow-sec">Карта екранів</a></li><li><a href="#kit">UI-кіт</a></li><li><a href="#onboarding">Онбординг</a></li><li><a href="#identity">Айдентика</a></li><li><a href="#icon-sec">Іконка</a></li><li><a href="#voice">Голос</a></li></ol>
+  </div></header>
+
+  <section class="sheet sec" id="anim" data-title="Анімації"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 1 · Анімації</div>
+      <h2>Спрайт-шити героїв</h2>
+      <p class="muted">Чотири стани для кожного героя: стоїть, іде, радіє, помиляється. Кожна клітинка — справжній цикл кадрів, який піде в гру.</p>
+    </div>
+    <div class="sheets reveal-scale" id="sheets"></div>
+  </div></section>
+
+  <section class="sheet sec" id="shirt" data-title="Прогрес"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 2 · Прогрес</div>
+      <h2>Вишиванка Енея як карта навичок</h2>
+      <p class="muted">Чиста сорочка на старті, перші візерунки після Карфагену, повністю вишита у фіналі. Сорочкою можна поділитися як резюме.</p>
+    </div>
+    <div class="prog">
+      <figure class="reveal"><div class="cloth"><canvas id="shirt0"></canvas></div><figcaption>Світ 0 · Попелище Трої. Сорочка ще чиста.</figcaption></figure>
+      <figure class="reveal"><div class="cloth"><canvas id="shirt1"></canvas></div><figcaption>Після Карфагену · хвилі і два зустрічні ромби.</figcaption></figure>
+      <figure class="reveal"><div class="cloth"><canvas id="shirt2"></canvas></div><figcaption>Фінал · усі 13 візерунків.</figcaption></figure>
+    </div>
+  </div></section>
+
+  <section class="sheet sec" id="pysanka" data-title="Писанка"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 3 · Артефакт</div>
+      <h2>Кришталева Писанка</h2>
+      <p class="muted">Тримає світи української літератури в ладу. Шторм Еола розбив її, і кожен уламок несе один візерунок, тобто одну хитрість.</p>
+    </div>
+    <div class="pys">
+      <figure class="reveal"><div class="cloth"><canvas id="eggWhole" aria-label="Ціла Писанка"></canvas></div><figcaption class="muted">Ціла, на Олімпі</figcaption></figure>
+      <figure class="reveal"><div class="cloth"><canvas id="eggBroken" aria-label="Розбита Писанка"></canvas></div><figcaption class="muted">Після шторму Еола</figcaption></figure>
+    </div>
+    <div class="motifs" id="motifs"></div>
+  </div></section>
+
+  <section class="sheet sec" id="flow-sec" data-title="Карта екранів"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 4 · Карта екранів</div>
+      <h2>Як гравець рухається застосунком</h2>
+      <p class="muted">Сім екранів і переходи між ними. Жовтий квадратик пробігає основний шлях: заставка, меню, мапа, рівень, суд богів і назад на мапу.</p>
+    </div>
+    <div class="flow reveal-scale" id="flow">
+      <svg class="flow-svg" id="flow-svg" aria-hidden="true"></svg>
+      <div class="scr" id="s1" style="grid-area:a"><b>Заставка</b><canvas id="fl-splash"></canvas><small>онбординг, 13 сцен</small></div>
+      <div class="scr" id="s2" style="grid-area:b"><b>Головне меню</b><div class="mini-menu"><span class="lg">{Кодеїда</span><i class="on">Продовжити мандрівку</i><i>Книга хитрощів</i><i>Профіль</i><i>Налаштування</i></div></div>
+      <div class="scr" id="s3" style="grid-area:c"><b>Мапа світів</b><canvas id="fl-map"></canvas><small>16 світів, 6 пісень</small></div>
+      <div class="scr" id="s4" style="grid-area:d"><b>Рівень</b><div class="mini-lvl"><i class="ed"><u></u><u></u><u class="w"></u><u></u><u class="w"></u></i><i class="wd"></i><i class="ts"></i></div><small>редактор · світ · тести</small></div>
+      <div class="scr" id="s5" style="grid-area:e"><b>Суд богів</b><div class="mini-res"><span class="st">★★★</span><span>5 / 5 тестів · O(n)</span><span class="bad">Вовк: не встиг</span><i>Далі →</i></div></div>
+      <div class="scr" id="s6" style="grid-area:f"><b>Профіль</b><div class="mini-prof"><canvas id="fl-profile"></canvas><span>Хитрун<br><small>2 / 13 візерунків</small></span></div></div>
+      <div class="scr" id="s7" style="grid-area:g"><b>Налаштування</b><div class="mini-set"><span>Мова коду <em>TS ▾</em></span><span>Звук <em class="tg on"></em></span><span>Менше руху <em class="tg"></em></span><span>Мова UI <em>UA</em></span></div></div>
+    </div>
+  </div></section>
+
+  <section class="sheet sec" id="kit" data-title="UI-кіт"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 5 · UI-кіт</div>
+      <h2>Компоненти інтерфейсу</h2>
+      <p class="muted">Кнопки, вкладки, мітки, рядки тестів, репліки персонажів, сповіщення і тема редактора «Mykyta Dark».</p>
+    </div>
+    <div class="kit reveal-scale">
+      <div class="kg"><span class="eyebrow">Кнопки</span><div class="krow"><button class="kb run" type="button">▶ Запустити</button><button class="kb" type="button">Крок</button><button class="kb ghost" type="button">↺</button><button class="kb" type="button" disabled>🔒 Підказка</button></div></div>
+      <div class="kg"><span class="eyebrow">Вкладки і мітки</span><div class="krow"><span class="ktab on">carthage.ts</span><span class="ktab">Умова</span><span class="kchip e">Easy</span><span class="kchip m">Medium</span><span class="kchip h">Hard</span><span class="kchip o">O(n)</span><span class="mvp">MVP</span></div></div>
+      <div class="kg"><span class="eyebrow">Тести</span><div class="ktests"><span class="ok">✓ [1,8,6,2,5,4,8,3,7] → 49</span><span class="fail">✗ [1,1] → 0, очікували 1</span><span class="tle">⏱ n = 100 000 · Time Limit</span></div></div>
+      <div class="kg kg-wide"><span class="eyebrow">Репліки</span><div class="kbubbles"><p class="kbub fox"><b>Микита</b>Оце по-лисячому! Вовк ще рахує пари.</p><p class="kbub sib"><b>Сивілла</b>А що, як іти з обох кінців одночасно?</p><p class="kbub juno"><b>Юнона</b>Мій шторм ще не скінчився, а ти вже видихся.</p><p class="kbub wolf"><b>Вовк</b>Я перевірю всі пари. Всі-всі.</p></div></div>
+      <div class="kg"><span class="eyebrow">Сповіщення</span><div class="ktoasts"><span class="kt"><i>◆</i>На вишиванці новий візерунок: «два зустрічні ромби»</span><span class="kt rank"><i>★</i>Цар Лев жалує тобі звання Хитруна</span></div></div>
+      <div class="kg"><span class="eyebrow">Тема редактора · Mykyta Dark</span><div class="ktheme"><span style="--c:#f08a45">keyword</span><span style="--c:#e9c46a">function</span><span style="--c:#7fc4ae">type</span><span style="--c:#ff8b7e">number</span><span style="--c:#b9a7e8">property</span><span style="--c:#76857b">comment</span><span style="--c:#e7e0cf">text</span><span style="--c:#141b17">фон</span></div>
+        <pre class="kcode"><span class="cm">// два вказівники</span>
+<span class="kw">while</span> (left &lt; right) {
+  <span class="kw">const</span> h = <span class="ty">Math</span>.<span class="fn">min</span>(a[left], a[right]);
+  best = <span class="ty">Math</span>.<span class="fn">max</span>(best, h * (right - left));
+}</pre></div>
+    </div>
+  </div></section>
+
+  <section class="sheet sec" id="onboarding" data-title="Онбординг"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 6 · Онбординг</div>
+      <h2>Зачин за тринадцять сцен</h2>
+      <p class="muted">Сцени 1–9 — заставка на півтори хвилини, яку можна пропустити. З десятої гравець пише код. Гортайте текст праворуч (смуга прокрутки збоку) або натискайте крапки.</p>
+    </div>
+    <div class="ob reveal-scale">
+      <div class="ob-stage">
+        <div class="ob-frame"><canvas id="ob-canvas" aria-label="Поточна сцена онбордингу"></canvas><span class="ob-kind" id="ob-kind"></span></div>
+        <div class="ob-meta"><span class="mono" id="ob-title"></span><span class="ob-dots" id="ob-dots"></span></div>
+      </div>
+      <div class="ob-textcol"><div class="ob-scroll" id="ob-scroll" tabindex="0" aria-label="Тексти сцен онбордингу"><ol class="ob-steps" id="ob-steps"></ol></div><div class="ob-rail" aria-hidden="true"><span id="ob-thumb"></span></div></div>
+    </div>
+  </div></section>
+
+  <section class="sheet sec" id="identity" data-title="Айдентика"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 7 · Айдентика</div>
+      <h2>Логотип, кольори, шрифти</h2>
+    </div>
+    <div class="logos">
+      <div class="logo reveal"><div class="mark"><canvas id="logoHead" aria-label="Голова Енея з оселедцем-дужкою"></canvas><span class="word">Кодеїда</span></div><p class="muted">A · Голова Енея з оселедцем <code>{</code> поруч із назвою. Основний варіант.</p></div>
+      <div class="logo reveal"><div class="mark"><span class="word">Коде<span class="yi">ı</span>да</span></div><p class="muted">B · Крапки над «ї» стали двома уламками Писанки: червоним і лисячим.</p></div>
+      <div class="logo reveal"><div class="mark"><div class="egg">{К}</div></div><p class="muted">C · Монограма в формі писанки для іконки застосунку.</p></div>
+    </div>
+    <div class="palette" id="palette"></div>
+    <div class="type reveal">
+      <div class="row"><span class="eyebrow">Заголовки</span><span style="font-family:var(--display);font-weight:700;font-size:1.5rem">Твоя мандрівка алгоритмами</span></div>
+      <div class="row"><span class="eyebrow">Текст</span><span>Еней дістався Карфагену. Дидона просить обгородити найбільшу ділянку, а Вовк уже перебирає всі пари стовпів.</span></div>
+      <div class="row"><span class="eyebrow">Код</span><span class="mono">while (left &lt; right) { … }</span></div>
+    </div>
+  </div></section>
+
+  <section class="sheet sec" id="icon-sec" data-title="Іконка"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 8 · Іконка і заставка</div>
+      <h2>Іконка застосунку і заставка запуску</h2>
+      <p class="muted">Кришталева Писанка на нічному тлі з оселедцем-дужкою зліва. Заставка показує поради Сивілли, поки вантажиться застосунок.</p>
+    </div>
+    <div class="iconbox reveal-scale">
+      <div class="icons-col"><div class="icons" id="icons"></div>
+        <div class="dock"><span class="dk"></span><span class="dk"></span><canvas id="dock-icon" aria-label="Іконка в доку macOS"></canvas><span class="dk"></span><span class="dk"></span></div></div>
+      <div class="splashwin"><div class="sw-bar"><i></i><i></i><i></i></div><div class="sw-body"><canvas id="splash" aria-label="Заставка запуску"></canvas><div class="sw-logo"><span>{</span>Кодеїда</div><div class="sw-prog"><i id="splash-bar"></i></div><p id="splash-tip" class="sw-tip"></p></div></div>
+    </div>
+  </div></section>
+
+  <section class="sheet sec" id="voice" data-title="Голос"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 9 · Голос</div>
+      <h2>Як говорить гра</h2>
+      <p class="muted">Бурлеск Котляревського та іронія Франка. Сміємося з Юнони і Вовка, ніколи з гравця.</p>
+    </div>
+    <div class="voice">
+      <div class="line reveal"><span class="who">Оптимальне рішення · Микита</span><q>Оце по-лисячому! Вовк ще рахує пари, а ми вже пливемо далі.</q></div>
+      <div class="line reveal"><span class="who">Працює, але повільно · Микита</span><q>Так розв'язав би Вовк Неситий: O(n²). Пошукай хитрість.</q></div>
+      <div class="line reveal"><span class="who">Time Limit · Юнона</span><q>Ха! Мій шторм ще не скінчився, а ти вже видихся.</q></div>
+      <div class="line reveal"><span class="who">Помилка · система</span><q>Еней спіткнувся на рядку 12: змінна right не оголошена.</q></div>
+      <div class="line reveal"><span class="who">Підказка · Сивілла</span><q>А що, як іти з обох кінців одночасно?</q></div>
+      <div class="line reveal"><span class="who">Новий візерунок · система</span><q>На вишиванці Енея з'явилися «два зустрічні ромби».</q></div>
+    </div>
+    
+    <footer>Кодеїда — open-source гра про алгоритми. Персонажі намальовані з нуля за текстами в суспільному надбанні: Котляревський, Франко, Леся Українка, Коцюбинський, Квітка-Основ'яненко, народні казки.</footer>
+  </div></section>
+
+</div>
+<div class="stash" hidden aria-hidden="true">
+
+
+
+  <header class="cover sec-x" id="top" data-title="Обкладинка"><div class="fit">
+    <div class="eyebrow reveal">Open source · українською · без AI-підказок</div>
+    <h1 id="heroTitle"><span class="brace" data-split>{</span><span data-split>Кодеїда</span></h1>
+    <p class="sub reveal" style="--i:1">Гра, де твій код рухає героя. Разом з Енеєм і Лисом Микитою ти вивчаєш прийоми задач рівня LeetCode: два вказівники, хеш-мапи, графи, динамічне програмування. І бачиш, як працює кожен рядок.</p>
+    <div class="cta reveal" style="--i:2"><a class="kb run" href="#how">Подивитись, як це працює ↓</a><span class="kb soon" aria-disabled="true">★ GitHub · скоро</span></div>
+    <div class="meta reveal" style="--i:3"><span>Застосунок для Mac, Windows, Linux · офлайн</span><span>TypeScript · JavaScript · Python, далі C# · C++ · Go</span></div>
+    <div class="cloth hero reveal-scale" style="--i:3"><canvas id="hero" aria-label="Еней, Кришталева Писанка і Лис Микита"></canvas></div>
+  </div></header>
+
+  <section class="sheet sec-x" id="why" data-title="Чому"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Чому Кодеїда</div>
+      <h2>LeetCode без зубріння</h2>
+      <p class="muted">Більшість застосунків дають задачі. Кодеїда вчить бачити в задачі прийом і розуміти, чому він працює.</p>
+    </div>
+    <div class="why reveal-scale">
+      <article class="wcard"><canvas data-motif="rhombs"></canvas><h3>Хитрощі, а не відповіді</h3><p>Кожен світ — один прийом: два вказівники, ковзне вікно, хеш-мапа, графи, DP. Підвідні вправи ведуть до справжньої задачі.</p></article>
+      <article class="wcard"><canvas data-motif="waves"></canvas><h3>Бачиш, як працює код</h3><p>Кнопка «Крок» виконує рядок за рядком, а герої у світі показують, що відбувається з даними.</p></article>
+      <article class="wcard"><canvas data-motif="halved"></canvas><h3>Вовк проти Микити</h3><p>Після кожного рішення видно, скільки кроків зробив би перебір. Складність O(n²) і O(n) стає наочною.</p></article>
+      <article class="wcard"><canvas data-motif="tree"></canvas><h3>Українська класика</h3><p>Енеїда, Франко, Леся Українка й народні казки. Сюжет, гумор і персонажі, які хочеться проходити далі.</p></article>
+    </div>
+  </div></section>
+
+  <section class="sheet sec-x" id="how" data-title="Як це працює"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Як це працює</div>
+      <h2>Пишеш код — світ оживає</h2>
+      <p class="muted">Редактор без AI, справжні тести і світ, що виконує твій код крок за кроком. Наприкінці — порівняння з рішенням Вовка, щоб було видно, навіщо хитрість.</p>
+    </div>
+    <div class="stage reveal-scale" id="app-stage" role="img" aria-label="Анімований макет застосунку Кодеїда: розв'язок задачі Дидони крок за кроком">
+      <div class="stage-inner">
+        <div class="app2">
+          <div class="a-title"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span>Кодеїда · Пісня II · Карфаген Дидони</span><b>TS ▾</b></div>
+          <div class="a-body">
+            <nav class="a-act"><span class="on" title="Вправи">☰</span><span title="Книга хитрощів">✦</span><span title="Мапа">◈</span><span title="Вишиванка">✚</span><span class="a-gear" title="Налаштування">⚙</span></nav>
+            <aside class="a-side">
+              <div class="a-h">Світ 2 · Карфаген</div>
+              <div class="a-it done">✓ Зустрітися посередині</div>
+              <div class="a-it done">✓ Valid Palindrome</div>
+              <div class="a-it done">✓ Two Sum II</div>
+              <div class="a-it done">✓ Remove Duplicates</div>
+              <div class="a-it on">★ Задача Дидони</div>
+              <div class="a-h" style="margin-top:14px">Книга хитрощів</div>
+              <div class="a-it">◇ Два вказівники</div>
+              <div class="a-it muted2">◇ Хвилі <small>світ 1</small></div>
+              <div class="a-h" style="margin-top:14px">Вишиванка</div>
+              <div class="a-shirt"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </aside>
+            <main class="a-ed">
+              <div class="a-tabs"><span class="on">carthage.ts</span><span>Умова</span><span>Підказки Сивілли</span></div>
+              <div class="a-brief"><b>Задача Дидони.</b> Стовпи стоять у ряд, висота кожного в масиві <code>posts</code>. Обгородь двома стовпами ділянку, що вміщає найбільше води.</div>
+              <div class="a-code" data-el="code"></div>
+              <div class="a-panel">
+                <div class="a-ptabs"><span class="on">Суд богів</span><span>Консоль</span><span class="v" data-el="verdict"></span></div>
+                <div data-el="tests" class="a-tests"></div>
+              </div>
+            </main>
+            <section class="a-world">
+              <div class="a-wh"><span>Світ 2 · <b data-el="step"></b></span><span class="a-btn run" data-el="run">▶ Запустити</span><span class="a-btn">Крок</span><span class="a-btn">↺</span></div>
+              <div class="a-canvas"><canvas data-el="world"></canvas><div class="a-best">найкраще<b data-el="best">0</b></div></div>
+              <div class="a-bubble" data-el="bubble"><b>Микита:</b> Оце по-лисячому! Вовк ще перебирає пари, а ми вже обгородили 49.</div>
+              <div class="a-cmp">
+                <canvas data-el="wolf" class="a-wolf"></canvas>
+                <div class="a-bars">
+                  <div class="a-bar"><span>Вовк Неситий</span><div class="tr"><div class="fl w" data-el="wbar"></div></div><em data-el="wcount"></em></div>
+                  <div class="a-try" data-el="wtry"></div>
+                  <div class="a-bar"><span>Еней і Микита</span><div class="tr"><div class="fl e" data-el="ebar"></div></div><em data-el="ecount"></em></div>
+                </div>
+              </div>
+            </section>
+          </div>
+          <div class="a-status"><span>● Попелище → Карфаген</span><span>Ln 9, Col 5</span><span>Складність: <b data-el="cx">—</b></span><span data-el="stars">☆☆☆</span><span>TypeScript</span></div>
+        </div>
+        <div class="a-cursor" data-el="cursor"></div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="sheet sec-x" id="worlds" data-title="Світи"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">16 світів</div>
+      <h2>Мандрівка світами української літератури</h2>
+      <p class="muted">Від попелища Трої до кузні Вулкана: Енеїда, Франко, Леся Українка, Коцюбинський, народні казки. Кожен світ — один прийом і його мешканці.</p>
+    </div>
+  <div class="journey" id="journey" tabindex="0" aria-label="Мапа світів і картка поточного світу. Стрілки ← → перемикають світи.">
+    <div class="j-sticky">
+      <div class="j-grid">
+        <div class="j-map">
+          <div class="mapbox">
+            <canvas id="map" aria-label="Мапа мандрівки Енея: шість островів-пісень і шістнадцять світів, з'єднаних маршрутом"></canvas>
+            <div class="pins" id="map-pins"></div>
+          </div>
+          <div class="j-ctrl">
+            <span class="mono" id="j-count"></span>
+            <div class="j-progress"><span id="j-bar"></span></div>
+            <div class="car-btns"><button type="button" id="j-prev" aria-label="Попередній світ">←</button><button type="button" id="j-next" aria-label="Наступний світ">→</button></div>
+          </div>
+        </div>
+        <article class="j-card" id="j-card" aria-live="polite">
+          <canvas id="j-art" aria-label="Еней і Микита в поточному світі"></canvas>
+          <div class="body">
+            <div class="row"><span class="eyebrow" id="j-eyebrow"></span><span class="mvp" id="j-mvp">MVP</span></div>
+            <h3 id="j-name"></h3>
+            <div class="meta"><span class="topic" id="j-topic"></span><span class="task" id="j-task"></span></div>
+            <p id="j-does"></p>
+            <q id="j-quote"></q>
+            <div class="foot"><span class="chip"><span class="dot" id="j-dot"></span>Микита: <span id="j-fox"></span></span><span class="chip">Мешканці: <span id="j-npc"></span></span></div>
+          </div>
+        </article>
+        <svg class="j-conn" id="j-conn" aria-hidden="true"></svg>
+      </div>
+    </div>
+  </div>
+  </div></section>
+
+  <section class="sheet sec-x" id="characters" data-title="Герої"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Герої</div>
+      <h2>Еней, Лис Микита і ще 17 персонажів</h2>
+      <p class="muted">Гравець керує Енеєм, Микита підказує і жартує, а Вовк Неситий розв'язує все перебором і програє. Звірі поза своїм світом олюднені чарами Писанки.</p>
+    </div>
+    <div class="chars reveal-scale">
+      <div class="ch-side">
+        <div class="ch-tabs" id="ch-tabs" role="group" aria-label="Категорія"></div>
+        <div class="ch-list" id="ch-list" role="tablist" aria-label="Персонажі"></div>
+      </div>
+      <div class="ch-stagebox cloth"><canvas id="ch-stage" aria-label="Обраний персонаж"></canvas></div>
+      <div class="ch-info">
+        <span class="tag" id="ch-src"></span>
+        <h3 id="ch-name"></h3>
+        <p id="ch-role"></p>
+        <ul id="ch-bullets"></ul>
+        <div class="ch-colors" id="ch-colors" aria-label="Фарба світу"></div>
+        <div class="ch-vars-head"><span class="eyebrow">Варіації</span><span class="muted" id="ch-note"></span></div>
+        <div class="ch-vars" id="ch-vars"></div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="sheet sec-x" id="book" data-title="Хитрощі"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Книга хитрощів</div>
+      <h2>Вчимо прийомів, а не відповідей</h2>
+      <p class="muted">Кожен пройдений світ відкриває сторінку: коли брати прийом, шаблон коду, складність і живий приклад.</p>
+    </div>
+    <div class="bookspread reveal-scale">
+      <article class="page left">
+        <div class="bk-top"><canvas id="bk-motif" aria-label="Візерунок «два зустрічні ромби»"></canvas><div><span class="eyebrow">Хитрість №2 · Карфаген</span><h3>Два вказівники</h3><p class="muted">Еней іде зліва, Микита справа, і вони рухаються назустріч.</p></div></div>
+        <h4>Коли брати</h4>
+        <ul><li>Масив або рядок <b>відсортований</b>.</li><li>Шукаєш <b>пару</b> з умовою: сума, площа, паліндром.</li><li>Після кожного порівняння можна відкинути одну сторону.</li></ul>
+        <h4>Шаблон</h4>
+        <pre class="kcode"><span class="kw">let</span> l = <span class="nu">0</span>, r = a.length - <span class="nu">1</span>;
+<span class="kw">while</span> (l &lt; r) {
+  <span class="kw">if</span> (<span class="fn">good</span>(l, r)) <span class="kw">return</span> [l, r];
+  <span class="kw">if</span> (<span class="fn">tooSmall</span>(l, r)) l++; <span class="kw">else</span> r--;
+}</pre>
+        <div class="bk-chips"><span class="kchip o">час O(n)</span><span class="kchip o">пам'ять O(1)</span><span class="kchip m">Задачі: 125, 167, 11, 15</span></div>
+      </article>
+      <article class="page right">
+        <span class="eyebrow">Живий приклад · Two Sum II</span>
+        <canvas id="bk-array" aria-label="Два вказівники шукають пару з сумою 31"></canvas>
+        <span class="eyebrow">Вовк проти Микити</span>
+        <canvas id="bk-chart" aria-label="Графік кількості кроків: O(n²) проти O(n)"></canvas>
+      </article>
+    </div>
+  </div></section>
+
+  <section class="sheet sec-x" id="boss-sec" data-title="Бос-файт"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Фінал</div>
+      <h2>Двобій з Турном</h2>
+      <p class="muted">Режим співбесіди: незнайомі задачі, таймер і жодної підказки. Перевірка, чи ти справді навчився впізнавати прийоми.</p>
+    </div>
+    <div class="bossbox reveal-scale">
+      <div class="boss-stage">
+        <canvas id="boss" aria-label="Еней з шаблею проти Турна на полі Лаціуму"></canvas>
+        <div class="hud">
+          <div class="hp"><span>Лад Енея</span><div class="bar"><i id="hp-enei" class="e"></i></div></div>
+          <div class="timer mono" id="boss-timer">30:00</div>
+          <div class="hp r"><span>Турн</span><div class="bar"><i id="hp-turn" class="t"></i></div></div>
+        </div>
+        <div class="boss-hit" id="boss-hit">Влучно!</div>
+        <div class="boss-banner" id="boss-banner">Перемога! Писанку зібрано</div>
+      </div>
+      <aside class="boss-side">
+        <span class="eyebrow">Задачі двобою</span>
+        <div class="bt"><b>1</b><span>Незнайома задача<br><small>Medium · тему не підказують</small></span></div>
+        <div class="bt"><b>2</b><span>Незнайома задача<br><small>Medium</small></span></div>
+        <div class="bt"><b>3</b><span>Незнайома задача<br><small>Medium</small></span></div>
+        <div class="bt"><b>4</b><span>Фінальний удар<br><small>Hard</small></span></div>
+        <button class="kb" type="button" disabled>🔒 Сивілла мовчить</button>
+      </aside>
+    </div>
+  </div></section>
+
+  <section class="sheet sec-x" id="roadmap" data-title="Дорожня карта"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Дорожня карта · open source</div>
+      <h2>Що буде і коли</h2>
+      <p class="muted">Проєкт відкритий: код, сюжет і арт можна дивитися, обговорювати й покращувати разом.</p>
+    </div>
+    <ol class="road reveal-scale">
+      <li class="now"><b>MVP</b><span>Онбординг, Попелище Трої, Море Еола, Карфаген. TypeScript і JavaScript.</span><em>зараз</em></li>
+      <li><b>Python</b><span>Виконання Python прямо в застосунку, без встановлення.</span><em>далі</em></li>
+      <li><b>16 світів</b><span>Уся кампанія від Трої до двобою з Турном, Книга хитрощів, вишиванка-прогрес.</span><em>далі</em></li>
+      <li><b>C#, C++, Go</b><span>Ще три мови для тих, хто готується до співбесід.</span><em>потім</em></li>
+      <li><b>Нові кампанії</b><span>Алгоритми, структури даних, ООП — за останнім уламком Писанки.</span><em>потім</em></li>
+    </ol>
+    <div class="cta-box reveal">
+      <div><h3>Хочеш спробувати першим?</h3><p class="muted">Шукаємо перших гравців і контриб'юторів: розробників, художників, методистів.</p></div>
+      <div class="cta"><span class="kb run soon" aria-disabled="true">★ Зірочка на GitHub · скоро</span><span class="kb soon" aria-disabled="true">Стати тестувальником · скоро</span></div>
+    </div>
+    <footer>
+    Кодеїда — open-source гра про алгоритми. Персонажі намальовані з нуля за текстами в суспільному надбанні: Котляревський, Франко, Леся Українка, Коцюбинський, Квітка-Основ'яненко, народні казки.
+  </footer>
+  </div></section>
+
+
+  <!-- CHARACTERS -->
+
+
+
+  <!-- PYSANKA -->
+
+  <!-- JOURNEY -->
+
+  <!-- UI -->
+
+
+
+
+
+  <!-- ONBOARDING -->
+
+  <!-- IDENTITY -->
+
+
+  <!-- VOICE -->
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>

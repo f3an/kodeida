@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Script parses
+        run: node --check site/app.js
+      - name: Pages reference shared files
+        run: |
+          for f in site/index.html site/artbook.html; do
+            grep -q 'src="app.js"' "$f" || { echo "$f does not load app.js"; exit 1; }
+            grep -q 'href="style.css"' "$f" || { echo "$f does not load style.css"; exit 1; }
+          done
