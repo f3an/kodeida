@@ -3,10 +3,11 @@ import type { Level, World } from '../engine/level.ts';
 import type { Lang } from '../engine/types.ts';
 import { uiLang, siteT } from '../i18n.ts';
 import { LEVELS_EN, WORLDS_EN } from './en.ts';
+import { PY, pyStarter, pyText, pyTool } from './python.ts';
 
-export function lt(level: Level) {
+export function lt(level: Level, lang: Lang = 'ts') {
   const en = uiLang() === 'en' ? LEVELS_EN[level.id] : undefined;
-  return {
+  const base = {
     title: en?.title ?? level.title,
     topic: en?.topic ?? level.topic,
     brief: en?.brief ?? level.brief,
@@ -17,10 +18,25 @@ export function lt(level: Level) {
     talk: level.talk?.map((l, i) => ({ who: l.who, text: en?.talk?.[i] ?? l.text })),
     quip: level.quip && { who: level.quip.who, text: en?.quip ?? level.quip.text },
   };
+  const part = PY[level.id];
+  if (lang !== 'py' || !part) return base;
+  const m = !!level.memory;
+  return {
+    ...base,
+    brief: pyText(base.brief, m),
+    statement: base.statement.map((t) => pyText(t, m)),
+    hints: [pyText(base.hints[0], m), pyText(base.hints[1], m), part.hint] as [string, string, string],
+    lesson: pyText(base.lesson, m),
+    tool: base.tool && pyTool(level, base.tool),
+  };
 }
 
 /** Стартовий код: для англійської — коментар-умова англійською, решта коду та сама. */
 export function starterOf(level: Level, lang: Lang): string {
+  if (lang === 'py') {
+    const en = uiLang() === 'en' ? LEVELS_EN[level.id] : undefined;
+    return pyStarter(level, en?.doc, en ? '# Your code here' : undefined);
+  }
   const code = level.starter[lang];
   const en = uiLang() === 'en' ? LEVELS_EN[level.id] : undefined;
   if (!en) return code;

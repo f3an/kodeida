@@ -70,7 +70,7 @@ Most coding sites hand you problems. Kodeida teaches you to **recognise the tech
 - **Wolf vs Mykyta.** After every solution you see how many times brute force would look at the data. O(n²) versus O(n) becomes something you can see.
 - **Ukrainian classics.** The frame story is Kotliarevsky's *Eneida*. Aeneas sails from book to book to collect the shards: Franko's fox, *The Mitten*, Lesya Ukrainka's *Forest Song*, Kotsiubynsky's Carpathians, Kvitka-Osnovianenko's *Konotop Witch*.
 
-Languages: TypeScript and JavaScript today, then Python, then C#, C++ and Go. The interface is in Ukrainian and English. The game works offline.
+Languages: TypeScript, JavaScript and Python (via Pyodide, bundled, works offline) today, then C#, C++ and Go. The interface is in Ukrainian and English. The game works offline.
 
 ## Download
 
@@ -168,9 +168,9 @@ Every push to `main` that touches `site/` redeploys GitHub Pages. To publish a r
 ## Roadmap
 
 1. ✅ **Technical plan and the first level:** sandboxed runner, event log, animation, tests, the Wolf comparison.
-2. ✅ **MVP:** onboarding and worlds 0–3 (Ashes of Troy, Sea of Aeolus, Dido's Carthage, Mykyta's Forest), TypeScript and JavaScript, Ukrainian and English, installers, releases and auto-update.
+2. ✅ **MVP:** onboarding and worlds 0–3 (Ashes of Troy, Sea of Aeolus, Dido's Carthage, Mykyta's Forest), TypeScript, JavaScript and Python, Ukrainian and English, installers, releases and auto-update.
 3. **First playtest** with 10–20 people. ← *we are here*
-4. **Python** in the app (Pyodide), then **all 16 worlds**, the Book of Tricks and the embroidered-shirt progress.
+4. ✅ **Python** in the app (Pyodide), then **all 16 worlds**, the Book of Tricks and the embroidered-shirt progress.
 5. **C#, C++, Go**, then new campaigns: algorithms, data structures, OOP.
 
 ## Contributing

@@ -97,13 +97,14 @@ function smoke(win) {
     // Суд богів на стартовому коді: пісочниця має виконати код під CSP і винести вердикт.
     const state = await win.webContents.executeJavaScript(`new Promise((done) => {
       localStorage.setItem('kodeida.progress', JSON.stringify({ levels: {}, onboarded: true }));
+      localStorage.setItem('kodeida.settings', JSON.stringify({ lang: ${JSON.stringify(process.env.KODEIDA_SMOKE_LANG || 'ts')} }));
       localStorage.setItem('kodeida.screen', JSON.stringify({ name: 'level', id: 'carthage.dido' }));
       if (!document.querySelector('.btn.judge')) { location.reload(); return done({ reload: true }); }
       document.querySelector('.btn.judge').click();
       const t0 = Date.now();
       const poll = () => {
         const v = document.querySelector('.ptabs .v');
-        if (v || Date.now() - t0 > 8000) done({
+        if (v || Date.now() - t0 > 40000) done({
           bridge: !!(window.kodeida && window.kodeida.updates),
           editor: !!document.querySelector('.monaco-editor'),
           world: !!document.querySelector('canvas.world'),

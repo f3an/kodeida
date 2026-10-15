@@ -10,6 +10,9 @@ import { expectedOf } from '../engine/judge.ts';
 
 export interface Advice { who: 'fox' | 'sibyl' | 'host'; text: () => string }
 
+/** Поради написані під JS; Python-код (є `def`) вони не розуміють. */
+const isPy = (code: string) => /^\s*def\s/m.test(code);
+
 const COMMANDS = ['move', 'take', 'jump', 'fireAhead', 'atEnd'];
 
 /** Код без коментарів; другий варіант — ще й без вмісту рядків. */
@@ -39,6 +42,7 @@ const at = (line?: number) => (line ? L(`Рядок ${line}: `, `Line ${line}: `
 
 /** Помилка під час компіляції чи виконання. `raw` — те, що сказав рушій. */
 export function adviseError(level: Level, code: string, err: { message: string; line?: number }): Advice | null {
+  if (isPy(code)) return null;
   const { bare } = clean(code);
   const m = err.message;
   // рушій уже переклав помилку й додав оригінал у дужках; для помилок JS порада пояснює сама,
@@ -87,6 +91,7 @@ export function adviseError(level: Level, code: string, err: { message: string; 
 
 /** Код працював понад 2 секунди. */
 export function adviseTimeout(_level: Level, code: string): Advice {
+  if (isPy(code)) return fox('Цикл не закінчується. Перевір, чи змінюється щось, від чого залежить умова while (наприклад, чи є крок усередині).', 'The loop never ends. Check whether anything that the while condition depends on changes (for example, is there a step inside?).');
   const { bare } = clean(code);
   const w = bare.match(/while\s*\(([^)]*\)?)\)\s*\{?([\s\S]*)/);
   if (w && /atEnd/.test(w[1]) && !/move|jump/.test(w[2]))
@@ -98,6 +103,7 @@ export function adviseTimeout(_level: Level, code: string): Advice {
 
 /** Запуск на прикладі пройшов без помилки, але відповідь не та. `why` — пояснення судді. */
 export function adviseRun(level: Level, code: string, r: CallResult, why: string, tc?: TestCase): Advice | null {
+  if (isPy(code)) return null;
   const { code: c, bare } = clean(code);
   if (level.scene.type === 'street') {
     const acted = r.events.some((e) => e.t === 'act');
@@ -188,6 +194,7 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
 
 /** Суд богів: приклад пройшов, а якийсь інший тест — ні. */
 export function adviseJudge(level: Level, code: string, rep: JudgeReport): Advice | null {
+  if (isPy(code)) return null;
   const { bare } = clean(code);
   const exampleOk = rep.cases.filter((c) => c.kind === 'example').every((c) => c.verdict === 'ok');
   const bad = rep.cases.find((c) => c.verdict === 'wrong');
@@ -205,6 +212,7 @@ export function adviseJudge(level: Level, code: string, rep: JudgeReport): Advic
 
 /** Розв'язано, але є що підказати на майбутнє: наприклад, 15 рядків замість циклу. */
 export function adviseSolved(level: Level, code: string): string | null {
+  if (isPy(code)) return null;
   const { bare } = clean(code);
   const moves = (bare.match(/enei\.move\s*\(/g) ?? []).length;
   if ((level.id === 'troy.far' || level.id === 'troy.sacks') && !usesLoop(bare) && moves >= 5)
@@ -214,6 +222,7 @@ export function adviseSolved(level: Level, code: string): string | null {
 
 /** Відповіді правильні, але Вовк би так само: у циклі ховається ще один обхід масиву. */
 export function adviseWolf(level: Level, code: string): Advice | null {
+  if (isPy(code)) return null;
   const { bare } = clean(code);
   if (level.world === 3 && /\.(includes|indexOf|lastIndexOf|filter|some|find|findIndex|count)\s*\(/.test(bare) && usesLoop(bare))
     return fox('Відповіді правильні, але includes, indexOf чи filter щоразу обходять увесь масив — це той самий Вовк, тільки тихіший. Запам\'ятовуй у Set чи Map.', 'The answers are right, but includes, indexOf or filter walk the whole array every time — it’s the same Wolf, just quieter. Remember things in a Set or a Map.');

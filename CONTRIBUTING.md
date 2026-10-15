@@ -19,6 +19,7 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
   - `src/engine` runs player code in a Worker and judges it; `src/levels` holds the worlds as data (`troy.ts`, `sea.ts`, `carthage.ts`, `forest.ts`), their English texts (`en.ts`) and the Book of Tricks.
   - `src/world/sprites.js` is **generated** from `site/app.js` by `npm run sync-sprites` — change sprites, cutscenes and the journey map on the site, then sync. `src/world/scenes.ts` draws the in-level scenes.
   - `src/ui` holds the screens; interface text goes through `L('укр', 'eng')` from `src/i18n.ts`.
+  - Python: `src/levels/python.ts` holds, for every level, the starter body, the solution, the Wolf and the third hint (texts are converted from the JS wording by `pyText`); the engine is `src/engine/py-*.ts` on top of Pyodide, which `npm run dev`/`build` copy into `public/pyodide/` (`scripts/sync-pyodide.mjs`). A new level needs an entry there, or the selftest fails.
   - `electron/` is the main process: window, `app://` protocol with CSP, menu, auto-update (`updater.cjs`).
   - Run `npm run selftest` and `npm run typecheck` before sending changes. A new level needs a fox `solution` (and a `wolf` for levels with a big test); the self-test checks both.
 - `site/` — the website (no build step). `app.js` holds the pixel-art renderer, all scenes and the i18n dictionary; `style.css` holds the light and dark themes.
@@ -79,8 +80,8 @@ Releases are built by [`.github/workflows/release.yml`](.github/workflows/releas
 1. Bump `version` in `app/package.json` (the tag must match it).
 2. Commit, then tag and push the tag:
    ```bash
-   git tag v0.1.2
-   git push origin v0.1.2
+   git tag v0.2.0
+   git push origin v0.2.0
    ```
 3. The workflow builds macOS (`.dmg` + `.zip`, Apple Silicon and Intel), Windows (NSIS `.exe`) and Linux (`.AppImage`) and publishes the
    release with auto-generated notes. Running it manually from the Actions tab builds without publishing.

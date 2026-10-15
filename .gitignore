@@ -5,3 +5,4 @@ release/
 .playwright-mcp/
 *.log
 .env
+app/public/pyodide/

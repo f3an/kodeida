@@ -4,6 +4,10 @@ import assert from 'node:assert/strict';
 import { compile, runCall } from '../src/engine/sandbox-core.ts';
 import { planJudge, verdictOf } from '../src/engine/judge.ts';
 import { levels } from '../src/levels/index.ts';
+import { loadPyodide } from 'pyodide';
+import { createPyEngine, pyEntry } from '../src/engine/py-core.ts';
+import { PY, pyText } from '../src/levels/python.ts';
+import { starterOf, lt } from '../src/levels/text.ts';
 
 function judge(level, code, lang = 'ts') {
   const { planned, calls } = planJudge(level);
@@ -95,4 +99,57 @@ test('Еней не йде за кінець вулиці', () => {
   const r = runCall(c.fn, { args: [{ $actor: 'enei', setup: { cells: ['empty', 'empty'] } }], observe: [null], record: false }, 0);
   assert.ok(r.error);
 });
+
+// ---- Python (Pyodide) ----
+const pyodide = await loadPyodide();
+const py = createPyEngine(pyodide);
+function judgePy(level, code) {
+  const { planned, calls } = planJudge(level);
+  const c = py.compile(code, pyEntry(level.entry), false);
+  if ('error' in c) return verdictOf(level, planned, { compileError: c.error, results: [] });
+  return verdictOf(level, planned, { results: calls.map((s) => py.runCall(s, 1000, false)) });
+}
+for (const level of levels) {
+  const part = PY[level.id];
+  test(`${level.id}: Python є`, () => assert.ok(part));
+  test(`${level.id}: Python — лисяче рішення`, () => {
+    const r = judgePy(level, part.solution);
+    assert.equal(r.verdict, 'fox', why(r));
+    if (level.big) assert.ok(r.bigReads <= level.big.readBudget(level.big.n), `reads ${r.bigReads}`);
+  });
+  if (level.wolf && level.big) test(`${level.id}: Python — вовче рішення`, () => { const r = judgePy(level, part.wolf); assert.equal(r.verdict, 'wolf', why(r)); });
+  test(`${level.id}: Python — стартовий код компілюється`, () => {
+    const code = starterOf(level, 'py');
+    assert.ok('ok' in py.compile(code, pyEntry(level.entry), false), code);
+    if (level.id !== 'troy.step') assert.notEqual(judgePy(level, code).verdict, 'fox');
+  });
+  test(`${level.id}: Python — анімований прогін`, () => {
+    py.compile(part.solution, pyEntry(level.entry), false);
+    const r = py.runCall({ args: structuredClone(level.examples[0].args), observe: level.observe, record: true, forbid: level.forbid, memory: level.memory }, 5000, false);
+    assert.equal(r.error, undefined, JSON.stringify(r.error));
+    assert.ok(r.events.length > 0);
+    if (level.memory) assert.ok(r.events.some((e) => e.t === 'mem'), 'mem');
+  });
+  test(`${level.id}: Python — тексти без JS-залишків`, () => {
+    const T = lt(level, 'py');
+    const all = [T.brief, ...T.statement, T.lesson, ...(T.tool ? [...T.tool.text, T.tool.code] : [])].join('\n').replace(/<[^>]+>/g, '');
+    assert.doesNotMatch(all, /===|!==|\.length\b|\bconst\b|\blet\b|=>|;\s*$/m, all);
+  });
+}
+test('Python: помилка виконання вказує рядок', () => {
+  py.compile('def f(h):\n    x = 1\n    return x + right\n', 'f', false);
+  const r = py.runCall({ args: [[1]], observe: ['h'], record: false }, 0, false);
+  assert.equal(r.error.line, 3);
+});
+test('Python: синтаксична помилка вказує рядок', () => assert.equal(py.compile('def f(h):\n    x = \n', 'f', false).error.line, 2));
+test('Python: заборонений sort/sorted/reverse', () => {
+  py.compile('def f(a):\n    a.sort()\n', 'f', false);
+  assert.match(py.runCall({ args: [[2, 1]], observe: ['a'], record: false, forbid: ['sort'] }, 0, false).error.message, /sort/);
+});
+test('Python: Еней обпікся', () => {
+  py.compile('def f(enei):\n    enei.move()\n', 'f', false);
+  const r = py.runCall({ args: [{ $actor: 'enei', setup: { cells: ['empty', 'fire', 'well'] } }], observe: [null], record: true }, 100, false);
+  assert.equal(r.error.line, 2);
+});
+
 console.log(`\n${n} перевірок пройдено`);

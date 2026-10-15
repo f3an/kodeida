@@ -1,5 +1,5 @@
 /** Мова «слова ладу» — коду гравця. */
-export type Lang = 'ts' | 'js';
+export type Lang = 'ts' | 'js' | 'py';
 
 /** Подія, яку світ програє як анімацію. Однакова для будь-якої мови гравця. */
 export type WorldEvent =
@@ -59,6 +59,8 @@ export interface SandboxRequest {
 }
 
 export type SandboxMessage =
+  | { type: 'ready' }
+  | { type: 'initError'; message: string }
   | { type: 'compiled' }
   | { type: 'compileError'; error: { message: string; line?: number } }
   | { type: 'call'; index: number; result: CallResult }

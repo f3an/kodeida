@@ -251,6 +251,7 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go, pr
             <select value={settings.lang} onChange={(e) => setSettings((s) => ({ ...s, lang: e.target.value as Lang }))}>
               <option value="ts">TypeScript</option>
               <option value="js">JavaScript</option>
+              <option value="py">Python</option>
             </select>
           </label>
           <label className="row">{L('Швидкість анімації', 'Animation speed')}

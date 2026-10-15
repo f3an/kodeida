@@ -49,7 +49,7 @@ export function Editor({ value, lang, error, onChange, onCursor, onRun }: Props)
     const editor = ed.current!;
     const uri = monaco.Uri.parse(`file:///solution.${lang}`);
     let model = monaco.editor.getModel(uri);
-    if (!model) model = monaco.editor.createModel(value, lang === 'ts' ? 'typescript' : 'javascript', uri);
+    if (!model) model = monaco.editor.createModel(value, { ts: 'typescript', js: 'javascript', py: 'python' }[lang], uri);
     else if (model.getValue() !== value) model.setValue(value);
     const old = editor.getModel();
     editor.setModel(model);

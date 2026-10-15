@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Editor } from './Editor.tsx';
 import { WorldView, type WorldHandle } from './WorldView.tsx';
-import { runInSandbox } from '../engine/runner.ts';
+import { runInSandbox, preloadPython } from '../engine/runner.ts';
 import { planJudge, verdictOf, short, expectedOf, judgeCall, gotOf, clone } from '../engine/judge.ts';
 import type { Level } from '../engine/level.ts';
 import type { JudgeReport, Lang } from '../engine/types.ts';
@@ -39,10 +39,10 @@ interface Props {
 
 export function LevelScreen({ level, progress, setProgress, patchLevel, settings, setSettings, go }: Props) {
   const world = worlds[level.world];
-  const T = lt(level), WT = wt(world);
   const lang = settings.lang;
+  const T = lt(level, lang), WT = wt(world);
   const codeKey = (l: Lang) => `code.${level.id}.${l}`;
-  const [code, setCode] = useState<Record<Lang, string>>(() => ({ ts: load(codeKey('ts'), starterOf(level, 'ts')), js: load(codeKey('js'), starterOf(level, 'js')) }));
+  const [code, setCode] = useState<Record<Lang, string>>(() => ({ ts: load(codeKey('ts'), starterOf(level, 'ts')), js: load(codeKey('js'), starterOf(level, 'js')), py: load(codeKey('py'), starterOf(level, 'py')) }));
   const mine = progress.levels[level.id] ?? { stars: 0, hintsUsed: 0 };
   const [tab, setTab] = useState<Tab>('code');
   const [panel, setPanel] = useState<Panel>('tests');
@@ -70,7 +70,9 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   const pendingRun = useRef<{ ok: true | string; got: unknown; r: CallResult } | null>(null);
   const view = useRef<WorldHandle>(null);
 
-  useEffect(() => { save(codeKey('ts'), code.ts); save(codeKey('js'), code.js); }, [code]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (lang === 'py') preloadPython().catch(() => undefined); }, [lang]);
+
+  useEffect(() => { save(codeKey('ts'), code.ts); save(codeKey('js'), code.js); save(codeKey('py'), code.py); }, [code]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const WHO: Record<Who, string> = {
     host: WT.host.who, fox: L('Микита', 'Mykyta'), juno: L('Юнона', 'Juno'), sibyl: L('Сивілла', 'Sibyl'), system: L('Еней', 'Aeneas'),
@@ -194,8 +196,8 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
       const joins = joinIdx >= 0 && joinIdx < CREW_MAX && !solved(progress, level);
       const nudge = adviseSolved(level, code[lang]);
       say('fox', () => L(
-        `Оце по-лисячому! ${lt(level).lesson}${shard ? ` Уламок знайдено: на вишиванці з'явився новий візерунок, а в Книзі хитрощів — «${wt(world).trick}».` : ''}${joins ? ` До ватаги приєднався ${TROJAN_NAMES[joinIdx]}: ватага = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
-        `That’s the fox way! ${lt(level).lesson}${shard ? ` Shard found: a new pattern appeared on the shirt, and the Book of Tricks has a new page — “${wt(world).trick}”.` : ''}${joins ? ` ${TROJANS_EN[joinIdx][0].toUpperCase() + TROJANS_EN[joinIdx].slice(1)} joined the crew: crew = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
+        `Оце по-лисячому! ${lt(level, lang).lesson}${shard ? ` Уламок знайдено: на вишиванці з'явився новий візерунок, а в Книзі хитрощів — «${wt(world).trick}».` : ''}${joins ? ` До ватаги приєднався ${TROJAN_NAMES[joinIdx]}: ватага = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
+        `That’s the fox way! ${lt(level, lang).lesson}${shard ? ` Shard found: a new pattern appeared on the shirt, and the Book of Tricks has a new page — “${wt(world).trick}”.` : ''}${joins ? ` ${TROJANS_EN[joinIdx][0].toUpperCase() + TROJANS_EN[joinIdx].slice(1)} joined the crew: crew = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
       ) + (nudge ? ` ${nudge}` : ''), 'win');
     }
     const quip = rep.verdict === 'fox' && !solved(progress, level) ? lt(level).quip : undefined;
@@ -231,7 +233,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     const next = Math.min(3, mine.hintsUsed + 1);
     patchLevel(level.id, { hintsUsed: next });
     setTab('hints');
-    say('sibyl', () => lt(level).hints[next - 1]);
+    say('sibyl', () => lt(level, lang).hints[next - 1]);
   };
 
   useEffect(() => {
@@ -288,6 +290,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
             <select value={lang} onChange={(e) => { setSettings((s) => ({ ...s, lang: e.target.value as Lang })); setError(null); }}>
               <option value="ts">TypeScript</option>
               <option value="js">JavaScript</option>
+              <option value="py">Python</option>
             </select>
           </label>
         </div>
@@ -322,7 +325,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
               <h2>{L('Шпаргалка', 'Cheat sheet')}</h2>
               <p className="muted">{L('Усе, що ти вже бачив у світі 0: коротко й з прикладом.', 'Everything you have met in world 0, briefly and with an example.')}</p>
               {worlds[0].levels.filter((l, i) => l.tool && (level.world > 0 || i <= worlds[0].levels.indexOf(level))).map((l) => {
-                const tool = lt(l).tool!;
+                const tool = lt(l, lang).tool!;
                 return (
                   <section key={l.id} className="tool-card">
                     <h3>{tool.name}</h3>
@@ -435,7 +438,7 @@ function StatusBar({ level, cursor, complexity, stars, lang }: { level: Level; c
       <span>Ln {cursor.line}, Col {cursor.col}</span>
       <span>{L('Складність', 'Complexity')}: <b>{complexity}</b></span>
       <span aria-label={L(`${stars} з 3 зірок`, `${stars} of 3 stars`)}>{'★'.repeat(stars)}{'☆'.repeat(3 - stars)}</span>
-      <span>{lang === 'ts' ? 'TypeScript' : 'JavaScript'}</span>
+      <span>{lang === 'ts' ? 'TypeScript' : lang === 'js' ? 'JavaScript' : 'Python'}</span>
     </footer>
   );
 }

@@ -10,7 +10,7 @@
 |---|---|
 | Світи | онбординг (14 сцен), світи 0–3: «Попелище Трої», «Море Еола», «Карфаген Дидони», «Ліс Лиса Микити» |
 | Вправи | підвідні вправи + фінальна задача кожного світу ([STORY.md](STORY.md)) |
-| Мови коду | TypeScript і JavaScript |
+| Мови коду | TypeScript, JavaScript і Python (Pyodide у Worker'і, `app/src/engine/py-*.ts`) |
 | Мова інтерфейсу | українська й англійська (перемикач у меню й налаштуваннях) |
 | Платформа | Electron (macOS, Windows, Linux), офлайн, без бекенду й акаунтів |
 | Не входить | Python, світи 4–15, Книга хитрощів повністю, вишиванка, двобій з Турном |
@@ -106,7 +106,7 @@ interface Level {
   world: number;                    // 2
   title: string; story: string;     // українською, Markdown
   entry: string;                    // ім'я функції гравця: 'maxArea'
-  starter: { ts: string; js: string };
+  starter: { ts: string; js: string };  // Python-версії: app/src/levels/python.ts
   examples: TestCase[];             // видимі
   hidden: TestCase[];               // приховані
   big?: { make: () => TestCase; readBudget: (n: number) => number };
