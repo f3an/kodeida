@@ -4,6 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('kodeida', {
   version: process.argv.find((a) => a.startsWith('--kodeida-version='))?.split('=')[1] ?? '',
   platform: process.platform,
+  setLang: (l) => ipcRenderer.invoke('ui:set-lang', l),
   updates: {
     get: () => ipcRenderer.invoke('update:get'),
     check: () => ipcRenderer.invoke('update:check'),

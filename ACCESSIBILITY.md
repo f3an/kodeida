@@ -5,7 +5,8 @@ Kodeida is a game about learning, and we want it to be usable by as many people 
 ## Supported environments
 
 - **Website** (<https://f3an.github.io/kodeida/>): any current browser, desktop and mobile.
-- **Languages:** the landing page is Ukrainian and English (switch in the top-right corner); the artbook is Ukrainian for now.
+- **Game app:** macOS, Windows and Linux ([releases](https://github.com/f3an/kodeida/releases)).
+- **Languages:** the game, the landing page and the artbook are Ukrainian and English (switch in the top-right corner of the site, in the game's main menu and in Settings).
 - **Themes:** light, dark, or follow the system setting. The choice is remembered.
 
 ## What we do
@@ -19,10 +20,13 @@ Kodeida is a game about learning, and we want it to be usable by as many people 
 
 ## The game app (pre-alpha)
 
-- Buttons, tabs and the language switch are native controls with visible keyboard focus. **Ctrl/⌘ + Enter** runs the code on the example, **Ctrl/⌘ + Shift + Enter** runs all tests.
-- Character lines (Mykyta, Dido, Juno, the Sibyl) are announced through a live region; test results are plain text.
-- The world animation respects `prefers-reduced-motion`: heroes jump to their positions instead of walking.
-- Not done yet: a text description of each animation step for screen readers, English interface, adjustable font size.
+- Buttons, tabs, map pins and the language switch are native controls with visible keyboard focus. **Ctrl/⌘ + Enter** runs the code on the example, **Ctrl/⌘ + Shift + Enter** runs all tests.
+- The onboarding and the Sibyl's tour work from the keyboard: **→ / Enter / Space** next, **←** back, **Esc** skips. The world map switches worlds with **← →**.
+- Character lines are announced through a live region and are always fully present for assistive technology, even while they are typed out on screen; a click shows the whole line at once.
+- Errors are shown three ways at once, not only by colour: the line number in Aeneas's message, a “!” marker in the editor gutter and a shake of the scene.
+- Everything respects `prefers-reduced-motion`: lines appear at once, heroes jump to their positions instead of walking, shakes, sparkles and blinking stop.
+- Interface zoom: **View → Zoom In / Out** in the menu (Ctrl/⌘ + / −).
+- Not done yet: a text description of each animation step for screen readers.
 
 ## Known limitations
 

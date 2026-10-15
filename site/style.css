@@ -720,7 +720,6 @@ body{font:16px/1.6 var(--body)}
 .ab-toc a{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--sheet);color:var(--fg);text-decoration:none;font-size:.92rem}
 .ab-toc a::before{content:counter(t);font:700 .75rem var(--mono);color:var(--accent)}
 .ab-toc a:hover{border-color:var(--accent)}
-body[data-page="artbook"] .lang{display:none}
 @media (max-width:640px){.sitenav{top:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%)}}
 
 html.snap .cover>.fit{padding-top:56px}

@@ -360,3 +360,5 @@ a { color: var(--fox-soft); }
 .j-card.locked canvas { filter: grayscale(.7) brightness(.85); }
 @media (max-width: 1150px) { .journey { grid-template-columns: 1fr; } .j-conn { display: none; } }
 @media (prefers-reduced-motion: reduce) { .j-dash, .j-card.pop { animation: none; } }
+.update-line { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.update-line .btn { border-color: var(--line); }

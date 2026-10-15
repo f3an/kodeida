@@ -7,6 +7,7 @@ export interface UpdateState { stage: UpdateStage; version: string | null; error
 interface Bridge {
   version: string;
   platform: string;
+  setLang(l: 'uk' | 'en'): Promise<void>;
   updates: {
     get(): Promise<UpdateState>;
     check(): Promise<UpdateState>;

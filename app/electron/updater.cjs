@@ -1,7 +1,7 @@
 // Автооновлення з GitHub Releases (electron-updater), як у Mova-Flow:
 // перевірка під час запуску й кожні 6 годин; завантаження автоматичне або за кнопкою;
 // встановлення — після перезапуску, який обирає гравець.
-const { app, ipcMain, Notification } = require('electron');
+const { app, ipcMain, Notification, dialog } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -10,6 +10,10 @@ const readConfig = () => { try { return { autoUpdate: true, ...JSON.parse(fs.rea
 const writeConfig = (c) => { try { fs.writeFileSync(CONFIG(), JSON.stringify(c)); } catch { /* немає доступу — не пам'ятаємо */ } };
 
 let state = { stage: 'idle', version: null, error: null, percent: 0, auto: true, supported: false };
+/** Мова інтерфейсу гри (приходить з renderer): нею говорять меню, діалоги й сповіщення. */
+let uiLang = app.getLocale().startsWith('uk') ? 'uk' : 'en';
+const M = (uk, en) => (uiLang === 'uk' ? uk : en);
+let onLang = () => {};
 let getWindow = () => null;
 let autoUpdater = null;
 
@@ -24,7 +28,7 @@ function notify(kind, version) {
   const win = getWindow();
   if (notified.has(key) || !Notification.isSupported() || (win && win.isVisible() && win.isFocused())) return;
   notified.add(key);
-  const uk = app.getLocale().startsWith('uk');
+  const uk = uiLang === 'uk';
   const body = kind === 'available'
     ? (uk ? `Доступна нова версія ${version}. Відкрий Кодеїду, щоб завантажити.` : `Version ${version} is available. Open Kodeida to download it.`)
     : (uk ? `Версія ${version} завантажена. Перезапусти Кодеїду, щоб оновитися.` : `Version ${version} is downloaded. Restart Kodeida to update.`);
@@ -41,6 +45,40 @@ function download() {
   autoUpdater.downloadUpdate().catch((err) => setState({ stage: 'error', error: err.message }));
 }
 
+async function check() {
+  if (!autoUpdater || busy()) return state;
+  try { await autoUpdater.checkForUpdates(); } catch (err) { setState({ stage: 'error', error: err.message }); }
+  return state;
+}
+
+/** «Перевірити оновлення…» з меню: перевірка й нативний діалог з результатом і діями. */
+async function checkInteractive() {
+  const win = getWindow();
+  const show = (o) => (win ? dialog.showMessageBox(win, o) : dialog.showMessageBox(o));
+  if (!autoUpdater) {
+    await show({ type: 'info', message: M('Оновлення працюють у встановленому застосунку', 'Updates work in the installed app'), detail: M('Ця копія запущена з вихідного коду.', 'This copy runs from source.') });
+    return;
+  }
+  if (state.stage === 'downloading') {
+    await show({ type: 'info', message: M(`Завантажую версію ${state.version}: ${state.percent}%`, `Downloading version ${state.version}: ${state.percent}%`) });
+    return;
+  }
+  if (state.stage !== 'downloaded') await check();
+  if (state.stage === 'downloaded') {
+    const r = await show({ type: 'info', buttons: [M('Перезапустити й оновити', 'Restart and update'), M('Пізніше', 'Later')], defaultId: 0, cancelId: 1,
+      message: M(`Версія ${state.version} готова`, `Version ${state.version} is ready`), detail: M('Перезапусти Кодеїду, щоб оновитися. Прогрес і код збережуться.', 'Restart Kodeida to update. Your progress and code are kept.') });
+    if (r.response === 0) autoUpdater.quitAndInstall();
+  } else if (state.stage === 'available') {
+    const r = await show({ type: 'info', buttons: [M('Завантажити', 'Download'), M('Пізніше', 'Later')], defaultId: 0, cancelId: 1,
+      message: M(`Доступна версія ${state.version}`, `Version ${state.version} is available`), detail: M(`У тебе ${app.getVersion()}.`, `You have ${app.getVersion()}.`) });
+    if (r.response === 0) download();
+  } else if (state.stage === 'error') {
+    await show({ type: 'warning', message: M('Не вдалося перевірити оновлення', 'Could not check for updates'), detail: state.error || '' });
+  } else {
+    await show({ type: 'info', message: M('У тебе найновіша версія', 'You have the latest version'), detail: `Kodeida ${app.getVersion()}` });
+  }
+}
+
 function init(windowGetter) {
   getWindow = windowGetter;
   state.auto = readConfig().autoUpdate;
@@ -55,10 +93,11 @@ function init(windowGetter) {
     return state;
   });
   ipcMain.handle('update:check', async () => {
-    if (!autoUpdater) return { ...state, stage: 'not-available' };
-    try { await autoUpdater.checkForUpdates(); } catch (err) { setState({ stage: 'error', error: err.message }); }
+    if (!autoUpdater) return state;
+    await check();
     return state;
   });
+  ipcMain.handle('ui:set-lang', (_e, l) => { uiLang = l === 'en' ? 'en' : 'uk'; onLang(); });
 
   // electron-updater читає app-update.yml, який є лише в зібраному застосунку.
   if (!app.isPackaged) return;
@@ -83,4 +122,4 @@ function init(windowGetter) {
   setInterval(check, 6 * 60 * 60 * 1000);
 }
 
-module.exports = { init };
+module.exports = { init, check, state: () => state, checkInteractive, M: (uk, en) => M(uk, en), onLangChange: (f) => { onLang = f; } };

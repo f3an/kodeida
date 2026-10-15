@@ -20,12 +20,14 @@ export function App() {
   setUiLang(settings.ui);
   const [screen, setScreen] = useState<Screen>(() => load<Screen>('screen', { name: 'menu' }));
   useEffect(() => save('screen', screen), [screen]);
+  // меню застосунку й діалоги оновлень говорять мовою гри
+  useEffect(() => { bridge?.setLang?.(settings.ui); }, [settings.ui]);
   const go = (s: Screen) => setScreen(s);
 
   const level = screen.name === 'level' ? levelById(screen.id) : undefined;
   if (screen.name === 'level' && !level) setScreen({ name: 'map' });
 
-  if (screen.name === 'menu') return <Menu progress={progress} go={go} ui={settings.ui} setUi={(ui) => setSettings((s) => ({ ...s, ui }))} />;
+  if (screen.name === 'menu') return <Menu progress={progress} go={go} updates={updates} ui={settings.ui} setUi={(ui) => setSettings((s) => ({ ...s, ui }))} />;
   if (screen.name === 'onboarding') {
     const finish = () => { setProgress((p) => ({ ...p, onboarded: true })); go({ name: 'level', id: worlds[0].levels[0].id }); };
     return <Onboarding scenes={INTRO_SCENES} finishLabel={L('Перший крок ▸', 'First step ▸')} onDone={finish} onSkip={finish} />;

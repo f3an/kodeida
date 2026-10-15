@@ -9,13 +9,18 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
 - **World ideas** — a work of Ukrainian literature in the public domain plus one algorithmic technique it can teach. Use the *World idea* issue template.
 - **Story and dialogue** — lines for Mykyta, the Sibyl, Juno or the locals, in the tone of the brand book: Kotliarevsky's burlesque and Franko's irony, never mocking the player.
 - **Pixel art** — new characters, variants, scene details. Everything is drawn in code, see below.
-- **Translations** — the landing page is Ukrainian and English; the artbook is Ukrainian only for now.
-- **Accessibility and UX feedback** on the website.
-- **Feedback on the first level** — play *Dido's Task* in `app/` and tell us where you got stuck. The technical plan is in [docs/MVP.md](docs/MVP.md).
+- **Translations** — the game, the landing page and the artbook are Ukrainian and English; proofreading the English is very welcome.
+- **Accessibility and UX feedback** on the game and the website.
+- **Playtesting** — install the latest [release](https://github.com/f3an/kodeida/releases), play worlds 0–2 and tell us where you got stuck (**Help → Report a problem** in the app). The technical plan is in [docs/MVP.md](docs/MVP.md).
 
 ## Project layout
 
-- `app/` — the game (Electron + React + TypeScript + Monaco). `src/engine` runs player code in a Worker and judges it, `src/levels` holds levels as data, `src/world` draws the worlds. Run `npm run selftest` and `npm run typecheck` before sending changes.
+- `app/` — the game (Electron + React + TypeScript + Monaco).
+  - `src/engine` runs player code in a Worker and judges it; `src/levels` holds the worlds as data (`troy.ts`, `sea.ts`, `carthage.ts`), their English texts (`en.ts`) and the Book of Tricks.
+  - `src/world/sprites.js` is **generated** from `site/app.js` by `npm run sync-sprites` — change sprites, cutscenes and the journey map on the site, then sync. `src/world/scenes.ts` draws the in-level scenes.
+  - `src/ui` holds the screens; interface text goes through `L('укр', 'eng')` from `src/i18n.ts`.
+  - `electron/` is the main process: window, `app://` protocol with CSP, menu, auto-update (`updater.cjs`).
+  - Run `npm run selftest` and `npm run typecheck` before sending changes. A new level needs a fox `solution` (and a `wolf` for levels with a big test); the self-test checks both.
 - `site/` — the website (no build step). `app.js` holds the pixel-art renderer, all scenes and the i18n dictionary; `style.css` holds the light and dark themes.
 - `docs/` — design documents: `NOTES.md` (idea, decisions, plan), `BRAND.md`, `LORE.md`, `STORY.md`, `ONBOARDING.md`.
 
@@ -33,7 +38,8 @@ Every push to `main` that touches `site/` redeploys GitHub Pages.
 
 - **Characters** are functions like `makeEnei()` or `makeFox()` in `site/app.js` that draw a small sprite from shapes (`ell`, `rect`, `poly`, `line`). When drawn at an even scale they are upscaled automatically (Scale2x, light and shade, cel lines). Hand-tuned details live in `hdDetails()`.
 - **Worlds** live in `WORLD_SCENES` (background and local character) and `WORLD_FX` (particles, light, vignette).
-- **Text** is written in Ukrainian in the markup and scripts. English comes from the `DICT` table and the `RULES` patterns in `app.js`; when you add or change visible text on the landing page, add its English entry there.
+- **Text** is written in Ukrainian in the markup and scripts. English comes from the `DICT` table and the `RULES` patterns in `app.js` (both pages); when you add or change visible text, add its English entry there. Text drawn on a canvas goes through `ST('…')`, so the site and the game translate it the same way.
+- **Shared with the game:** everything between the `colour helpers` marker and the cutscenes (`OB`) is copied into the app by `npm run sync-sprites`; keep it free of DOM access.
 - Respect `prefers-reduced-motion`: every animation must have a finished resting frame.
 - Each section must fit one screen on desktop; check at 1440×860 and at a short window around 930×470.
 

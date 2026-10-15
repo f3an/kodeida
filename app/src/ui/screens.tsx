@@ -20,7 +20,8 @@ const GINGER = '#e2702b';
 const HERO_ENEI = makeEnei(0), HERO_ENEI_BLINK = makeEnei(0, { blink: true });
 const HERO_FOX = [makeFox(GINGER), makeFox(GINGER, { cursorOff: true })];
 
-export function Menu({ progress, go, ui, setUi }: { progress: Progress; go: Go; ui: UiLang; setUi: (l: UiLang) => void }) {
+export function Menu({ progress, go, ui, setUi, updates }: { progress: Progress; go: Go; ui: UiLang; setUi: (l: UiLang) => void; updates: UpdateState | null }) {
+  const [checking, setChecking] = useState(false);
   const started = Object.keys(progress.levels).length > 0 || progress.onboarded;
   const next = nextLevel(progress);
   const drawHero = (ctx: CanvasRenderingContext2D, f: number) => {
@@ -48,6 +49,7 @@ export function Menu({ progress, go, ui, setUi }: { progress: Progress; go: Go; 
           {started && <button className="btn big" onClick={() => go({ name: 'onboarding' })}>{L('Переглянути вступ', 'Watch the intro')}</button>}
           <button className="btn big" onClick={() => go({ name: 'settings' })}>{L('Налаштування', 'Settings')}</button>
         </div>
+        <UpdateLine updates={updates} checking={checking} onCheck={async () => { setChecking(true); await bridge?.updates.check(); setChecking(false); }} />
         <p className="muted small">{L('Версія', 'Version')} {APP_VERSION} · {L('офлайн, без AI-підказок', 'offline, no AI hints')} · <a href="https://github.com/f3an/kodeida" target="_blank" rel="noreferrer">github.com/f3an/kodeida</a></p>
       </div>
     </div>
@@ -286,6 +288,21 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go }: 
         </section>
       </div>
     </main>
+  );
+}
+
+/** Рядок оновлень у головному меню: кнопка перевірки, статус і дія (завантажити / перезапустити). */
+function UpdateLine({ updates, checking, onCheck }: { updates: UpdateState | null; checking: boolean; onCheck: () => void }) {
+  if (!bridge) return null;
+  if (!updates?.supported) return <p className="muted small">{L('Оновлення працюють у встановленому застосунку.', 'Updates work in the installed app.')}</p>;
+  const busy = checking || updates.stage === 'checking' || updates.stage === 'downloading';
+  return (
+    <div className="update-line" aria-live="polite">
+      {updates.stage === 'available' ? <button className="btn run" onClick={() => bridge!.updates.download()}>{L('Завантажити', 'Download')} {updates.version}</button>
+        : updates.stage === 'downloaded' ? <button className="btn run" onClick={() => bridge!.updates.install()}>{L('Перезапустити й оновити', 'Restart and update')}</button>
+        : <button className="btn" disabled={busy} onClick={onCheck}>{busy && updates.stage !== 'downloading' ? L('Перевіряю…', 'Checking…') : L('Перевірити оновлення', 'Check for updates')}</button>}
+      <span className="muted small">{updateText(updates)}</span>
+    </div>
   );
 }
 

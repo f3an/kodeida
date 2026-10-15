@@ -15,7 +15,8 @@
     "electron:dev": "KODEIDA_DEV_URL=http://localhost:5173 electron .",
     "selftest": "node scripts/selftest.mjs",
     "typecheck": "tsc --noEmit",
-    "dist": "npm run build && electron-builder --publish never"
+    "dist": "npm run build && electron-builder --publish never",
+    "sync-sprites": "node scripts/sync-sprites.mjs"
   },
   "dependencies": {
     "electron-updater": "6.8.9"

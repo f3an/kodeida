@@ -85,8 +85,10 @@ export function Speech({ who, name, text, tone, fox, seq, enter, action }: Props
         <PixelCanvas key={`${who}:${fox}`} width={PW} height={PH} draw={draw} interval={talking ? 280 : 420} label={name} />
       </div>
       <div className="speech-body" onClick={() => setShown(text.length)}>
-        <b className="speech-name">{name}</b>
-        <p>{text.slice(0, shown)}<span className="speech-rest" aria-hidden="true">{text.slice(shown)}</span></p>
+        <b className="speech-name" aria-hidden="true">{name}</b>
+        {/* друк — лише для очей; скринрідер одразу отримує всю репліку */}
+        <p aria-hidden="true">{text.slice(0, shown)}<span className="speech-rest">{text.slice(shown)}</span></p>
+        <span className="sr">{name}: {text}</span>
         {action && !talking && <div className="speech-action">{action}</div>}
       </div>
     </div>

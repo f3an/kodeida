@@ -1,5 +1,5 @@
 // Головний процес Electron: одне вікно, збірка з dist/ через протокол app://, без мережі й Node в інтерфейсі.
-const { app, BrowserWindow, protocol, net, shell } = require('electron');
+const { app, BrowserWindow, Menu, protocol, net, shell } = require('electron');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const updater = require('./updater.cjs');
@@ -7,6 +7,8 @@ const updater = require('./updater.cjs');
 const DIST = path.join(__dirname, '..', 'dist');
 const DEV_URL = process.env.KODEIDA_DEV_URL;
 const SMOKE = process.env.KODEIDA_SMOKE === '1';
+// KODEIDA_SMOKE=update: перевірити оновлення на GitHub, надрукувати стан і вийти (для зібраного застосунку).
+const SMOKE_UPDATE = process.env.KODEIDA_SMOKE === 'update';
 
 // 'unsafe-eval' потрібен пісочниці: код гравця компілюється через eval у Worker'і.
 const CSP = [
@@ -97,9 +99,35 @@ function smoke(win) {
   }, 2500));
 }
 
+/** Меню застосунку мовою гри: «Перевірити оновлення…», правка (потрібна редактору), вигляд, вікно. */
+function buildMenu() {
+  const M = updater.M;
+  const check = { label: M('Перевірити оновлення…', 'Check for Updates…'), click: () => updater.checkInteractive() };
+  const about = { label: M('Про Кодеїду', 'About Kodeida'), click: () => app.showAboutPanel() };
+  const site = { label: M('Сайт Кодеїди', 'Kodeida website'), click: () => shell.openExternal('https://f3an.github.io/kodeida/') };
+  const issues = { label: M('Повідомити про помилку', 'Report a problem'), click: () => shell.openExternal('https://github.com/f3an/kodeida/issues/new/choose') };
+  const mac = process.platform === 'darwin';
+  const template = [
+    ...(mac ? [{ label: app.name, submenu: [about, check, { type: 'separator' }, { role: 'hide', label: M('Сховати Кодеїду', 'Hide Kodeida') }, { role: 'hideOthers' }, { role: 'unhide' }, { type: 'separator' }, { role: 'quit', label: M('Вийти з Кодеїди', 'Quit Kodeida') }] }] : []),
+    ...(mac ? [] : [{ label: M('Файл', 'File'), submenu: [{ role: 'quit', label: M('Вийти', 'Exit') }] }]),
+    { label: M('Правка', 'Edit'), submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
+    { label: M('Вигляд', 'View'), submenu: [{ role: 'resetZoom' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { type: 'separator' }, { role: 'togglefullscreen' }, ...(app.isPackaged ? [] : [{ role: 'toggleDevTools' }])] },
+    { label: M('Вікно', 'Window'), role: 'windowMenu' },
+    { label: M('Довідка', 'Help'), role: 'help', submenu: [...(mac ? [] : [check, about, { type: 'separator' }]), site, issues] },
+  ];
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
 app.whenReady().then(() => {
   protocol.handle('app', serve);
   updater.init(() => mainWindow);
+  app.setAboutPanelOptions({ applicationName: 'Kodeida', applicationVersion: app.getVersion(), copyright: '© 2026 Ihor Cherniavskyi · Apache-2.0', website: 'https://f3an.github.io/kodeida/' });
+  buildMenu();
+  updater.onLangChange(buildMenu);
+  if (SMOKE_UPDATE) {
+    updater.check().then(() => { console.log('update', JSON.stringify(updater.state())); app.exit(0); });
+    return;
+  }
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
