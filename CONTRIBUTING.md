@@ -2,7 +2,7 @@
 
 By taking part you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Accessibility barriers are bugs — see [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
-Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist, and the game app has its first playable level. That shapes what kind of help is most useful right now.
+Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist, and the game app has its MVP — the onboarding and worlds 0–2, released for macOS, Windows and Linux. That shapes what kind of help is most useful right now.
 
 ## What helps most today
 
@@ -11,7 +11,7 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
 - **Pixel art** — new characters, variants, scene details. Everything is drawn in code, see below.
 - **Translations** — the game, the landing page and the artbook are Ukrainian and English; proofreading the English is very welcome.
 - **Accessibility and UX feedback** on the game and the website.
-- **Playtesting** — install the latest [release](https://github.com/f3an/kodeida/releases), play worlds 0–2 and tell us where you got stuck (**Help → Report a problem** in the app). The technical plan is in [docs/MVP.md](docs/MVP.md).
+- **Playtesting** — install the latest [release](https://github.com/f3an/kodeida/releases/latest), play worlds 0–2 and press **Leave feedback** (main menu, Settings or the Help menu). It opens the *Playtest feedback* form with your version and progress filled in. Bugs go to **Help → Report a problem**. The technical plan is in [docs/MVP.md](docs/MVP.md).
 
 ## Project layout
 
@@ -22,7 +22,7 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
   - `electron/` is the main process: window, `app://` protocol with CSP, menu, auto-update (`updater.cjs`).
   - Run `npm run selftest` and `npm run typecheck` before sending changes. A new level needs a fox `solution` (and a `wolf` for levels with a big test); the self-test checks both.
 - `site/` — the website (no build step). `app.js` holds the pixel-art renderer, all scenes and the i18n dictionary; `style.css` holds the light and dark themes.
-- `docs/` — design documents: `NOTES.md` (idea, decisions, plan), `BRAND.md`, `LORE.md`, `STORY.md`, `ONBOARDING.md`.
+- `docs/` — design documents: `NOTES.md` (idea, decisions, plan), `MVP.md`, `BRAND.md`, `LORE.md`, `STORY.md`, `ONBOARDING.md`. `docs/media/` holds the logo and the README GIFs (see below).
 
 ## Running the site
 
@@ -42,6 +42,10 @@ Every push to `main` that touches `site/` redeploys GitHub Pages.
 - **Shared with the game:** everything between the `colour helpers` marker and the cutscenes (`OB`) is copied into the app by `npm run sync-sprites`; keep it free of DOM access.
 - Respect `prefers-reduced-motion`: every animation must have a finished resting frame.
 - Each section must fit one screen on desktop; check at 1440×860 and at a short window around 930×470.
+
+## README media
+
+The GIFs in `docs/media/` are recorded from the running game (`npm run dev`), in both languages: `intro-*.gif` (the opening cutscenes), `play-*.gif` (Dido's problem: Run, then Judgement), `map-*.gif` (the world map), plus `hero.gif` from the website cover. When the screens change noticeably, re-record them at a 1280×800 window and keep each GIF under about 4 MB (8–12 fps, 720–960 px wide). `icon.png` is `app/build/icon.png` scaled to 256 px.
 
 ## Content rules
 
@@ -65,8 +69,8 @@ Releases are built by [`.github/workflows/release.yml`](.github/workflows/releas
 1. Bump `version` in `app/package.json` (the tag must match it).
 2. Commit, then tag and push the tag:
    ```bash
-   git tag v0.1.0
-   git push origin v0.1.0
+   git tag v0.1.2
+   git push origin v0.1.2
    ```
 3. The workflow builds macOS (`.dmg` + `.zip`, Apple Silicon and Intel), Windows (NSIS `.exe`) and Linux (`.AppImage`) and publishes the
    release with auto-generated notes. Running it manually from the Actions tab builds without publishing.
