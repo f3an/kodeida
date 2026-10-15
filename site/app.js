@@ -2,6 +2,26 @@
 (function(){
 /* ================= МОВА: UA / EN ================= */
 const DICT={
+// завантаження
+"Завантажити ·":"Download ·",
+"Завантажити гру ↓":"Download the game ↓",
+"Завантажити гру":"Download the game",
+"Завантажити":"Download",
+"остання версія":"latest version",
+"Грай на своєму комп'ютері":"Play on your computer",
+"Безкоштовно й офлайн, без реєстрації. Гра сама оновлюється, щойно виходить нова версія.":"Free and offline, no sign-up. The game updates itself as soon as a new version is out.",
+"твоя система":"your system",
+"Apple Silicon (M1 і новіші) · .dmg":"Apple Silicon (M1 and newer) · .dmg",
+"Завантажити для Mac":"Download for Mac",
+"Підписано й нотаризовано Apple: відкривається без попереджень.":"Signed and notarized by Apple: opens without warnings.",
+"Windows 10 і 11 · інсталятор .exe":"Windows 10 and 11 · .exe installer",
+"Завантажити для Windows":"Download for Windows",
+"Якщо SmartScreen попередить: «Докладніше» → «Усе одно запустити».":"If SmartScreen warns you: “More info” → “Run anyway”.",
+"x64 · AppImage, без встановлення":"x64 · AppImage, no installation",
+"Завантажити для Linux":"Download for Linux",
+"Дозволь запуск: chmod +x Kodeida-*.AppImage — і відкривай.":"Allow it to run: chmod +x Kodeida-*.AppImage — then open it.",
+"Усі версії й нотатки до релізів →":"All versions and release notes →",
+"вийшла 0.1":"0.1 is out",
 "Вправи":"Exercises",
 "Мапа":"Map",
 // артбук
@@ -390,6 +410,9 @@ Object.assign(DICT,{"Тема":"Theme","Як у системі":"Match system","
 "Як це працює":"How it works"
 });
 const RULES=[
+ [/^Завантажити для (\S+) ↓$/,(m)=>`Download for ${m[1]} ↓`],
+ [/^версія ([\d.]+)(?: · (.+))?$/,(m)=>`version ${m[1]}${m[2]?' · '+m[2]:''}`],
+ [/^(.+) · (\d+) МБ$/,(m)=>`${m[1]} · ${m[2]} MB`],
  [/^Сцена (\d+) · (.+)$/,(m)=>`Scene ${m[1]} · ${tr(m[2])}`],
  [/^Сцена (\d+): (.+)$/,(m)=>`Scene ${m[1]}: ${tr(m[2])}`],
  [/^(\d+) \/ (\d+) · (.+)$/,(m)=>`${m[1]} / ${m[2]} · ${tr(m[3])}`],
@@ -2235,6 +2258,31 @@ function buildFrames(sh,st){
   draw(12.5);scene(c,{loop:14,rest:12.5,draw});
 })();
 
+
+
+/* ================= ЗАВАНТАЖИТИ: останній реліз з GitHub ================= */
+(function(){
+  const box=document.getElementById('download');if(!box||box.closest('.stash'))return;
+  const ua=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||navigator.userAgent||'';
+  const mine=/mac/i.test(ua)?'mac':/win/i.test(ua)?'win':/linux|x11/i.test(ua)&&!/android/i.test(navigator.userAgent)?'linux':null;
+  const NAME={mac:'Mac',win:'Windows',linux:'Linux'};
+  if(mine){const card=box.querySelector(`.dl[data-os="${mine}"]`);if(card)card.classList.add('mine');
+    const hero=document.getElementById('hero-dl');if(hero)hero.textContent=`Завантажити для ${NAME[mine]} ↓`;}
+  const pick={mac:a=>/\.dmg$/i.test(a.name),win:a=>/\.exe$/i.test(a.name),linux:a=>/\.AppImage$/i.test(a.name)};
+  fetch('https://api.github.com/repos/f3an/kodeida/releases/latest',{headers:{Accept:'application/vnd.github+json'}})
+    .then(r=>r.ok?r.json():Promise.reject(r.status))
+    .then(rel=>{
+      const v=(rel.tag_name||'').replace(/^v/,''),d=new Date(rel.published_at);
+      const date=isNaN(d)?'':d.toLocaleDateString('uk-UA');
+      const ver=document.getElementById('dl-ver');if(ver&&v)ver.textContent=`версія ${v}${date?' · '+date:''}`;
+      box.querySelectorAll('.dl').forEach(card=>{
+        const a=(rel.assets||[]).find(pick[card.dataset.os]);if(!a)return;
+        const btn=card.querySelector('.dl-btn');btn.href=a.browser_download_url;btn.setAttribute('download','');
+        const meta=card.querySelector('.dl-meta');if(meta)meta.textContent=`${a.name} · ${Math.round(a.size/1048576)} МБ`;
+      });
+    })
+    .catch(()=>{/* релізу ще немає або ліміт API — кнопки ведуть на сторінку релізів */});
+})();
 
 /* лендінг: іконки переваг */
 document.querySelectorAll('.wcard canvas[data-motif]').forEach(c=>drawMotif(setup(c,54,54),MOTIFS[c.dataset.motif],0,0,6,RD));

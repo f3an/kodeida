@@ -732,3 +732,21 @@ html.snap .cover>.fit{padding-top:56px}
 .lang{right:126px}
 
 html.snap .wrap{padding-block:0}
+
+/* завантаження */
+.dl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}
+.dl{position:relative;background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:8px;align-content:start;transition:border-color .2s,transform .2s}
+.dl h3{margin:0;font-size:1.3rem}
+.dl p{margin:0}
+.dl-top{display:flex;justify-content:space-between;align-items:center}
+.dl-ic{width:34px;height:34px;color:var(--fg)}
+.dl-mine{display:none;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:#1a120b;background:#e2702b;border-radius:999px;padding:3px 9px}
+.dl.mine{border-color:#e2702b;box-shadow:0 0 0 3px rgba(226,112,43,.18)}
+.dl.mine .dl-mine{display:inline-block}
+.dl:not(.mine) .dl-btn{background:transparent;color:var(--fg);border-color:var(--line)}
+.dl .dl-btn{justify-self:start;text-decoration:none;font-size:14px;padding:11px 18px;margin-top:6px}
+.dl-meta{font:12px var(--mono);color:var(--muted);min-height:1.2em;word-break:break-all}
+.dl-note{font-size:.86rem;color:var(--muted)}
+.dl-all{margin-top:14px}
+.dl-all a{color:var(--fg)}
+@media (max-width:900px){.dl-grid{grid-template-columns:1fr}}
