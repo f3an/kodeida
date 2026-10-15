@@ -442,6 +442,8 @@ class Spr{
   set(x,y,c){x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>=this.w||y>=this.h)return;this.p[y*this.w+x]=c;this.v++;}
   get(x,y){if(x<0||y<0||x>=this.w||y>=this.h)return null;return this.p[y*this.w+x];}
   fill(pts,c){pts.forEach(([x,y])=>{const col=typeof c==='function'?c(x,y):c;if(col)this.set(x,y,col);});return this;}
+  /* Очистити для повторного малювання: той самий буфер і те саме полотно, без нових текстур щокадру. */
+  clear(){this.p.fill(null);this.v++;return this;}
   erase(pts){pts.forEach(([x,y])=>{x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<this.w&&y<this.h)this.p[y*this.w+x]=null;});this.v++;return this;}
   outline(amt){
     const out=[];
@@ -1542,8 +1544,11 @@ function routePoint(from,to,p){
 }
 /* Мапа: море, острови-пісні, маршрут (золотий до reached), мітки світів, рамка навколо active і кораблик.
    o.state(i): 'locked' | 'open' | 'done' — у грі закриті світи сірі, пройдені мають золоту рамку. */
+/* Море мапи: один буфер на весь час, перераховується лише коли змінився кадр f (новий Spr щокадру коштував ~45 мс). */
+let _sea=null,_seaF=-1;
 function paintJourney(ctx,f,o){
-  const s=o.scale||MS,sea=new Spr(MW,MH);
+  const s=o.scale||MS,fresh=_seaF!==f,sea=_sea||(_sea=new Spr(MW,MH));_seaF=f;
+  if(fresh)
   for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const w=(x+Math.round(Math.sin((y+f)*0.5)*3)+f)%14;sea.set(x,y,w===0&&y%4===0?'#3c6c9e':((x+y)%2?'#1d3f66':'#21466f'));}
   sea.draw(ctx,0,0,s);mapBase().draw(ctx,0,0,s);
   const reached=o.reached??o.active;
@@ -1563,7 +1568,8 @@ const ART={};
 function artOf(n){if(!ART[n]){const ws=WORLD_SCENES[n];ART[n]=ws?{bg:ws.bg,npc:ws.npcSpr,pos:ws.npcPos,float:ws.float}:{bg:genericBg(ALL_WORLDS[n])};}return ART[n];}
 function paintWorldArt(ctx,n,f,foxFrom,p=1){
   const w=ALL_WORLDS[n],a=artOf(n),s=2;
-  const sp=new Spr(SW,SH_);a.bg(sp,f);sp.draw(ctx,0,0,s);
+  /* фон картки: свій буфер для кожного світу, перемальовується лише з новим кадром f */
+  const sp=a.sp||(a.sp=new Spr(SW,SH_));if(a.spF!==f){sp.clear();a.bg(sp,f);a.spF=f;}sp.draw(ctx,0,0,s);
   const FT=(typeof performance!=='undefined'?performance.now():0)/1000;fxLayer(ctx,w.n,FT,'back');
   ENEI_SCENE.draw(ctx,4*s,(SH_-70)*s,s);
   drawSwap(ctx,foxFrom&&hdOf(foxFrom),52*s-1,(SH_-59)*s-1,hdOf(foxFor(w)),52*s-1,(SH_-59)*s-1,s/2,easeOut(p));
@@ -1710,4 +1716,4 @@ const OB=[
 
 ];
 
-export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, makeAnchises, makeLion, makeMitten, makeSotnyk, artOf, drawSack, drawEgg, eggCells, EGG_PAL, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };
+export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, makeAnchises, makeLion, makeMitten, makeSotnyk, makeAcestes, artOf, drawSack, drawEgg, eggCells, EGG_PAL, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };

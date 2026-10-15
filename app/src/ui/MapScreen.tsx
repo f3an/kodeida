@@ -105,7 +105,7 @@ export function MapScreen({ progress, go }: { progress: Progress; go: (s: Screen
       <div className="journey" ref={wrap}>
         <div className="j-map">
           <div className="mapbox" ref={mapBox}>
-            <PixelCanvas width={MW * MS} height={MH * MS} draw={drawMap} interval={300} label={L('Мапа мандрівки Енея: шість островів-пісень і шістнадцять світів, з\'єднаних маршрутом', 'Aeneas’s journey map: six song islands and sixteen worlds joined by a route')} />
+            <PixelCanvas width={MW * MS} height={MH * MS} draw={drawMap} interval={300} smooth label={L('Мапа мандрівки Енея: шість островів-пісень і шістнадцять світів, з\'єднаних маршрутом', 'Aeneas’s journey map: six song islands and sixteen worlds joined by a route')} />
             <div className="pins">
               {(NODES as [number, number][]).map(([x, y], i) => (
                 <button key={i} className={`pin ${stateOf(i)}${i === sel ? ' on' : ''}${x / MW > 0.72 ? ' tip-l' : x / MW < 0.22 ? ' tip-r' : ''}${y / MH < 0.22 ? ' tip-b' : ''}`} style={{ left: `${(x / MW) * 100}%`, top: `${(y / MH) * 100}%` }}
@@ -141,7 +141,7 @@ export function MapScreen({ progress, go }: { progress: Progress; go: (s: Screen
         )}
 
         <article key={pop} className={`j-card ${st}${pop ? ' pop' : ''}`} ref={card} style={{ ['--wc' as string]: col }} aria-live="polite">
-          <PixelCanvas key={sel} width={SW * 2} height={SH_ * 2} draw={drawArt} interval={70} label={`${siteT(w.name)}: ${siteT(INFO[sel]?.does ?? '')}`} />
+          <PixelCanvas key={sel} width={SW * 2} height={SH_ * 2} draw={drawArt} interval={70} smooth label={`${siteT(w.name)}: ${siteT(INFO[sel]?.does ?? '')}`} />
           <div className="j-body">
             <div className="eyebrow">{L('Світ', 'World')} {sel} · {L('Пісня', 'Song')} {song.n} · {siteT(song.title)}</div>
             <h3>{siteT(w.name)}</h3>
