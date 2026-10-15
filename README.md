@@ -36,7 +36,7 @@ Planned languages: TypeScript and JavaScript first, then Python, then C#, C++ an
 
 ## Status
 
-**Pre-alpha.** The design is done: story, 16 worlds mapped to techniques, a 13-scene onboarding, characters and their pixel-art, a UI mock-up, and the website. The game app in `app/` has its first playable level — *Dido's Task* (Container With Most Water) with a sandboxed runner, an animated world, tests and the Wolf comparison. The technical plan is in [docs/MVP.md](docs/MVP.md); see also the [roadmap](#roadmap).
+**Pre-alpha.** The design is done: story, 16 worlds mapped to techniques, a 14-scene onboarding, characters and their pixel-art, a UI mock-up, and the website. The game app in `app/` has the MVP content: the onboarding with speaking characters and a guided tour, and worlds 0–2 (16 exercises, from the first `enei.move()` to *Container With Most Water*), each with a sandboxed runner, an animated world, tests and the Wolf comparison — in Ukrainian and English. The technical plan is in [docs/MVP.md](docs/MVP.md); see also the [roadmap](#roadmap).
 
 ## What's in this repository
 
@@ -90,7 +90,7 @@ Every push to `main` that touches `site/` redeploys GitHub Pages via [`.github/w
 ## Roadmap
 
 1. ✅ **Technical plan for the MVP** ([docs/MVP.md](docs/MVP.md)) and the first playable level: sandboxed runner in a Web Worker with timeouts, "code → event log → animation", tests and the Wolf comparison.
-2. **MVP** — Electron + React + Monaco; onboarding, worlds 0–2 (Ashes of Troy, Sea of Aeolus, Dido's Carthage); TypeScript and JavaScript.
+2. ✅ **MVP content** — Electron + React + Monaco; onboarding, worlds 0–2 (Ashes of Troy, Sea of Aeolus, Dido's Carthage); TypeScript and JavaScript; Ukrainian and English. Next: installers, releases and auto-update.
 3. **First playtest** with 10–20 people. The metric: can they solve the real *Container With Most Water* afterwards, without the game?
 4. **Python** in the app (Pyodide), then **all 16 worlds**, the Book of Tricks and the embroidered-shirt progress.
 5. **C#, C++, Go**, then new campaigns: algorithms, data structures, OOP.

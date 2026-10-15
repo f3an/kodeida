@@ -20,6 +20,31 @@ ts.javascriptDefaults.setCompilerOptions({ ...compilerOptions, allowJs: true, ch
 // У пісочниці є лише console.log; DOM гравцю недоступний.
 const consoleLib = 'declare const console: { log(...a: unknown[]): void; info(...a: unknown[]): void; warn(...a: unknown[]): void; error(...a: unknown[]): void };';
 ts.typescriptDefaults.addExtraLib(consoleLib, 'ts:kodeida/console.d.ts');
+// Еней у світі 0: команди, які дає вулиця (sandbox-core.ts → makeStreet). Опис — мовою інтерфейсу.
+const eneiLib = (en: boolean) => `/** ${en ? 'Aeneas on the street of ashes.' : 'Еней на вулиці згарища.'} */
+interface Enei {
+  /** ${en ? 'One step forward.' : 'Крок уперед на одну клітинку.'} */
+  move(): void;
+  /** ${en ? 'Jump over one cell (over the fire).' : 'Стрибок через одну клітинку (над вогнем).'} */
+  jump(): void;
+  /** ${en ? 'Pick up the sack where you stand.' : 'Підняти мішок там, де стоїш.'} */
+  take(): void;
+  /** ${en ? 'Is the next cell on fire.' : 'Чи горить на наступній клітинці.'} */
+  fireAhead(): boolean;
+  /** ${en ? 'Is there a sack here.' : 'Чи лежить мішок тут.'} */
+  sackHere(): boolean;
+  /** ${en ? 'Is Aeneas at the end of the street.' : 'Чи Еней уже в кінці вулиці.'} */
+  atEnd(): boolean;
+  /** ${en ? 'The cell Aeneas stands on.' : 'Номер клітинки, де стоїть Еней.'} */
+  readonly position: number;
+}`;
+let eneiDisposables: { dispose(): void }[] = [];
+/** Перереєструвати опис API Енея мовою інтерфейсу. */
+export function setEditorLang(lang: 'uk' | 'en') {
+  eneiDisposables.forEach((d) => d.dispose());
+  eneiDisposables = [ts.typescriptDefaults.addExtraLib(eneiLib(lang === 'en'), 'ts:kodeida/enei.d.ts'), ts.javascriptDefaults.addExtraLib(eneiLib(lang === 'en'), 'ts:kodeida/enei.d.ts')];
+}
+setEditorLang('uk');
 ts.javascriptDefaults.addExtraLib(consoleLib, 'ts:kodeida/console.d.ts');
 
 monaco.editor.defineTheme('mykyta-dark', {

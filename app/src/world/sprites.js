@@ -1,6 +1,173 @@
 // @ts-nocheck
-/* Піксельний рушій, перенесений із site/app.js без змін у малюванні. */
+/* ЗГЕНЕРОВАНО з site/app.js скриптом scripts/sync-sprites.mjs — не редагуй вручну.
+   Піксельний рушій, герої, сцени світів і онбординг без змін у малюванні. */
+const DPR = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1;
+const REDUCED = typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DICT={
+// написи на полотні заставок
+"дзень!":"clink!","хм…":"hmm…","ам!":"chomp!","гик!":"hic!","ватага":"crew",
+// hero & static
+"Open source · українською · без AI-підказок":"Open source · in Ukrainian and English · no AI hints",
+"Гра, де твій код рухає героя. Разом з Енеєм і Лисом Микитою ти вивчаєш прийоми задач рівня LeetCode: два вказівники, хеш-мапи, графи, динамічне програмування. І бачиш, як працює кожен рядок.":"A game where your code moves the hero. Together with Aeneas and Mykyta the Fox you learn the techniques behind LeetCode-style problems: two pointers, hash maps, graphs, dynamic programming. And you see what every line does.",
+"Подивитись, як це працює ↓":"See how it works ↓","★ GitHub · скоро":"★ GitHub · soon",
+"Застосунок для Mac, Windows, Linux · офлайн":"Desktop app for Mac, Windows, Linux · works offline",
+"TypeScript · JavaScript · Python, далі C# · C++ · Go":"TypeScript · JavaScript · Python, then C# · C++ · Go",
+"Чому Кодеїда":"Why Kodeida","LeetCode без зубріння":"LeetCode without cramming",
+"Більшість застосунків дають задачі. Кодеїда вчить бачити в задачі прийом і розуміти, чому він працює.":"Most apps hand you problems. Kodeida teaches you to spot the technique inside a problem and understand why it works.",
+"Хитрощі, а не відповіді":"Tricks, not answers",
+"Кожен світ — один прийом: два вказівники, ковзне вікно, хеш-мапа, графи, DP. Підвідні вправи ведуть до справжньої задачі.":"Each world is one technique: two pointers, sliding window, hash map, graphs, DP. Warm-up exercises lead to a real problem.",
+"Бачиш, як працює код":"See your code run",
+"Кнопка «Крок» виконує рядок за рядком, а герої у світі показують, що відбувається з даними.":"The Step button runs your code line by line, and the heroes in the world show what happens to the data.",
+"Вовк проти Микити":"Wolf vs Mykyta",
+"Після кожного рішення видно, скільки кроків зробив би перебір. Складність O(n²) і O(n) стає наочною.":"After every solution you see how many steps brute force would take. O(n²) versus O(n) becomes something you can see.",
+"Українська класика":"Ukrainian classics",
+"Енеїда, Франко, Леся Українка й народні казки. Сюжет, гумор і персонажі, які хочеться проходити далі.":"The Aeneid, Franko, Lesya Ukrainka and folk tales. A story, humour and characters that make you want to keep going.",
+"Як це працює":"How it works","Пишеш код — світ оживає":"Write code, watch the world come alive",
+"Редактор без AI, справжні тести і світ, що виконує твій код крок за кроком. Наприкінці — порівняння з рішенням Вовка, щоб було видно, навіщо хитрість.":"An editor without AI, real tests and a world that runs your code step by step. At the end you compare with the Wolf's solution, so you see why the trick matters.",
+"16 світів":"16 worlds","Мандрівка світами української літератури":"A journey through Ukrainian literature",
+"Від попелища Трої до кузні Вулкана: Енеїда, Франко, Леся Українка, Коцюбинський, народні казки. Кожен світ — один прийом і його мешканці.":"From the ashes of Troy to Vulcan's forge: the Aeneid, Franko, Lesya Ukrainka, Kotsiubynsky, folk tales. Each world is one technique and its inhabitants.",
+"Герої":"Heroes","Еней, Лис Микита і ще 17 персонажів":"Aeneas, Mykyta the Fox and 17 more characters",
+"Гравець керує Енеєм, Микита підказує і жартує, а Вовк Неситий розв'язує все перебором і програє. Звірі поза своїм світом олюднені чарами Писанки.":"You control Aeneas, Mykyta gives hints and jokes, and the Greedy Wolf brute-forces everything and loses. Outside their own world, animals are humanised by the Pysanka's magic.",
+"Книга хитрощів":"Book of Tricks","Вчимо прийомів, а не відповідей":"We teach techniques, not answers",
+"Кожен пройдений світ відкриває сторінку: коли брати прийом, шаблон коду, складність і живий приклад.":"Every world you finish unlocks a page: when to use the technique, a code template, complexity and a live example.",
+"Фінал":"Finale","Двобій з Турном":"Duel with Turnus",
+"Режим співбесіди: незнайомі задачі, таймер і жодної підказки. Перевірка, чи ти справді навчився впізнавати прийоми.":"Interview mode: unfamiliar problems, a timer and no hints. A test of whether you really learned to recognise the techniques.",
+"Дорожня карта · open source":"Roadmap · open source","Що буде і коли":"What's coming and when",
+"Проєкт відкритий: код, сюжет і арт можна дивитися, обговорювати й покращувати разом.":"The project is open: code, story and art are there to read, discuss and improve together.",
+"MVP":"MVP","Онбординг, Попелище Трої, Море Еола, Карфаген. TypeScript і JavaScript.":"Onboarding, the Ashes of Troy, the Sea of Aeolus, Carthage. TypeScript and JavaScript.",
+"зараз":"now","далі":"next","потім":"later",
+"Виконання Python прямо в застосунку, без встановлення.":"Python runs right inside the app, nothing to install.",
+"Уся кампанія від Трої до двобою з Турном, Книга хитрощів, вишиванка-прогрес.":"The whole campaign from Troy to the duel with Turnus, the Book of Tricks, the embroidered-shirt progress.",
+"C#, C++, Go":"C#, C++, Go","Ще три мови для тих, хто готується до співбесід.":"Three more languages for interview prep.",
+"Нові кампанії":"New campaigns","Алгоритми, структури даних, ООП — за останнім уламком Писанки.":"Algorithms, data structures, OOP — behind the last Pysanka shard.",
+"Хочеш спробувати першим?":"Want to try it first?",
+"Шукаємо перших гравців і контриб'юторів: розробників, художників, методистів.":"We're looking for first players and contributors: developers, artists, teachers.",
+"★ Зірочка на GitHub":"★ Star on GitHub","Запропонувати ідею":"Suggest an idea",
+"Кодеїда — open-source гра про алгоритми. Персонажі намальовані з нуля за текстами в суспільному надбанні: Котляревський, Франко, Леся Українка, Коцюбинський, Квітка-Основ'яненко, народні казки.":"Kodeida is an open-source game about algorithms. Characters are drawn from scratch after public-domain texts: Kotliarevsky, Franko, Lesya Ukrainka, Kotsiubynsky, Kvitka-Osnovianenko, folk tales.",
+// journey card
+"Микита:":"Mykyta:","Мешканці:":"Locals:",
+// app stage
+"Кодеїда · Пісня II · Карфаген Дидони":"Kodeida · Song II · Dido's Carthage","TS ▾":"TS ▾",
+"Світ 2 · Карфаген":"World 2 · Carthage","✓ Зустрітися посередині":"✓ Meet in the middle","★ Задача Дидони":"★ Dido's problem",
+"◇ Два вказівники":"◇ Two pointers","◇ Хвилі":"◇ Waves","світ 1":"world 1","Вишиванка":"Shirt",
+"Умова":"Problem","Підказки Сивілли":"Sibyl's hints","Задача Дидони.":"Dido's problem.",
+"Стовпи стоять у ряд, висота кожного в масиві":"Posts stand in a row; each height is in the array",
+". Обгородь двома стовпами ділянку, що вміщає найбільше води.":". Use two posts to fence the plot that holds the most water.",
+"Суд богів":"Judgement of the gods","Консоль":"Console","Світ 2 ·":"World 2 ·",
+"▶ Запустити":"▶ Run","Крок":"Step","найкраще":"best",
+"Оце по-лисячому! Вовк ще перебирає пари, а ми вже обгородили 49.":"Now that's foxy! The Wolf is still checking pairs, and we've already fenced 49.",
+"Вовк Неситий":"Greedy Wolf","Еней і Микита":"Aeneas & Mykyta",
+"● Попелище → Карфаген":"● Ashes → Carthage","Складність:":"Complexity:",
+"// Задача Дидони: Еней зліва, Микита справа":"// Dido's problem: Aeneas on the left, Mykyta on the right","// Еней":"// Aeneas","// Микита":"// Mykyta",
+"готово до запуску":"ready to run","перевіряємо…":"checking…","5 / 5 тестів":"5 / 5 tests","чекає":"waiting","n = 100 000: не встиг":"n = 100 000: too slow","0,8 мс":"0.8 ms",
+// book
+"Хитрість №2 · Карфаген":"Trick #2 · Carthage","Два вказівники":"Two pointers",
+"Еней іде зліва, Микита справа, і вони рухаються назустріч.":"Aeneas starts on the left, Mykyta on the right, and they walk towards each other.",
+"Коли брати":"When to use it","Масив або рядок":"The array or string is","відсортований":"sorted",
+"Шукаєш":"You're looking for a","пару":"pair","з умовою: сума, площа, паліндром.":"with a condition: sum, area, palindrome.",
+"Після кожного порівняння можна відкинути одну сторону.":"After each comparison you can drop one side.",
+"Шаблон":"Template","час O(n)":"time O(n)","пам'ять O(1)":"memory O(1)","Задачі: 125, 167, 11, 15":"Problems: 125, 167, 11, 15",
+"Живий приклад · Two Sum II":"Live example · Two Sum II","✓ знайшли":"✓ found","→ мало, Еней крок уперед":"→ too small, Aeneas steps right","← багато, Микита крок назад":"← too big, Mykyta steps left","кроки":"steps",
+// boss
+"Лад Енея":"Aeneas' order","Турн":"Turnus","Влучно!":"Hit!","Перемога! Писанку зібрано":"Victory! The Pysanka is whole",
+"Задачі двобою":"Duel problems","Незнайома задача":"Unknown problem","Medium · тему не підказують":"Medium · topic not revealed","Фінальний удар":"Final blow","🔒 Сивілла мовчить":"🔒 The Sibyl is silent",
+// characters gallery
+"Усі":"All","Антагоністи":"Villains","Мешканці світів":"Locals","Варіації":"Variants",
+"Еней":"Aeneas","Лис Микита":"Mykyta the Fox","Юнона":"Juno","Еол":"Aeolus","Дидона":"Dido","Цар Лев":"King Lion","Мешканці рукавички":"Mitten dwellers","Сотник Забрьоха":"Captain Zabrioha","Харон":"Charon","Анхіз":"Anchises","Мольфар":"Molfar","Сивілла":"Sibyl","Ацест":"Acestes","Чумацький віл":"Chumak ox","Мавка":"Mavka","Кирило Кожум'яка":"Kyrylo Kozhumiaka","Вулкан":"Vulcan",
+"Котляревський, «Енеїда»":"Kotliarevsky, «Aeneid»","Франко, «Фарбований лис»":"Franko, «The Painted Fox»","Франко, «Лис Микита»":"Franko, «Mykyta the Fox»",
+"Енеїда · Світ 1":"Aeneid · World 1","Енеїда · Світ 2":"Aeneid · World 2","Франко · Світ 3":"Franko · World 3","Народна казка · Світ 4":"Folk tale · World 4","Квітка-Основ'яненко · Світ 5":"Kvitka-Osnovianenko · World 5","Енеїда · Світ 6":"Aeneid · World 6","Чумацькі пісні · Світ 7":"Chumak songs · World 7","Енеїда · Світ 8":"Aeneid · World 8","Енеїда · Світи 8–9":"Aeneid · Worlds 8–9","Леся Українка · Світ 10":"Lesya Ukrainka · World 10","Коцюбинський · Світ 11":"Kotsiubynsky · World 11","Легенда · Світ 12":"Legend · World 12","Енеїда · Світ 14":"Aeneid · World 14","Енеїда · онбординг":"Aeneid · onboarding",
+"Головний герой. Гравець завжди керує ним кодом.":"The main hero. The player always controls him with code.",
+"Оселедець закручений у дужку {. Головна впізнавана риса і основа логотипа.":"His Cossack forelock curls into a { brace — his signature look and the base of the logo.",
+"Вишиванка росте з гравцем: кожен уламок додає візерунок.":"His embroidered shirt grows with the player: every shard adds a pattern.",
+"Статний, руки в боки, шабля при боці.":"Broad-shouldered, hands on hips, sabre at his side.",
+"Основний":"Default","На старті":"At the start","Чиста сорочка, світ 0.":"Plain shirt, world 0.","У жупані":"In a zhupan","Холодні світи і мандри.":"Cold worlds and travel.","До бою":"Ready to fight","Фінальні задачі, двобій з Турном.":"Final problems, the duel with Turnus.","На бенкеті":"At the feast","Після кожного уламка.":"After every shard.",
+"Маскот і помічник. Підказує, жартує, носить Книгу хитрощів.":"Mascot and sidekick. Gives hints, jokes, carries the Book of Tricks.",
+"Поза своїм лісом олюднений чарами Писанки.":"Outside his forest he's humanised by the Pysanka's magic.",
+"Кожен перехід між світами перефарбовує його. Оберіть колір нижче.":"Every jump between worlds repaints him. Pick a colour below.",
+"Білий кінчик хвоста блимає, як курсор.":"The white tip of his tail blinks like a text cursor.",
+"Олюднений":"Humanised","У рідному лісі":"In his home forest","Без чарів, на чотирьох лапах.":"No magic, on four paws.","Остромисл":"Ostromysl","Режим експерта, у короні.":"Expert mode, with a crown.","У полоні":"Captive","Табір Турна, без Книги.":"Turnus' camp, no Book.",
+"Головна злодійка. Підкупила Еола розбити Писанку.":"The main villain. She bribed Aeolus to shatter the Pysanka.",
+"Накладає обмеження: Time Limit, Memory Limit, великі входи.":"Imposes limits: Time Limit, Memory Limit, huge inputs.",
+"Символ — павине перо, кольори фіолет і золото.":"Her symbol is the peacock feather; her colours are purple and gold.",
+"У фіналі визнає поразку.":"Admits defeat in the finale.","Основна":"Default",
+"Суперник-brute force на службі Юнони.":"The brute-force rival in Juno's service.",
+"Проковтнув уламок і потрапив до Юнони.":"Swallowed a shard and ended up with Juno.",
+"У кожному світі розв'язує в лоб і програє на великих тестах.":"In every world he brute-forces and fails on big tests.",
+"У фіналі переходить на бік Енея заради бенкету.":"In the finale he switches to Aeneas' side for the feast.",
+"У лівреї Юнони":"In Juno's livery","До уламка.":"Before the shard.","Жадібний":"Greedy","Заїдає провал перебором.":"Eats away the brute-force failure.","Фінал.":"Finale.",
+"Фінальний бос, чемпіон Юнони в Лаціумі.":"The final boss, Juno's champion in Latium.","Двобій з ним — режим співбесіди без підказок.":"Fighting him is interview mode with no hints.","На щиті павине око Юнони.":"Juno's peacock eye is on his shield.",
+"Бог вітрів із мішком вітрів. Розбив Писанку за плату.":"God of winds with a bag of winds. Shattered the Pysanka for a fee.","Затихає, коли гравець вишикує флот.":"Calms down once you line up the fleet.","На хмарі":"On a cloud",
+"Цариця Карфагена з волячою шкурою.":"Queen of Carthage with an ox hide.","Задача Дидони = Container With Most Water.":"Dido's problem = Container With Most War."
+};
+DICT["Задача Дидони = Container With Most Water."]="Dido's problem = Container With Most Water.";
+Object.assign(DICT,{
+"Правитель звіриного ярмарку. Удома звірі не олюднені.":"Ruler of the animal fair. At home animals aren't humanised.","Повертає Микиті звання канцлера на мить.":"Makes Mykyta chancellor again, for a moment.",
+"Мишка, жабка і зайчик у рукавичці.":"A mouse, a frog and a hare in a mitten.","Хто заліз останнім, вилазить першим: Stack.":"Last in, first out: Stack.","Рукавичка":"The Mitten",
+"«Перевіряє відьом» водою, поки Еней не ділить навпіл.":"Tests «witches» with water until Aeneas starts halving.","Бінарний пошук через «тоне чи пливе».":"Binary search via «sinks or floats».","З перначем":"With a mace",
+"Перевізник у пеклі, човен на двох.":"Ferryman of the underworld, a boat for two.","Boats to Save People.":"Boats to Save People.","У човні":"In the boat",
+"Батько Енея. Базовий випадок рекурсії і корінь родоводу.":"Aeneas' father. The base case of recursion and the root of the family tree.","Показує Енеєві нащадків: дерева.":"Shows Aeneas his descendants: trees.","В Елісії":"In Elysium",
+"Гуцульський чарівник із трембітою.":"A Hutsul wizard with a trembita.","Трембіта кличе хвилями: BFS.":"The trembita calls in waves: BFS.","З трембітою":"With a trembita",
+"Провидиця. Вчить «слова ладу» і дає підказки.":"The seer. Teaches the «word of order» and gives hints.","Три рівні підказок: натяк, ідея, псевдокод.":"Three hint levels: nudge, idea, pseudocode.","З сувоєм":"With a scroll",
+"Цар Сицилії, влаштовує ігри на честь Анхіза.":"King of Sicily, hosts games in Anchises' honour.","Живе табло призерів: Sliding Window і купа.":"A live leaderboard: sliding window and a heap.",
+"Тягне валку степом. Повільний вказівник проти швидкого лиса.":"Pulls the wagon train across the steppe. The slow pointer against the fast fox.","Linked List Cycle: зустрінуться чи ні.":"Linked List Cycle: will they meet or not.","У ярмі":"In the yoke",
+"Дух лісу. Власний образ, не з мультфільму.":"Spirit of the forest. Our own design, not the cartoon one.","Кожне дерево на своєму місці: BST.":"Every tree in its place: BST.","Весняна":"Spring",
+"Заорав Змія і проклав Змієві вали.":"Ploughed the Dragon into the Serpent's Walls.","Інтервали: зшити вали, що перекриваються.":"Intervals: stitch the overlapping walls.","Зі шкурою":"With a hide",
+"Коваль богів, кує Енеєві зброю.":"Smith of the gods, forges Aeneas' weapons.","Динамічне програмування: не кувати двічі.":"Dynamic programming: never forge twice.","Біля ковадла":"At the anvil",
+// worlds
+"Шторм":"Storm","Гостини":"Visits","Випробування":"Trials","Пекло":"Underworld","Ліси й гори":"Forests & mountains","Лаціум":"Latium",
+"Попелище Трої":"Ashes of Troy","Море Еола":"Sea of Aeolus","Карфаген Дидони":"Dido's Carthage","Ліс Лиса Микити":"Mykyta's Forest","Конотоп":"Konotop","Сицилія: ігри Ацеста":"Sicily: Acestes' games","Чумацький шлях":"The Milky Way","Родовід Анхіза":"Anchises' family tree","Лісова пісня":"The Forest Song","Карпати":"Carpathians","Змієві вали":"Serpent's Walls","Табір Турна":"Turnus' camp","Кузня Вулкана":"Vulcan's forge",
+"Основи: змінні, цикли, умови":"Basics: variables, loops, conditions","Масиви, сортування":"Arrays, sorting","Рекурсія, Backtracking":"Recursion, backtracking","Дерева":"Trees","Графи, BFS / DFS":"Graphs, BFS / DFS","Інтервали, Greedy":"Intervals, greedy","Найкоротший шлях":"Shortest path","Динамічне програмування":"Dynamic programming","Фінал: усі хитрощі":"Finale: every trick","Режим співбесіди":"Interview mode",
+"попелястий":"ash grey","морський синій":"sea blue","тірський пурпур":"Tyrian purple","рудий, без фарби":"ginger, no paint","сніжно-білий":"snow white","нічний фіолетовий":"night violet","сонячна вохра":"sunny ochre","зоряний":"starlight","вугільно-червоний":"ember red","золотавий":"golden","весняний зелений":"spring green","хвойний смарагд":"pine emerald","теракотовий":"terracotta","темно-синій (полон)":"dark blue (captive)","розжарений помаранчевий":"forge orange","усі кольори":"all colours",
+"Еней збирає ватагу і припаси на згарищі. Микита ще звикає до штанів.":"Aeneas gathers his crew and supplies in the ruins. Mykyta is still getting used to trousers.",
+"Шикують розкиданий штормом флот. Микита вистежує кораблі з щогли.":"They line up the storm-scattered fleet. Mykyta spots ships from the mast.",
+"Обгороджують Дидоні найбільшу ділянку, йдучи з двох кінців назустріч.":"They fence the biggest plot for Dido, walking towards each other from both ends.",
+"Наводять лад на звіриному ярмарку. Микита вчить Енея запам'ятовувати.":"They bring order to the animal fair. Mykyta teaches Aeneas to remember things.",
+"Впускають і випускають звірів: хто заліз останнім, вилазить першим.":"They let animals in and out: last in, first out.",
+"Замість кидати в став усіх по черзі, щоразу ділять навпіл.":"Instead of dunking everyone in turn, they halve the range each time.",
+"Еней змагається, Микита суддює й веде живе табло призерів.":"Aeneas competes while Mykyta judges and keeps a live leaderboard.",
+"Розплутують чумацьку валку, що ходить по колу в степу.":"They untangle the chumak wagon train circling the steppe.",
+"Спускаються до Анхіза і повертаються тим самим шляхом, як рекурсія.":"They descend to Anchises and climb back the same way, like recursion.",
+"Відновлюють переплутаний родовід Енея.":"They restore Aeneas' tangled family tree.",
+"Повертають кожне дерево Мавчиного лісу на своє місце.":"They put every tree of Mavka's forest back in its place.",
+"Відновлюють зв'язок між полонинами хвилями трембіти.":"They reconnect the mountain meadows with waves of the trembita.",
+"Зшивають порізані вали в суцільну оборону від зміїв.":"They stitch the cut walls into one defence against serpents.",
+"Еней сам, без Микити, пробирається табором до полоненого друга.":"Alone, without Mykyta, Aeneas sneaks through the camp to his captured friend.",
+"Кують зброю, не повторюючи вже викуваного.":"They forge weapons without re-forging what's already done.",
+"Двобій з Турном: незнайомі задачі без підказок, лише власна тямка.":"The duel with Turnus: unfamiliar problems, no hints, only your own wits.",
+"Анхіз і вцілілі троянці":"Anchises and the surviving Trojans","Еол, бог вітрів":"Aeolus, god of winds","Дидона, цариця Карфагена":"Dido, queen of Carthage","Цар Лев і звірі ярмарку":"King Lion and the fair animals","Ацест, цар Сицилії":"Acestes, king of Sicily","Чумаки та їхні воли":"Chumaks and their oxen","Харон, перевізник":"Charon the ferryman","Анхіз в Елісії":"Anchises in Elysium","Кирило Кожум'яка":"Kyrylo Kozhumiaka","Вулкан, коваль богів":"Vulcan, smith of the gods","Турн, чемпіон Юнони":"Turnus, Juno's champion",
+"Сину, збирай людей і зерно. Нова земля чекає, але спершу порахуй, що лишилось.":"Son, gather the people and the grain. A new land awaits, but first count what's left.",
+"Юнона заплатила за шторм, а не за порядок. Вишикуй флот, і я затихну.":"Juno paid for a storm, not for order. Line up the fleet and I'll calm down.",
+"Скільки землі обгородиш шкурою, стільки й моя. Стовпи вже стоять, обери два.":"As much land as you fence with the hide is mine. The posts are up — pick two.",
+"Хто що продає — ніхто не пам'ятає. Наведи лад, і Микита знову буде канцлером. На хвилинку.":"Nobody remembers who sells what. Sort it out and Mykyta is chancellor again. For a minute.",
+"Хто заліз останнім, той і вилазить першим. Інакше рукавичка лусне!":"Whoever climbed in last climbs out first. Otherwise the mitten bursts!",
+"Кидаємо в став кожну по черзі! Що значить «ділити навпіл»? Ну, спробуй.":"We dunk them in the pond one by one! What do you mean «split in half»? Go on, try it.",
+"Ігри на честь Анхіза! Тільки табло зламалось. Хто ж переміг?":"Games in Anchises' honour! Only the scoreboard broke. So who won?",
+"Валка ходить по колу третю ніч. Віл повільний, а лис швидкий — хай перевірять, чи зустрінуться.":"The wagon train has circled for three nights. The ox is slow, the fox is fast — let's see if they meet.",
+"Човен на двох, і вага обмежена. Хто з ким пливе, вирішуй сам.":"The boat holds two and weight is limited. Who goes with whom is up to you.",
+"Ось твій рід, сину: від кореня до найменшого листка. Знайди, де дві гілки сходяться.":"Here is your line, son, from root to the smallest leaf. Find where two branches meet.",
+"Кожне дерево має своє місце: молодші ліворуч, старші праворуч. Поверни ліс, поки він не заснув.":"Every tree has its place: younger on the left, older on the right. Restore the forest before it falls asleep.",
+"Трембіта кличе хвилями: спершу найближчі полонини, потім дальші. Так і шукай.":"The trembita calls in waves: the nearest meadows first, then the farther ones. Search the same way.",
+"Заорав я Змія, а вали порізало на шматки. Зший їх, де перекриваються, і жодна змія не пролізе.":"I ploughed the Dragon, but the walls got cut to pieces. Stitch them where they overlap and no serpent gets through.",
+"Варта всюди. Найкоротший шлях до Микити — той, де найменше дозорів.":"Guards everywhere. The shortest way to Mykyta is the one with the fewest patrols.",
+"Не куй двічі те, що вже викував. Запиши — і спирайся на зроблене.":"Never forge twice what you've already forged. Write it down and build on it.",
+"Ні підказок, ні Сивілли. Лише ти, твої хитрощі і мій меч.":"No hints, no Sibyl. Just you, your tricks and my sword.",
+"Вцілілі троянці":"Surviving Trojans","Ацест і учасники ігор":"Acestes and the competitors","Чумаки":"Chumaks","Лукаш і Мавка":"Lukash and Mavka","Низ і Евріал":"Nisus and Euryalus","Мешканці рукавички":"Mitten dwellers"
+});
+Object.assign(DICT,{"Тема":"Theme","Як у системі":"Match system","Світла тема":"Light theme","Темна тема":"Dark theme","{Кодеїда":"{Kodeida","Гра":"Game","Артбук":"Artbook","Сайт":"Site","Артбук →":"Artbook →",
+"Розділи":"Sections","Обкладинка":"Cover","Чому":"Why","Світи":"Worlds","Хитрощі":"Tricks","Бос-файт":"Boss fight","Дорожня карта":"Roadmap","Мова / Language":"Language / Мова",
+"Еней, Кришталева Писанка і Лис Микита":"Aeneas, the Crystal Pysanka and Mykyta the Fox",
+"Анімований макет застосунку Кодеїда: розв'язок задачі Дидони крок за кроком":"Animated mock-up of the Kodeida app: solving Dido's problem step by step",
+"Мапа світів і картка поточного світу. Стрілки ← → перемикають світи.":"World map and the current world card. Arrow keys ← → switch worlds.",
+"Мапа мандрівки Енея: шість островів-пісень і шістнадцять світів, з'єднаних маршрутом":"Map of Aeneas' journey: six song-islands and sixteen worlds joined by a route",
+"Попередній світ":"Previous world","Наступний світ":"Next world","Еней і Микита в поточному світі":"Aeneas and Mykyta in the current world",
+"Категорія":"Category","Персонажі":"Characters","Обраний персонаж":"Selected character","Фарба світу":"World paint",
+"Візерунок «два зустрічні ромби»":"The «two meeting diamonds» pattern","Два вказівники шукають пару з сумою 31":"Two pointers look for a pair that sums to 31",
+"Графік кількості кроків: O(n²) проти O(n)":"Chart of step counts: O(n²) versus O(n)","Еней з шаблею проти Турна на полі Лаціуму":"Aeneas with a sabre against Turnus on the field of Latium",
+"Як це працює":"How it works"
+});
 /* ---------- colour helpers ---------- */
+/* Переклад написів на полотні сцен: сайт і гра підставляють свою функцію в globalThis.__kodeidaT. */
+const ST=s=>(typeof globalThis!=='undefined'&&typeof globalThis.__kodeidaT==='function')?globalThis.__kodeidaT(s):s;
 function toRgb(c){
   if(c.startsWith('rgb'))return c.match(/\d+/g).slice(0,3).map(Number);
   let h=c.replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');
@@ -9,15 +176,25 @@ function toRgb(c){
 function shade(c,a){const [r,g,b]=toRgb(c);const t=a<0?0:255,p=Math.abs(a);const f=v=>Math.round((t-v)*p+v);return `rgb(${f(r)},${f(g)},${f(b)})`;}
 function luminance(c){const [r,g,b]=toRgb(c).map(v=>v/255);return .2126*r+.7152*g+.0722*b;}
 function hash(x,y){const s=Math.sin(x*12.9898+y*78.233)*43758.5453;return s-Math.floor(s);}
+
+/* ---------- canvas ---------- */
+function setup(canvas,w,h,fluid){
+  canvas.width=Math.round(w*DPR);canvas.height=Math.round(h*DPR);
+  canvas.style.width=fluid?'100%':w+'px';
+  const ctx=canvas.getContext('2d');ctx.setTransform(DPR,0,0,DPR,0,0);ctx.imageSmoothingEnabled=false;
+  return ctx;
+}
+const RGB_CACHE=new Map();
+function rgbOf(c){let v=RGB_CACHE.get(c);if(!v){v=toRgb(c);RGB_CACHE.set(c,v);}return v;}
 function px(ctx,x,y,s,col){ctx.fillStyle=col;ctx.fillRect(Math.round(x),Math.round(y),s,s);}
 
 /* ---------- tiny pixel rasteriser ---------- */
 class Spr{
-  constructor(w,h){this.w=w;this.h=h;this.p=new Array(w*h).fill(null);}
-  set(x,y,c){x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>=this.w||y>=this.h)return;this.p[y*this.w+x]=c;}
+  constructor(w,h){this.w=w;this.h=h;this.p=new Array(w*h).fill(null);this.v=0;}
+  set(x,y,c){x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>=this.w||y>=this.h)return;this.p[y*this.w+x]=c;this.v++;}
   get(x,y){if(x<0||y<0||x>=this.w||y>=this.h)return null;return this.p[y*this.w+x];}
   fill(pts,c){pts.forEach(([x,y])=>{const col=typeof c==='function'?c(x,y):c;if(col)this.set(x,y,col);});return this;}
-  erase(pts){pts.forEach(([x,y])=>{x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<this.w&&y<this.h)this.p[y*this.w+x]=null;});return this;}
+  erase(pts){pts.forEach(([x,y])=>{x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<this.w&&y<this.h)this.p[y*this.w+x]=null;});this.v++;return this;}
   outline(amt){
     const out=[];
     for(let y=0;y<this.h;y++)for(let x=0;x<this.w;x++){
@@ -29,8 +206,22 @@ class Spr{
     this.ol=new Set(out.map(([x,y])=>y*this.w+x));
     return this;
   }
+  /* Швидкий шлях: спрайт один раз стає маленьким полотном (ImageData), далі — один drawImage з масштабом.
+     Кеш скидається, коли спрайт змінюється (set/erase). Без DOM (Node) — малюємо по пікселю, як раніше. */
+  canvas(){
+    if(this._cv&&this._cvV===this.v)return this._cv;
+    const cv=this._cv||document.createElement('canvas');cv.width=this.w;cv.height=this.h;
+    const c=cv.getContext('2d'),img=c.createImageData(this.w,this.h),d=img.data;
+    for(let i=0;i<this.p.length;i++){const col=this.p[i];if(!col)continue;const q=rgbOf(col);d[i*4]=q[0];d[i*4+1]=q[1];d[i*4+2]=q[2];d[i*4+3]=255;}
+    c.putImageData(img,0,0);this._cv=cv;this._cvV=this.v;return cv;
+  }
   draw(ctx,ox,oy,s,crop){
     const [x0,y0,x1,y1]=crop||[0,0,this.w,this.h];
+    if(typeof document!=='undefined'&&ctx.drawImage){
+      const smooth=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(this.canvas(),x0,y0,x1-x0,y1-y0,Math.round(ox),Math.round(oy),(x1-x0)*s,(y1-y0)*s);
+      ctx.imageSmoothingEnabled=smooth;return;
+    }
     for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){const c=this.p[y*this.w+x];if(c)px(ctx,ox+(x-x0)*s,oy+(y-y0)*s,s,c);}
   }
 }
@@ -330,6 +521,55 @@ function makeEol(){
   return s.outline(0.6);
 }
 
+/* Боги Олімпу. o.raise — права рука вгору (кадр анімації: тост, акорд, змах тризубом). */
+function makeGod(kind,o={}){
+  const s=new Spr(48,74);
+  const P={
+    zeus:{ro:'#f1ece0',ros:'#cfc6b4',sa:GD,sk:'#efbf98',sks:'#cf9b75',hr:'#f4f4f4',hrs:'#cfd3d8',beard:1},
+    apollo:{ro:'#e9a23b',ros:'#b9761f',sa:'#f6efe0',sk:'#f0c49c',sks:'#cf9b75',hr:'#f2cf5a',hrs:'#c9a13a'},
+    bacchus:{ro:'#6b3fa0',ros:'#4a2a78',sa:'#5fa04a',sk:'#f0b48e',sks:'#cf8f6c',hr:'#5b3a20',hrs:'#3a2414',beard:1},
+    neptune:{ro:'#1fa3a3',ros:'#16797a',sa:'#d4ecf3',sk:'#e8b892',sks:'#c98f6c',hr:'#9fe3c8',hrs:'#5fb79c',beard:1},
+    venus:{ro:'#f2a7b8',ros:'#d47e93',sa:'#f6efe0',sk:'#f6d0b0',sks:'#dcae8c',hr:'#f2cf5a',hrs:'#c9a13a'},
+  }[kind];
+  const cx=24;
+  // тога
+  s.fill(poly([[16,30],[32,30],[36,52],[40,72],[8,72],[12,52]]),(x)=>x>27?P.ros:P.ro);
+  s.fill(line(15,32,33,52,2),P.sa);
+  s.fill(rect(8,70,33,2),P.ros);
+  [[19,52,17,70],[26,50,27,70],[32,54,35,70]].forEach(([a,b,c,d])=>s.fill(line(a,b,c,d),P.ros));
+  // ліва рука вниз
+  s.fill(poly([[16,31],[11,34],[10,46],[14,46],[15,36]]),P.ro);s.fill(ell(12,47,2,2),P.sk);
+  // права рука: вниз або вгору з річчю
+  const up=!!o.raise,hx=up?40:37,hy=up?14:46;
+  if(up)s.fill(poly([[31,31],[36,30],[42,16],[39,14],[34,26]]),P.ros);
+  else s.fill(poly([[32,31],[37,34],[38,46],[34,46],[33,36]]),P.ros);
+  s.fill(ell(hx,hy,2,2),P.sks);
+  // шия й голова
+  s.fill(rect(21,24,6,6),P.sk);
+  s.fill(ell(cx,16,7,8),P.hr);
+  s.fill(ell(cx,18,5.6,6.6),(x)=>x>cx+2?P.sks:P.sk);
+  s.fill(rect(cx-4,17,2,1),BK);s.fill(rect(cx+2,17,2,1),BK);
+  if(kind==='zeus'||kind==='bacchus'){s.fill(ell(cx-4,20,1.6,1.2),'#f08a8a');s.fill(ell(cx+4,20,1.6,1.2),'#f08a8a');}
+  if(kind==='bacchus')s.fill(ell(cx,20,1.6,1.4),'#e0504a');
+  if(P.beard){s.fill(poly([[cx-6,20],[cx+6,20],[cx+5,29],[cx,33],[cx-5,29]]),(x)=>x>cx+1?P.hrs:P.hr);s.fill(rect(cx-2,22,4,1),'#7a2a2a');}
+  else s.fill(rect(cx-1,22,3,1),'#b3202a');
+  if(kind==='venus'){s.fill(poly([[cx-8,14],[cx-5,14],[cx-6,34],[cx-9,32]]),P.hr);s.fill(poly([[cx+8,14],[cx+5,14],[cx+6,34],[cx+9,32]]),P.hrs);}
+  // корони й вінки
+  if(kind==='zeus'){s.fill(poly([[cx-6,10],[cx+6,10],[cx+6,5],[cx+4,8],[cx+2,3],[cx,7],[cx-2,3],[cx-4,8],[cx-6,5]]),(x)=>x>cx+2?GDs:GD);s.set(cx,8,RD);}
+  if(kind==='apollo'||kind==='bacchus'){const c=kind==='apollo'?'#3f7a3a':'#5fa04a';for(let a=0;a<9;a++){const an=Math.PI*(1.05+a*0.11);s.fill(ell(cx+Math.cos(an)*8,13+Math.sin(an)*5,1.6,1.2),c);}
+    if(kind==='bacchus')[[cx-7,12],[cx+7,12],[cx-8,15]].forEach(([x,y])=>s.fill(ell(x,y,1.6,1.6),'#6b3fa0'));}
+  if(kind==='neptune')s.fill(poly([[cx-6,10],[cx+6,10],[cx+5,6],[cx+3,9],[cx,5],[cx-3,9],[cx-5,6]]),'#d4ecf3');
+  if(kind==='venus')s.fill(ell(cx+6,10,2,2),'#e0504a');
+  // речі
+  if(kind==='zeus'){const gx=hx,gy=hy-6;s.fill(rect(gx-2,gy,5,5),GD);s.fill(rect(gx-1,gy+5,3,2),GDs);s.fill(rect(gx-2,gy-1,5,1),'#f7e3a1');
+    s.fill(path([[9,40],[6,48],[9,48],[5,58]],1.4),'#f7e27a');}
+  if(kind==='apollo'){const lx=up?hx-4:hx-6,ly=up?hy-10:hy-8;s.fill(path([[lx,ly+12],[lx-2,ly],[lx+1,ly-2]],1.2),GD);s.fill(path([[lx+8,ly+12],[lx+10,ly],[lx+7,ly-2]],1.2),GD);s.fill(rect(lx,ly+11,9,2),GDs);[2,4,6].forEach(k=>s.fill(line(lx+k,ly+1,lx+k,ly+11),'#f6efe0'));}
+  if(kind==='bacchus'){const ax=hx,ay=hy-8;s.fill(ell(ax,ay+3,4,5),(x,y)=>y>ay+4?'#8a4a24':'#b8693a');s.fill(rect(ax-1,ay-4,3,3),'#8a4a24');s.fill(line(ax-4,ay,ax-5,ay+4),'#8a4a24');}
+  if(kind==='neptune'){s.fill(line(hx,hy+20,hx,hy-14,1.4),'#c9a466');s.fill(path([[hx-4,hy-18],[hx-4,hy-12],[hx+4,hy-12],[hx+4,hy-18]],1.2),GD);s.fill(line(hx,hy-12,hx,hy-20,1.2),GD);}
+  if(kind==='venus'){s.fill(ell(hx,hy-3,2.4,2.4),'#e0504a');s.fill(line(hx,hy,hx,hy+5),'#3f7a3a');}
+  return s.outline(0.6);
+}
+
 /* Дидона з волячою шкурою-стрічкою */
 function makeDido(){
   const s=new Spr(46,72);
@@ -449,6 +689,8 @@ function makeMolfar(){
 
 /* ================= HD: подвоєна роздільність, світло, тінь, фактура, дрібні деталі ================= */
 function tagged(fn,kind){return function(...a){const s=fn(...a);s.kind=kind;s.args=a;return s;};}
+makeEnei=tagged(makeEnei,'enei');makeFox=tagged(makeFox,'fox');makeWolf=tagged(makeWolf,'wolf');makeJuno=tagged(makeJuno,'juno');
+makeFoxWild=tagged(makeFoxWild,'foxwild');makeWolfWild=tagged(makeWolfWild,'wolfwild');
 function colDist(a,b){const p=toRgb(a),q=toRgb(b);return Math.abs(p[0]-q[0])+Math.abs(p[1]-q[1])+Math.abs(p[2]-q[2]);}
 function lum(c){const [r,g,b]=toRgb(c);return .2126*r+.7152*g+.0722*b;}
 /* HD: без старого контуру → scale2x → світло/тінь → деталі → cel-лінії між частинами → тонкий зовнішній контур */
@@ -516,6 +758,708 @@ Spr.prototype.draw=function(ctx,ox,oy,s,crop){
   return _sprDraw.call(this,ctx,ox,oy,s,crop);
 };
 
-const tEnei=tagged(makeEnei,'enei'),tFox=tagged(makeFox,'fox'),tWolf=tagged(makeWolf,'wolf'),tFoxWild=tagged(makeFoxWild,'foxwild'),tWolfWild=tagged(makeWolfWild,'wolfwild'),tJuno=tagged(makeJuno,'juno');
-export {Spr,px,shade,hash,rect,poly,ell,line,path,BK,RD,GD,WH,
-  tEnei as makeEnei,tFox as makeFox,tWolf as makeWolf,tFoxWild as makeFoxWild,tWolfWild as makeWolfWild,tJuno as makeJuno,makeDido,makeEol};
+/* ================= КРИШТАЛЕВА ПИСАНКА ================= */
+function eggCells(W,H){
+  const cx=(W-1)/2,cy=(H-1)/2,mask=[];
+  for(let y=0;y<H;y++){mask.push([]);const v=(y-cy)/cy;const half=(W/2)*Math.sqrt(Math.max(0,1-v*v))*(1+0.12*v);for(let x=0;x<W;x++)mask[y].push(Math.abs(x-cx)<=half-0.35);}
+  const b1=Math.floor(H*0.3),b2=Math.floor(H*0.66),cells=[];
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    if(!mask[y][x])continue;
+    const edge=!(mask[y-1]&&mask[y-1][x])||!(mask[y+1]&&mask[y+1][x])||!mask[y][x-1]||!mask[y][x+1];
+    const facet=((x*2+y)%5===0)?'j':((x>cx+W*0.18)?'s':'i');
+    let c;
+    if(edge)c='k';
+    else if(y===b1||y===b2||y===b1+1||y===b2+1)c=(y===b1||y===b2)?'y':'z';
+    else if(y<b1)c=((Math.abs(x-Math.round(cx))+y)%4===0)?'r':facet;
+    else if(y>b2)c=(((y-b2)%3)===(Math.abs((x%4)-2)%3))?'r':facet;
+    else{const a=(x+y)%6,b=((x-y)%6+6)%6;c=(a===0||b===0)?'r':((a===3&&b===3)?'k':facet);}
+    cells.push({x,y,c});
+  }
+  return {cells,cx,cy};
+}
+const EGG_PAL={k:'#1f1b16',y:GD,z:GDs,r:RD,i:'#d4ecf3',j:'#a7d6e6',s:'#b6dcea'};
+function drawEgg(ctx,W,H,ox,oy,s,broken,glow,spread=0.16,glowR=0.95){
+  const {cells,cx,cy}=eggCells(W,H);
+  if(glow){const R=W*glowR;for(let y=Math.floor(cy-R);y<=cy+R;y++)for(let x=Math.floor(cx-R);x<=cx+R;x++){const d=Math.hypot(x-cx,(y-cy)*0.85);
+    if(d<R*0.6||(d<R*0.8&&(x+y)%2===0)||(d<R&&x%2===0&&y%2===0))px(ctx,ox+x*s,oy+y*s,s,'#f7e3a1');}}
+  const N=7,sec={};
+  cells.forEach(c=>{const a=Math.atan2(c.y-cy,c.x-cx)+Math.PI;sec[c.x+','+c.y]=Math.floor((a/(2*Math.PI)*N+(hash(c.x,c.y)-.5)*.35+N)%N);});
+  cells.forEach(c=>{
+    let dx=0,dy=0;
+    if(broken){
+      const k=sec[c.x+','+c.y];
+      if([[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const v=sec[(c.x+a)+','+(c.y+b)];return v!==undefined&&v!==k;}))return;
+      const ang=(k+.5)/N*2*Math.PI-Math.PI;dx=Math.round(Math.cos(ang)*W*spread);dy=Math.round(Math.sin(ang)*W*spread);
+    }
+    px(ctx,ox+(c.x+dx)*s,oy+(c.y+dy)*s,s,EGG_PAL[c.c]);
+  });
+}
+
+/* ================= ВІЗЕРУНКИ ================= */
+const P=r=>{const out=r.map(x=>x.padEnd(9,'.'));while(out.length<9){out.length%2?out.push('.........'):out.unshift('.........');}return out;};
+const MOTIFS={
+  ship:P(["....x....","....xx...","....xxx..","....xxxx.","....x....","xxxxxxxxx",".xxxxxxx.","..xxxxx.."]),
+  waves:P(["..x...x..",".x.x.x.x.","x...x...x",".........","..x...x..",".x.x.x.x.","x...x...x"]),
+  rhombs:P(["..x...x..",".x.x.x.x.","x...x...x",".x.x.x.x.","..x...x.."]),
+  chest:P([".xxxxxxx.",".x..x..x.",".x..x..x.",".xxxxxxx.",".x..x..x.",".x..x..x.",".xxxxxxx."]),
+  tower:P(["...xxx...","...x.x...","..xxxxx..","..x...x..",".xxxxxxx.",".x.....x.","xxxxxxxxx"]),
+  halved:P(["....x....","...xxx...","..x.x.x..",".x..x..x.","x...x...x",".x..x..x.","..x.x.x..","...xxx...","....x...."]),
+  frame:P(["xxxxx....","x...x....","x.x.x.x.x","x...x....","xxxxx...."]),
+  chain:P(["xxx......","x.xxx....","xxx.xxx..","..xxx.xxx","....xxx.x","......xxx"]),
+  spiral:P([".xxxxxxx.",".......x.",".xxxxx.x.",".x...x.x.",".x.xxx.x.",".x.....x.",".xxxxxxx."]),
+  tree:P(["....x....","..x.x.x..","...xxx...",".x..x..x.","..x.x.x..","...xxx...","....x....","...xxx...","..x...x.."]),
+  periwinkle:P(["...x.x...","..xxxxx..",".x.xxx.x.","xxxx.xxxx",".x.xxx.x.","..xxxxx..","...x.x..."]),
+  rose:P(["x...x...x",".x..x..x.","..x.x.x..","...xxx...","xxxx.xxxx","...xxx...","..x.x.x..",".x..x..x.","x...x...x"]),
+  zigzag:P(["x...x...x",".x.x.x.x.","..x...x..",".........","x...x...x",".x.x.x.x.","..x...x.."]),
+  key:P([".xxx.....","x...x....","x...xxxxx","x...x.x.x",".xxx....."]),
+  combs:P([".xx..xx..","x..xx..x.","x..xx..x.",".xx..xx..","x..xx..x.","x..xx..x.",".xx..xx.."]),
+};
+const MOTIF_NAMES={waves:'хвилі',rhombs:'два зустрічні ромби',chest:'скриня з комірками',tower:'вежа',halved:'ромб навпіл',frame:'рамка',chain:'ланцюжок',spiral:'спіраль',tree:'дерево життя',periwinkle:'барвінок',rose:'розетка',zigzag:'зигзаг',combs:'соти'};
+function drawMotif(ctx,rows,ox,oy,s,col,upto=9){rows.forEach((r,y)=>{if(y>=upto)return;for(let x=0;x<r.length;x++)if(r[x]==='x')px(ctx,ox+x*s,oy+y*s,s,col);});}
+
+/* ================= СВІТИ ================= */
+const SONGS=[
+  {n:'I',title:'Шторм',worlds:[
+    {n:0,name:'Попелище Трої',topic:'Основи: змінні, цикли, умови',task:'Running Sum · 1480',motif:'ship',fox:'#8d8780',foxName:'попелястий',bg:'#3b3633',mvp:true},
+    {n:1,name:'Море Еола',topic:'Масиви, сортування',task:'Sort Colors · 75',motif:'waves',fox:'#3f7fd0',foxName:'морський синій',bg:'#173049',mvp:true}]},
+  {n:'II',title:'Гостини',worlds:[
+    {n:2,name:'Карфаген Дидони',topic:'Two Pointers',task:'Container With Most Water · 11',motif:'rhombs',fox:'#9b3a87',foxName:'тірський пурпур',bg:'#e9d9b4',mvp:true},
+    {n:3,name:'Ліс Лиса Микити',topic:'Hash Map',task:'Top K Frequent · 347',motif:'chest',fox:'#e2702b',foxName:'рудий, без фарби',bg:'#2d4a33'},
+    {n:4,name:'Рукавичка',topic:'Stack',task:'Daily Temperatures · 739',motif:'tower',fox:'#eef2f5',foxName:'сніжно-білий',bg:'#5b7186'}]},
+  {n:'III',title:'Випробування',worlds:[
+    {n:5,name:'Конотоп',topic:'Binary Search',task:'Koko Eating Bananas · 875',motif:'halved',fox:'#a68ae6',foxName:'нічний фіолетовий',bg:'#1e1a33'},
+    {n:6,name:'Сицилія: ігри Ацеста',topic:'Sliding Window, Heap',task:'Kth Largest in Stream · 703',motif:'frame',fox:'#d9a032',foxName:'сонячна вохра',bg:'#256a74'},
+    {n:7,name:'Чумацький шлях',topic:'Linked List',task:'Linked List Cycle · 141',motif:'chain',fox:'#d3e0f7',foxName:'зоряний',bg:'#121d36'}]},
+  {n:'IV',title:'Пекло',worlds:[
+    {n:8,name:'Пекло',topic:'Рекурсія, Backtracking',task:'Combination Sum · 39',motif:'spiral',fox:'#c9302a',foxName:'вугільно-червоний',bg:'#1b0f0d'},
+    {n:9,name:'Родовід Анхіза',topic:'Дерева',task:'LCA of Binary Tree · 236',motif:'tree',fox:'#e7b843',foxName:'золотавий',bg:'#5f4f80'}]},
+  {n:'V',title:'Ліси й гори',worlds:[
+    {n:10,name:'Лісова пісня',topic:'BST',task:'Kth Smallest in BST · 230',motif:'periwinkle',fox:'#86c95f',foxName:'весняний зелений',bg:'#1f3d2a'},
+    {n:11,name:'Карпати',topic:'Графи, BFS / DFS',task:'Pacific Atlantic · 417',motif:'rose',fox:'#1f8a5b',foxName:'хвойний смарагд',bg:'#c8d5cd'},
+    {n:12,name:'Змієві вали',topic:'Інтервали, Greedy',task:'Min Arrows · 452',motif:'zigzag',fox:'#c0623a',foxName:'теракотовий',bg:'#e6d3ae'}]},
+  {n:'VI',title:'Лаціум',worlds:[
+    {n:13,name:'Табір Турна',topic:'Найкоротший шлях',task:'Path With Min Effort · 1631',motif:'key',fox:'#33467a',foxName:'темно-синій (полон)',bg:'#d6c49c'},
+    {n:14,name:'Кузня Вулкана',topic:'Динамічне програмування',task:'LIS · 300',motif:'combs',fox:'#ff8a1f',foxName:'розжарений помаранчевий',bg:'#2a1a14'},
+    {n:15,name:'Двобій з Турном',topic:'Фінал: усі хитрощі',task:'Режим співбесіди',motif:'egg',fox:'rainbow',foxName:'усі кольори',bg:'#1c2c66'}]},
+];
+const ALL_WORLDS=SONGS.flatMap(s=>s.worlds);
+const GINGER='#e2702b';
+const FOX_GINGER=makeFox(GINGER);
+const foxCache={};
+function foxFor(w){if(!foxCache[w.n])foxCache[w.n]=w.fox==='rainbow'?makeFox(GINGER,{rainbow:true}):makeFox(w.fox);return foxCache[w.n];}
+
+/* ================= СЦЕНИ ================= */
+const SW=200,SH_=130;
+function sky(sp,cols,y0,y1){for(let y=y0;y<y1;y++){const t=(y-y0)/(y1-y0)*(cols.length-1),i=Math.floor(t),f=t-i;for(let x=0;x<SW;x++){const c=(f>0.66||(f>0.33&&(x+y)%2===0))?cols[Math.min(i+1,cols.length-1)]:cols[i];sp.set(x,y,c);}}}
+function ridge(sp,base,amp,fr,ph,col,y1,fn){for(let x=0;x<SW;x++){const h=Math.round(base+Math.sin(x*fr+ph)*amp+Math.sin(x*fr*2.3+ph*1.7)*amp*0.4);for(let y=h;y<y1;y++)sp.set(x,y,fn?fn(x,y,h):col);}}
+function spruce(sp,x,y,h,col,snow){for(let i=0;i<h;i++){const w=Math.floor(i*0.45)+1;for(let k=-w;k<=w;k++)sp.set(x+k,y-h+i,(snow&&i%5===0&&Math.abs(k)<w)?'#f4f7fa':col);}sp.set(x,y,'#3a2414');sp.set(x,y+1,'#3a2414');}
+function columns(sp,xs,y0,y1,c,cs){xs.forEach(x=>{sp.fill(rect(x,y0,8,y1-y0),(xx)=>xx>x+5?cs:((xx-x)%3===1?cs:c));sp.fill(rect(x-2,y0-3,12,3),c);sp.fill(rect(x-2,y1,12,2),cs);});}
+function sea(sp,f,y0,c1,c2,crest){for(let y=y0;y<SH_;y++)for(let x=0;x<SW;x++){const w=(x+f*2+Math.round(Math.sin(y*0.7)*4))%18;sp.set(x,y,w<2&&y%5===0?crest:(y>y0+28?c2:c1));}}
+
+const WORLD_SCENES={
+  1:{npc:'Еол, бог вітрів',quote:'Юнона заплатила за шторм, а не за порядок. Вишикуй флот, і я затихну.',npcSpr:makeEol(),npcPos:[128,8],float:true,
+   bg:(sp,f)=>{
+     sky(sp,['#0b1626','#152a45','#22405f','#2c4a6e'],0,74);
+     [[30,18,18,7],[60,12,14,6],[150,30,22,8],[110,22,16,6]].forEach(([x,y,rx,ry],i)=>sp.fill(ell(x+((f+i)%4<2?0:1),y,rx,ry),(xx,yy)=>yy<y-ry/3?'#55708f':'#3d5675'));
+     if(f%9<2)sp.fill(path([[96,8],[90,24],[96,26],[88,44]],1.6),'#f7e27a');
+     sea(sp,f,72,'#1a446b','#123251','#7fb6d9');
+     sp.fill(poly([[96,82],[132,82],[127,90],[100,90]]),'#5b3a20');sp.fill(line(114,82,114,56),'#3a2414');sp.fill(poly([[115,58],[130,66],[115,78]]),(x,y)=>y===68?RD:'#e9e1cc');
+     sp.fill(poly([[0,106],[40,100],[70,104],[100,112],[100,130],[0,130]]),(x,y)=>y<104?'#5a6168':'#3a3f45');
+   }},
+  2:{npc:'Дидона, цариця Карфагена',quote:'Скільки землі обгородиш шкурою, стільки й моя. Стовпи вже стоять, обери два.',npcSpr:makeDido(),npcPos:[146,56],
+   bg:(sp,f)=>{
+     sky(sp,['#6fb6e3','#9fd0ee','#d4eaf5'],0,64);
+     sp.fill(ell(170,18,8,8),'#fff1b8');
+     sp.fill(rect(0,58,SW,8),(x,y)=>(x+f)%12===0&&y===60?'#9fd0ee':'#2f7fb8');
+     for(let x=70;x<SW;x++)for(let y=36;y<70;y++){const top=(x%10<6)?36:40;if(y>=top)sp.set(x,y,(x%22===3&&y>48&&y<54)?'#7a5a32':(x>150?'#c9a466':'#d9b77a'));}
+     sp.fill(rect(120,26,14,44),'#c9a466');for(let x=120;x<134;x+=4)sp.fill(rect(x,22,2,4),'#c9a466');sp.fill(rect(125,34,4,6),'#7a5a32');
+     for(let y=66;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x*7+y*3)%11===0?'#d4b073':'#e3c58e');
+     sp.fill(path([[30,70],[28,52],[30,38]],2),'#7a5a32');[[30,38,18,34],[30,38,42,33],[30,38,22,44],[30,38,40,45],[30,38,30,30]].forEach(([a,b,c,d])=>sp.fill(line(a,b,c,d,2),'#3f7a3a'));
+     const posts=[3,9,7,2,6,5,9,4,8];posts.forEach((h,i)=>{const x=10+i*10;sp.fill(rect(x,92-h*2,2,h*2),'#7a4a24');sp.set(x,91-h*2,GD);sp.set(x+1,91-h*2,GD);});
+   }},
+  4:{npc:'Мешканці рукавички',quote:'Хто заліз останнім, той і вилазить першим. Інакше рукавичка лусне!',npcSpr:makeMitten(),npcPos:[130,78],
+   bg:(sp,f)=>{
+     sky(sp,['#9fb6d0','#c3d3e4','#e3ebf3'],0,84);
+     ridge(sp,70,6,0.05,1,'#c9d7e4',84);
+     [[14,82,26],[40,80,30],[70,84,22],[178,84,28],[100,80,18]].forEach(([x,y,h])=>spruce(sp,x,y,h,'#2c5040',true));
+     for(let y=84;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%9===0?'#d6e2ee':'#f4f7fa');
+     for(let i=0;i<40;i++){const x=Math.floor(hash(i,1)*SW),y=Math.floor((hash(i,2)*SH_+f*2+i)%SH_);sp.set(x,y,'#ffffff');}
+   }},
+  5:{npc:'Сотник Забрьоха',quote:'Кидаємо в став кожну по черзі! Що значить «ділити навпіл»? Ну, спробуй.',npcSpr:makeSotnyk(),npcPos:[146,56],
+   bg:(sp,f)=>{
+     sky(sp,['#0a0c22','#161a3f','#262a5c'],0,88);
+     for(let i=0;i<50;i++){const x=Math.floor(hash(i,3)*SW),y=Math.floor(hash(i,4)*80);if((i+f)%7)sp.set(x,y,(i%5)?'#cfd6ff':'#fff4c2');}
+     sp.fill(ell(150,26,15,15),'#f3eac2');[[145,22,2],[156,30,3],[150,34,1.6]].forEach(([x,y,r])=>sp.fill(ell(x,y,r,r),'#ddd2a6'));
+     const wx=(f*3)%260-40;sp.fill(line(wx,36,wx+22,30,1),'#3a2414');sp.fill(poly([[wx+20,28],[wx+26,26],[wx+27,32],[wx+21,33]]),'#120f1c');sp.fill(ell(wx+14,28,3,3),'#120f1c');sp.fill(poly([[wx+11,26],[wx+14,18],[wx+17,26]]),'#120f1c');
+     ridge(sp,88,2,0.08,0,'#1c2a1b',SH_);
+     sp.fill(poly([[16,72],[52,72],[60,62],[34,48],[8,62]]),(x,y)=>(x+y)%3?'#8a6a3a':'#6e5229');sp.fill(rect(14,72,40,20),'#e9e4d6');sp.fill(rect(28,78,8,8),'#f2c75c');sp.fill(rect(31,78,2,8),'#6e5229');
+     sp.fill(ell(112,96,30,4),(x,y)=>(x+f)%9===0?'#3a4a8a':'#141b3a');sp.fill(rect(108,95,8,1),'#f3eac2');
+   }},
+  8:{npc:'Харон, перевізник',quote:'Човен на двох, і вага обмежена. Хто з ким пливе, вирішуй сам.',npcSpr:makeCharon(),npcPos:[132,52],
+   bg:(sp,f)=>{
+     sky(sp,['#110607','#22090a','#3b100d','#56170f'],0,110);
+     for(let x=0;x<SW;x+=13){const h=6+Math.floor(hash(x,7)*16);for(let i=0;i<h;i++){const w=Math.max(0,Math.floor((h-i)/4));for(let k=-w;k<=w;k++)sp.set(x+k,i,'#0b0405');}}
+     [[40,86],[96,80]].forEach(([x,y],j)=>{sp.fill(ell(x,y,12,8),'#141010');sp.fill(rect(x-12,y-8,24,2),'#2a2424');for(let k=-10;k<=10;k+=2){const h=3+((k+f+j)%4);sp.fill(rect(x+k,y+8,2,h),k%4?'#f7a541':'#d9431e');}});
+     for(let y=104;y<SH_;y++)for(let x=96;x<SW;x++){const w=(x+f*3+Math.round(Math.sin(y)*5))%14;sp.set(x,y,w<2?'#f7d26a':(w<6?'#f08a2a':'#d9431e'));}
+     sp.fill(poly([[0,108],[60,104],[100,112],[104,130],[0,130]]),(x,y)=>(x+y)%7===0?'#3a1a14':'#2a1512');
+   }},
+  11:{npc:'Мольфар',quote:'Трембіта кличе хвилями: спершу найближчі полонини, потім дальші. Так і шукай.',npcSpr:makeMolfar(),npcPos:[146,52],
+   bg:(sp,f)=>{
+     sky(sp,['#86bde4','#b5d7ee','#e3eff6'],0,70);
+     sp.fill(ell(162,20,10,10),'#ffe08a');
+     ridge(sp,52,10,0.045,0.3,'#9fb6c8',SH_);
+     ridge(sp,66,8,0.06,2,'#6f9a8a',SH_);
+     for(let y=60;y<70;y++)for(let x=0;x<SW;x++)if((x+y+f)%3===0)sp.set(x,y,'#e3eff6');
+     ridge(sp,84,6,0.08,4,'#3f7a56',SH_);
+     [[12,90,22],[30,88,26],[52,92,18],[176,90,24],[192,92,18]].forEach(([x,y,h])=>spruce(sp,x,y,h,'#1f4a33',false));
+     for(let y=98;y<SH_;y++)for(let x=0;x<SW;x++){const r=hash(x,y);sp.set(x,y,r<0.03?(r<0.015?RD:'#f2c230'):((x+y)%5===0?'#548d42':'#5f9a4a'));}
+   }},
+};
+/* ================= НОВІ МЕШКАНЦІ ================= */
+function recolor(spr,map){const s=new Spr(spr.w,spr.h);s.p=spr.p.map(c=>c&&map[c]?map[c]:c);s.ol=spr.ol;return s;}
+function makeAcestes(){const a=makeAnchises();const r=recolor(a,{'#f1ece0':'#3a6ea5','#d8d0bf':'#2b5487','#5fa04a':GD,'#3f7a3a':GDs,'#f2f2f2':'#d9d4cc','#cfcfcf':'#b5aea4'});return r;}
+function makeMavka(){
+  const s=new Spr(40,72),SK='#f3dcc8',SKs='#d9bea8',HA='#3f7a3a',HAs='#2f5a28',DR='#9fd18b',DRs='#7fb46b';
+  s.fill(poly([[12,10],[28,10],[33,62],[7,62]]),(x)=>x>24?HAs:HA);
+  s.fill(poly([[14,26],[26,26],[32,68],[8,68]]),(x)=>x>24?DRs:DR);
+  for(let x=8;x<33;x+=4){s.fill(poly([[x,68],[x+2,64],[x+4,68]]),'#5f9a4a');}
+  s.fill(rect(15,68,3,2),SK);s.fill(rect(23,68,3,2),SKs);
+  s.fill(poly([[14,27],[10,40],[12,42],[16,31]]),SK);
+  s.fill(poly([[26,27],[31,22],[33,24],[27,31]]),SKs);s.fill(ell(32,21,1.8,1.8),SKs);
+  s.fill(ell(33,18,2,2),'#5b7fd6');s.set(33,18,'#f2c230');s.fill(line(32,20,32,23),'#3f7a3a');
+  s.fill(rect(18,21,5,5),SK);
+  s.fill(ell(20,15,5.2,6.2),(x)=>x>22?SKs:SK);
+  s.fill(poly([[13,11],[17,11],[16,40],[11,44]]),HA);s.fill(poly([[27,11],[23,11],[25,40],[29,44]]),HAs);
+  s.fill(rect(17,15,2,1),'#2f5a28');s.fill(rect(22,15,2,1),'#2f5a28');s.fill(rect(19,19,3,1),'#d97a8a');
+  [[13,9,RD],[15,8,'#f2c230'],[17,7,'#5b7fd6'],[19,7,WH],[21,7,RD],[23,7,'#f2c230'],[25,8,'#5b7fd6'],[27,9,WH]].forEach(([x,y,c])=>{s.set(x,y,c);s.set(x+1,y,c);s.set(x,y+1,c);});
+  return s.outline(0.6);
+}
+function makeKozhumyaka(){
+  const s=new Spr(52,74),SK='#e2a77d',SKs='#c08158',SH='#f4efe3',SHs='#d3c9b6',AP='#7a4a24',APs='#5b3418',PA='#2f3f6a';
+  s.fill(poly([[13,62],[22,62],[22,70],[10,70]]),'#3a2416');s.fill(poly([[28,62],[37,62],[40,70],[28,70]]),'#2a1a10');
+  s.fill(poly([[14,46],[36,46],[38,63],[27,63],[25,55],[23,63],[12,63]]),PA);
+  s.fill(poly([[11,24],[39,24],[37,48],[13,48]]),(x)=>x>31?SHs:SH);
+  s.fill(poly([[16,30],[34,30],[36,60],[14,60]]),(x)=>x>29?APs:AP);s.fill(line(16,30,22,24),APs);s.fill(line(34,30,28,24),APs);
+  s.fill(poly([[11,25],[5,40],[9,42],[15,30]]),SK);s.fill(ell(7,42,2.6,2.4),SK);
+  s.fill(poly([[39,25],[45,38],[42,40],[36,30]]),SKs);s.fill(ell(44,40,2.6,2.4),SKs);
+  s.fill(poly([[40,36],[51,40],[49,64],[38,58]]),(x,y)=>(x+y)%5===0?'#9a6a3a':'#b07a44');
+  s.fill(rect(21,20,9,5),SK);
+  s.fill(ell(25,14,7,8),(x)=>x>27?SKs:SK);
+  s.fill(rect(21,12,3,1),'#3a2414');s.fill(rect(27,12,3,1),'#3a2414');s.fill(rect(22,14,2,1),BK);s.fill(rect(27,14,2,1),BK);
+  s.fill(path([[25,18],[21,19],[19,22],[18,26]],2),'#3a2414');s.fill(path([[25,18],[29,19],[31,22],[32,26]],2),'#3a2414');
+  s.fill(path([[25,7],[24,4],[22,2]],2),'#3a2414');
+  return s.outline(0.6);
+}
+function makeVulcan(){
+  const s=new Spr(60,72),SK='#c98a5e',SKs='#a36a42',BE='#6e2a18',AP='#4a3020',APs='#33200f';
+  s.fill(poly([[40,52],[58,52],[56,58],[50,58],[50,66],[54,70],[42,70],[46,66],[46,58],[40,58]]),(x,y)=>y<55?'#8d949e':'#5f666e');
+  s.fill(poly([[10,62],[19,62],[19,70],[7,70]]),'#2a1a10');s.fill(poly([[23,62],[32,62],[34,70],[23,70]]),'#1f140b');
+  s.fill(poly([[11,44],[32,44],[33,63],[22,63],[21,55],[20,63],[9,63]]),'#3a3a40');
+  s.fill(poly([[9,24],[34,24],[33,47],[10,47]]),(x)=>x>27?SKs:SK);
+  s.fill(poly([[12,30],[31,30],[33,58],[10,58]]),(x)=>x>26?APs:AP);
+  s.fill(poly([[9,25],[3,36],[7,39],[13,30]]),SK);s.fill(ell(5,39,2.6,2.4),SK);
+  s.fill(poly([[34,25],[42,16],[45,19],[37,30]]),SKs);s.fill(ell(44,16,2.6,2.6),SKs);
+  s.fill(line(44,16,40,2,1.8),'#6b4420');s.fill(rect(34,0,12,6),'#8d949e');s.fill(rect(34,0,12,2),'#c9ced6');
+  s.fill(rect(18,19,8,6),SK);
+  s.fill(ell(22,13,7,8),(x)=>x>24?SKs:SK);
+  s.fill(poly([[15,15],[29,15],[27,32],[17,32]]),BE);
+  s.fill(rect(18,11,3,1),BE);s.fill(rect(24,11,3,1),BE);s.fill(rect(19,13,2,1),BK);s.fill(rect(24,13,2,1),BK);
+  return s.outline(0.6);
+}
+function makeOx(){
+  const s=new Spr(62,42),O='#d8d2c4',Os='#b3ab9a',H='#e9e1cc';
+  [[16,28],[22,29],[40,29],[46,28]].forEach(([x,y],i)=>s.fill(rect(x,y,4,12),(xx,yy)=>yy>37?'#3a2a20':(i%2?Os:O)));
+  s.fill(ell(32,24,18,9),(x,y)=>y>28?Os:O);
+  s.fill(path([[50,22],[56,28],[54,32]],2),Os);
+  s.fill(ell(12,22,7,6),O);s.fill(poly([[6,22],[12,22],[10,30],[4,28]]),'#c9a98a');s.set(5,26,BK);
+  s.fill(path([[9,16],[5,12],[4,8]],1.6),H);s.fill(path([[15,16],[19,12],[20,8]],1.6),H);
+  s.fill(rect(10,20,2,1),BK);
+  s.fill(rect(17,12,4,22),'#7a4a24');s.fill(rect(15,12,8,3),'#6b4420');
+  return s.outline(0.6);
+}
+const W_ANCHISES=makeAnchises(),W_ACESTES=makeAcestes(),W_LION=makeLion(),W_OX=makeOx(),W_MAVKA=makeMavka(),W_KOZH=makeKozhumyaka(),W_TURN=makeTurn(),W_VULCAN=makeVulcan();
+function stars(sp,n,k,f,ymax){for(let i=0;i<n;i++){const x=Math.floor(hash(i,k)*SW),y=Math.floor(hash(i,k+1)*ymax);if((i+f)%7)sp.set(x,y,(i%5)?'#cfd6ff':'#fff4c2');}}
+function tent(sp,x,y,w,h,c,cs){sp.fill(poly([[x,y],[x+w/2,y-h],[x+w,y]]),(xx)=>xx>x+w/2?cs:c);sp.fill(poly([[x+w/2-2,y],[x+w/2,y-5],[x+w/2+2,y]]),'#1a0f0a');}
+Object.assign(WORLD_SCENES,{
+  0:{npc:'Анхіз і вцілілі троянці',quote:'Сину, збирай людей і зерно. Нова земля чекає, але спершу порахуй, що лишилось.',npcSpr:W_ANCHISES,npcPos:[146,56],
+     bg:(sp,f)=>{ruins(sp,f);for(let i=0;i<5;i++){const x=70+i*14;sp.fill(ell(x,114,4,5),(xx,yy)=>yy<111?'#c9a466':'#a8844a');}}},
+  3:{npc:'Цар Лев і звірі ярмарку',quote:'Хто що продає — ніхто не пам\'ятає. Наведи лад, і Микита знову буде канцлером. На хвилинку.',npcSpr:W_LION,npcPos:[140,80],
+     bg:(sp,f)=>{sky(sp,['#bfe0c8','#d9eed9','#eef6ea'],0,92);[[10,92,30],[30,90,26],[186,92,30]].forEach(([x,y,h])=>spruce(sp,x,y,h,'#2d5a3a',false));for(let y=92;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%6===0?'#4f8a4a':'#5f9a4a');
+       [[60,'#b3202a'],[96,'#2f55a0'],[132,'#d9a521']].forEach(([x,c],k)=>{sp.fill(rect(x,72,30,20),'#c9a466');for(let i=0;i<30;i+=4)sp.fill(rect(x+i,64,4,8),i%8?WH:c);sp.fill(rect(x+2,80,26,3),'#8a6a3a');[[x+5,'#e2702b'],[x+12,'#5fa04a'],[x+19,'#c0392b']].forEach(([xx,cc])=>sp.fill(ell(xx,78,2.5,2),cc));});}},
+  6:{npc:'Ацест, цар Сицилії',quote:'Ігри на честь Анхіза! Тільки табло зламалось. Хто ж переміг?',npcSpr:W_ACESTES,npcPos:[148,56],
+     bg:(sp,f)=>{sky(sp,['#7fc0e8','#a9d6ef','#dceef6'],0,60);sp.fill(ell(40,18,9,9),'#ffe08a');sea(sp,f,60,'#2a7aa8','#1f5f86','#bfe3f2');for(let y=82;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%7===0?'#d4b073':'#e3c58e');columns(sp,[150,170,190],40,82,'#f1ece0','#cfc6b4');
+       [[30,'#b3202a'],[70,'#2f55a0'],[110,'#d9a521']].forEach(([x,c],k)=>{const bx=(x+f*(1+k*0.3))%220-20;sp.fill(poly([[bx,72],[bx+16,72],[bx+13,76],[bx+3,76]]),'#5b3a20');sp.fill(rect(bx+7,64,1,8),'#3a2414');sp.fill(poly([[bx+8,64],[bx+14,68],[bx+8,71]]),c);});}},
+  7:{npc:'Чумаки та їхні воли',quote:'Валка ходить по колу третю ніч. Віл повільний, а лис швидкий — хай перевірять, чи зустрінуться.',npcSpr:W_OX,npcPos:[132,86],
+     bg:(sp,f)=>{sky(sp,['#070a1c','#111a3a','#1e2a52'],0,96);stars(sp,90,11,f,92);for(let x=0;x<SW;x++){const yy=Math.round(70-x*0.28);for(let k=-6;k<=6;k++)if(hash(x,k+50)<0.28-Math.abs(k)*0.035)sp.set(x,yy+k,'#e8ecff');}
+       ridge(sp,96,2,0.05,1,'#1c2a1b',SH_);sp.fill(rect(40,96,40,10),'#5b3a20');sp.fill(ell(46,108,5,5),'#3a2414');sp.fill(ell(74,108,5,5),'#3a2414');sp.fill(ell(60,92,18,6),'#d9d2c4');}},
+  9:{npc:'Анхіз в Елісії',quote:'Ось твій рід, сину: від кореня до найменшого листка. Знайди, де дві гілки сходяться.',npcSpr:W_ANCHISES,npcPos:[148,56],
+     bg:(sp,f)=>{sky(sp,['#f6dca0','#f2c98a','#e9b3a0'],0,SH_);[[30,100,30,8],[170,104,30,8],[100,112,60,10]].forEach(([x,y,rx,ry])=>sp.fill(ell(x,y,rx,ry),'#fbf3e6'));
+       const tr=(x,y,len,ang,d)=>{if(d>5)return;const x2=x+Math.cos(ang)*len,y2=y+Math.sin(ang)*len;sp.fill(line(x,y,x2,y2,Math.max(1,4-d*0.7)),'#7a5a32');if(d>=3)sp.fill(ell(x2,y2,2.5,2.2),(d+((f>>2)%2))%2?'#e7b843':'#d9a521');tr(x2,y2,len*0.7,ang-0.45,d+1);tr(x2,y2,len*0.7,ang+0.45,d+1);};tr(96,118,26,-Math.PI/2,0);}},
+  10:{npc:'Мавка',quote:'Кожне дерево має своє місце: молодші ліворуч, старші праворуч. Поверни ліс, поки він не заснув.',npcSpr:W_MAVKA,npcPos:[150,56],
+     bg:(sp,f)=>{sky(sp,['#a9d8c0','#cfe9d6','#eef7ea'],0,90);for(let y=90;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%5===0?'#6fae55':'#7fbf63');sp.fill(ell(100,104,46,7),(x,y)=>(x+f)%9===0?'#bfe3f2':'#6fb2d9');
+       [[20,'#f4f1ea'],[44,'#f4f1ea'],[176,'#f4f1ea'],[196,'#f4f1ea']].forEach(([x])=>{sp.fill(rect(x,40,4,52),'#f4f1ea');for(let y=44;y<90;y+=7)sp.fill(rect(x+(y%2),y,2,1),'#2a2a2a');sp.fill(ell(x+2,38,12,10),'#86c95f');});
+       for(let i=0;i<30;i++){const x=Math.floor(hash(i,61)*SW),y=92+Math.floor(hash(i,62)*36);sp.set(x,y,i%3?'#5b7fd6':'#f2c230');}}},
+  12:{npc:'Кирило Кожум\'яка',quote:'Заорав я Змія, а вали порізало на шматки. Зший їх, де перекриваються, і жодна змія не пролізе.',npcSpr:W_KOZH,npcPos:[144,54],
+     bg:(sp,f)=>{sky(sp,['#c9d6e0','#e3e3d6','#f0e6cc'],0,80);sp.fill(path([[160,20],[170,16],[180,20],[190,14]],1.6),'#5a5048');for(let y=80;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(Math.floor(x/6)+y)%4===0?'#b88a52':'#c9a06a');
+       [[10,60,88],[50,110,84],[90,140,90],[120,190,86]].forEach(([a,b,y])=>{for(let x=a;x<b;x++){const h=Math.round(5+Math.sin((x-a)/(b-a)*Math.PI)*3);sp.fill(rect(x,y-h,1,h),'#8a6a3a');sp.set(x,y-h-1,'#5f9a4a');}});}},
+  13:{npc:'Табір Турна',quote:'Варта всюди. Найкоротший шлях до Микити — той, де найменше дозорів.',npcSpr:W_TURN,npcPos:[146,52],
+     bg:(sp,f)=>{sky(sp,['#0a0c22','#161a3f','#262a5c'],0,92);stars(sp,40,21,f,80);ridge(sp,92,2,0.08,0,'#1c2a1b',SH_);[[20,96,26,20],[60,94,30,24],[100,96,26,20]].forEach(([x,y,w,h])=>tent(sp,x,y,w,h,'#9b1c1c','#701313'));
+       for(let x=0;x<SW;x+=6)sp.fill(rect(x,84,3,10),'#4a3220');[[50,104],[124,106]].forEach(([x,y],k)=>{for(let i=-3;i<=3;i++){const hh=3+((i+f+k)%4);sp.fill(rect(x+i,y-hh,1,hh),i%2?'#f7a541':'#d9431e');}});}},
+  14:{npc:'Вулкан, коваль богів',quote:'Не куй двічі те, що вже викував. Запиши — і спирайся на зроблене.',npcSpr:W_VULCAN,npcPos:[136,56],
+     bg:(sp,f)=>{sky(sp,['#1a0f0b','#2a1610','#3a1c12'],0,SH_);for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%6===0?'#2a1a14':'#3a2418');
+       sp.fill(rect(60,60,40,40),'#3a2a24');sp.fill(rect(66,70,28,22),(x,y)=>((x+y+f)%3===0)?'#ffd27a':'#f08a2a');sp.fill(rect(70,40,20,20),'#2a1e1a');
+       for(let i=0;i<14;i++){const p=((f*2+i*7)%30)/30,x=80+(hash(i,71)-.5)*60*p,y=70-p*50;sp.set(x,y,i%2?'#ffd27a':'#f7a541');}}},
+  15:{npc:'Турн, чемпіон Юнони',quote:'Ні підказок, ні Сивілли. Лише ти, твої хитрощі і мій меч.',npcSpr:W_TURN,npcPos:[146,52],
+     bg:(sp,f)=>{sky(sp,['#3a1c3a','#8a3a3a','#e98a50'],0,90);sp.fill(ell(100,90,22,22),'#ffcf7a');ridge(sp,92,3,0.05,2,'#4a2a1a',SH_);for(let y=96;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%6===0?'#6b4a2a':'#7a5632');
+       [[30,'#2f55a0'],[60,'#b3202a'],[170,'#6b3fa0']].forEach(([x,c])=>{sp.fill(rect(x,56,1,40),'#3a2414');sp.fill(poly([[x+1,56],[x+14+((f%2)?1:0),60],[x+1,66]]),c);});}},
+});
+
+/* ================= АТМОСФЕРА СВІТІВ: деталі тла, частинки, світло ================= */
+function cloudSp(sp,x,y,w,c1,c2,c3){const h=Math.max(4,Math.round(w*0.32));
+  [[0,0.55,0.5],[0.25,0.3,0.42],[0.55,0.45,0.38],[0.8,0.6,0.3]].forEach(([dx,dy,r])=>sp.fill(ell(x+w*dx,y+h*dy,w*r,h*r*1.3),(xx,yy)=>yy<y+h*0.35?c1:(yy>y+h*0.75?c3:c2)));}
+function tufts(sp,y0,y1,c,c2,k){for(let i=0;i<70;i++){const x=Math.floor(hash(i,k)*SW),y=y0+Math.floor(hash(i,k+1)*(y1-y0));sp.set(x,y,c);sp.set(x-1,y+1,c2);sp.set(x+1,y+1,c2);sp.set(x,y-1,c2);}}
+function flowers(sp,y0,y1,k,cols){for(let i=0;i<40;i++){const x=Math.floor(hash(i,k)*SW),y=y0+Math.floor(hash(i,k+3)*(y1-y0));const c=cols[i%cols.length];sp.set(x,y,c);sp.set(x+1,y,c);sp.set(x,y+1,'#3f7a3a');}}
+const EXTRAS={
+  2:(sp,f)=>{cloudSp(sp,18,10,40,'#ffffff','#e9f4fb','#c9e2f1');cloudSp(sp,96+(f%40)/8,6,32,'#ffffff','#e9f4fb','#c9e2f1');for(let x=0;x<SW;x++){const y=Math.round(104+Math.sin(x*0.06)*3);sp.set(x,y,'#d4b073');sp.set(x,y+1,'#d4b073');}},
+  3:(sp,f)=>{tufts(sp,96,128,'#3f7a3a','#4f8a4a',31);flowers(sp,100,128,33,[RD,'#f2c230',WH]);},
+  6:(sp,f)=>{cloudSp(sp,70,8,36,'#ffffff','#eef6fb','#d0e6f2');cloudSp(sp,120,14,26,'#ffffff','#eef6fb','#d0e6f2');},
+  10:(sp,f)=>{tufts(sp,92,128,'#5f9a4a','#6fae55',41);flowers(sp,94,128,43,['#5b7fd6','#f2c230',WH,'#e7a3ad']);},
+  11:(sp,f)=>{cloudSp(sp,20,14,40,'#ffffff','#eaf3f8','#cfe0ea');cloudSp(sp,110,8,30,'#ffffff','#eaf3f8','#cfe0ea');tufts(sp,100,128,'#3f7a3a','#548d42',51);},
+  12:(sp,f)=>{cloudSp(sp,40,12,40,'#f6f2e6','#e3dccb','#c9c0ac');tufts(sp,96,128,'#8a6a3a','#a07a44',61);},
+  0:(sp,f)=>{for(let x=0;x<SW;x+=3){const y=100+Math.floor(hash(x,71)*4);sp.set(x,y,'#3a3330');}},
+  9:(sp,f)=>{flowers(sp,108,128,91,['#fff3c4','#f2c230',WH]);},
+};
+Object.entries(EXTRAS).forEach(([n,fn])=>{const ws=WORLD_SCENES[n];if(!ws)return;const ob=ws.bg;ws.bg=(sp,f)=>{ob(sp,f);fn(sp,f);};});
+
+/* частинки малюються поверх тла (back) і поверх героїв (front); усе залежить лише від часу t */
+const FXP=(ctx,x,y,c,z=2)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x/2)*2,Math.round(y/2)*2,z,z);};
+const FXW=400,FXH=260;
+const FXK={
+  embers(ctx,t,o={}){const n=o.n||20,[x0,x1]=o.x||[0,FXW],yb=o.y||FXH;for(let i=0;i<n;i++){const v=18+30*hash(i,1),ph=((t*v+hash(i,2)*yb)%yb),y=yb-ph,x=x0+hash(i,3)*(x1-x0)+Math.sin(t*2+i)*6;ctx.globalAlpha=Math.max(0,1-ph/yb);FXP(ctx,x,y,['#f7d26a','#f08a2a','#d9431e'][(i+Math.floor(t*8))%3]);}ctx.globalAlpha=1;},
+  ash(ctx,t,o={}){for(let i=0;i<(o.n||14);i++){const v=8+10*hash(i,4),y=(t*v+hash(i,5)*FXH)%FXH,x=(hash(i,6)*FXW+Math.sin(t*0.8+i)*14+t*6)%FXW;ctx.globalAlpha=.7;FXP(ctx,x,y,'#cfc6bd');}ctx.globalAlpha=1;},
+  snow(ctx,t,o={}){for(let i=0;i<(o.n||50);i++){const near=hash(i,7)<0.25,v=near?34:14+10*hash(i,8),y=(t*v+hash(i,9)*FXH)%FXH,x=(hash(i,10)*FXW+Math.sin(t*(near?1.4:0.8)+i)*(near?12:6))%FXW;ctx.globalAlpha=near?1:.75;FXP(ctx,x,y,'#ffffff',near?4:2);}ctx.globalAlpha=1;},
+  rain(ctx,t,o={}){ctx.strokeStyle='rgba(180,205,235,.55)';ctx.lineWidth=2;ctx.beginPath();for(let i=0;i<(o.n||60);i++){const v=320,y=(t*v+hash(i,11)*FXH)%FXH,x=(hash(i,12)*(FXW+80)-t*v*0.35)%(FXW+80);const X=(x+FXW+80)%(FXW+80)-40;ctx.moveTo(X,y);ctx.lineTo(X-4,y+10);}ctx.stroke();},
+  spray(ctx,t,o={}){for(let i=0;i<(o.n||14);i++){const a=(t*1.3+hash(i,13))%1,x=hash(i,14)*FXW,y=(o.y||150)-Math.sin(a*Math.PI)*16;ctx.globalAlpha=1-a;FXP(ctx,x,y,'#e6f2fb');}ctx.globalAlpha=1;},
+  dust(ctx,t,o={}){for(let i=0;i<(o.n||18);i++){const x=(hash(i,15)*FXW+t*(8+10*hash(i,16)))%FXW,y=hash(i,17)*FXH*0.9+Math.sin(t+i)*6;ctx.globalAlpha=.35+.35*Math.sin(t*2+i);FXP(ctx,x,y,o.col||'#f3dfb0');}ctx.globalAlpha=1;},
+  leaves(ctx,t,o={}){const cols=o.col||['#e2702b','#d9a521','#c0392b','#5f9a4a'];for(let i=0;i<(o.n||10);i++){const v=16+12*hash(i,18),y=(t*v+hash(i,19)*FXH)%FXH,x=(hash(i,20)*FXW+Math.sin(t*1.5+i)*18)%FXW,c=cols[i%cols.length];FXP(ctx,x,y,c);FXP(ctx,x+2,y+(Math.floor(t*4+i)%2?2:-2),shade(c,-0.2));}},
+  petals(ctx,t,o={}){for(let i=0;i<(o.n||12);i++){const v=12+8*hash(i,21),y=(t*v+hash(i,22)*FXH)%FXH,x=(hash(i,23)*FXW+Math.sin(t*1.2+i)*20)%FXW;FXP(ctx,x,y,i%2?'#f6d3dc':'#ffffff');}},
+  fireflies(ctx,t,o={}){for(let i=0;i<(o.n||12);i++){const bx=hash(i,24)*FXW,by=(o.y0||90)+hash(i,25)*((o.y1||230)-(o.y0||90)),x=bx+Math.sin(t*0.7+i)*22,y=by+Math.cos(t*0.9+i*1.3)*12,a=.5+.5*Math.sin(t*3+i*2);ctx.globalAlpha=a*.35;ctx.fillStyle=o.day?'#fff6b0':'#d6ff8a';ctx.fillRect(Math.round(x/2)*2-2,Math.round(y/2)*2-2,6,6);ctx.globalAlpha=a;FXP(ctx,x,y,o.day?'#fffbe0':'#f4ffc8');}ctx.globalAlpha=1;},
+  motes(ctx,t,o={}){for(let i=0;i<(o.n||24);i++){const v=6+8*hash(i,26),y=FXH-((t*v+hash(i,27)*FXH)%FXH),x=hash(i,28)*FXW+Math.sin(t+i)*8,tw=Math.sin(t*4+i)>0.6;ctx.globalAlpha=.8;FXP(ctx,x,y,o.col||'#ffe9a8');if(tw){FXP(ctx,x-2,y,o.col||'#ffe9a8');FXP(ctx,x+2,y,o.col||'#ffe9a8');FXP(ctx,x,y-2,o.col||'#ffe9a8');FXP(ctx,x,y+2,o.col||'#ffe9a8');}}ctx.globalAlpha=1;},
+  sparks(ctx,t,o={}){const [sx,sy]=o.at||[160,150];for(let i=0;i<(o.n||30);i++){const age=(t*1.1+hash(i,29))%1,vx=(hash(i,30)-.5)*2.4,vy=1+hash(i,31)*1.6,x=sx+vx*age*70,y=sy-vy*age*70+age*age*90;ctx.globalAlpha=1-age;FXP(ctx,x,y,age<.3?'#fff2b0':(age<.6?'#ffb340':'#e2502a'));}ctx.globalAlpha=1;},
+  smoke(ctx,t,o={}){const [x0,x1]=o.x||[0,FXW];for(let i=0;i<(o.n||6);i++){const age=(t*0.18+hash(i,32))%1,x=x0+hash(i,33)*(x1-x0)+Math.sin(t*0.6+i)*8+age*20,y=(o.y||200)-age*170,r=4+age*16;ctx.globalAlpha=(1-age)*.35;ctx.fillStyle=o.col||'#2a2420';for(let a=-r;a<=r;a+=2)for(let b=-r;b<=r;b+=2){if(a*a+b*b<=r*r&&((a+b)/2)%2===0)ctx.fillRect(Math.round((x+a)/2)*2,Math.round((y+b)/2)*2,2,2);}}ctx.globalAlpha=1;},
+  rays(ctx,t,o={}){const c=o.col||'255,240,190',x=o.x||300;for(let k=0;k<5;k++){const a=.05+.03*Math.sin(t*0.8+k);ctx.fillStyle=`rgba(${c},${a.toFixed(3)})`;ctx.beginPath();ctx.moveTo(x-10+k*14,0);ctx.lineTo(x+6+k*14,0);ctx.lineTo(x-90+k*50,FXH);ctx.lineTo(x-130+k*50,FXH);ctx.fill();}},
+  birds(ctx,t,o={}){ctx.fillStyle=o.col||'#2a2a30';for(let i=0;i<(o.n||3);i++){const x=(t*(18+8*hash(i,34))+hash(i,35)*FXW)%(FXW+40)-20,y=(o.y||40)+hash(i,36)*30+Math.sin(t*2+i)*3,up=Math.floor(t*6+i)%2;ctx.fillRect(Math.round(x),Math.round(y),2,2);ctx.fillRect(Math.round(x)-4,Math.round(y)-(up?2:0),4,2);ctx.fillRect(Math.round(x)+2,Math.round(y)-(up?2:0),4,2);}},
+  lightning(ctx,t){const k=Math.floor(t*2.2);if(k%7===0&&(t*2.2)%1<0.25){ctx.fillStyle='rgba(220,235,255,.22)';ctx.fillRect(0,0,FXW,FXH);}},
+  moonhalo(ctx,t,o={}){const [x,y]=o.at||[300,52];for(let r=36;r<=60;r+=8){ctx.globalAlpha=.07*(1+Math.sin(t+r));ctx.fillStyle='#f3eac2';for(let a=0;a<64;a++){const an=a/64*6.283;ctx.fillRect(Math.round((x+Math.cos(an)*r)/2)*2,Math.round((y+Math.sin(an)*r)/2)*2,2,2);}}ctx.globalAlpha=1;},
+  shooting(ctx,t){const per=5.5,k=t%per;if(k<0.9){const p=k/0.9,x=60+p*220,y=20+p*60;for(let j=0;j<12;j++){ctx.globalAlpha=(1-j/12)*(1-p*.5);FXP(ctx,x-j*5,y-j*1.4,'#ffffff');}ctx.globalAlpha=1;}},
+  glitter(ctx,t,o={}){for(let i=0;i<24;i++){if(Math.sin(t*5+i*3)>.7){const x=hash(i,37)*FXW,y=(o.y||124)+hash(i,38)*((o.y2||160)-(o.y||124));FXP(ctx,x,y,'#ffffff');}}},
+  campfire(ctx,t,o={}){const [x,y]=o.at||[180,200];for(let i=-3;i<=3;i++){const h=4+((i+Math.floor(t*10))%4+4)%4*2;ctx.fillStyle=i%2?'#f7a541':'#d9431e';ctx.fillRect(x+i*2,y-h,2,h);}ctx.fillStyle='#fff2b0';ctx.fillRect(x,y-4,2,2);ctx.globalAlpha=.18+.06*Math.sin(t*9);ctx.fillStyle='#ffb340';ctx.fillRect(x-14,y-18,30,20);ctx.globalAlpha=1;},
+  lavaglow(ctx,t){const a=.12+.06*Math.sin(t*2);for(let k=0;k<5;k++){ctx.fillStyle=`rgba(255,90,30,${(a*(1-k/5)).toFixed(3)})`;ctx.fillRect(0,FXH-60-k*12,FXW,12);}},
+  forgeglow(ctx,t){const a=.16+.08*Math.sin(t*3);for(let r=70;r>10;r-=12){ctx.fillStyle=`rgba(255,150,60,${(a*(1-r/80)).toFixed(3)})`;ctx.fillRect(160-r,160-r*0.7,r*2,r*1.4);}},
+  mist(ctx,t,o={}){const y=o.y||120,a=o.a||.35;for(let b=0;b<3;b++){const off=(t*(6+b*3))%40;ctx.globalAlpha=a*(1-b*0.25);ctx.fillStyle='#f4f8fb';for(let x=-40;x<FXW;x+=4)for(let yy=0;yy<10;yy+=2){if(((x/4|0)+(yy/2|0)+b)%3===0)ctx.fillRect(Math.round(x+off),y+b*10+yy+Math.round(Math.sin((x+t*20)/40)*3),2,2);}}ctx.globalAlpha=1;},
+  dragon(ctx,t){const x=(t*14)%(FXW+120)-60,y=40+Math.sin(t*0.8)*8,up=Math.floor(t*3)%2;ctx.fillStyle='rgba(60,50,45,.55)';ctx.fillRect(Math.round(x),Math.round(y),18,3);ctx.fillRect(Math.round(x)+18,Math.round(y)-2,4,3);ctx.fillRect(Math.round(x)-8,Math.round(y)+2,8,2);ctx.fillRect(Math.round(x)+4,Math.round(y)-(up?8:-4),8,up?8:4);},
+  bunting(ctx,t){const y0=118,cols=[RD,'#f2c230','#2f55a0',WH];for(let x=120;x<390;x+=10){const sag=Math.sin((x-120)/270*Math.PI)*10,sw=Math.round(Math.sin(t*2+x/30));ctx.fillStyle='#5b3a20';ctx.fillRect(x,y0+sag,10,1);ctx.fillStyle=cols[(x/10|0)%4];ctx.beginPath();ctx.moveTo(x+1,y0+sag+1);ctx.lineTo(x+9,y0+sag+1);ctx.lineTo(x+5+sw,y0+sag+9);ctx.fill();}},
+  ripples(ctx,t,o={}){const y=o.y||208;for(let i=0;i<3;i++){const p=((t*0.5+i/3)%1),rx=8+p*40,ry=2+p*5,x=200+(i-1)*40;ctx.globalAlpha=(1-p)*.6;ctx.fillStyle='#e6f4fb';for(let a=0;a<40;a++){const an=a/40*6.283;ctx.fillRect(Math.round((x+Math.cos(an)*rx)/2)*2,Math.round((y+Math.sin(an)*ry)/2)*2,2,2);}}ctx.globalAlpha=1;},
+  windowglow(ctx,t,o={}){const [x,y]=o.at||[0,0];ctx.globalAlpha=.18+.05*Math.sin(t*2);ctx.fillStyle='#ffd27a';ctx.fillRect(x-8,y-8,30,26);ctx.globalAlpha=1;},
+};
+const WORLD_FX={
+  0:{grade:'rgba(255,110,40,.07)',back:[['smoke',{x:[20,140],y:200,col:'#2a2420',n:7}]],front:[['embers',{n:26}],['ash',{n:16}]],vig:.35},
+  1:{grade:'rgba(10,25,50,.14)',back:[['lightning']],front:[['rain',{n:70}],['spray',{n:16,y:150}]],vig:.45},
+  2:{back:[['rays',{x:330,col:'255,240,190'}],['birds',{n:3,y:30}]],front:[['dust',{n:18,col:'#f6e4b8'}]],vig:.18},
+  3:{back:[['bunting']],front:[['leaves',{n:12}]],vig:.2},
+  4:{back:[],front:[['snow',{n:60}]],vig:.25},
+  5:{back:[['moonhalo',{at:[300,52]}],['shooting']],front:[['fireflies',{n:14,y0:120,y1:240}]],vig:.5},
+  6:{back:[['rays',{x:90,col:'255,244,205'}],['birds',{n:4,y:24}],['glitter',{y:124,y2:162}]],front:[['dust',{n:10,col:'#fff3cf'}]],vig:.18},
+  7:{back:[['shooting'],['campfire',{at:[180,206]}]],front:[['embers',{n:10,x:[168,196],y:206}],['fireflies',{n:6,y0:150,y1:240}]],vig:.5},
+  8:{back:[['lavaglow']],front:[['embers',{n:40}],['smoke',{x:[60,200],y:190,col:'#1a0e0c',n:6}]],vig:.55},
+  9:{back:[['rays',{x:200,col:'255,236,170'}]],front:[['motes',{n:30}]],vig:.18},
+  10:{back:[['ripples',{y:208}]],front:[['fireflies',{n:10,day:true,y0:80,y1:220}],['petals',{n:14}]],vig:.22},
+  11:{back:[['mist',{y:118,a:.35}],['birds',{n:3,y:40}]],front:[['leaves',{n:8,col:['#3f7a56','#d9a521','#5f9a4a']}],['mist',{y:206,a:.18}]],vig:.22},
+  12:{back:[['dragon']],front:[['dust',{n:24,col:'#e2cc96'}]],vig:.25},
+  13:{back:[],front:[['embers',{n:24,y:220}],['fireflies',{n:5,y0:150,y1:240}]],vig:.55},
+  14:{back:[['forgeglow']],front:[['sparks',{n:40,at:[160,150]}],['smoke',{x:[146,176],y:90,col:'#1a1210',n:5}]],vig:.5},
+  15:{back:[['rays',{x:210,col:'255,180,120'}]],front:[['dust',{n:26,col:'#ecb890'}],['embers',{n:12}]],vig:.4},
+};
+function fxLayer(ctx,n,t,which){const cfg=WORLD_FX[n];if(!cfg)return;(cfg[which]||[]).forEach(([k,o])=>FXK[k]&&FXK[k](ctx,t,o||{}));
+  if(which==='front'){if(cfg.grade){ctx.fillStyle=cfg.grade;ctx.fillRect(0,0,FXW,FXH);}
+    if(cfg.vig){for(let k=0;k<4;k++){const a=cfg.vig*(1-k/4)*0.45;ctx.fillStyle=`rgba(10,8,14,${a.toFixed(3)})`;const d=k*6;ctx.fillRect(d,d,FXW-d*2,6);ctx.fillRect(d,FXH-d-6,FXW-d*2,6);ctx.fillRect(d,d+6,6,FXH-d*2-12);ctx.fillRect(FXW-d-6,d+6,6,FXH-d*2-12);}}}}
+
+/* загальна сцена для світів без окремої ілюстрації */
+function genericBg(w){
+  const light=luminance(w.bg)>0.5,top=shade(w.bg,light?0.25:0.18),mid=w.bg,low=shade(w.bg,light?-0.12:-0.3);
+  return (sp,f)=>{
+    sky(sp,[top,mid,low],0,96);
+    const mc=shade(w.bg,light?-0.22:0.3);
+    if(w.motif!=='egg'){const m=MOTIFS[w.motif];m.forEach((r,y)=>{for(let x=0;x<r.length;x++)if(r[x]==='x')sp.fill(rect(120+x*7,10+y*7,6,6),mc);});}
+    for(let i=0;i<24;i++){const x=Math.floor(hash(i,w.n)*SW),y=Math.floor(hash(i,w.n+20)*90);if((i+f)%5)sp.set(x,y,shade(w.bg,light?-0.35:0.5));}
+    for(let y=96;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%6===0?shade(low,-0.1):low);
+  };
+}
+const WORLD_INFO={
+  0:{npc:'Вцілілі троянці',does:'Еней збирає ватагу і припаси на згарищі. Микита ще звикає до штанів.'},
+  1:{does:'Шикують розкиданий штормом флот. Микита вистежує кораблі з щогли.'},
+  2:{does:'Обгороджують Дидоні найбільшу ділянку, йдучи з двох кінців назустріч.'},
+  3:{npc:'Цар Лев і звірі ярмарку',does:'Наводять лад на звіриному ярмарку. Микита вчить Енея запам\'ятовувати.'},
+  4:{does:'Впускають і випускають звірів: хто заліз останнім, вилазить першим.'},
+  5:{does:'Замість кидати в став усіх по черзі, щоразу ділять навпіл.'},
+  6:{npc:'Ацест і учасники ігор',does:'Еней змагається, Микита суддює й веде живе табло призерів.'},
+  7:{npc:'Чумаки',does:'Розплутують чумацьку валку, що ходить по колу в степу.'},
+  8:{does:'Спускаються до Анхіза і повертаються тим самим шляхом, як рекурсія.'},
+  9:{npc:'Анхіз',does:'Відновлюють переплутаний родовід Енея.'},
+  10:{npc:'Лукаш і Мавка',does:'Повертають кожне дерево Мавчиного лісу на своє місце.'},
+  11:{does:'Відновлюють зв\'язок між полонинами хвилями трембіти.'},
+  12:{npc:'Кирило Кожум\'яка',does:'Зшивають порізані вали в суцільну оборону від зміїв.'},
+  13:{npc:'Низ і Евріал',does:'Еней сам, без Микити, пробирається табором до полоненого друга.'},
+  14:{npc:'Вулкан',does:'Кують зброю, не повторюючи вже викуваного.'},
+  15:{npc:'Турн',does:'Двобій з Турном: незнайомі задачі без підказок, лише власна тямка.'},
+};
+const ENEI_SCENE=makeEnei(2);
+function sceneDrawer(c,bg,fox,npc,npcPos,floatNpc,extra){
+  return f=>{
+    const sp=new Spr(SW,SH_);bg(sp,f);
+    const s=2,ctx=setup(c,SW*s,SH_*s,true);sp.draw(ctx,0,0,s);
+    if(extra)extra(ctx,f,s);
+    ENEI_SCENE.draw(ctx,4*s,(SH_-70)*s,s);
+    if(fox)fox.draw(ctx,52*s,(SH_-59)*s,s);
+    if(npc){const [nx,ny]=npcPos;npc.draw(ctx,nx*s,(ny+(floatNpc?Math.round(Math.sin(f*0.6)):0))*s,s);}
+  };
+}
+
+/* ================= ОНБОРДИНГ: закріплена сцена ================= */
+function makeSibyl(){
+  const s=new Spr(40,70),RO='#4a5a3a',ROs='#34402a',SK='#d9b08c',SKs='#b88d6a',HAIR='#cfd3d8',SC='#f1e8d2';
+  s.fill(poly([[12,22],[28,22],[33,66],[7,66]]),(x)=>x>23?ROs:RO);
+  s.fill(rect(7,64,27,2),'#2a3320');
+  s.fill(ell(20,15,9,10),RO);
+  s.fill(ell(20,17,5.5,6.5),(x)=>x>21?SKs:SK);
+  s.fill(line(15,20,13,34,1.6),HAIR);s.fill(line(25,20,27,34,1.6),HAIR);
+  [[13,8],[15,6],[18,5],[22,5],[25,6],[27,8]].forEach(([x,y])=>{s.set(x,y,'#5fa04a');s.set(x,y+1,'#3f7a3a');});
+  s.set(18,17,'#9fe3ff');s.set(22,17,'#9fe3ff');s.fill(line(17,15,19,15),SKs);s.fill(line(21,15,23,15),SKs);
+  s.fill(line(18,21,22,21),SKs);
+  s.fill(rect(12,34,16,6),SC);s.fill(ell(12,37,1.6,3),'#d6c9a6');s.fill(ell(28,37,1.6,3),'#d6c9a6');s.set(20,37,RD);
+  s.fill(ell(12,38,2,2),SK);s.fill(ell(28,38,2,2),SKs);
+  return s.outline(0.6);
+}
+const GLYPHS={'{':["..xx",".x..",".x..","x...",".x..",".x..","..xx"],'}':["xx..","..x.","..x.","...x","..x.","..x.","xx.."],'(':["..x",".x.","x..","x..","x..",".x.","..x"],')':["x..",".x.","..x","..x","..x",".x.","x.."]};
+function glyph(sp,g,x,y,c){GLYPHS[g].forEach((r,j)=>{for(let i=0;i<r.length;i++)if(r[i]==='x')sp.fill(rect(x+i*2,y+j*2,2,2),c);});}
+const OLYMPUS_GODS=Object.fromEntries(['zeus','apollo','bacchus','neptune','venus'].map(k=>[k,[makeGod(k),makeGod(k,{raise:true})]]));
+const JUNO_S=makeJuno(),EOL_S=makeEol(),WOLF_S=makeWolf({drool:2}),SIBYL_S=makeSibyl(),FOX_ASH=makeFox('#8d8780'),FOX_SEA=makeFox('#3f7fd0'),FOX_WILD=makeFoxWild(GINGER);
+function palace(sp){sky(sp,['#24143a','#3a2360','#55357c'],0,100);columns(sp,[14,44,150,180],22,100,'#7a5aa8','#5b3f86');for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,((x>>3)+(y>>3))%2?'#2a1a42':'#33204f');}
+function ruins(sp,f){sky(sp,['#3e3430','#5e4e44','#8c7464'],0,100);[[20,60,10],[60,74,8],[150,56,10],[178,70,8]].forEach(([x,y,w])=>{sp.fill(rect(x,y,w,100-y),'#3a3330');sp.fill(poly([[x,y],[x+w,y],[x+w-2,y-4],[x+2,y-2]]),'#4a423e');});for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%5===0?'#4a4440':'#5a534e');for(let i=0;i<20;i++){const x=Math.floor(hash(i,30)*SW),y=Math.floor(((hash(i,31)*100)-f*1.5-i*3)%100+100)%100;sp.set(x,y,i%3?'#f08a2a':'#f7d26a');}}
+const OB_OLD=[
+  {kind:'заставка',title:'Олімп',narr:'Давно колись, як іще світи стояли в ладу, на Олімпі сяяла Кришталева Писанка. На її візерунках трималось усе: море в берегах, звірі в казках, задачі у відповідях. А боги бенкетували.',
+   lines:[['Зевс','Наливай! Поки Писанка ціла, світ сам себе порахує.'],['Вакх','За лад! За задачі, що мають відповіді!'],['Аполлон','А я заспіваю — гекзаметром, як годиться!'],['Юнона','Святкуйте, святкуйте… Доля Енея теж у тій Писанці.']],act:'Дивиться.',
+   bg:(sp,f)=>{sky(sp,['#f6d9a8','#f2c08a','#e9a6a0'],0,100);[[20,96,26,8],[90,104,40,10],[176,98,28,8]].forEach(([x,y,rx,ry])=>sp.fill(ell(x,y,rx,ry),'#fbf3e6'));columns(sp,[6,26,166,186],34,100,'#eee8dc','#cfc6b4');
+     for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,((x>>3)+(y>>3))%2?'#e9e2d2':'#d9d0bc');
+     // гірлянди між колонами
+     for(let x=10;x<190;x++){const y=36+Math.round(Math.sin((x-10)/180*Math.PI)*10);if(x%3)sp.set(x,y,(x>>3)%2?RD:GD);}
+     for(let k=0;k<10;k++){const a=(k/10)*6.28+f*0.05;line(100,34,100+Math.cos(a)*70,34+Math.sin(a)*44).forEach(([x,y],j)=>{if(j%3===0&&j>10)sp.set(x,y,'#f7e3a1');});}},
+   fg:(ctx,f,s)=>{
+     drawEgg(ctx,17,22,(100-8)*s,12*s,s,false,true,0,f%2?0.85:0.95);
+     const G=OLYMPUS_GODS,base=SH_*s-66;
+     const bob=(k)=>Math.round(Math.sin((f+k*3)*0.35)*2);
+     // хто що робить у кадрі f
+     const pose=[['apollo',4,f%6<3],['bacchus',54,f%10<5],['zeus',146,f%16<8],['neptune',236,f%18<9],['venus',290,f%12<6]];
+     pose.forEach(([k,x,up],i)=>{const sp=up?G[k][1]:G[k][0];const dy=k==='bacchus'?Math.abs(Math.sin(f*0.3))*-6:bob(i);sp.draw(ctx,x,Math.round(base-sp.h+dy),1);});
+     JUNO_S.draw(ctx,344,base-JUNO_S.h+2,1);
+     if(f%30<8){ctx.fillStyle='#f4ecda';ctx.fillRect(330,base-JUNO_S.h-18,30,14);ctx.fillStyle='#4a2a78';ctx.font='bold 10px "Fira Code", monospace';ctx.fillText(ST('хм…'),334,base-JUNO_S.h-7);}
+     // стіл: скатертина з орнаментом і наїдки
+     const ty=base-14;ctx.fillStyle='#7a4a24';ctx.fillRect(40,ty,300,6);ctx.fillStyle='#f6efe0';ctx.fillRect(40,ty+6,300,14);
+     for(let x=40;x<340;x+=6){ctx.fillStyle=(x/6)%2?RD:BK;ctx.fillRect(x+1,ty+15,3,3);}
+     ctx.fillStyle='#5b3a20';ctx.fillRect(48,ty+20,6,14);ctx.fillRect(326,ty+20,6,14);
+     [[70,'#b3202a'],[120,'#d9a521'],[200,'#6b3fa0'],[262,'#b3202a'],[300,'#d9a521']].forEach(([x,c],i)=>{ctx.fillStyle=GD;ctx.fillRect(x,ty-8,6,8);ctx.fillStyle=c;ctx.fillRect(x+1,ty-7,4,3);});
+     ctx.fillStyle='#c9773a';[[96,ty-6],[104,ty-7],[112,ty-6]].forEach(([x,y])=>{ctx.fillRect(x,y,7,6);});
+     ctx.fillStyle='#8b3a2a';ctx.beginPath();ctx.arc(170,ty-4,8,Math.PI,0);ctx.fill();ctx.fillStyle='#5fa04a';ctx.fillRect(164,ty-12,3,4);
+     ctx.fillStyle='#6b3fa0';[[226,ty-6],[230,ty-9],[234,ty-6],[230,ty-4]].forEach(([x,y])=>ctx.fillRect(x,y,4,4));
+     // «дзень!» — тост Зевса
+     if(f%16<3){ctx.fillStyle='#fff6c8';ctx.font='bold 11px "Fira Code", monospace';ctx.fillText(ST('дзень!'),174,base-84);for(let i=0;i<6;i++){const a=i/6*6.28;ctx.fillRect(194+Math.cos(a)*10,base-70+Math.sin(a)*8,3,3);}}
+     // ноти Аполлона
+     for(let i=0;i<4;i++){const t=((f*0.3+i*5)%20)/20,x=34+i*6+Math.sin((f+i)*0.3)*6,y=base-70-t*60;ctx.globalAlpha=1-t;ctx.fillStyle='#4a2a78';ctx.fillRect(Math.round(x),Math.round(y),3,3);ctx.fillRect(Math.round(x)+2,Math.round(y)-7,1,8);ctx.globalAlpha=1;}
+     // серця Венери
+     for(let i=0;i<3;i++){const t=((f*0.25+i*7)%21)/21,x=316+i*8+Math.sin(f*0.25+i)*5,y=base-80-t*50;ctx.globalAlpha=1-t;ctx.fillStyle='#e0504a';ctx.fillRect(x,y,2,2);ctx.fillRect(x+3,y,2,2);ctx.fillRect(x,y+2,5,2);ctx.fillRect(x+1,y+4,3,1);ctx.globalAlpha=1;}
+     // конфеті
+     for(let i=0;i<34;i++){const x=(hash(i,70)*400+Math.sin((f+i)*0.2)*6)%400,y=((hash(i,71)*260+f*(1+i%2))%260);ctx.fillStyle=RAINBOW[i%6];ctx.fillRect(Math.round(x),Math.round(y),i%3?3:2,i%2?3:2);}
+   }},
+  {kind:'заставка',title:'Змова',narr:'Юнона кличе Еола: доля Енея записана в Писанці, тож Писанку треба розбити.',lines:[['Юнона','Розбий її, і долі не буде. Плачу щедро: мішок золота і вічний вихідний.'],['Еол','Ну… для вас хоч ураган.']],act:'Дивиться.',
+   bg:palace,fg:(ctx,f,s)=>{EOL_S.draw(ctx,6*s,(46+(f%2))*s,s);JUNO_S.draw(ctx,120*s,52*s,s);const gl=f%3===0;ctx.fillStyle=GD;ctx.fillRect(96*s,112*s,10*s,8*s);if(gl){ctx.fillStyle='#fff6c8';ctx.fillRect(99*s,111*s,s,s);}}},
+  {kind:'заставка',title:'Шторм',narr:'Бахнуло так, що Зевс протверезів. Писанка на друзки, а друзки по книжках. І в кожній книжці, куди впав уламок, лад пішов шкереберть.',lines:[],act:'Бачить тизер мапи: 13 міток спалахують і гаснуть.',
+   bg:(sp,f)=>{sky(sp,['#0b1626','#152a45','#22405f'],0,SH_);[[40,20,24,8],[160,28,26,9],[100,14,18,6]].forEach(([x,y,rx,ry])=>sp.fill(ell(x+(f%3),y,rx,ry),'#3d5675'));if(f%6<2)sp.fill(path([[150,10],[142,30],[150,32],[138,60]],1.6),'#f7e27a');for(let i=0;i<30;i++){const x=Math.floor((hash(i,40)*SW+f*6)%SW),y=Math.floor(hash(i,41)*SH_);sp.fill(line(x,y,x-6,y+2),'#5f7f9f');}
+     sp.fill(rect(10,108,180,4),'#5b3a20');[[16,'#b3202a'],[28,'#2f55a0'],[38,'#4f9d4a'],[50,'#d9a521'],[62,'#6b3fa0'],[132,'#e2702b'],[146,'#2e8b57'],[158,'#7b2d6b'],[170,'#1fa3a3']].forEach(([x,c],k)=>{sp.fill(rect(x,90-(k%3)*2,9,18+(k%3)*2),c);sp.fill(rect(x+1,96,7,1),GD);});},
+   fg:(ctx,f,s)=>drawEgg(ctx,34,44,(83)*s,(16)*s,s,true,false,0.08+0.2*((f%14)/14))},
+  {kind:'заставка',title:'Ліс Франка',narr:'Хто знає казку, той знає: Микита в діжу таки впаде. Але цього разу діжа була з дірою в інший світ.',lines:[['Микита','О, а це що за ласощі?']],act:'Дивиться.',
+   bg:(sp,f)=>{sky(sp,['#bfe0c8','#d9eed9','#eef6ea'],0,92);[[12,92,36],[34,90,30],[160,92,34],[186,90,30],[60,92,22]].forEach(([x,y,h])=>spruce(sp,x,y,h,'#2d5a3a',false));for(let y=92;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%6===0?'#4f8a4a':'#5f9a4a');sp.fill(rect(120,50,60,44),'#e9e4d6');sp.fill(poly([[114,52],[186,52],[150,30]]),'#8a6a3a');
+     const bx=96,by=96;sp.fill(rect(bx,by,20,18),'#7a4a24');sp.fill(rect(bx,by+4,20,2),'#3a2414');sp.fill(rect(bx,by+12,20,2),'#3a2414');sp.fill(rect(bx+1,by,18,2),RAINBOW[f%RAINBOW.length]);
+     const t=f%26;if(t>=19){for(let i=0;i<14;i++){const a=i/14*3.14,r=(t-18)*3;sp.set(bx+10+Math.cos(a)*r,by-Math.sin(a)*r,RAINBOW[i%6]);}}},
+   fg:(ctx,f,s)=>{const t=f%26;if(t<19){const p=t/18,x=40+p*56,y=82-Math.sin(p*3.14)*40-(p>0.8?(p-0.8)*60:0);FOX_WILD.draw(ctx,Math.round(x)*s,Math.round(y)*s,s);}}},
+  {kind:'заставка',title:'Присяга',narr:'Вовк Неситий ковтає інший уламок і гепається на підлогу палат Юнони, вже олюднений.',lines:[['Юнона','Служитимеш мені, матимеш весь ліс на обід.'],['Вовк','Весь-весь? І зайців?']],act:'Дивиться.',
+   bg:palace,fg:(ctx,f,s)=>{WOLF_S.draw(ctx,20*s,(62+(f%2))*s,s);JUNO_S.draw(ctx,120*s,52*s,s);}},
+  {kind:'інтерактив',title:'Попелище Трої',narr:'Еней був парубок моторний / І кодер хоч куди козак, / На всяку задачу проворний, / Завзятіший од всіх бурлак.',lines:[['Микита','Це… Троя? А де мій ліс? І чому на мені штани?'],['Еней','Звідки ти, рудий? Тобто… сірий?']],act:'Уперше бачить редактор з рядком enei.move() і тисне «Запустити».',
+   bg:ruins,fg:(ctx,f,s)=>{ENEI_SCENE.draw(ctx,30*s,(SH_-70)*s,s);const t=f%24,y=t<12?-60+t*(71/12):11;FOX_ASH.draw(ctx,110*s,Math.round(y+(SH_-71))*s- (t<12?0:0),s);if(t<12)for(let k=0;k<3;k++){ctx.fillStyle='#e9e1cc';ctx.fillRect((116+k*10)*s,Math.round(y+(SH_-71)-8-k*4)*s,s,4*s);}
+     ctx.fillStyle='#141b17';ctx.fillRect(150*s,14*s,44*s,16*s);ctx.fillStyle='#e2702b';ctx.fillRect(154*s,18*s,8*s,8*s);ctx.fillStyle='#e7e0cf';for(let k=0;k<5;k++)ctx.fillRect((166+k*5)*s,21*s,3*s,2*s);}},
+  {kind:'інтерактив',title:'Сивілла',narr:'Лад тримається на точному слові. Ліворуч слово, праворуч світ, а «Крок» показує, як світ виконує кожне слово.',lines:[['Сивілла','Скажеш криво, і світ піде криво. Скажеш точно, і світ послухає.']],act:'Дописує кілька рядків і проходить їх кнопкою «Крок».',
+   bg:(sp,f)=>{sky(sp,['#1c1612','#2b2119','#3b2d22'],0,SH_);sp.fill(ell(100,40,70,46),'#4a3a2c');sp.fill(ell(100,44,56,36),'#5a4836');for(let y=104;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%5===0?'#2b2119':'#3b2d22');
+     [['{',70,30],['}',150,26],['(',100,18],[')',124,40]].forEach(([g,x,y],i)=>glyph(sp,g,x,y+Math.round(Math.sin((f+i*3)*0.5)*2),i%2?'#9fe3ff':'#f2d27a'));},
+   fg:(ctx,f,s)=>{ENEI_SCENE.draw(ctx,20*s,(SH_-70)*s,s);SIBYL_S.draw(ctx,130*s,(SH_-70)*s,s);}},
+  {kind:'інтерактив',title:'Збори ватаги',narr:'Еней збирає вцілілих троянців і зерно. Перші вправи світу 0: цикл, умова, змінна-лічильник.',lines:[['Еней','Збираймо своїх, і зерно не лишаймо.'],['Микита','Можна й руками кожен мішок… але цикл хитріший.']],act:'Проходить вправи світу 0 і фінальну задачу Running Sum.',
+   bg:(sp,f)=>{ruins(sp,f);const ex=12+(f%40)*4;for(let i=0;i<7;i++){const x=60+i*18;if(x>ex+30)sp.fill(ell(x,112,5,6),(xx,yy)=>yy<108?'#c9a466':'#a8844a');}},
+   fg:(ctx,f,s)=>{const ex=12+(f%40)*4;ENEI_SCENE.draw(ctx,Math.min(ex,150)*s,(SH_-70)*s,s);}},
+  {kind:'інтерактив',title:'Відплиття',narr:'Корабель заходить у тріщину між світами, Микита перефарбовується в морський синій. Так почалась Кодеїда.',lines:[['Микита','Чую… пахне морем і уламком. Туди!']],act:'Відкривається мапа світів і порожня вишиванка Енея.',
+   bg:(sp,f)=>{sky(sp,['#5a4a8a','#c96f7a','#f2b880'],0,80);sp.fill(ell(60,78,14,14),'#ffd98a');sea(sp,f,80,'#3a4f86','#2a3a6a','#f2b880');
+     for(let y=14;y<96;y++){const x=164+Math.round(Math.sin(y*0.4+f*0.3)*2);for(let k=-6;k<=6;k++){const a=Math.abs(k);if(a<2)sp.set(x+k,y,'#ffffff');else if(a<4&&(y+f)%2)sp.set(x+k,y,'#9fe3ff');else if((x+k+y)%3===0)sp.set(x+k,y,'#6fb6e3');}}},
+   fg:(ctx,f,s)=>{const sx=6+(f%40)*1.5,bob=(f%4<2?0:1),dk=96+bob;
+     poly([[sx+34,30],[sx+66,62],[sx+34,88]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,(y===60||y===61)?RD:'#efe7d4'));
+     poly([[sx+30,40],[sx+8,74],[sx+30,86]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,'#e2d9c3'));
+     line(sx+32,dk,sx+32,26).forEach(([x,y])=>{px(ctx,x*s,y*s,s,'#3a2414');px(ctx,(x+1)*s,y*s,s,'#3a2414');});
+     poly([[sx,dk],[sx+80,dk],[sx+72,dk+13],[sx+8,dk+13]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,y<dk+2?'#7a4a24':(y>dk+9?'#3a2414':'#5b3a20')));
+     for(let k=0;k<6;k++)px(ctx,(sx+12+k*11)*s,(dk+5)*s,s,'#2a1a10');
+     ENEI_SCENE.draw(ctx,Math.round((sx+14)*s),dk*s-70,1);
+     FOX_SEA.draw(ctx,Math.round((sx+54)*s),dk*s-58,1);}},
+];
+/* ================= ДОДАТКОВІ ПЕРСОНАЖІ ================= */
+function makeAnchises(){
+  const s=new Spr(44,72),SK='#e2b08e',SKs='#c08f6c',RO='#f1ece0',ROs='#d8d0bf',BE='#f2f2f2',BEs='#cfcfcf';
+  s.fill(line(8,18,8,70,1.6),'#7a5a32');
+  s.fill(poly([[14,24],[30,24],[34,68],[10,68]]),(x)=>x>26?ROs:RO);
+  s.fill(rect(10,66,25,2),GD);s.fill(line(14,26,30,46,1.4),GD);
+  s.fill(poly([[14,25],[9,36],[11,38],[16,30]]),RO);s.fill(ell(9,38,2,2),SK);
+  s.fill(poly([[30,25],[34,36],[32,38],[29,30]]),ROs);s.fill(ell(33,38,2,2),SKs);
+  s.fill(rect(19,20,7,5),SK);
+  s.fill(ell(22,14,6,7),(x)=>x>24?SKs:SK);
+  s.fill(poly([[16,17],[28,17],[26,34],[18,34]]),(x)=>x>24?BEs:BE);
+  s.fill(path([[22,18],[18,19],[16,22]],1.6),BE);s.fill(path([[22,18],[26,19],[28,22]],1.6),BE);
+  s.fill(rect(18,13,2,1),BK);s.fill(rect(24,13,2,1),BK);s.fill(rect(17,11,4,1),BE);s.fill(rect(23,11,4,1),BE);
+  [[15,9],[17,7],[20,6],[24,6],[27,7],[29,9]].forEach(([x,y])=>{s.set(x,y,'#5fa04a');s.set(x,y+1,'#3f7a3a');});
+  return s.outline(0.6);
+}
+function makeTurn(){
+  const s=new Spr(50,74),SK='#d9a07a',SKs='#b47d58',BR='#c08a3e',BRs='#8f6228',CA='#9b1c1c',CAs='#701313';
+  s.fill(line(42,2,44,72,1.6),'#6b4a2a');s.fill(poly([[40,6],[42,0],[44,6],[42,9]]),'#cdd2da');
+  s.fill(poly([[12,24],[36,24],[41,66],[7,66]]),(x)=>x>30?CAs:CA);
+  s.fill(rect(16,50,6,14),SK);s.fill(rect(26,50,6,14),SKs);s.fill(rect(16,56,6,8),BR);s.fill(rect(26,56,6,8),BRs);
+  s.fill(rect(14,64,9,4),'#4a2a18');s.fill(rect(25,64,9,4),'#3a1f10');
+  s.fill(rect(14,42,20,9),(x)=>x%3===0?'#5a3a1c':'#7a5228');
+  s.fill(poly([[14,24],[34,24],[32,42],[16,42]]),(x)=>x>27?BRs:BR);
+  s.fill(line(24,27,24,40),BRs);s.fill(line(18,31,22,33),BRs);s.fill(line(30,31,26,33),BRs);
+  s.fill(poly([[34,25],[40,33],[41,36],[34,32]]),SKs);s.fill(ell(41,36,2,2),SKs);
+  s.fill(ell(10,36,9,11),(x,y)=>Math.hypot((x-10)/9,(y-36)/11)>0.82?BRs:BR);s.fill(ell(10,36,3,3.5),'#1fa3a3');s.set(10,36,'#1b3f8f');
+  s.fill(rect(21,20,6,5),SK);
+  s.fill(ell(24,15,5.5,6.5),(x)=>x>26?SKs:SK);
+  s.fill(ell(24,11,7,5.5),BR);s.fill(rect(17,11,3,8),BR);s.fill(rect(28,11,3,8),BRs);
+  s.fill(path([[15,6],[18,1],[24,0],[30,1],[34,6],[33,12]],2.4),CA);
+  s.fill(line(20,14,23,15),BK);s.fill(line(28,14,25,15),BK);s.set(22,16,'#f2c230');s.set(26,16,'#f2c230');
+  s.fill(rect(22,20,4,1),'#7a2a2a');
+  return s.outline(0.6);
+}
+function makeLion(){
+  const s=new Spr(56,50),F='#d9a256',Fs='#b07b36',MA='#8a4f1c',MAs='#6b3a12';
+  s.fill(path([[44,40],[52,36],[54,28]],2),Fs);s.fill(ell(54,27,2.4,2.4),MA);
+  s.fill(ell(32,36,15,11),(x,y)=>y>40?Fs:F);
+  s.fill(rect(20,40,5,9),F);s.fill(rect(36,40,5,9),Fs);s.fill(rect(19,47,7,2),Fs);s.fill(rect(35,47,7,2),MAs);
+  s.fill(ell(20,20,14,15),(x,y)=>hash(x,y)<0.2?MAs:MA);
+  s.fill(ell(20,22,8,9),(x)=>x>22?Fs:F);
+  s.fill(poly([[16,24],[24,24],[22,30],[18,30]]),'#f1d9a8');s.fill(rect(19,24,3,2),BK);
+  s.fill(rect(15,19,3,1),BK);s.fill(rect(23,19,3,1),BK);s.set(16,19,'#f2c230');s.set(24,19,'#f2c230');
+  s.fill(poly([[12,10],[28,10],[28,4],[25,7],[20,2],[15,7],[12,4]]),GD);s.set(20,6,RD);
+  return s.outline(0.6);
+}
+
+/* перехід між двома спрайтами будь-якого розміру: піксельне розчинення */
+function drawSwap(ctx,A,ax,ay,B,bx,by,s,p){
+  if(A&&p<1)for(let y=0;y<A.h;y++)for(let x=0;x<A.w;x++){const c=A.p[y*A.w+x];if(c&&hash(x,y)>=p)px(ctx,ax+x*s,ay+y*s,s,c);}
+  if(B)for(let y=0;y<B.h;y++)for(let x=0;x<B.w;x++){const c=B.p[y*B.w+x];if(c&&hash(x,y)<p)px(ctx,bx+x*s,by+y*s,s,c);}
+}
+
+/* ================= ЧАС І АНІМАЦІЇ (сцени як функції часу) ================= */
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const prog=(t,a,b)=>clamp((t-a)/(b-a));
+const easeOut=x=>1-Math.pow(1-x,3);
+const easeInOut=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const back=x=>{const c=1.5;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2);};
+const lerp=(a,b,x)=>a+(b-a)*x;
+const ease=easeOut;
+
+/* ================= МАПА МАНДРІВКИ (чисті функції: сайт і гра) ================= */
+const NODES=[[18,78],[40,60],[62,44],[80,28],[96,44],[110,72],[126,86],[142,70],[154,40],[172,26],[186,66],[200,84],[214,64],[206,34],[222,20],[234,40]];
+const ISLES=[{c:[28,70],r:[22,16],land:'#7d7670'},{c:[80,38],r:[26,18],land:'#cdb27a'},{c:[126,76],r:[26,16],land:'#6c6aa0'},{c:[162,34],r:[18,14],land:'#7a2c22'},{c:[200,72],r:[24,16],land:'#4f8a4a'},{c:[220,30],r:[20,16],land:'#c9a24a'}];
+const MW=240,MH=110,MS=4;
+let _mapBase=null;
+function mapBase(){if(_mapBase)return _mapBase;const sp=new Spr(MW,MH);ISLES.forEach((is,i)=>{sp.fill(ell(is.c[0],is.c[1],is.r[0]+2,is.r[1]+2).filter(([x,y])=>hash(x,y+i)>0.08||Math.hypot((x-is.c[0])/is.r[0],(y-is.c[1])/is.r[1])<0.85),'#e3c58e');sp.fill(ell(is.c[0],is.c[1],is.r[0],is.r[1]).filter(([x,y])=>hash(x+3,y)>0.05),(x,y)=>(x+y)%5===0?shade(is.land,-0.15):is.land);});return _mapBase=sp;}
+const routePts=[];for(let i=0;i<NODES.length-1;i++){const [a,b]=NODES[i],[c,d]=NODES[i+1];routePts.push(line(a,b,c,d));}
+function worldCol(i,f=0){const w=ALL_WORLDS[i];return w.fox==='rainbow'?RAINBOW[f%RAINBOW.length]:w.fox;}
+/* Точка на маршруті між світами from і to, p = 0..1 (для кораблика). */
+function routePoint(from,to,p){
+  if(from===to||p>=1)return NODES[to];
+  const a=Math.min(from,to),b=Math.max(from,to),seg=[];for(let i=a;i<b;i++)seg.push(...routePts[i]);
+  if(from>to)seg.reverse();return seg[Math.min(seg.length-1,Math.floor(p*seg.length))]||NODES[to];
+}
+/* Мапа: море, острови-пісні, маршрут (золотий до reached), мітки світів, рамка навколо active і кораблик.
+   o.state(i): 'locked' | 'open' | 'done' — у грі закриті світи сірі, пройдені мають золоту рамку. */
+function paintJourney(ctx,f,o){
+  const s=o.scale||MS,sea=new Spr(MW,MH);
+  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const w=(x+Math.round(Math.sin((y+f)*0.5)*3)+f)%14;sea.set(x,y,w===0&&y%4===0?'#3c6c9e':((x+y)%2?'#1d3f66':'#21466f'));}
+  sea.draw(ctx,0,0,s);mapBase().draw(ctx,0,0,s);
+  const reached=o.reached??o.active;
+  routePts.forEach((L,i)=>L.forEach(([x,y],k)=>{if((k+f)%4<2)px(ctx,x*s,y*s,s,i<reached?'#f2d27a':'rgba(201,214,228,.75)');}));
+  NODES.forEach(([x,y],i)=>{const st=o.state?o.state(i):'open',col=st==='locked'?'#6c776f':worldCol(i,f),on=i===o.active;
+    if(on){const r=f%2?5:6;for(let k=-r;k<=r;k++){[[x+k,y-r],[x+k,y+r],[x-r,y+k],[x+r,y+k]].forEach(([a,b])=>px(ctx,a*s,b*s,s,col));}}
+    const edgeC=st==='done'?GD:'#0f1f33';
+    for(let a=-3;a<=3;a++)for(let b=-3;b<=3;b++){if(Math.abs(a)===3&&Math.abs(b)===3)continue;const edge=Math.abs(a)===3||Math.abs(b)===3,ring=Math.abs(a)===2||Math.abs(b)===2;px(ctx,(x+a)*s,(y+b)*s,s,edge?edgeC:(ring?'#fbf3e6':col));}
+    if(st==='locked'){px(ctx,x*s,(y-1)*s,s,'#2a332e');px(ctx,(x-1)*s,y*s,s,'#2a332e');px(ctx,x*s,y*s,s,'#2a332e');px(ctx,(x+1)*s,y*s,s,'#2a332e');}
+    else px(ctx,(x-1)*s,(y-1)*s,s,shade(col,0.45));
+  });
+  if(o.ship){const [sx,sy]=o.ship,bob=f%2;
+    [[0,0,'#e9e1cc'],[0,1,'#e9e1cc'],[1,1,'#e9e1cc'],[0,2,'#e9e1cc'],[1,2,RD],[2,2,'#e9e1cc'],[-3,3,'#5b3a20'],[-2,3,'#5b3a20'],[-1,3,'#5b3a20'],[0,3,'#5b3a20'],[1,3,'#5b3a20'],[2,3,'#5b3a20'],[3,3,'#5b3a20'],[-2,4,'#3a2414'],[-1,4,'#3a2414'],[0,4,'#3a2414'],[1,4,'#3a2414'],[2,4,'#3a2414']].forEach(([a,b,c])=>px(ctx,(sx+4+a)*s,(sy-9+b+bob)*s,s,c));}
+}
+/* Картинка світу для картки: сцена, Еней, Микита (перефарбовується з кольору foxFrom за p) і мешканець. */
+const ART={};
+function artOf(n){if(!ART[n]){const ws=WORLD_SCENES[n];ART[n]=ws?{bg:ws.bg,npc:ws.npcSpr,pos:ws.npcPos,float:ws.float}:{bg:genericBg(ALL_WORLDS[n])};}return ART[n];}
+function paintWorldArt(ctx,n,f,foxFrom,p=1){
+  const w=ALL_WORLDS[n],a=artOf(n),s=2;
+  const sp=new Spr(SW,SH_);a.bg(sp,f);sp.draw(ctx,0,0,s);
+  const FT=(typeof performance!=='undefined'?performance.now():0)/1000;fxLayer(ctx,w.n,FT,'back');
+  ENEI_SCENE.draw(ctx,4*s,(SH_-70)*s,s);
+  drawSwap(ctx,foxFrom&&hdOf(foxFrom),52*s-1,(SH_-59)*s-1,hdOf(foxFor(w)),52*s-1,(SH_-59)*s-1,s/2,easeOut(p));
+  if(a.npc){const [nx,ny]=a.pos;a.npc.draw(ctx,nx*s,(ny+(a.float?Math.round(Math.sin(f*0.6)):0))*s,s);}
+  fxLayer(ctx,w.n,FT,'front');
+}
+
+
+const OBX={...Object.fromEntries(OB_OLD.map((o,i)=>[i,o]))};
+const BOOKS=[[16,'#b3202a'],[28,'#2f55a0'],[38,'#4f9d4a'],[50,'#d9a521'],[62,'#6b3fa0'],[74,'#c96f2a'],[118,'#e2702b'],[132,'#2e8b57'],[146,'#7b2d6b'],[158,'#1fa3a3'],[170,'#8a6a3a'],[182,'#c0392b'],[96,'#3a6ea5']];
+
+/* допоміжне для сцен лісу Франка */
+const FOX_WILD_BASE=makeFoxWild(GINGER),WOLF_WILD_BASE=makeWolfWild();
+const easeIn2=x=>x*x;
+function forestBg(sp){sky(sp,['#bfe0c8','#d9eed9','#eef6ea'],0,92);[[12,92,36],[34,90,30],[170,92,34],[192,90,30],[62,92,22]].forEach(([x,y,h])=>spruce(sp,x,y,h,'#2d5a3a',false));for(let y=92;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%6===0?'#4f8a4a':'#5f9a4a');sp.fill(rect(128,50,52,44),'#e9e4d6');sp.fill(poly([[122,52],[186,52],[154,30]]),'#8a6a3a');sp.fill(rect(150,74,10,20),'#6b4420');}
+function barrelBack(sp,f){const x=89,y=92,w=34;sp.fill(ell(x+w/2,y,w/2,3.5),'#3a2414');sp.fill(ell(x+w/2,y+0.5,w/2-2,2.4),(xx,yy)=>RAINBOW[(Math.floor(f/2)+((xx>>2)))%RAINBOW.length]);}
+function barrelFront(ctx,s,f){const x=89,y=92,w=34,h=24;for(let yy=y+1;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++){const band=(yy===y+5||yy===y+6||yy===y+17||yy===y+18);const edge=xx===x||xx===x+w-1;px(ctx,xx*s,yy*s,s,band?'#3a2414':(edge?'#5b3a20':((xx-x)%6===0?'#6b4420':'#7a4a24')));}
+  for(let xx=x;xx<x+w;xx++)px(ctx,xx*s,y*s,s,'#3a2414');}
+
+/* вцілілі троянці: воїн, моряк із мішком, старий зі стрижнем, жінка з клунком */
+function makeTrojan(kind){
+  const s=new Spr(40,66),SK='#e6b08a',SKs='#c48c66';
+  const P={warrior:{tu:'#9b1c1c',tus:'#701313',cl:'#5b3a20'},sailor:{tu:'#2f55a0',tus:'#203a72',cl:'#d9cfb6'},elder:{tu:'#8a8478',tus:'#6b665c',cl:'#4a4540'},woman:{tu:'#3f7a3a',tus:'#2f5a28',cl:'#b3202a'}}[kind];
+  const longRobe=kind==='elder'||kind==='woman';
+  if(longRobe){s.fill(poly([[13,24],[27,24],[31,62],[9,62]]),(x)=>x>23?P.tus:P.tu);s.fill(rect(12,62,6,3),'#4a3020');s.fill(rect(22,62,6,3),'#3a2416');}
+  else{s.fill(rect(14,46,5,16),SK);s.fill(rect(21,46,5,16),SKs);s.fill(rect(13,60,7,3),'#4a3020');s.fill(rect(21,60,7,3),'#3a2416');
+    s.fill(poly([[13,24],[27,24],[29,48],[11,48]]),(x)=>x>23?P.tus:P.tu);s.fill(rect(12,40,17,2),'#8b5a2b');}
+  s.fill(poly([[13,25],[8,38],[11,40],[15,30]]),P.tu);s.fill(ell(9,40,2,2),SK);
+  s.fill(poly([[27,25],[32,38],[29,40],[25,30]]),P.tus);s.fill(ell(31,40,2,2),SKs);
+  s.fill(rect(17,20,6,5),SK);
+  s.fill(ell(20,15,5.5,6.5),(x)=>x>22?SKs:SK);
+  s.fill(rect(17,15,2,1),BK);s.fill(rect(22,15,2,1),BK);
+  if(kind==='warrior'){s.fill(ell(20,11,6.5,5),'#c08a3e');s.fill(rect(14,11,2,7),'#c08a3e');s.fill(rect(24,11,2,7),'#8f6228');s.fill(path([[14,6],[20,2],[27,6]],2.2),'#c0392b');
+    s.fill(line(34,6,35,64,1.4),'#6b4a2a');s.fill(poly([[33,8],[34.5,2],[36,8]]),'#cdd2da');s.fill(path([[17,19],[20,21],[23,19]],1),'#5b3a20');}
+  if(kind==='sailor'){s.fill(ell(20,10,6,3.5),'#3a2414');s.fill(rect(14,11,12,2),'#f2d27a');s.fill(ell(31,24,6,5),'#c9a466');s.fill(line(27,22,34,27),'#8b7244');}
+  if(kind==='elder'){s.fill(ell(20,10,6,3.5),'#e9e6df');s.fill(poly([[15,17],[25,17],[23,29],[17,29]]),'#e9e6df');s.fill(line(7,22,7,64,1.4),'#7a5a32');}
+  if(kind==='woman'){s.fill(poly([[13,13],[27,13],[28,24],[12,24]]),P.cl);s.fill(ell(20,10,7.5,5),P.cl);s.fill(ell(20,15.5,4.3,5),SK);s.fill(rect(17,15,2,1),BK);s.fill(rect(22,15,2,1),BK);
+    s.fill(ell(10,38,5,4),'#d9cfb6');s.fill(line(6,36,14,40),'#a3243a');}
+  return s.outline(0.6);
+}
+const TROJANS=['warrior','sailor','elder','woman'].map(makeTrojan);
+function drawSack(ctx,x,y){ctx.fillStyle='#1f1b16';ctx.fillRect(x-10,y-14,20,18);ctx.fillStyle='#a8844a';ctx.fillRect(x-9,y-12,18,15);ctx.fillStyle='#c9a466';ctx.fillRect(x-8,y-12,10,6);ctx.fillStyle='#7a5a32';ctx.fillRect(x-3,y-17,6,5);ctx.fillStyle='#e9d9a6';ctx.fillRect(x-1,y-6,2,2);}
+const OB=[
+  OBX[0],OBX[1],
+  {kind:'заставка',title:'Мішок вітрів',narr:'Еол розв\'язує мішок, і вітри вириваються на волю. Хмари крутяться над Олімпом.',lines:[['Еол','Ану, хлопці, гуляйте!']],act:'Дивиться.',
+   bg:(sp,f)=>{sky(sp,['#2a3a5a','#3d5675','#55708f'],0,SH_);for(let k=0;k<5;k++){const cx=40+k*30,cy=40+(k%2)*24,r=10+((f+k*3)%12);for(let a=0;a<28;a++){const an=a/28*6.28+f*0.25+k;sp.set(cx+Math.cos(an)*r,cy+Math.sin(an)*r*0.6,'#c9d6e4');}}columns(sp,[150,172],50,110,'#d9d2c4','#b5ad9c');for(let y=110;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,'#8a8478');},
+   fg:(ctx,f,s)=>{EOL_S.draw(ctx,10*s,(40+(f%2))*s,s);}},
+  OBX[2],
+  {kind:'заставка',title:'Уламки по книжках',narr:'Тринадцять уламків влітають у корінці книжок. Мапа спалахує тринадцятьма мітками і гасне.',lines:[],act:'Бачить тизер мапи світів.',
+   bg:(sp,f)=>{sky(sp,['#1b1424','#2a1d36','#3a2a4a'],0,SH_);sp.fill(rect(6,92,188,5),'#5b3a20');sp.fill(rect(6,40,188,4),'#5b3a20');
+     BOOKS.forEach(([x,c],k)=>{const h=30+(k%3)*4,glow=((f>>1)%13)===k;sp.fill(rect(x,92-h,10,h),glow?'#fff3c4':c);sp.fill(rect(x+1,92-h+6,8,1),GD);});
+     for(let k=0;k<13;k++){const ph=((f+k*2)%26)/26;if(ph<0.6){const [bx]=BOOKS[k],sx=100+Math.cos(k)*30,sy=10,x=lerp(sx,bx+5,ph/0.6),y=lerp(sy,70,ph/0.6);sp.set(x,y,k%2?RD:'#a7d6e6');sp.set(x+1,y,'#d4ecf3');sp.set(x,y+1,'#d4ecf3');}}
+     for(let k=0;k<13;k++){const on=(f+k)%6<3;if(on)sp.fill(rect(20+k*13,110,3,3),RAINBOW[k%6]);}}},
+  /* Прохання Венери: Зевс після бенкету з рушником на голові обіцяє Енеєві дорогу */
+  {kind:'заставка',title:'Прохання Венери',narr:'Венера, мати Енея, біжить до Зевса. Той ще тримається за голову після бенкету, але слухає.',
+   lines:[['Венера','Зевсе, батечку! Без Писанки мій Еней пропаде: його доля розсипалась по книжках.'],['Зевс','Ой, голова… Добре. Хай сам збере тринадцять уламків. Слово ладу йому в поміч, а Сивілла — в провідниці.'],['Венера','А Юнона?'],['Зевс','А Юнона хай спробує.']],act:'Дивиться.',
+   bg:(sp,f)=>{sky(sp,['#2a2050','#4a3474','#7a5a8c'],0,100);stars(sp,40,7,f,70);columns(sp,[10,30,162,182],34,100,'#9a8cb0','#7a6c94');
+     for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,((x>>3)+(y>>3))%2?'#5a4c74':'#4a3e64');
+     sp.fill(rect(92,82,16,18),'#8a7ca4');sp.fill(rect(90,80,20,3),'#6a5c84');
+     // трон Зевса
+     sp.fill(rect(124,60,40,44),'#d9a521');sp.fill(rect(128,64,32,36),'#b3202a');sp.fill(rect(120,56,48,6),'#a87a12');},
+   fg:(ctx,f,s)=>{
+     const Z=OLYMPUS_GODS.zeus,V=OLYMPUS_GODS.venus;
+     // мапа з тринадцятьма уламками розгортається між ними
+     const t=Math.min(1,(f%60)/30);
+     ctx.fillStyle=`rgba(244,236,218,${0.85*t})`;ctx.fillRect(150,40,Math.round(100*t),56);
+     if(t>=1)for(let k=0;k<13;k++){const x=160+(k%5)*20+(Math.floor(k/5)%2)*8,y=50+Math.floor(k/5)*16;ctx.fillStyle=(f+k)%6<3?RD:'#a7d6e6';ctx.fillRect(x,y,4,4);}
+     // Зевс на троні (з рушником) і Венера, що просить
+     const zu=f%24<4;(zu?Z[1]:Z[0]).draw(ctx,240,92,2);
+     // мокрий рушник на голові замість корони
+     ctx.fillStyle='#1f1b16';ctx.fillRect(271,97,36,14);ctx.fillStyle='#f6efe0';ctx.fillRect(272,98,34,12);ctx.fillStyle='#a7d6e6';ctx.fillRect(274,102,30,2);ctx.fillRect(274,106,30,1);
+     if(f%20<10){const d=Math.floor(f/2)%5;ctx.fillStyle='#9fe3ff';ctx.fillRect(276+d*6,112+d*3,2,3);}
+     const vu=f%12<6;(vu?V[1]:V[0]).draw(ctx,40,102+(vu?-2:0),2);
+     // зірочки навколо голови Зевса
+     for(let i=0;i<3;i++){const a=f*0.18+i*2.1;ctx.fillStyle=GD;ctx.fillRect(Math.round(289+Math.cos(a)*24),Math.round(96+Math.sin(a)*5),3,3);}
+     // Сивілла з'являється наприкінці
+     if(f%60>44){ctx.globalAlpha=Math.min(1,(f%60-44)/10);SIBYL_S.draw(ctx,176,150,1);ctx.globalAlpha=1;}
+   }},
+  /* Ліс Франка: лис стрибає дугою і пірнає саме в діжу */
+  {kind:'заставка',title:'Ліс Франка',narr:'Хто знає казку, той знає: Микита в діжу таки впаде. Але цього разу діжа була з дірою в інший світ.',lines:[['Микита','О, а це що за ласощі?']],act:'Дивиться.',
+   bg:(sp,f)=>{forestBg(sp);barrelBack(sp,f);},
+   fg:(ctx,f,s)=>{const t=(f*0.15)%5.6,FX=FOX_WILD_BASE;
+     const R={x:89,y:92,w:34};const cx=(R.x+R.w/2)*s,rim=R.y*s;
+     let x,y,show=true;
+     if(t<0.8){x=34*s;y=rim-31+(t%0.4<0.2?0:-3);}
+     else if(t<2.0){const p=easeInOut(prog(t,0.8,2.0));x=lerp(34*s,cx-25,p);y=lerp(rim-31,rim-44,p)-Math.sin(p*Math.PI)*70;}
+     else if(t<2.9){const p=easeIn2(prog(t,2.0,2.9));x=cx-25;y=lerp(rim-44,rim+6,p);}
+     else show=false;
+     if(show){ctx.save();ctx.beginPath();ctx.rect(0,0,ctx.canvas.width,rim+1);ctx.clip();FX.draw(ctx,Math.round(x),Math.round(y),1);ctx.restore();}
+     barrelFront(ctx,s,f);
+     if(t>2.6&&t<4.4){const p=prog(t,2.6,4.4);for(let i=0;i<22;i++){const a=Math.PI*(0.1+0.8*hash(i,5)),v=40+60*hash(i,6),px_=cx+Math.cos(a)*v*p*(hash(i,7)>.5?1:-1),py=rim-Math.sin(a)*v*p*2+p*p*120;ctx.fillStyle=RAINBOW[i%6];ctx.globalAlpha=1-p;ctx.fillRect(Math.round(px_),Math.round(py),s,s);}ctx.globalAlpha=1;}
+     if(t>2.9&&t<3.6){const p=prog(t,2.9,3.6);ctx.fillStyle=`rgba(255,250,230,${(1-p)*0.8})`;ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);}
+   }},
+  /* Вовк ковтає свій уламок */
+  {kind:'заставка',title:'Вовк і уламок',narr:'Неподалік у траві світиться ще один уламок. Вовк Неситий, як завжди, спершу ковтає, а потім думає.',lines:[['Вовк','Не пропадати ж добру!'],['Вовк','…гик!']],act:'Дивиться.',
+   bg:(sp,f)=>{forestBg(sp);},
+   fg:(ctx,f,s)=>{const t=(f*0.15)%6,W_=WOLF_WILD_BASE,sx=150*s,sy=90*s;
+     if(t<2.2){const g=0.5+0.5*Math.sin(t*8),q=2*s;ctx.globalAlpha=g*0.7;ctx.fillStyle='#f7e3a1';ctx.fillRect(sx-4*q,sy-4*q,9*q,9*q);ctx.globalAlpha=1;
+       [[0,-2,'#d4ecf3'],[-1,-1,'#a7d6e6'],[0,-1,RD],[1,-1,'#a7d6e6'],[-2,0,'#d4ecf3'],[-1,0,RD],[0,0,'#ffffff'],[1,0,RD],[2,0,'#d4ecf3'],[-1,1,'#a7d6e6'],[0,1,RD],[1,1,'#a7d6e6'],[0,2,'#d4ecf3']].forEach(([a,b,c])=>{ctx.fillStyle=c;ctx.fillRect(sx+a*q,sy+b*q-q,q,q);});}
+     let wx,wy=92*s-35,alpha=1,hop=0;
+     if(t<2.0){wx=lerp(-60,sx-54,easeOut(prog(t,0,2.0)));wy+=(Math.floor(t*6)%2)*-2;}
+     else wx=sx-54;
+     if(t>2.6&&t<3.4){hop=-Math.sin(prog(t,2.6,3.0)*Math.PI)*24;}
+     if(t>3.4){alpha=1-prog(t,3.4,4.0);}
+     if(t<4.0){ctx.globalAlpha=alpha;W_.draw(ctx,Math.round(wx),Math.round(wy+hop),1);ctx.globalAlpha=1;}
+     if(t>2.0&&t<2.5){ctx.fillStyle='#ffffff';ctx.font=`bold ${6*s}px "Fira Code", monospace`;ctx.fillText(ST('ам!'),sx-14*s,sy-26*s);}
+     if(t>2.6&&t<3.4){ctx.fillStyle='#ffffff';ctx.fillRect(sx-20*s,sy-44*s,26*s,11*s);ctx.fillStyle='#1f1b16';ctx.font=`bold ${6*s}px "Fira Code", monospace`;ctx.fillText(ST('гик!'),sx-18*s,sy-36*s);}
+     if(t>3.3&&t<4.6){const p=prog(t,3.3,4.6),r=p*120;ctx.fillStyle=`rgba(255,246,210,${(1-p)})`;for(let a=0;a<36;a++){const an=a/36*6.28;ctx.fillRect(Math.round(wx+56+Math.cos(an)*r),Math.round(wy+30+Math.sin(an)*r*0.6),s*2,s*2);}
+       ctx.fillStyle=`rgba(255,250,235,${(1-p)*0.7})`;ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);}
+   }},
+  OBX[4],OBX[5],
+  {kind:'інтерактив',title:'Перший крок',narr:'Уперше відкривається редактор. У ньому вже стоїть рядок enei.move(). Кнопка «Запустити» пульсує.',lines:[['Сивілла','Скажи слово, і світ послухає.']],act:'Тисне «Запустити»: Еней робить крок і подає Микиті руку.',
+   bg:ruins,fg:(ctx,f,s)=>{const t=(f%40)/40,step=easeInOut(prog(t,0.45,0.75));ENEI_SCENE.draw(ctx,Math.round(30+step*24)*s,(SH_-70)*s,s);FOX_ASH.draw(ctx,110*s,(SH_-59)*s,s);
+     ctx.fillStyle='#141b17';ctx.fillRect(126*s,8*s,68*s,34*s);ctx.fillStyle='#8c968e';ctx.fillRect(130*s,12*s,4*s,2*s);
+     const typed='enei.move();',n=Math.round(typed.length*prog(t,0.05,0.35));ctx.fillStyle='#e7e0cf';ctx.font=`${7*s}px "Fira Code", monospace`;ctx.fillText(typed.slice(0,n),137*s,19*s);
+     const pulse=t<0.42?(Math.sin(f)*0.5+0.5):0;ctx.fillStyle=t>0.4&&t<0.46?'#b85a1f':'#e2702b';ctx.fillRect(130*s,27*s,(28+pulse*2)*s,10*s);ctx.fillStyle='#1a120b';ctx.fillText('▶ Run',133*s,34.5*s);}},
+  OBX[6],
+  /* Збори ватаги: Еней іде вулицею, підбирає мішки, і вцілілі троянці стають за ним у ватагу */
+  {kind:'інтерактив',title:'Збори ватаги',narr:'Еней збирає вцілілих троянців і зерно. Перші вправи світу 0: цикл, умова, змінна-лічильник.',lines:[['Еней','Збираймо своїх, і зерно не лишаймо.'],['Микита','Можна й руками кожен мішок… але цикл хитріший.']],act:'Проходить вправи світу 0 і фінальну задачу Running Sum.',
+   bg:(sp,f)=>{ruins(sp,f);},
+   fg:(ctx,f,s)=>{const t=(f%64)/64,ex=8+t*330,G=SH_*s,homes=[96,170,236,300];
+     homes.forEach((hx,k)=>{const sx=hx-16;if(ex+34<sx)drawSack(ctx,sx,G-8);});
+     let n=0;const followers=[];
+     homes.forEach((hx,k)=>{if(ex+34>=hx-16)followers.push(k);});
+     homes.forEach((hx,k)=>{const fi=followers.indexOf(k);const T=TROJANS[k];
+       if(fi<0){T.draw(ctx,hx,G-T.h-2+(k%2),1);}
+       else{n++;const x=Math.max(2,ex-34*(fi+1)),bob=Math.floor(f/2+k)%2;T.draw(ctx,Math.round(x),G-T.h-2-bob,1);}});
+     const eb=Math.floor(f/2)%2;ENEI_SCENE.draw(ctx,Math.round(ex),G-72-eb,1);
+     ctx.fillStyle='rgba(20,27,23,.82)';ctx.fillRect(8,8,128,22);ctx.fillStyle='#f2d27a';ctx.font='600 12px "Fira Code", monospace';ctx.fillText(`${ST('ватага')} = ${n} / 4`,16,23);}},
+  /* Відплиття: корабель з Енеєм, Микитою і ватагою пливе до тріщини */
+  {kind:'інтерактив',title:'Відплиття',narr:'Корабель заходить у тріщину між світами, Микита перефарбовується в морський синій. Так почалась Кодеїда.',lines:[['Микита','Чую… пахне морем і уламком. Туди!']],act:'Відкривається мапа світів і порожня вишиванка Енея.',
+   bg:(sp,f)=>{sky(sp,['#5a4a8a','#c96f7a','#f2b880'],0,80);sp.fill(ell(60,78,14,14),'#ffd98a');sea(sp,f,80,'#3a4f86','#2a3a6a','#f2b880');
+     for(let y=14;y<96;y++){const x=172+Math.round(Math.sin(y*0.4+f*0.3)*2);for(let k=-6;k<=6;k++){const a=Math.abs(k);if(a<2)sp.set(x+k,y,'#ffffff');else if(a<4&&(y+f)%2)sp.set(x+k,y,'#9fe3ff');else if((x+k+y)%3===0)sp.set(x+k,y,'#6fb6e3');}}},
+   fg:(ctx,f,s)=>{const sx=2+(f%40)*1.3,bob=(f%4<2?0:1),dk=98+bob,W2=118;
+     poly([[sx+46,24],[sx+82,60],[sx+46,90]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,(y===58||y===59)?RD:'#efe7d4'));
+     poly([[sx+42,36],[sx+16,72],[sx+42,88]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,'#e2d9c3'));
+     line(sx+44,dk,sx+44,20).forEach(([x,y])=>{px(ctx,x*s,y*s,s,'#3a2414');px(ctx,(x+1)*s,y*s,s,'#3a2414');});
+     const crew=[[TROJANS[2],sx+4],[ENEI_SCENE,sx+20],[TROJANS[0],sx+46],[TROJANS[3],sx+66],[FOX_SEA,sx+88]];
+     crew.forEach(([sp_,x])=>sp_.draw(ctx,Math.round(x*s),dk*s-sp_.h+2,1));
+     poly([[sx,dk],[sx+W2,dk],[sx+W2-10,dk+14],[sx+10,dk+14]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,y<dk+2?'#7a4a24':(y>dk+10?'#3a2414':'#5b3a20')));
+     for(let k=0;k<8;k++)px(ctx,(sx+14+k*12)*s,(dk+6)*s,s,'#2a1a10');
+     const oa=Math.sin(f*0.5)*0.5;line(sx+30,dk+4,sx+18+Math.round(oa*8),dk+20).forEach(([x,y])=>px(ctx,x*s,y*s,s,'#8b5a2b'));
+     line(sx+70,dk+4,sx+58+Math.round(oa*8),dk+20).forEach(([x,y])=>px(ctx,x*s,y*s,s,'#8b5a2b'));}},
+
+];
+
+export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, drawSack, drawEgg, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };

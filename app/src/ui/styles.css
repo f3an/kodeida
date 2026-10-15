@@ -142,3 +142,221 @@ code, pre { font-family: var(--mono); }
 .status span:last-child { margin-left: auto; }
 
 @media (prefers-reduced-motion: reduce) { .bar .fl { transition: none; } }
+
+/* ============ спільне для екранів ============ */
+.titlebar .logo { cursor: pointer; -webkit-app-region: no-drag; }
+.tabs .lang { margin-left: auto; display: flex; align-items: center; padding-right: 8px; }
+.tabs select { background: var(--side); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; font: 12px var(--mono); }
+.side .it { text-align: left; display: grid; gap: 0; }
+.side .it small { margin-left: 0; }
+.side button.it:disabled { opacity: .5; }
+.side button.it:hover:not(:disabled):not(.on) { background: #18211c; }
+.body.page-body { grid-template-columns: 46px 1fr; }
+.app:has(.page-body) { grid-template-rows: 36px 1fr; }
+.act button:hover:not(.on) { color: var(--fg); }
+.update-pill { -webkit-app-region: no-drag; display: flex; gap: 8px; align-items: center; background: #1f2a23; border: 1px solid var(--line); border-radius: 999px; padding: 2px 4px 2px 12px; color: var(--fox-soft); }
+.update-pill button { background: var(--fox); color: #1a120b; border-radius: 999px; padding: 2px 10px; font: 600 11px var(--mono); }
+.bubble { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+.btn.next { background: var(--fox); border-color: var(--fox); color: #1a120b; font-weight: 600; flex: none; }
+.cmp.lesson p { margin: 0; color: #cfc8b6; font-size: 13px; }
+.cmp.lesson b { color: var(--fox-soft); }
+.btn.danger { border-color: #7e1219; color: #ffb4ab; }
+.btn.big { padding: 10px 18px; font-size: 14px; border-color: var(--line); background: var(--side); }
+.btn.big.run { background: var(--fox); border-color: var(--fox); color: #1a120b; }
+.small { font-size: 12px; }
+.eyebrow { font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--fox-soft); }
+a { color: var(--fox-soft); }
+
+/* сторінки: мапа, книга, вишиванка, налаштування */
+.page { overflow: auto; padding: 28px 36px 48px; min-width: 0; }
+.page-h h1 { font: 700 26px var(--display); margin: 0 0 6px; }
+.page-h p { margin: 0 0 22px; max-width: 760px; }
+.song h2 { font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin: 22px 0 10px; }
+.world-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.world-card { --wc: var(--fox); text-align: left; display: grid; gap: 3px; background: var(--side); border: 1px solid var(--line); border-top: 4px solid var(--wc); border-radius: 12px; padding: 0 0 12px; overflow: hidden; }
+.world-card > :not(canvas) { padding: 0 12px; }
+.world-card:hover:not(:disabled) { border-color: var(--wc); transform: translateY(-1px); }
+.world-card.locked { opacity: .55; }
+.world-card.locked .world-art { filter: grayscale(.8) brightness(.7); }
+.world-art { width: 100%; display: block; margin-bottom: 8px; }
+.world-card .wn { font: 11px var(--mono); color: var(--dim); }
+.world-card b { font: 700 15px var(--display); }
+.world-card .wt { font-size: 12px; color: var(--mute); }
+.world-card .wp { font: 11px var(--mono); color: var(--fox-soft); }
+.world-card .wd { font-size: 12px; color: #a49d8d; }
+.book { display: grid; gap: 16px; max-width: 900px; }
+.trick { display: grid; grid-template-columns: 70px 1fr; gap: 18px; background: var(--side); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.trick.locked { opacity: .6; }
+.trick .motif { width: 54px; }
+.trick h2 { font: 700 18px var(--display); margin: 4px 0 8px; }
+.trick h3 { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin: 12px 0 4px; }
+.trick ul { margin: 0; padding-left: 18px; color: #cfc8b6; }
+.trick p { color: #cfc8b6; margin: 0; }
+.trick pre { background: var(--bar); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--fg); overflow: auto; }
+.shirt-page { display: grid; grid-template-columns: 200px 1fr; gap: 30px; align-items: start; }
+.shirt-enei { width: 184px; }
+.motifs { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.motifs figure { margin: 0; display: grid; justify-items: center; gap: 6px; background: var(--side); border: 1px dashed #3a4a40; border-radius: 10px; padding: 12px 6px; }
+.motifs figure.on { border: 1px solid var(--red); }
+.motifs canvas { width: 54px; }
+.motifs figcaption { font-size: 11.5px; color: var(--mute); text-align: center; }
+.settings { display: grid; gap: 18px; max-width: 680px; }
+.settings section { background: var(--side); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+.settings h2 { font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin: 0 0 10px; }
+.settings .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0; }
+.settings .row.check { justify-content: flex-start; }
+.settings select { background: var(--bar); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font: 12px var(--mono); }
+.row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* головне меню */
+.menu { height: 100%; display: grid; place-items: center; overflow: auto; background: radial-gradient(ellipse at 50% 30%, #1e2a23, var(--bg) 70%); padding: 24px; }
+.menu-card { display: grid; justify-items: center; gap: 10px; text-align: center; max-width: 760px; width: 100%; }
+.menu-hero { width: 100%; max-width: 720px; }
+.menu h1 { font: 800 44px var(--display); margin: 0; letter-spacing: .01em; }
+.menu h1 .brace { color: var(--gold); font-family: var(--mono); margin-right: 6px; }
+.menu .tag { margin: 0 0 8px; color: var(--mute); font-size: 15px; }
+.menu-actions { display: grid; gap: 8px; width: min(360px, 100%); margin-bottom: 8px; }
+
+/* онбординг */
+.onboarding { height: 100%; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(340px, 1fr); background: #0f1512; }
+.ob-stage { display: grid; place-items: center; padding: 28px; min-width: 0; }
+.ob-canvas { width: 100%; max-width: 960px; border-radius: 14px; box-shadow: 0 30px 70px rgba(0, 0, 0, .4); }
+.ob-text { display: flex; flex-direction: column; gap: 10px; padding: 40px 36px; background: var(--bg); border-left: 1px solid var(--line); overflow: auto; }
+.ob-text h2 { font: 700 26px var(--display); margin: 0; }
+.ob-text .narr { color: #cfc8b6; font-size: 15px; margin: 0; }
+.ob-text .line { margin: 0; background: #f4ecda; color: #1f1b16; border-radius: 10px; padding: 8px 12px; }
+.ob-text .line b { color: #7b2d6b; }
+.ob-dots { display: flex; gap: 6px; margin-top: auto; padding-top: 18px; flex-wrap: wrap; }
+.ob-dots button { width: 10px; height: 10px; border-radius: 50%; background: #33413a; }
+.ob-dots button.on { background: var(--fox); }
+.ob-actions { display: flex; gap: 8px; align-items: center; }
+.ob-actions .grow { flex: 1; }
+@media (max-width: 1150px) { .onboarding { grid-template-columns: 1fr; grid-template-rows: auto 1fr; } .ob-text { border-left: 0; border-top: 1px solid var(--line); } }
+/* рядок стану живе в екрані рівня, тому займає власний рядок сітки .body */
+.app { grid-template-rows: 36px 1fr; }
+.body:not(.page-body) { grid-template-rows: minmax(0, 1fr) 24px; }
+.body > .status { grid-column: 1 / -1; }
+
+/* перший запуск: кнопка «Запустити» пульсує */
+.btn.run.pulse { animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(226, 112, 43, .7); } 50% { box-shadow: 0 0 0 8px rgba(226, 112, 43, 0); } }
+@media (prefers-reduced-motion: reduce) { .btn.run.pulse { animation: none; outline: 2px solid var(--gold); } }
+
+/* тур Сивілли */
+.tour { position: fixed; inset: 0; z-index: 50; }
+.tour-hole { position: fixed; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(8, 12, 10, .72), inset 0 0 0 2px #c9b8f0; transition: all .25s ease; pointer-events: none; }
+.tour-pop { position: fixed; background: #f4ecda; color: #1f1b16; border-radius: 14px; padding: 14px 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, .45); transition: all .25s ease; display: grid; gap: 8px; }
+.tour-head { display: flex; gap: 12px; align-items: center; }
+.tour-sibyl { width: 40px; flex: none; }
+.tour-pop .eyebrow { color: #4a3f7a; }
+.tour-pop h3 { margin: 2px 0 0; font: 700 16px var(--display); }
+.tour-pop p { margin: 0; font-size: 13.5px; }
+.tour-actions { display: flex; gap: 6px; align-items: center; }
+.tour-actions .grow { flex: 1; }
+.tour-pop .btn { color: #1f1b16; border-color: #c9bfa6; }
+.tour-pop .btn.run { color: #1a120b; }
+@media (prefers-reduced-motion: reduce) { .tour-hole, .tour-pop { transition: none; } }
+
+
+/* перемикач мови в меню */
+.lang-switch { position: fixed; top: 14px; right: 16px; display: flex; gap: 2px; background: var(--side); border: 1px solid var(--line); border-radius: 999px; padding: 3px; z-index: 2; }
+.lang-switch button { font: 600 12px var(--mono); padding: 3px 10px; border-radius: 999px; color: var(--mute); }
+.lang-switch button.on { background: var(--fox); color: #1a120b; }
+
+/* ============ діалог світу: персонаж виходить на сцену й говорить ============ */
+.speech { margin: 0 12px; display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: end; min-height: 104px; }
+.speech .portrait { width: 96px; height: 104px; background: radial-gradient(circle at 50% 70%, rgba(242, 210, 122, .25), transparent 70%); border-radius: 50% 50% 12px 12px; overflow: hidden; align-self: end; }
+.speech .portrait canvas { width: 96px; display: block; }
+.speech-body { position: relative; background: #f4ecda; color: #1f1b16; border-radius: 14px; padding: 10px 14px; min-height: 64px; cursor: text; border: 2px solid transparent; }
+.speech-body::before { content: ''; position: absolute; left: -9px; bottom: 18px; border: 9px solid transparent; border-right-color: #f4ecda; border-left: 0; }
+.speech-name { display: block; font: 700 12px var(--mono); letter-spacing: .04em; text-transform: uppercase; color: #7b2d6b; margin-bottom: 2px; }
+.speech p { margin: 0; font-size: 13.5px; line-height: 1.45; }
+.speech-rest { visibility: hidden; }
+.speech-action { margin-top: 8px; display: flex; justify-content: flex-end; }
+.speech.enter-in .portrait canvas { animation: speaker-in .42s cubic-bezier(.2, 1.4, .4, 1) both; }
+.speech.enter-nod .portrait canvas { animation: speaker-nod .3s ease-out; }
+.speech.enter-in .speech-body { animation: bubble-in .3s ease-out both; }
+@keyframes speaker-in { from { transform: translateY(70%) scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes speaker-nod { 40% { transform: translateY(-6px); } }
+@keyframes bubble-in { from { transform: translateX(-8px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
+.speech.error .speech-body { background: #fbe3df; border-color: #b3202a; animation: bubble-shake .45s ease-out; }
+.speech.error .speech-body::before { border-right-color: #b3202a; }
+.speech.error .speech-name { color: #b3202a; }
+.speech.error .portrait { background: radial-gradient(circle at 50% 70%, rgba(179, 32, 42, .45), transparent 70%); }
+.speech.taunt .speech-body { background: #ece4f6; border-color: #6b3fa0; }
+.speech.taunt .speech-body::before { border-right-color: #6b3fa0; }
+.speech.taunt .speech-name { color: #6b3fa0; }
+.speech.win .speech-body { border-color: #d9a521; box-shadow: 0 0 0 4px rgba(217, 165, 33, .25), 0 0 26px rgba(242, 210, 122, .35); }
+.speech.win .speech-name { color: #8a5a1c; }
+@keyframes bubble-shake { 15% { transform: translateX(-7px); } 35% { transform: translateX(6px); } 55% { transform: translateX(-4px); } 75% { transform: translateX(2px); } }
+
+/* сцена здригається від помилки */
+.canvas-wrap.shake { animation: world-shake .5s ease-out; box-shadow: 0 0 0 3px #b3202a; }
+@keyframes world-shake { 10% { transform: translate(-6px, 2px); } 30% { transform: translate(5px, -2px); } 50% { transform: translate(-4px, 1px); } 70% { transform: translate(3px, 0); } 90% { transform: translate(-1px, 0); } }
+
+/* рядок з помилкою в редакторі */
+.kd-err-line { background: rgba(179, 32, 42, .28); animation: err-line 1.4s ease-out; }
+.kd-err-bar { background: #e1505a; width: 3px !important; margin-left: 3px; }
+.kd-err-glyph::before { content: '!'; display: grid; place-items: center; width: 16px; height: 16px; margin-top: 3px; border-radius: 4px; background: #b3202a; color: #fff; font: 700 11px var(--mono); }
+@keyframes err-line { 0%, 30%, 60% { background: rgba(225, 80, 90, .55); } 15%, 45% { background: rgba(179, 32, 42, .15); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .speech .portrait canvas, .speech .speech-body, .canvas-wrap.shake, .kd-err-line { animation: none !important; }
+}
+
+/* онбординг: репліки по одній, заголовок і оповідь з'являються м'яко */
+.onboarding .speech { margin: 6px 0 0; }
+.onboarding .ob-stage { cursor: pointer; }
+.ob-title, .onboarding .narr { animation: ob-fade .5s ease-out both; }
+@keyframes ob-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.ob-lines { display: flex; gap: 4px; }
+.ob-lines i { width: 18px; height: 3px; border-radius: 2px; background: #33413a; }
+.ob-lines i.done { background: #6c776f; }
+.ob-lines i.on { background: var(--fox-soft); }
+@media (prefers-reduced-motion: reduce) { .ob-title, .onboarding .narr { animation: none; } }
+
+/* ============ мапа світів (як на сайті) ============ */
+.map-page { max-width: 1480px; }
+.journey { position: relative; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr); gap: 28px; align-items: center; }
+.j-map { display: grid; gap: 10px; min-width: 0; }
+.mapbox { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #1d3f66; }
+.mapbox canvas { width: 100%; display: block; }
+.pins { position: absolute; inset: 0; }
+.pin { position: absolute; transform: translate(-50%, -50%); width: 34px; height: 34px; border-radius: 7px; background: transparent; cursor: pointer; }
+.pin::after { content: attr(aria-label); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap; background: #141b17; color: #ece4d2; padding: 3px 7px; border-radius: 6px; font: 500 11px/1.2 var(--mono); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.pin:hover::after, .pin:focus-visible::after, .pin.on::after { opacity: 1; }
+.pin:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.isle-label { position: absolute; transform: translate(-50%, -100%); font: 600 11px/1 var(--mono); color: #fbf3e6; background: rgba(10, 20, 35, .55); padding: 3px 7px; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+.j-ctrl { display: flex; align-items: center; gap: 12px; }
+.j-ctrl .mono { font: 12px var(--mono); color: var(--mute); min-width: 54px; }
+.j-progress { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.j-progress span { display: block; height: 100%; background: var(--red); transform-origin: 0 50%; transition: transform .4s; }
+.j-ctrl .btn { padding: 6px 14px; font-size: 15px; border-color: var(--line); }
+.j-legend { display: flex; gap: 16px; font: 11px var(--mono); color: var(--mute); }
+.j-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lg { width: 12px; height: 12px; border-radius: 3px; border: 2px solid #0f1f33; background: var(--fox); }
+.lg.done { border-color: var(--gold); } .lg.locked { background: #6c776f; }
+.j-conn { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+.j-dash { animation: j-dash 1.2s linear infinite; }
+@keyframes j-dash { to { stroke-dashoffset: -28; } }
+.j-card { --wc: #e2702b; position: relative; z-index: 1; background: #f4ecda; color: #1f1b16; border-left: 5px solid var(--wc); border-radius: 16px; overflow: hidden; display: grid; min-width: 0; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
+.j-card.pop { animation: card-pop .55s cubic-bezier(.2, .7, .2, 1); }
+@keyframes card-pop { from { transform: translateY(10px) scale(.98); opacity: .4; } to { transform: none; opacity: 1; } }
+.j-card canvas { width: 100%; display: block; }
+.j-card .j-body { padding: 14px 18px 16px; display: grid; gap: 7px; }
+.j-card .eyebrow { color: #b3202a; }
+.j-card h3 { font: 800 24px var(--display); margin: 0; }
+.j-card .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+.j-card .topic { font-weight: 700; }
+.j-card .task { font: 12px var(--mono); color: #635a4d; }
+.j-card p { margin: 0; font-size: 14px; }
+.j-card q { quotes: "«" "»"; color: #635a4d; font-size: 13.5px; }
+.j-card .foot { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: #635a4d; }
+.j-card .chip { display: inline-flex; align-items: center; gap: 6px; }
+.j-card .dot { width: 10px; height: 10px; border-radius: 3px; border: 1px solid rgba(0, 0, 0, .25); flex: none; }
+.j-status { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 4px; padding-top: 10px; border-top: 1px solid #ddd0b4; font: 12px var(--mono); }
+.j-card .muted { color: #8a7f6c; }
+.j-card .btn.run { font-size: 13px; padding: 7px 14px; }
+.j-card.locked canvas { filter: grayscale(.7) brightness(.85); }
+@media (max-width: 1150px) { .journey { grid-template-columns: 1fr; } .j-conn { display: none; } }
+@media (prefers-reduced-motion: reduce) { .j-dash, .j-card.pop { animation: none; } }

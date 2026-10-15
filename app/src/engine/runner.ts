@@ -1,5 +1,6 @@
 /* Запускає код гравця в окремому Worker'і з таймаутом. */
 import type { CallResult, CallSpec, Lang, SandboxMessage } from './types.ts';
+import { uiLang } from '../i18n.ts';
 
 export interface RunOutcome {
   compileError?: { message: string; line?: number };
@@ -33,7 +34,7 @@ export function runInSandbox(
       else if (m.type === 'call') results[m.index] = m.result;
       else if (m.type === 'done') finish({});
     };
-    worker.onerror = (e) => { e.preventDefault(); finish({ compileError: { message: e.message || 'Пісочниця впала' } }); };
-    worker.postMessage({ ...req, eventLimit: opts.eventLimit ?? 20000 });
+    worker.onerror = (e) => { e.preventDefault(); finish({ compileError: { message: e.message || 'Sandbox crashed' } }); };
+    worker.postMessage({ ...req, eventLimit: opts.eventLimit ?? 20000, ui: uiLang() });
   });
 }

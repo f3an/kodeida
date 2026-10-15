@@ -3,9 +3,14 @@
  * Без DOM і без Worker API, тож працює і в Worker'і, і в Node (scripts/selftest.mjs).
  */
 import { transform } from 'sucrase';
-import type { CallResult, CallSpec, Lang, WorldEvent } from './types.ts';
+import type { ActorArg, CallResult, CallSpec, Lang, StreetState, WorldEvent } from './types.ts';
 
 export const SOURCE_URL = 'slovo.js';
+
+/** Мова повідомлень світу й помилок (передається з інтерфейсу разом із запитом). */
+let msgEn = false;
+export function setMessageLang(l: 'uk' | 'en') { msgEn = l === 'en'; }
+const M = (uk: string, en: string) => (msgEn ? en : uk);
 
 export interface CodeError { message: string; line?: number }
 
@@ -31,7 +36,24 @@ export function lineOf(err: unknown): number | undefined {
 
 function errorOf(err: unknown): CodeError {
   const message = err instanceof Error ? err.message.replace(/\s*\(\d+:\d+\)$/, '') : String(err);
-  return { message, line: lineOf(err) };
+  return { message: translate(message), line: lineOf(err) };
+}
+
+/** Найчастіші помилки рушія JS — українською, оригінал у дужках для пошуку. */
+function translate(m: string): string {
+  if (msgEn) return m;
+  const rules: [RegExp, (x: RegExpMatchArray) => string][] = [
+    [/^(\S+) is not defined$/, (x) => `змінну ${x[1]} не оголошено`],
+    [/^Cannot read properties of (undefined|null) \(reading '(.+)'\)$/, (x) => `не можна взяти ${x[2]} у ${x[1]}`],
+    [/^Cannot set properties of (undefined|null) \(setting '(.+)'\)$/, (x) => `не можна записати ${x[2]} в ${x[1]}`],
+    [/^(\S+) is not a function$/, (x) => `${x[1]} — не функція`],
+    [/^Assignment to constant variable\.$/, () => 'не можна змінити const — візьми let'],
+    [/^Cannot access '(.+)' before initialization$/, (x) => `змінна ${x[1]} використана до оголошення`],
+    [/^Maximum call stack size exceeded$/, () => 'рекурсія не зупиняється'],
+    [/^Unexpected token/, () => 'зайвий або пропущений символ'],
+  ];
+  for (const [re, f] of rules) { const x = m.match(re); if (x) return `${f(x)} (${m})`; }
+  return m;
 }
 
 /** TS → JS без зсуву рядків (sucrase лише знімає типи), далі eval у власній області видимості. */
@@ -51,12 +73,55 @@ export function compile(code: string, lang: Lang, entry: string): { fn: PlayerFn
     return { error: errorOf(err) };
   }
   if (typeof fn !== 'function') {
-    return { error: { message: `Не знайдено функцію ${entry}. Не перейменовуй її.` } };
+    return { error: { message: M(`Не знайдено функцію ${entry}. Не перейменовуй її.`, `Function ${entry} not found. Don't rename it.`) } };
   }
   return { fn: fn as PlayerFn };
 }
 
 class OverBudget extends Error {}
+/** Помилка світу (Еней обпікся, мішка немає…): показується як помилка гравця з рядком. */
+class WorldError extends Error {}
+const MAX_ACTIONS = 1000;
+
+function isActor(a: unknown): a is ActorArg {
+  return !!a && typeof a === 'object' && (a as ActorArg).$actor === 'enei';
+}
+
+/** Еней на вулиці світу 0. Кожна команда — подія 'act'; помилки світу зупиняють виконання. */
+function makeStreet(setup: ActorArg['setup'], push: (e: WorldEvent) => void) {
+  const st: StreetState = { cells: setup.cells.slice(), pos: setup.start ?? 0, bag: 0, crew: 0, burns: 0, actions: 0 };
+  const act = (name: string, ok: boolean, note?: string) => {
+    if (++st.actions > MAX_ACTIONS) throw new WorldError(M(`Еней зробив понад ${MAX_ACTIONS} дій і сів перепочити. Чи не зациклився код?`, `Aeneas made over ${MAX_ACTIONS} moves and sat down to rest. Is the code stuck in a loop?`));
+    push({ t: 'act', name, ok, note });
+    if (!ok) throw new WorldError(note ?? name);
+  };
+  const last = st.cells.length - 1;
+  const api = Object.freeze({
+    move() {
+      if (st.pos >= last) return act('move', false, M('Далі дороги немає: Еней уже в кінці вулиці.', 'No road ahead: Aeneas is already at the end of the street.'));
+      if (st.cells[st.pos + 1] === 'fire') { st.burns++; return act('move', false, M('Еней ступив у вогонь! Перевір, чи попереду не горить, і перестрибни.', 'Aeneas stepped into the fire! Check whether it burns ahead, and jump over.')); }
+      st.pos++;
+      if (st.cells[st.pos] === 'trojan') { st.crew++; st.cells[st.pos] = 'empty'; }
+      act('move', true);
+    },
+    jump() {
+      if (st.pos + 2 > last) return act('jump', false, M('Стрибати нікуди: вулиця закінчується.', 'Nowhere to jump: the street ends.'));
+      if (st.cells[st.pos + 2] === 'fire') { st.burns++; return act('jump', false, M('Еней перестрибнув — і приземлився у вогонь.', 'Aeneas jumped — and landed in the fire.')); }
+      st.pos += 2;
+      act('jump', true);
+    },
+    take() {
+      if (st.cells[st.pos] !== 'sack') return act('take', false, M(`Тут немає мішка (клітинка ${st.pos}).`, `There is no sack here (cell ${st.pos}).`));
+      st.cells[st.pos] = 'empty'; st.bag++;
+      act('take', true);
+    },
+    fireAhead() { return st.cells[st.pos + 1] === 'fire'; },
+    sackHere() { return st.cells[st.pos] === 'sack'; },
+    atEnd() { return st.pos >= last; },
+    get position() { return st.pos; },
+  });
+  return { api, st };
+}
 
 /** Викликає функцію гравця один раз. Масиви з `observe` загортаються в Proxy, що рахує читання. */
 export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallResult {
@@ -73,14 +138,19 @@ export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallR
     push({ t: 'log', text });
   };
 
+  const forbid = new Set(spec.forbid ?? []);
+  const read = (name: string, i: number) => {
+    if (overBudget) throw new OverBudget();
+    reads++;
+    if (reads > budget) { overBudget = true; throw new OverBudget(); }
+    push({ t: 'read', arr: name, i });
+  };
   const watch = (arr: unknown[], name: string) =>
     new Proxy(arr, {
       get(target, prop, recv) {
-        if (counting && typeof prop === 'string' && isIndex(prop)) {
-          if (overBudget) throw new OverBudget();
-          reads++;
-          if (reads > budget) { overBudget = true; throw new OverBudget(); }
-          push({ t: 'read', arr: name, i: Number(prop) });
+        if (counting && typeof prop === 'string') {
+          if (isIndex(prop)) read(name, Number(prop));
+          else if (forbid.has(prop)) throw new WorldError(M(`У цій вправі метод ${prop}() заборонено — зроби це сам.`, `The ${prop}() method is forbidden in this exercise — do it yourself.`));
         }
         return Reflect.get(target, prop, recv);
       },
@@ -90,7 +160,14 @@ export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallR
       },
     });
 
-  const args = spec.args.map((a, i) => (Array.isArray(a) && spec.observe[i] ? watch(a, spec.observe[i]!) : a));
+  let street: StreetState | undefined;
+  const raw = spec.args.map((a) => (Array.isArray(a) ? a.slice() : a));
+  const args = raw.map((a, i) => {
+    if (isActor(a)) { const s = makeStreet(a.setup, push); street = s.st; return s.api; }
+    if (Array.isArray(a) && spec.observe[i]) return watch(a, spec.observe[i]!);
+    if (typeof a === 'string' && spec.observe[i] && spec.record) return watchString(a, spec.observe[i]!, read);
+    return a;
+  });
   const t0 = performance.now();
   let value: unknown;
   let error: CodeError | undefined;
@@ -99,10 +176,39 @@ export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallR
   } catch (err) {
     if (!overBudget && !(err instanceof OverBudget)) error = errorOf(err);
   }
+  // Рядок під наглядом поводиться майже як справжній; якщо код на це спіткнувся — повтор без нагляду.
+  if (error && spec.record && raw.some((a, i) => typeof a === 'string' && spec.observe[i])) {
+    logSink = () => {};
+    const again = runCall(fn, { ...spec, record: false }, 0);
+    if (!again.error) return { ...again, logs };
+  }
   const ms = performance.now() - t0;
   counting = false;
   logSink = () => {};
-  return { value: overBudget || error ? undefined : plain(value), error, reads, overBudget, events, logs, ms };
+  const bad = overBudget || !!error;
+  return {
+    value: bad ? undefined : plain(value), error, reads, overBudget, events, logs, ms,
+    argsAfter: bad ? undefined : raw.map((a) => (isActor(a) ? null : plain(a))),
+    street: street ? { ...street, cells: street.cells.slice() } : undefined,
+  };
+}
+
+/** Рядок, що рахує читання s[i] і s.charAt(i). Об'єкт String, тож порівняння s === '…' не спрацює —
+ *  тому нагляд вмикається лише для анімованого прогону, а Суд богів отримує звичайний рядок. */
+function watchString(s: string, name: string, read: (name: string, i: number) => void) {
+  const box = new String(s);
+  return new Proxy(box, {
+    get(target, prop) {
+      if (typeof prop === 'string' && isIndex(prop)) { read(name, Number(prop)); return s[Number(prop)]; }
+      if (prop === 'charAt' || prop === 'charCodeAt' || prop === 'codePointAt' || prop === 'at') {
+        return (i: number) => { const k = Math.trunc(Number(i) || 0); read(name, k < 0 ? s.length + k : k); return (s as unknown as Record<string, (i: number) => unknown>)[prop](i); };
+      }
+      if (prop === Symbol.toPrimitive) return () => s;
+      if (prop === 'length') return s.length;
+      const v = Reflect.get(target, prop, target);
+      return typeof v === 'function' ? v.bind(s) : v;
+    },
+  });
 }
 
 function isIndex(p: string): boolean {

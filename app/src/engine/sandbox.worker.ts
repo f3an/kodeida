@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 /* Пісочниця: новий Worker на кожен запуск, мережу вимкнено, зависання лікує terminate() у runner.ts. */
-import { compile, runCall } from './sandbox-core.ts';
+import { compile, runCall, setMessageLang } from './sandbox-core.ts';
 import type { SandboxMessage, SandboxRequest } from './types.ts';
 
 const scope = self as unknown as Record<string, unknown>;
@@ -11,7 +11,8 @@ for (const k of ['fetch', 'XMLHttpRequest', 'WebSocket', 'EventSource', 'importS
 const post = (m: SandboxMessage) => (self as unknown as Worker).postMessage(m);
 
 self.onmessage = (e: MessageEvent<SandboxRequest>) => {
-  const { code, lang, entry, calls, eventLimit } = e.data;
+  const { code, lang, entry, calls, eventLimit, ui } = e.data;
+  setMessageLang(ui ?? 'uk');
   const c = compile(code, lang, entry);
   if ('error' in c) { post({ type: 'compileError', error: c.error }); return; }
   post({ type: 'compiled' });

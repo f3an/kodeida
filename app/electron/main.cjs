@@ -2,6 +2,7 @@
 const { app, BrowserWindow, protocol, net, shell } = require('electron');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const updater = require('./updater.cjs');
 
 const DIST = path.join(__dirname, '..', 'dist');
 const DEV_URL = process.env.KODEIDA_DEV_URL;
@@ -18,6 +19,9 @@ const CSP = [
   "connect-src 'self'",
 ].join('; ');
 
+// KODEIDA_USER_DATA=<тека>: окремий профіль (наприклад, щоб пройти гру з нуля).
+if (process.env.KODEIDA_USER_DATA) app.setPath('userData', process.env.KODEIDA_USER_DATA);
+
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
@@ -33,8 +37,10 @@ async function serve(req) {
   return new Response(res.body, { status: res.status, headers });
 }
 
+let mainWindow = null;
+
 function createWindow() {
-  const win = new BrowserWindow({
+  const win = mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
     minWidth: 1100,
@@ -42,7 +48,13 @@ function createWindow() {
     backgroundColor: '#141b17',
     title: 'Кодеїда',
     show: !SMOKE,
-    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true },
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      preload: path.join(__dirname, 'preload.cjs'),
+      additionalArguments: [`--kodeida-version=${app.getVersion()}`],
+    },
   });
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https://')) shell.openExternal(url);
@@ -62,11 +74,15 @@ function smoke(win) {
   win.webContents.on('did-finish-load', () => setTimeout(async () => {
     // Суд богів на стартовому коді: пісочниця має виконати код під CSP і винести вердикт.
     const state = await win.webContents.executeJavaScript(`new Promise((done) => {
+      localStorage.setItem('kodeida.progress', JSON.stringify({ levels: {}, onboarded: true }));
+      localStorage.setItem('kodeida.screen', JSON.stringify({ name: 'level', id: 'carthage.dido' }));
+      if (!document.querySelector('.btn.judge')) { location.reload(); return done({ reload: true }); }
       document.querySelector('.btn.judge').click();
       const t0 = Date.now();
       const poll = () => {
         const v = document.querySelector('.ptabs .v');
         if (v || Date.now() - t0 > 8000) done({
+          bridge: !!(window.kodeida && window.kodeida.updates),
           editor: !!document.querySelector('.monaco-editor'),
           world: !!document.querySelector('canvas.world'),
           verdict: v ? v.textContent : null,
@@ -76,12 +92,14 @@ function smoke(win) {
       poll();
     })`);
     console.log('smoke', JSON.stringify(state), 'errors', JSON.stringify(errors));
-    app.exit(state.editor && state.world && state.verdict && errors.length === 0 ? 0 : 1);
+    if (state.reload) return; // перший прохід лише виставив прогрес — чекаємо наступного завантаження
+    app.exit(state.editor && state.world && state.verdict && state.bridge && errors.length === 0 ? 0 : 1);
   }, 2500));
 }
 
 app.whenReady().then(() => {
   protocol.handle('app', serve);
+  updater.init(() => mainWindow);
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });

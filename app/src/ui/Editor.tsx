@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { monaco } from './monaco.ts';
+import { monaco, setEditorLang } from './monaco.ts';
+import { uiLang } from '../i18n.ts';
 import type { Lang } from '../engine/types.ts';
 
 interface Props {
@@ -18,6 +19,7 @@ export function Editor({ value, lang, error, onChange, onCursor, onRun }: Props)
   const cb = useRef({ onChange, onCursor, onRun });
   cb.current = { onChange, onCursor, onRun };
 
+  setEditorLang(uiLang());
   useEffect(() => {
     const editor = monaco.editor.create(host.current!, {
       theme: 'mykyta-dark',
@@ -30,6 +32,7 @@ export function Editor({ value, lang, error, onChange, onCursor, onRun }: Props)
       scrollBeyondLastLine: false,
       tabSize: 2,
       padding: { top: 10 },
+      glyphMargin: true,
       renderLineHighlight: 'all',
       // Без AI-підказок: лише звичайне автодоповнення мови.
       inlineSuggest: { enabled: false },
@@ -59,10 +62,17 @@ export function Editor({ value, lang, error, onChange, onCursor, onRun }: Props)
     if (model && model.getValue() !== value) model.setValue(value);
   }, [value]);
 
+  const errDeco = useRef<monaco.editor.IEditorDecorationsCollection | null>(null);
   useEffect(() => {
     const model = ed.current?.getModel();
     if (!model) return;
     const line = error?.line;
+    // рядок з помилкою блимає червоним, на полях — знак «!»
+    errDeco.current?.clear();
+    if (line) errDeco.current = ed.current!.createDecorationsCollection([{
+      range: new monaco.Range(line, 1, line, 1),
+      options: { isWholeLine: true, className: 'kd-err-line', glyphMarginClassName: 'kd-err-glyph', linesDecorationsClassName: 'kd-err-bar' },
+    }]);
     monaco.editor.setModelMarkers(model, 'kodeida', line ? [{
       severity: monaco.MarkerSeverity.Error,
       message: error!.message,

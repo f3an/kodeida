@@ -5,7 +5,17 @@ export type Lang = 'ts' | 'js';
 export type WorldEvent =
   | { t: 'read'; arr: string; i: number }
   | { t: 'write'; arr: string; i: number; v: unknown }
-  | { t: 'log'; text: string };
+  | { t: 'log'; text: string }
+  /** Команда Енея у світах з явними командами (світ 0): move, take, jump… */
+  | { t: 'act'; name: string; ok: boolean; note?: string };
+
+/** Стан вулиці для вправ з командами Енея. */
+export type StreetCell = 'empty' | 'sack' | 'fire' | 'well' | 'trojan';
+export interface StreetSetup { cells: StreetCell[]; start?: number }
+export interface StreetState { cells: StreetCell[]; pos: number; bag: number; crew: number; burns: number; actions: number }
+
+/** Аргумент-заглушка: у пісочниці замінюється на об'єкт Енея на вулиці. */
+export interface ActorArg { $actor: 'enei'; setup: StreetSetup }
 
 /** Один виклик функції гравця всередині пісочниці. */
 export interface CallSpec {
@@ -16,6 +26,8 @@ export interface CallSpec {
   record: boolean;
   /** Скільки читань дозволено; більше — «Вовче рішення». */
   readBudget?: number;
+  /** Методи масивів, які в цій вправі заборонено (напр. 'sort'). */
+  forbid?: string[];
 }
 
 export interface CallResult {
@@ -26,6 +38,10 @@ export interface CallResult {
   events: WorldEvent[];
   logs: string[];
   ms: number;
+  /** Аргументи після виклику — для вправ, що змінюють масив на місці. */
+  argsAfter?: unknown[];
+  /** Стан вулиці після команд Енея. */
+  street?: StreetState;
 }
 
 export interface SandboxRequest {
@@ -34,6 +50,8 @@ export interface SandboxRequest {
   entry: string;
   calls: CallSpec[];
   eventLimit: number;
+  /** Мова повідомлень світу. */
+  ui?: 'uk' | 'en';
 }
 
 export type SandboxMessage =
@@ -44,7 +62,8 @@ export type SandboxMessage =
 
 export interface TestCase {
   args: unknown[];
-  expected: unknown;
+  /** Очікувана відповідь (для вправ з командами — не потрібна, перевіряє level.check). */
+  expected?: unknown;
   /** Підпис для панелі тестів, напр. «[1,8,6,2,5,4,8,3,7]». */
   label?: string;
 }
@@ -57,6 +76,8 @@ export interface CaseReport {
   verdict: 'ok' | 'wrong' | 'error' | 'timeout' | 'overBudget' | 'skipped';
   expected?: unknown;
   got?: unknown;
+  /** Пояснення для неправильної відповіді. */
+  why?: string;
   reads?: number;
   budget?: number;
   error?: { message: string; line?: number };

@@ -2,6 +2,8 @@
 (function(){
 /* ================= МОВА: UA / EN ================= */
 const DICT={
+// написи на полотні заставок
+"дзень!":"clink!","хм…":"hmm…","ам!":"chomp!","гик!":"hic!","ватага":"crew",
 // hero & static
 "Open source · українською · без AI-підказок":"Open source · in Ukrainian and English · no AI hints",
 "Гра, де твій код рухає героя. Разом з Енеєм і Лисом Микитою ти вивчаєш прийоми задач рівня LeetCode: два вказівники, хеш-мапи, графи, динамічне програмування. І бачиш, як працює кожен рядок.":"A game where your code moves the hero. Together with Aeneas and Mykyta the Fox you learn the techniques behind LeetCode-style problems: two pointers, hash maps, graphs, dynamic programming. And you see what every line does.",
@@ -183,6 +185,7 @@ const IS_ARTBOOK=document.body&&document.body.dataset.page==='artbook';
 try{LANG=localStorage.getItem('kd-lang')||((navigator.language||'').toLowerCase().startsWith('uk')?'uk':'en');}catch(e){LANG=(navigator.language||'').toLowerCase().startsWith('uk')?'uk':'en';}
 if(IS_ARTBOOK)LANG='uk';
 const T=s=>LANG==='en'?tr(s):s;
+globalThis.__kodeidaT=T;
 const UA=new WeakMap();
 function trNode(n){const v=n.nodeValue;if(n.__tr!==undefined&&v===n.__tr)return;UA.set(n,v);const m=v.match(/^(\s*)([\s\S]*?)(\s*)$/);const out=LANG==='en'?m[1]+tr(m[2])+m[3]:v;n.__tr=out;if(out!==v)n.nodeValue=out;}
 function retranslate(root){
@@ -209,6 +212,8 @@ const DPR = Math.min(window.devicePixelRatio || 1, 2);
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- colour helpers ---------- */
+/* Переклад написів на полотні сцен: сайт і гра підставляють свою функцію в globalThis.__kodeidaT. */
+const ST=s=>(typeof globalThis!=='undefined'&&typeof globalThis.__kodeidaT==='function')?globalThis.__kodeidaT(s):s;
 function toRgb(c){
   if(c.startsWith('rgb'))return c.match(/\d+/g).slice(0,3).map(Number);
   let h=c.replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');
@@ -225,15 +230,17 @@ function setup(canvas,w,h,fluid){
   const ctx=canvas.getContext('2d');ctx.setTransform(DPR,0,0,DPR,0,0);ctx.imageSmoothingEnabled=false;
   return ctx;
 }
+const RGB_CACHE=new Map();
+function rgbOf(c){let v=RGB_CACHE.get(c);if(!v){v=toRgb(c);RGB_CACHE.set(c,v);}return v;}
 function px(ctx,x,y,s,col){ctx.fillStyle=col;ctx.fillRect(Math.round(x),Math.round(y),s,s);}
 
 /* ---------- tiny pixel rasteriser ---------- */
 class Spr{
-  constructor(w,h){this.w=w;this.h=h;this.p=new Array(w*h).fill(null);}
-  set(x,y,c){x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>=this.w||y>=this.h)return;this.p[y*this.w+x]=c;}
+  constructor(w,h){this.w=w;this.h=h;this.p=new Array(w*h).fill(null);this.v=0;}
+  set(x,y,c){x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>=this.w||y>=this.h)return;this.p[y*this.w+x]=c;this.v++;}
   get(x,y){if(x<0||y<0||x>=this.w||y>=this.h)return null;return this.p[y*this.w+x];}
   fill(pts,c){pts.forEach(([x,y])=>{const col=typeof c==='function'?c(x,y):c;if(col)this.set(x,y,col);});return this;}
-  erase(pts){pts.forEach(([x,y])=>{x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<this.w&&y<this.h)this.p[y*this.w+x]=null;});return this;}
+  erase(pts){pts.forEach(([x,y])=>{x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<this.w&&y<this.h)this.p[y*this.w+x]=null;});this.v++;return this;}
   outline(amt){
     const out=[];
     for(let y=0;y<this.h;y++)for(let x=0;x<this.w;x++){
@@ -245,8 +252,22 @@ class Spr{
     this.ol=new Set(out.map(([x,y])=>y*this.w+x));
     return this;
   }
+  /* Швидкий шлях: спрайт один раз стає маленьким полотном (ImageData), далі — один drawImage з масштабом.
+     Кеш скидається, коли спрайт змінюється (set/erase). Без DOM (Node) — малюємо по пікселю, як раніше. */
+  canvas(){
+    if(this._cv&&this._cvV===this.v)return this._cv;
+    const cv=this._cv||document.createElement('canvas');cv.width=this.w;cv.height=this.h;
+    const c=cv.getContext('2d'),img=c.createImageData(this.w,this.h),d=img.data;
+    for(let i=0;i<this.p.length;i++){const col=this.p[i];if(!col)continue;const q=rgbOf(col);d[i*4]=q[0];d[i*4+1]=q[1];d[i*4+2]=q[2];d[i*4+3]=255;}
+    c.putImageData(img,0,0);this._cv=cv;this._cvV=this.v;return cv;
+  }
   draw(ctx,ox,oy,s,crop){
     const [x0,y0,x1,y1]=crop||[0,0,this.w,this.h];
+    if(typeof document!=='undefined'&&ctx.drawImage){
+      const smooth=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(this.canvas(),x0,y0,x1-x0,y1-y0,Math.round(ox),Math.round(oy),(x1-x0)*s,(y1-y0)*s);
+      ctx.imageSmoothingEnabled=smooth;return;
+    }
     for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){const c=this.p[y*this.w+x];if(c)px(ctx,ox+(x-x0)*s,oy+(y-y0)*s,s,c);}
   }
 }
@@ -543,6 +564,55 @@ function makeEol(){
   s.fill(ell(16,50,14,9),(x,y)=>y>52?'#b8c6d4':'#e4ebf2');
   s.fill(ell(32,47,16,11),(x,y)=>y>52?'#b8c6d4':'#eef3f8');
   s.fill(ell(48,50,14,9),(x,y)=>y>52?'#b8c6d4':'#e4ebf2');
+  return s.outline(0.6);
+}
+
+/* Боги Олімпу. o.raise — права рука вгору (кадр анімації: тост, акорд, змах тризубом). */
+function makeGod(kind,o={}){
+  const s=new Spr(48,74);
+  const P={
+    zeus:{ro:'#f1ece0',ros:'#cfc6b4',sa:GD,sk:'#efbf98',sks:'#cf9b75',hr:'#f4f4f4',hrs:'#cfd3d8',beard:1},
+    apollo:{ro:'#e9a23b',ros:'#b9761f',sa:'#f6efe0',sk:'#f0c49c',sks:'#cf9b75',hr:'#f2cf5a',hrs:'#c9a13a'},
+    bacchus:{ro:'#6b3fa0',ros:'#4a2a78',sa:'#5fa04a',sk:'#f0b48e',sks:'#cf8f6c',hr:'#5b3a20',hrs:'#3a2414',beard:1},
+    neptune:{ro:'#1fa3a3',ros:'#16797a',sa:'#d4ecf3',sk:'#e8b892',sks:'#c98f6c',hr:'#9fe3c8',hrs:'#5fb79c',beard:1},
+    venus:{ro:'#f2a7b8',ros:'#d47e93',sa:'#f6efe0',sk:'#f6d0b0',sks:'#dcae8c',hr:'#f2cf5a',hrs:'#c9a13a'},
+  }[kind];
+  const cx=24;
+  // тога
+  s.fill(poly([[16,30],[32,30],[36,52],[40,72],[8,72],[12,52]]),(x)=>x>27?P.ros:P.ro);
+  s.fill(line(15,32,33,52,2),P.sa);
+  s.fill(rect(8,70,33,2),P.ros);
+  [[19,52,17,70],[26,50,27,70],[32,54,35,70]].forEach(([a,b,c,d])=>s.fill(line(a,b,c,d),P.ros));
+  // ліва рука вниз
+  s.fill(poly([[16,31],[11,34],[10,46],[14,46],[15,36]]),P.ro);s.fill(ell(12,47,2,2),P.sk);
+  // права рука: вниз або вгору з річчю
+  const up=!!o.raise,hx=up?40:37,hy=up?14:46;
+  if(up)s.fill(poly([[31,31],[36,30],[42,16],[39,14],[34,26]]),P.ros);
+  else s.fill(poly([[32,31],[37,34],[38,46],[34,46],[33,36]]),P.ros);
+  s.fill(ell(hx,hy,2,2),P.sks);
+  // шия й голова
+  s.fill(rect(21,24,6,6),P.sk);
+  s.fill(ell(cx,16,7,8),P.hr);
+  s.fill(ell(cx,18,5.6,6.6),(x)=>x>cx+2?P.sks:P.sk);
+  s.fill(rect(cx-4,17,2,1),BK);s.fill(rect(cx+2,17,2,1),BK);
+  if(kind==='zeus'||kind==='bacchus'){s.fill(ell(cx-4,20,1.6,1.2),'#f08a8a');s.fill(ell(cx+4,20,1.6,1.2),'#f08a8a');}
+  if(kind==='bacchus')s.fill(ell(cx,20,1.6,1.4),'#e0504a');
+  if(P.beard){s.fill(poly([[cx-6,20],[cx+6,20],[cx+5,29],[cx,33],[cx-5,29]]),(x)=>x>cx+1?P.hrs:P.hr);s.fill(rect(cx-2,22,4,1),'#7a2a2a');}
+  else s.fill(rect(cx-1,22,3,1),'#b3202a');
+  if(kind==='venus'){s.fill(poly([[cx-8,14],[cx-5,14],[cx-6,34],[cx-9,32]]),P.hr);s.fill(poly([[cx+8,14],[cx+5,14],[cx+6,34],[cx+9,32]]),P.hrs);}
+  // корони й вінки
+  if(kind==='zeus'){s.fill(poly([[cx-6,10],[cx+6,10],[cx+6,5],[cx+4,8],[cx+2,3],[cx,7],[cx-2,3],[cx-4,8],[cx-6,5]]),(x)=>x>cx+2?GDs:GD);s.set(cx,8,RD);}
+  if(kind==='apollo'||kind==='bacchus'){const c=kind==='apollo'?'#3f7a3a':'#5fa04a';for(let a=0;a<9;a++){const an=Math.PI*(1.05+a*0.11);s.fill(ell(cx+Math.cos(an)*8,13+Math.sin(an)*5,1.6,1.2),c);}
+    if(kind==='bacchus')[[cx-7,12],[cx+7,12],[cx-8,15]].forEach(([x,y])=>s.fill(ell(x,y,1.6,1.6),'#6b3fa0'));}
+  if(kind==='neptune')s.fill(poly([[cx-6,10],[cx+6,10],[cx+5,6],[cx+3,9],[cx,5],[cx-3,9],[cx-5,6]]),'#d4ecf3');
+  if(kind==='venus')s.fill(ell(cx+6,10,2,2),'#e0504a');
+  // речі
+  if(kind==='zeus'){const gx=hx,gy=hy-6;s.fill(rect(gx-2,gy,5,5),GD);s.fill(rect(gx-1,gy+5,3,2),GDs);s.fill(rect(gx-2,gy-1,5,1),'#f7e3a1');
+    s.fill(path([[9,40],[6,48],[9,48],[5,58]],1.4),'#f7e27a');}
+  if(kind==='apollo'){const lx=up?hx-4:hx-6,ly=up?hy-10:hy-8;s.fill(path([[lx,ly+12],[lx-2,ly],[lx+1,ly-2]],1.2),GD);s.fill(path([[lx+8,ly+12],[lx+10,ly],[lx+7,ly-2]],1.2),GD);s.fill(rect(lx,ly+11,9,2),GDs);[2,4,6].forEach(k=>s.fill(line(lx+k,ly+1,lx+k,ly+11),'#f6efe0'));}
+  if(kind==='bacchus'){const ax=hx,ay=hy-8;s.fill(ell(ax,ay+3,4,5),(x,y)=>y>ay+4?'#8a4a24':'#b8693a');s.fill(rect(ax-1,ay-4,3,3),'#8a4a24');s.fill(line(ax-4,ay,ax-5,ay+4),'#8a4a24');}
+  if(kind==='neptune'){s.fill(line(hx,hy+20,hx,hy-14,1.4),'#c9a466');s.fill(path([[hx-4,hy-18],[hx-4,hy-12],[hx+4,hy-12],[hx+4,hy-18]],1.2),GD);s.fill(line(hx,hy-12,hx,hy-20,1.2),GD);}
+  if(kind==='venus'){s.fill(ell(hx,hy-3,2.4,2.4),'#e0504a');s.fill(line(hx,hy,hx,hy+5),'#3f7a3a');}
   return s.outline(0.6);
 }
 
@@ -1118,13 +1188,44 @@ function makeSibyl(){
 }
 const GLYPHS={'{':["..xx",".x..",".x..","x...",".x..",".x..","..xx"],'}':["xx..","..x.","..x.","...x","..x.","..x.","xx.."],'(':["..x",".x.","x..","x..","x..",".x.","..x"],')':["x..",".x.","..x","..x","..x",".x.","x.."]};
 function glyph(sp,g,x,y,c){GLYPHS[g].forEach((r,j)=>{for(let i=0;i<r.length;i++)if(r[i]==='x')sp.fill(rect(x+i*2,y+j*2,2,2),c);});}
+const OLYMPUS_GODS=Object.fromEntries(['zeus','apollo','bacchus','neptune','venus'].map(k=>[k,[makeGod(k),makeGod(k,{raise:true})]]));
 const JUNO_S=makeJuno(),EOL_S=makeEol(),WOLF_S=makeWolf({drool:2}),SIBYL_S=makeSibyl(),FOX_ASH=makeFox('#8d8780'),FOX_SEA=makeFox('#3f7fd0'),FOX_WILD=makeFoxWild(GINGER);
 function palace(sp){sky(sp,['#24143a','#3a2360','#55357c'],0,100);columns(sp,[14,44,150,180],22,100,'#7a5aa8','#5b3f86');for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,((x>>3)+(y>>3))%2?'#2a1a42':'#33204f');}
 function ruins(sp,f){sky(sp,['#3e3430','#5e4e44','#8c7464'],0,100);[[20,60,10],[60,74,8],[150,56,10],[178,70,8]].forEach(([x,y,w])=>{sp.fill(rect(x,y,w,100-y),'#3a3330');sp.fill(poly([[x,y],[x+w,y],[x+w-2,y-4],[x+2,y-2]]),'#4a423e');});for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,(x+y)%5===0?'#4a4440':'#5a534e');for(let i=0;i<20;i++){const x=Math.floor(hash(i,30)*SW),y=Math.floor(((hash(i,31)*100)-f*1.5-i*3)%100+100)%100;sp.set(x,y,i%3?'#f08a2a':'#f7d26a');}}
 const OB_OLD=[
-  {kind:'заставка',title:'Олімп',narr:'Давно колись, як іще світи стояли в ладу, на Олімпі сяяла Кришталева Писанка. На її візерунках трималось усе: море в берегах, звірі в казках, задачі у відповідях.',lines:[['Зевс','Наливай! Поки Писанка ціла, світ сам себе порахує.']],act:'Дивиться. Видно лише світ праворуч.',
-   bg:(sp,f)=>{sky(sp,['#f6d9a8','#f2c08a','#e9a6a0'],0,100);[[20,96,26,8],[90,104,40,10],[176,98,28,8]].forEach(([x,y,rx,ry])=>sp.fill(ell(x,y,rx,ry),'#fbf3e6'));columns(sp,[18,38,154,174],34,100,'#eee8dc','#cfc6b4');for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,((x>>3)+(y>>3))%2?'#e9e2d2':'#d9d0bc');sp.fill(rect(90,80,20,20),'#e2dac8');sp.fill(rect(88,78,24,3),'#cfc6b4');sp.fill(rect(122,96,44,3),'#7a4a24');sp.fill(rect(126,99,3,10),'#5b3a20');sp.fill(rect(160,99,3,10),'#5b3a20');[[128,90],[140,91],[152,90]].forEach(([x,y])=>{sp.fill(rect(x,y,4,6),GD);});sp.fill(ell(146,93,3,2),'#6b3fa0');for(let k=0;k<8;k++){const a=(k/8)*6.28+f*0.15;line(100,60,100+Math.cos(a)*60,60+Math.sin(a)*40).forEach(([x,y],j)=>{if(j%3===0&&j>8)sp.set(x,y,'#f7e3a1');});}},
-   fg:(ctx,f,s)=>drawEgg(ctx,17,22,(100-8)*s,(46)*s,s,false,false)},
+  {kind:'заставка',title:'Олімп',narr:'Давно колись, як іще світи стояли в ладу, на Олімпі сяяла Кришталева Писанка. На її візерунках трималось усе: море в берегах, звірі в казках, задачі у відповідях. А боги бенкетували.',
+   lines:[['Зевс','Наливай! Поки Писанка ціла, світ сам себе порахує.'],['Вакх','За лад! За задачі, що мають відповіді!'],['Аполлон','А я заспіваю — гекзаметром, як годиться!'],['Юнона','Святкуйте, святкуйте… Доля Енея теж у тій Писанці.']],act:'Дивиться.',
+   bg:(sp,f)=>{sky(sp,['#f6d9a8','#f2c08a','#e9a6a0'],0,100);[[20,96,26,8],[90,104,40,10],[176,98,28,8]].forEach(([x,y,rx,ry])=>sp.fill(ell(x,y,rx,ry),'#fbf3e6'));columns(sp,[6,26,166,186],34,100,'#eee8dc','#cfc6b4');
+     for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,((x>>3)+(y>>3))%2?'#e9e2d2':'#d9d0bc');
+     // гірлянди між колонами
+     for(let x=10;x<190;x++){const y=36+Math.round(Math.sin((x-10)/180*Math.PI)*10);if(x%3)sp.set(x,y,(x>>3)%2?RD:GD);}
+     for(let k=0;k<10;k++){const a=(k/10)*6.28+f*0.05;line(100,34,100+Math.cos(a)*70,34+Math.sin(a)*44).forEach(([x,y],j)=>{if(j%3===0&&j>10)sp.set(x,y,'#f7e3a1');});}},
+   fg:(ctx,f,s)=>{
+     drawEgg(ctx,17,22,(100-8)*s,12*s,s,false,true,0,f%2?0.85:0.95);
+     const G=OLYMPUS_GODS,base=SH_*s-66;
+     const bob=(k)=>Math.round(Math.sin((f+k*3)*0.35)*2);
+     // хто що робить у кадрі f
+     const pose=[['apollo',4,f%6<3],['bacchus',54,f%10<5],['zeus',146,f%16<8],['neptune',236,f%18<9],['venus',290,f%12<6]];
+     pose.forEach(([k,x,up],i)=>{const sp=up?G[k][1]:G[k][0];const dy=k==='bacchus'?Math.abs(Math.sin(f*0.3))*-6:bob(i);sp.draw(ctx,x,Math.round(base-sp.h+dy),1);});
+     JUNO_S.draw(ctx,344,base-JUNO_S.h+2,1);
+     if(f%30<8){ctx.fillStyle='#f4ecda';ctx.fillRect(330,base-JUNO_S.h-18,30,14);ctx.fillStyle='#4a2a78';ctx.font='bold 10px "Fira Code", monospace';ctx.fillText(ST('хм…'),334,base-JUNO_S.h-7);}
+     // стіл: скатертина з орнаментом і наїдки
+     const ty=base-14;ctx.fillStyle='#7a4a24';ctx.fillRect(40,ty,300,6);ctx.fillStyle='#f6efe0';ctx.fillRect(40,ty+6,300,14);
+     for(let x=40;x<340;x+=6){ctx.fillStyle=(x/6)%2?RD:BK;ctx.fillRect(x+1,ty+15,3,3);}
+     ctx.fillStyle='#5b3a20';ctx.fillRect(48,ty+20,6,14);ctx.fillRect(326,ty+20,6,14);
+     [[70,'#b3202a'],[120,'#d9a521'],[200,'#6b3fa0'],[262,'#b3202a'],[300,'#d9a521']].forEach(([x,c],i)=>{ctx.fillStyle=GD;ctx.fillRect(x,ty-8,6,8);ctx.fillStyle=c;ctx.fillRect(x+1,ty-7,4,3);});
+     ctx.fillStyle='#c9773a';[[96,ty-6],[104,ty-7],[112,ty-6]].forEach(([x,y])=>{ctx.fillRect(x,y,7,6);});
+     ctx.fillStyle='#8b3a2a';ctx.beginPath();ctx.arc(170,ty-4,8,Math.PI,0);ctx.fill();ctx.fillStyle='#5fa04a';ctx.fillRect(164,ty-12,3,4);
+     ctx.fillStyle='#6b3fa0';[[226,ty-6],[230,ty-9],[234,ty-6],[230,ty-4]].forEach(([x,y])=>ctx.fillRect(x,y,4,4));
+     // «дзень!» — тост Зевса
+     if(f%16<3){ctx.fillStyle='#fff6c8';ctx.font='bold 11px "Fira Code", monospace';ctx.fillText(ST('дзень!'),174,base-84);for(let i=0;i<6;i++){const a=i/6*6.28;ctx.fillRect(194+Math.cos(a)*10,base-70+Math.sin(a)*8,3,3);}}
+     // ноти Аполлона
+     for(let i=0;i<4;i++){const t=((f*0.3+i*5)%20)/20,x=34+i*6+Math.sin((f+i)*0.3)*6,y=base-70-t*60;ctx.globalAlpha=1-t;ctx.fillStyle='#4a2a78';ctx.fillRect(Math.round(x),Math.round(y),3,3);ctx.fillRect(Math.round(x)+2,Math.round(y)-7,1,8);ctx.globalAlpha=1;}
+     // серця Венери
+     for(let i=0;i<3;i++){const t=((f*0.25+i*7)%21)/21,x=316+i*8+Math.sin(f*0.25+i)*5,y=base-80-t*50;ctx.globalAlpha=1-t;ctx.fillStyle='#e0504a';ctx.fillRect(x,y,2,2);ctx.fillRect(x+3,y,2,2);ctx.fillRect(x,y+2,5,2);ctx.fillRect(x+1,y+4,3,1);ctx.globalAlpha=1;}
+     // конфеті
+     for(let i=0;i<34;i++){const x=(hash(i,70)*400+Math.sin((f+i)*0.2)*6)%400,y=((hash(i,71)*260+f*(1+i%2))%260);ctx.fillStyle=RAINBOW[i%6];ctx.fillRect(Math.round(x),Math.round(y),i%3?3:2,i%2?3:2);}
+   }},
   {kind:'заставка',title:'Змова',narr:'Юнона кличе Еола: доля Енея записана в Писанці, тож Писанку треба розбити.',lines:[['Юнона','Розбий її, і долі не буде. Плачу щедро: мішок золота і вічний вихідний.'],['Еол','Ну… для вас хоч ураган.']],act:'Дивиться.',
    bg:palace,fg:(ctx,f,s)=>{EOL_S.draw(ctx,6*s,(46+(f%2))*s,s);JUNO_S.draw(ctx,120*s,52*s,s);const gl=f%3===0;ctx.fillStyle=GD;ctx.fillRect(96*s,112*s,10*s,8*s);if(gl){ctx.fillStyle='#fff6c8';ctx.fillRect(99*s,111*s,s,s);}}},
   {kind:'заставка',title:'Шторм',narr:'Бахнуло так, що Зевс протверезів. Писанка на друзки, а друзки по книжках. І в кожній книжці, куди впав уламок, лад пішов шкереберть.',lines:[],act:'Бачить тизер мапи: 13 міток спалахують і гаснуть.',
@@ -1222,6 +1323,51 @@ const easeInOut=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const back=x=>{const c=1.5;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2);};
 const lerp=(a,b,x)=>a+(b-a)*x;
 const ease=easeOut;
+
+/* ================= МАПА МАНДРІВКИ (чисті функції: сайт і гра) ================= */
+const NODES=[[18,78],[40,60],[62,44],[80,28],[96,44],[110,72],[126,86],[142,70],[154,40],[172,26],[186,66],[200,84],[214,64],[206,34],[222,20],[234,40]];
+const ISLES=[{c:[28,70],r:[22,16],land:'#7d7670'},{c:[80,38],r:[26,18],land:'#cdb27a'},{c:[126,76],r:[26,16],land:'#6c6aa0'},{c:[162,34],r:[18,14],land:'#7a2c22'},{c:[200,72],r:[24,16],land:'#4f8a4a'},{c:[220,30],r:[20,16],land:'#c9a24a'}];
+const MW=240,MH=110,MS=4;
+let _mapBase=null;
+function mapBase(){if(_mapBase)return _mapBase;const sp=new Spr(MW,MH);ISLES.forEach((is,i)=>{sp.fill(ell(is.c[0],is.c[1],is.r[0]+2,is.r[1]+2).filter(([x,y])=>hash(x,y+i)>0.08||Math.hypot((x-is.c[0])/is.r[0],(y-is.c[1])/is.r[1])<0.85),'#e3c58e');sp.fill(ell(is.c[0],is.c[1],is.r[0],is.r[1]).filter(([x,y])=>hash(x+3,y)>0.05),(x,y)=>(x+y)%5===0?shade(is.land,-0.15):is.land);});return _mapBase=sp;}
+const routePts=[];for(let i=0;i<NODES.length-1;i++){const [a,b]=NODES[i],[c,d]=NODES[i+1];routePts.push(line(a,b,c,d));}
+function worldCol(i,f=0){const w=ALL_WORLDS[i];return w.fox==='rainbow'?RAINBOW[f%RAINBOW.length]:w.fox;}
+/* Точка на маршруті між світами from і to, p = 0..1 (для кораблика). */
+function routePoint(from,to,p){
+  if(from===to||p>=1)return NODES[to];
+  const a=Math.min(from,to),b=Math.max(from,to),seg=[];for(let i=a;i<b;i++)seg.push(...routePts[i]);
+  if(from>to)seg.reverse();return seg[Math.min(seg.length-1,Math.floor(p*seg.length))]||NODES[to];
+}
+/* Мапа: море, острови-пісні, маршрут (золотий до reached), мітки світів, рамка навколо active і кораблик.
+   o.state(i): 'locked' | 'open' | 'done' — у грі закриті світи сірі, пройдені мають золоту рамку. */
+function paintJourney(ctx,f,o){
+  const s=o.scale||MS,sea=new Spr(MW,MH);
+  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const w=(x+Math.round(Math.sin((y+f)*0.5)*3)+f)%14;sea.set(x,y,w===0&&y%4===0?'#3c6c9e':((x+y)%2?'#1d3f66':'#21466f'));}
+  sea.draw(ctx,0,0,s);mapBase().draw(ctx,0,0,s);
+  const reached=o.reached??o.active;
+  routePts.forEach((L,i)=>L.forEach(([x,y],k)=>{if((k+f)%4<2)px(ctx,x*s,y*s,s,i<reached?'#f2d27a':'rgba(201,214,228,.75)');}));
+  NODES.forEach(([x,y],i)=>{const st=o.state?o.state(i):'open',col=st==='locked'?'#6c776f':worldCol(i,f),on=i===o.active;
+    if(on){const r=f%2?5:6;for(let k=-r;k<=r;k++){[[x+k,y-r],[x+k,y+r],[x-r,y+k],[x+r,y+k]].forEach(([a,b])=>px(ctx,a*s,b*s,s,col));}}
+    const edgeC=st==='done'?GD:'#0f1f33';
+    for(let a=-3;a<=3;a++)for(let b=-3;b<=3;b++){if(Math.abs(a)===3&&Math.abs(b)===3)continue;const edge=Math.abs(a)===3||Math.abs(b)===3,ring=Math.abs(a)===2||Math.abs(b)===2;px(ctx,(x+a)*s,(y+b)*s,s,edge?edgeC:(ring?'#fbf3e6':col));}
+    if(st==='locked'){px(ctx,x*s,(y-1)*s,s,'#2a332e');px(ctx,(x-1)*s,y*s,s,'#2a332e');px(ctx,x*s,y*s,s,'#2a332e');px(ctx,(x+1)*s,y*s,s,'#2a332e');}
+    else px(ctx,(x-1)*s,(y-1)*s,s,shade(col,0.45));
+  });
+  if(o.ship){const [sx,sy]=o.ship,bob=f%2;
+    [[0,0,'#e9e1cc'],[0,1,'#e9e1cc'],[1,1,'#e9e1cc'],[0,2,'#e9e1cc'],[1,2,RD],[2,2,'#e9e1cc'],[-3,3,'#5b3a20'],[-2,3,'#5b3a20'],[-1,3,'#5b3a20'],[0,3,'#5b3a20'],[1,3,'#5b3a20'],[2,3,'#5b3a20'],[3,3,'#5b3a20'],[-2,4,'#3a2414'],[-1,4,'#3a2414'],[0,4,'#3a2414'],[1,4,'#3a2414'],[2,4,'#3a2414']].forEach(([a,b,c])=>px(ctx,(sx+4+a)*s,(sy-9+b+bob)*s,s,c));}
+}
+/* Картинка світу для картки: сцена, Еней, Микита (перефарбовується з кольору foxFrom за p) і мешканець. */
+const ART={};
+function artOf(n){if(!ART[n]){const ws=WORLD_SCENES[n];ART[n]=ws?{bg:ws.bg,npc:ws.npcSpr,pos:ws.npcPos,float:ws.float}:{bg:genericBg(ALL_WORLDS[n])};}return ART[n];}
+function paintWorldArt(ctx,n,f,foxFrom,p=1){
+  const w=ALL_WORLDS[n],a=artOf(n),s=2;
+  const sp=new Spr(SW,SH_);a.bg(sp,f);sp.draw(ctx,0,0,s);
+  const FT=(typeof performance!=='undefined'?performance.now():0)/1000;fxLayer(ctx,w.n,FT,'back');
+  ENEI_SCENE.draw(ctx,4*s,(SH_-70)*s,s);
+  drawSwap(ctx,foxFrom&&hdOf(foxFrom),52*s-1,(SH_-59)*s-1,hdOf(foxFor(w)),52*s-1,(SH_-59)*s-1,s/2,easeOut(p));
+  if(a.npc){const [nx,ny]=a.pos;a.npc.draw(ctx,nx*s,(ny+(a.float?Math.round(Math.sin(f*0.6)):0))*s,s);}
+  fxLayer(ctx,w.n,FT,'front');
+}
 
 /* Сцени — функції локального часу. Біжать лише на екрані і стартують заново при появі.
    kind 'loop' (draw(t) із t у секундах) або 'tick' (draw(frame) з інтервалом). */
@@ -1407,32 +1553,12 @@ Object.keys(MOTIF_NAMES).forEach((k,i)=>{
 });
 
 /* ================= МАНДРІВКА: мапа + картка на одному екрані ================= */
-const NODES=[[18,78],[40,60],[62,44],[80,28],[96,44],[110,72],[126,86],[142,70],[154,40],[172,26],[186,66],[200,84],[214,64],[206,34],[222,20],[234,40]];
-const ISLES=[{c:[28,70],r:[22,16],land:'#7d7670'},{c:[80,38],r:[26,18],land:'#cdb27a'},{c:[126,76],r:[26,16],land:'#6c6aa0'},{c:[162,34],r:[18,14],land:'#7a2c22'},{c:[200,72],r:[24,16],land:'#4f8a4a'},{c:[220,30],r:[20,16],land:'#c9a24a'}];
-const MW=240,MH=110,MS=4;
 const mapC=document.getElementById('map'),pins=document.getElementById('map-pins'),jCard=document.getElementById('j-card'),jArt=document.getElementById('j-art'),conn=document.getElementById('j-conn');
-const mapBase=(()=>{const sp=new Spr(MW,MH);ISLES.forEach((is,i)=>{sp.fill(ell(is.c[0],is.c[1],is.r[0]+2,is.r[1]+2).filter(([x,y])=>hash(x,y+i)>0.08||Math.hypot((x-is.c[0])/is.r[0],(y-is.c[1])/is.r[1])<0.85),'#e3c58e');sp.fill(ell(is.c[0],is.c[1],is.r[0],is.r[1]).filter(([x,y])=>hash(x+3,y)>0.05),(x,y)=>(x+y)%5===0?shade(is.land,-0.15):is.land);});return sp;})();
-const routePts=[];for(let i=0;i<NODES.length-1;i++){const [a,b]=NODES[i],[c,d]=NODES[i+1];const L=line(a,b,c,d);routePts.push(L);}
 let active=2,shipFrom=2,shipAt=0;
-function worldCol(i,f=0){const w=ALL_WORLDS[i];return w.fox==='rainbow'?RAINBOW[f%RAINBOW.length]:w.fox;}
-function shipPos(){
-  const p=REDUCED?1:easeInOut(clamp((performance.now()-shipAt)/900));
-  if(shipFrom===active||p>=1)return NODES[active];
-  const a=Math.min(shipFrom,active),b=Math.max(shipFrom,active),seg=[];for(let i=a;i<b;i++)seg.push(...routePts[i]);
-  if(shipFrom>active)seg.reverse();const q=seg[Math.min(seg.length-1,Math.floor(p*seg.length))];return q||NODES[active];
-}
+function shipPos(){return routePoint(shipFrom,active,REDUCED?1:easeInOut(clamp((performance.now()-shipAt)/900)));}
 function drawMap(f=0){
-  const ctx=setup(mapC,MW*MS,MH*MS,true),sp=new Spr(MW,MH);
-  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const w=(x+Math.round(Math.sin((y+f)*0.5)*3)+f)%14;sp.set(x,y,w===0&&y%4===0?'#3c6c9e':((x+y)%2?'#1d3f66':'#21466f'));}
-  sp.draw(ctx,0,0,MS);mapBase.draw(ctx,0,0,MS);
-  routePts.forEach((L,i)=>L.forEach(([x,y],k)=>{if((k+f)%4<2)px(ctx,x*MS,y*MS,MS,i<active?'#f2d27a':'rgba(201,214,228,.75)');}));
-  NODES.forEach(([x,y],i)=>{const col=worldCol(i,f),on=i===active;
-    if(on){const r=f%2?5:6;for(let k=-r;k<=r;k++){[[x+k,y-r],[x+k,y+r],[x-r,y+k],[x+r,y+k]].forEach(([a,b])=>px(ctx,a*MS,b*MS,MS,col));}}
-    for(let a=-3;a<=3;a++)for(let b=-3;b<=3;b++){if(Math.abs(a)===3&&Math.abs(b)===3)continue;const edge=Math.abs(a)===3||Math.abs(b)===3,ring=Math.abs(a)===2||Math.abs(b)===2;px(ctx,(x+a)*MS,(y+b)*MS,MS,edge?'#0f1f33':(ring?'#fbf3e6':col));}
-    px(ctx,(x-1)*MS,(y-1)*MS,MS,shade(col,0.45));
-  });
-  const [sx,sy]=shipPos(),bob=f%2;
-  [[0,0,'#e9e1cc'],[0,1,'#e9e1cc'],[1,1,'#e9e1cc'],[0,2,'#e9e1cc'],[1,2,RD],[2,2,'#e9e1cc'],[-3,3,'#5b3a20'],[-2,3,'#5b3a20'],[-1,3,'#5b3a20'],[0,3,'#5b3a20'],[1,3,'#5b3a20'],[2,3,'#5b3a20'],[3,3,'#5b3a20'],[-2,4,'#3a2414'],[-1,4,'#3a2414'],[0,4,'#3a2414'],[1,4,'#3a2414'],[2,4,'#3a2414']].forEach(([a,b,c])=>px(ctx,(sx+4+a)*MS,(sy-9+b+bob)*MS,MS,c));
+  const ctx=setup(mapC,MW*MS,MH*MS,true);
+  paintJourney(ctx,f,{active,ship:shipPos(),reached:active});
   drawConn(f);
 }
 function drawConn(f=0){
@@ -1446,17 +1572,10 @@ function drawConn(f=0){
 NODES.forEach(([x,y],i)=>{const b=document.createElement('button');b.className='pin';b.type='button';b.style.left=(x/MW*100)+'%';b.style.top=(y/MH*100)+'%';
   b.setAttribute('aria-label',`Світ ${i}: ${ALL_WORLDS[i].name}`);b.addEventListener('click',()=>jumpTo(i));pins.appendChild(b);});
 SONGS.forEach((song,i)=>{const l=document.createElement('span');l.className='isle-label';l.style.left=(ISLES[i].c[0]/MW*100)+'%';l.style.top=((ISLES[i].c[1]-ISLES[i].r[1]-6)/MH*100)+'%';l.textContent=`${song.n} · ${song.title}`;pins.appendChild(l);});
-const ART={};ALL_WORLDS.forEach(w=>{const ws=WORLD_SCENES[w.n];ART[w.n]=ws?{bg:ws.bg,npc:ws.npcSpr,pos:ws.npcPos,float:ws.float}:{bg:genericBg(w)};});
 let artFrom=null,artAt=0;
 function drawArt(f=0){
-  const w=ALL_WORLDS[active],a=ART[w.n],s=2,ctx=setup(jArt,SW*s,SH_*s,true);
-  const sp=new Spr(SW,SH_);a.bg(sp,f);sp.draw(ctx,0,0,s);
-  const FT=performance.now()/1000;fxLayer(ctx,w.n,FT,'back');
-  ENEI_SCENE.draw(ctx,4*s,(SH_-70)*s,s);
-  const p=REDUCED?1:clamp((performance.now()-artAt)/700);
-  drawSwap(ctx,artFrom&&hdOf(artFrom),52*s-1,(SH_-59)*s-1,hdOf(foxFor(w)),52*s-1,(SH_-59)*s-1,s/2,easeOut(p));
-  if(a.npc){const [nx,ny]=a.pos;a.npc.draw(ctx,nx*s,(ny+(a.float?Math.round(Math.sin(f*0.6)):0))*s,s);}
-  fxLayer(ctx,w.n,FT,'front');
+  const ctx=setup(jArt,SW*2,SH_*2,true);
+  paintWorldArt(ctx,active,f,artFrom,REDUCED?1:clamp((performance.now()-artAt)/700));
 }
 function fillCard(){
   const w=ALL_WORLDS[active],ws=WORLD_SCENES[w.n],info=WORLD_INFO[w.n],song=SONGS.find(s=>s.worlds.includes(w));
@@ -1617,7 +1736,7 @@ const TROJANS=['warrior','sailor','elder','woman'].map(makeTrojan);
 function drawSack(ctx,x,y){ctx.fillStyle='#1f1b16';ctx.fillRect(x-10,y-14,20,18);ctx.fillStyle='#a8844a';ctx.fillRect(x-9,y-12,18,15);ctx.fillStyle='#c9a466';ctx.fillRect(x-8,y-12,10,6);ctx.fillStyle='#7a5a32';ctx.fillRect(x-3,y-17,6,5);ctx.fillStyle='#e9d9a6';ctx.fillRect(x-1,y-6,2,2);}
 const OB=[
   OBX[0],OBX[1],
-  {kind:'заставка',title:'Мішок вітрів',narr:'Еол розв\'язує мішок, і вітри виривається на волю. Хмари крутяться над Олімпом.',lines:[['Еол','Ану, хлопці, гуляйте!']],act:'Дивиться.',
+  {kind:'заставка',title:'Мішок вітрів',narr:'Еол розв\'язує мішок, і вітри вириваються на волю. Хмари крутяться над Олімпом.',lines:[['Еол','Ану, хлопці, гуляйте!']],act:'Дивиться.',
    bg:(sp,f)=>{sky(sp,['#2a3a5a','#3d5675','#55708f'],0,SH_);for(let k=0;k<5;k++){const cx=40+k*30,cy=40+(k%2)*24,r=10+((f+k*3)%12);for(let a=0;a<28;a++){const an=a/28*6.28+f*0.25+k;sp.set(cx+Math.cos(an)*r,cy+Math.sin(an)*r*0.6,'#c9d6e4');}}columns(sp,[150,172],50,110,'#d9d2c4','#b5ad9c');for(let y=110;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,'#8a8478');},
    fg:(ctx,f,s)=>{EOL_S.draw(ctx,10*s,(40+(f%2))*s,s);}},
   OBX[2],
@@ -1626,6 +1745,31 @@ const OB=[
      BOOKS.forEach(([x,c],k)=>{const h=30+(k%3)*4,glow=((f>>1)%13)===k;sp.fill(rect(x,92-h,10,h),glow?'#fff3c4':c);sp.fill(rect(x+1,92-h+6,8,1),GD);});
      for(let k=0;k<13;k++){const ph=((f+k*2)%26)/26;if(ph<0.6){const [bx]=BOOKS[k],sx=100+Math.cos(k)*30,sy=10,x=lerp(sx,bx+5,ph/0.6),y=lerp(sy,70,ph/0.6);sp.set(x,y,k%2?RD:'#a7d6e6');sp.set(x+1,y,'#d4ecf3');sp.set(x,y+1,'#d4ecf3');}}
      for(let k=0;k<13;k++){const on=(f+k)%6<3;if(on)sp.fill(rect(20+k*13,110,3,3),RAINBOW[k%6]);}}},
+  /* Прохання Венери: Зевс після бенкету з рушником на голові обіцяє Енеєві дорогу */
+  {kind:'заставка',title:'Прохання Венери',narr:'Венера, мати Енея, біжить до Зевса. Той ще тримається за голову після бенкету, але слухає.',
+   lines:[['Венера','Зевсе, батечку! Без Писанки мій Еней пропаде: його доля розсипалась по книжках.'],['Зевс','Ой, голова… Добре. Хай сам збере тринадцять уламків. Слово ладу йому в поміч, а Сивілла — в провідниці.'],['Венера','А Юнона?'],['Зевс','А Юнона хай спробує.']],act:'Дивиться.',
+   bg:(sp,f)=>{sky(sp,['#2a2050','#4a3474','#7a5a8c'],0,100);stars(sp,40,7,f,70);columns(sp,[10,30,162,182],34,100,'#9a8cb0','#7a6c94');
+     for(let y=100;y<SH_;y++)for(let x=0;x<SW;x++)sp.set(x,y,((x>>3)+(y>>3))%2?'#5a4c74':'#4a3e64');
+     sp.fill(rect(92,82,16,18),'#8a7ca4');sp.fill(rect(90,80,20,3),'#6a5c84');
+     // трон Зевса
+     sp.fill(rect(124,60,40,44),'#d9a521');sp.fill(rect(128,64,32,36),'#b3202a');sp.fill(rect(120,56,48,6),'#a87a12');},
+   fg:(ctx,f,s)=>{
+     const Z=OLYMPUS_GODS.zeus,V=OLYMPUS_GODS.venus;
+     // мапа з тринадцятьма уламками розгортається між ними
+     const t=Math.min(1,(f%60)/30);
+     ctx.fillStyle=`rgba(244,236,218,${0.85*t})`;ctx.fillRect(150,40,Math.round(100*t),56);
+     if(t>=1)for(let k=0;k<13;k++){const x=160+(k%5)*20+(Math.floor(k/5)%2)*8,y=50+Math.floor(k/5)*16;ctx.fillStyle=(f+k)%6<3?RD:'#a7d6e6';ctx.fillRect(x,y,4,4);}
+     // Зевс на троні (з рушником) і Венера, що просить
+     const zu=f%24<4;(zu?Z[1]:Z[0]).draw(ctx,240,92,2);
+     // мокрий рушник на голові замість корони
+     ctx.fillStyle='#1f1b16';ctx.fillRect(271,97,36,14);ctx.fillStyle='#f6efe0';ctx.fillRect(272,98,34,12);ctx.fillStyle='#a7d6e6';ctx.fillRect(274,102,30,2);ctx.fillRect(274,106,30,1);
+     if(f%20<10){const d=Math.floor(f/2)%5;ctx.fillStyle='#9fe3ff';ctx.fillRect(276+d*6,112+d*3,2,3);}
+     const vu=f%12<6;(vu?V[1]:V[0]).draw(ctx,40,102+(vu?-2:0),2);
+     // зірочки навколо голови Зевса
+     for(let i=0;i<3;i++){const a=f*0.18+i*2.1;ctx.fillStyle=GD;ctx.fillRect(Math.round(289+Math.cos(a)*24),Math.round(96+Math.sin(a)*5),3,3);}
+     // Сивілла з'являється наприкінці
+     if(f%60>44){ctx.globalAlpha=Math.min(1,(f%60-44)/10);SIBYL_S.draw(ctx,176,150,1);ctx.globalAlpha=1;}
+   }},
   /* Ліс Франка: лис стрибає дугою і пірнає саме в діжу */
   {kind:'заставка',title:'Ліс Франка',narr:'Хто знає казку, той знає: Микита в діжу таки впаде. Але цього разу діжа була з дірою в інший світ.',lines:[['Микита','О, а це що за ласощі?']],act:'Дивиться.',
    bg:(sp,f)=>{forestBg(sp);barrelBack(sp,f);},
@@ -1653,8 +1797,8 @@ const OB=[
      if(t>2.6&&t<3.4){hop=-Math.sin(prog(t,2.6,3.0)*Math.PI)*24;}
      if(t>3.4){alpha=1-prog(t,3.4,4.0);}
      if(t<4.0){ctx.globalAlpha=alpha;W_.draw(ctx,Math.round(wx),Math.round(wy+hop),1);ctx.globalAlpha=1;}
-     if(t>2.0&&t<2.5){ctx.fillStyle='#ffffff';ctx.font=`bold ${6*s}px "Fira Code", monospace`;ctx.fillText('ам!',sx-14*s,sy-26*s);}
-     if(t>2.6&&t<3.4){ctx.fillStyle='#ffffff';ctx.fillRect(sx-20*s,sy-44*s,26*s,11*s);ctx.fillStyle='#1f1b16';ctx.font=`bold ${6*s}px "Fira Code", monospace`;ctx.fillText('гик!',sx-18*s,sy-36*s);}
+     if(t>2.0&&t<2.5){ctx.fillStyle='#ffffff';ctx.font=`bold ${6*s}px "Fira Code", monospace`;ctx.fillText(ST('ам!'),sx-14*s,sy-26*s);}
+     if(t>2.6&&t<3.4){ctx.fillStyle='#ffffff';ctx.fillRect(sx-20*s,sy-44*s,26*s,11*s);ctx.fillStyle='#1f1b16';ctx.font=`bold ${6*s}px "Fira Code", monospace`;ctx.fillText(ST('гик!'),sx-18*s,sy-36*s);}
      if(t>3.3&&t<4.6){const p=prog(t,3.3,4.6),r=p*120;ctx.fillStyle=`rgba(255,246,210,${(1-p)})`;for(let a=0;a<36;a++){const an=a/36*6.28;ctx.fillRect(Math.round(wx+56+Math.cos(an)*r),Math.round(wy+30+Math.sin(an)*r*0.6),s*2,s*2);}
        ctx.fillStyle=`rgba(255,250,235,${(1-p)*0.7})`;ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);}
    }},
@@ -1676,7 +1820,7 @@ const OB=[
        if(fi<0){T.draw(ctx,hx,G-T.h-2+(k%2),1);}
        else{n++;const x=Math.max(2,ex-34*(fi+1)),bob=Math.floor(f/2+k)%2;T.draw(ctx,Math.round(x),G-T.h-2-bob,1);}});
      const eb=Math.floor(f/2)%2;ENEI_SCENE.draw(ctx,Math.round(ex),G-72-eb,1);
-     ctx.fillStyle='rgba(20,27,23,.82)';ctx.fillRect(8,8,128,22);ctx.fillStyle='#f2d27a';ctx.font='600 12px "Fira Code", monospace';ctx.fillText(`ватага = ${n} / 4`,16,23);}},
+     ctx.fillStyle='rgba(20,27,23,.82)';ctx.fillRect(8,8,128,22);ctx.fillStyle='#f2d27a';ctx.font='600 12px "Fira Code", monospace';ctx.fillText(`${ST('ватага')} = ${n} / 4`,16,23);}},
   /* Відплиття: корабель з Енеєм, Микитою і ватагою пливе до тріщини */
   {kind:'інтерактив',title:'Відплиття',narr:'Корабель заходить у тріщину між світами, Микита перефарбовується в морський синій. Так почалась Кодеїда.',lines:[['Микита','Чую… пахне морем і уламком. Туди!']],act:'Відкривається мапа світів і порожня вишиванка Енея.',
    bg:(sp,f)=>{sky(sp,['#5a4a8a','#c96f7a','#f2b880'],0,80);sp.fill(ell(60,78,14,14),'#ffd98a');sea(sp,f,80,'#3a4f86','#2a3a6a','#f2b880');
@@ -1710,7 +1854,9 @@ function obSet(i){if(i===obActive)return;obActive=i;obSince=performance.now();
   obC.classList.remove('flash');void obC.offsetWidth;obC.classList.add('flash');drawOb(0);}
 function drawOb(f=0){const o=OB[obActive],sp=new Spr(SW,SH_);o.bg(sp,f);const s=2,ctx=setup(obC,SW*s,SH_*s,true);sp.draw(ctx,0,0,s);if(o.fg)o.fg(ctx,f,s);}
 document.getElementById('ob-title').textContent=`1 / ${OB.length} · ${OB[0].title}`;document.getElementById('ob-kind').textContent=OB[0].kind;
-drawOb(0);scene(obC,{interval:150,draw:f=>drawOb(Math.floor((performance.now()-obSince)/150))});
+/* темп заставок: 260 мс на кадр — персонажі рухаються спокійно */
+const OB_FRAME=260;
+drawOb(0);scene(obC,{interval:OB_FRAME,draw:f=>drawOb(Math.floor((performance.now()-obSince)/OB_FRAME))});
 const obThumb=document.getElementById('ob-thumb');
 function obRail(){const r=obThumb.parentElement.clientHeight,k=obScroll.clientHeight/obScroll.scrollHeight,h=Math.max(28,r*k),t=(r-h)*(obScroll.scrollTop/Math.max(1,obScroll.scrollHeight-obScroll.clientHeight));obThumb.style.height=h+'px';obThumb.style.top=t+'px';}
 function obPad(){const steps=obList.querySelectorAll('.ob-step'),last=steps[steps.length-1];if(!last)return;obList.style.setProperty('padding-bottom',Math.max(0,obScroll.clientHeight-last.offsetHeight-8)+'px','important');obRail();}
@@ -1766,7 +1912,7 @@ function buildFrames(sh,st){
   const box=document.getElementById('flow');if(!box)return;
   // міні-екрани
   const egg=document.getElementById('fl-splash');if(egg){const ctx=setup(egg,120,90,true);ctx.fillStyle='#141b17';ctx.fillRect(0,0,120,90);drawEgg(ctx,17,22,43,12,2,false,true,0,0.9);}
-  const mm=document.getElementById('fl-map');if(mm){const ctx=setup(mm,240,110,true);const sp=new Spr(240,110);for(let y=0;y<110;y++)for(let x=0;x<240;x++)sp.set(x,y,(x+y)%2?'#1d3f66':'#21466f');sp.draw(ctx,0,0,1);mapBase.draw(ctx,0,0,1);NODES.forEach(([x,y],i)=>{ctx.fillStyle=worldCol(i);ctx.fillRect(x-2,y-2,5,5);});}
+  const mm=document.getElementById('fl-map');if(mm){const ctx=setup(mm,240,110,true);const sp=new Spr(240,110);for(let y=0;y<110;y++)for(let x=0;x<240;x++)sp.set(x,y,(x+y)%2?'#1d3f66':'#21466f');sp.draw(ctx,0,0,1);mapBase().draw(ctx,0,0,1);NODES.forEach(([x,y],i)=>{ctx.fillStyle=worldCol(i);ctx.fillRect(x-2,y-2,5,5);});}
   const pr=document.getElementById('fl-profile');if(pr){const ctx=setup(pr,92,144,true);makeEnei(1).draw(ctx,0,0,2);}
   const svg=document.getElementById('flow-svg');
   const LINKS=[['s1','s2','старт'],['s2','s3','грати'],['s3','s4','світ'],['s4','s5','Запустити'],['s5','s3','далі'],['s2','s6','Профіль'],['s5','s6','новий візерунок'],['s2','s7','Налаштування']];
