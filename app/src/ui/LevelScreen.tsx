@@ -19,7 +19,7 @@ import { feedbackUrl } from './feedback.ts';
 import { adviseError, adviseJudge, adviseRun, adviseSolved, adviseTimeout } from './coach.ts';
 import type { CallResult } from '../engine/types.ts';
 
-type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 'warrior' | 'sailor' | 'woman';
+type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'wolf';
 /** Текст — функція, щоб після перемикання мови репліка теж перекладалась. */
 interface Bubble { who: Who; text: () => string; tone: Tone; seq: number; enter: 'in' | 'nod' }
 /** Хто говорить за «господаря» світу: Микита на попелищі, Еол у морі, Дидона в Карфагені. */
@@ -75,10 +75,11 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   const WHO: Record<Who, string> = {
     host: WT.host.who, fox: L('Микита', 'Mykyta'), juno: L('Юнона', 'Juno'), sibyl: L('Сивілла', 'Sibyl'), system: L('Еней', 'Aeneas'),
     enei: L('Еней', 'Aeneas'), anchises: L('Анхіз', 'Anchises'), warrior: L('Воїн', 'Warrior'), sailor: L('Моряк', 'Sailor'), woman: L('Троянка', 'Trojan woman'),
+    eol: L('Еол', 'Aeolus'), dido: L('Дидона', 'Dido'), wolf: L('Вовк Неситий', 'Greedy Wolf'),
   };
   const SPRITE: Record<Who, Speaker> = {
     host: HOST_SPRITE[world.n] ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei',
-    enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman',
+    enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman', eol: 'eol', dido: 'dido', wolf: 'wolf',
   };
   const say = (who: Who, text: () => string, tone: Tone = 'say') =>
     setBubble((b) => ({ who, text, tone, seq: b.seq + 1, enter: SPRITE[b.who] === SPRITE[who] ? 'nod' : 'in' }));
@@ -177,7 +178,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     else if (rep.verdict === 'wrong') {
       const bad = rep.cases.find((c) => c.verdict === 'wrong')!;
       oops();
-      const tip = adviseJudge(level, code[lang], rep) ?? (level.scene.type === 'array' ? adviseRun(level, code[lang], { value: bad.got, events: [] } as unknown as CallResult, bad.why ?? '') : null);
+      const tip = (level.scene.type === 'array' ? adviseRun(level, code[lang], { value: bad.got, argsAfter: level.inPlace !== undefined ? Object.assign([], { [level.inPlace]: bad.got }) : undefined, events: [] } as unknown as CallResult, bad.why ?? '') : null) ?? adviseJudge(level, code[lang], rep);
       if (tip) say(tip.who, tip.text, 'error');
       else say('host', () => L(`Суд богів не згоден (${bad.kind === 'hidden' ? 'прихований тест' : bad.label}): ${bad.why}.`, `The gods disagree (${bad.kind === 'hidden' ? 'hidden test' : bad.label}): ${bad.why}.`), 'error');
     } else if (rep.verdict === 'timeout') { oops(); if (/while|for/.test(code[lang])) { const tip = adviseTimeout(level, code[lang]); say(tip.who, () => `${L('Юнона сміється: шторм ще не скінчився. ', 'Juno laughs: the storm isn’t over. ')}${tip.text()}`, 'taunt'); } else say('juno', () => L('Ха! Мій шторм ще не скінчився, а ти вже видихся. Котрийсь тест не вклався в час.', 'Ha! My storm isn’t over and you’re already worn out. One of the tests ran out of time.'), 'taunt'); }

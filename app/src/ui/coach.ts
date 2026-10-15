@@ -111,14 +111,31 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
     return null;
   }
 
-  const got = r.value;
+  // для вправ «на місці» відповідь — змінений масив, а не те, що повернула функція
+  const got = level.inPlace !== undefined ? (r.argsAfter?.[level.inPlace] ?? r.value) : r.value;
   const lang = uiLang();
+  const input = level.examples[0]?.args[level.inPlace ?? 0];
+  const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+  if (level.inPlace !== undefined && Array.isArray(got) && Array.isArray(input)) {
+    if (/\breturn\s+[\w[]/.test(bare) && same(got, input)) return fox('Масив лишився таким самим. Тут треба змінити сам масив на місці, а не повертати новий.', 'The array stayed the same. Here you have to change the array itself in place, not return a new one.');
+    if (level.id === 'sea.swap' && got.length > 1 && got[0] === got[got.length - 1] && input[0] !== input[input.length - 1])
+      return fox('Обидва фланги тепер однакові: перший корабель перезаписано, перш ніж його збережено. Спершу відклади його в змінну.', 'Both flanks are now the same: the first ship was overwritten before it was saved. Put it aside in a variable first.');
+    if (level.id === 'sea.reverse' && same(got, input) && usesLoop(bare))
+      return fox('Колона не змінилась: схоже, ти розвернув її двічі. Обмінюй лише доки i < j — до середини, а не до кінця.', 'The column didn’t change: it looks like you reversed it twice. Swap only while i < j — up to the middle, not to the end.');
+    if (level.id === 'sea.zeroes' && got.filter((v) => v === 0).length < input.filter((v) => v === 0).length)
+      return fox('Цілі кораблі вже попереду, але хвіст лишився старим. Після проходу заповни решту місць нулями.', 'The whole ships are already in front, but the tail still holds old values. After the pass, fill the remaining places with zeros.');
+    if (same(got, input)) { const name = level.observe[level.inPlace] ?? 'arr'; return fox(`Масив не змінився. Чи записуєш ти щось у нього, наприклад ${name}[i] = …?`, `The array didn’t change. Are you writing anything into it, like ${name}[i] = …?`); }
+    return null;
+  }
+  if (level.id === 'sea.max' && got === 0 && Array.isArray(input) && !input.includes(0))
+    return fox('Вийшов 0, хоча такого корабля немає. Почни найкраще з ships[0], а не з 0: усі значення можуть бути й від\'ємними.', 'You got 0, though there’s no such ship. Start the best with ships[0], not 0: all the values may be negative.');
   // мова вулиці: в англійській грі вулиця англійська, і навпаки
   if (/"троянець"|'троянець'/.test(c) && lang === 'en') return fox('In the English game the street speaks English: look for "trojan", not "троянець".', 'In the English game the street speaks English: look for "trojan", not "троянець".');
   if (/"trojan"|'trojan'/.test(c) && lang !== 'en') return fox('В українській грі вулиця говорить українською: шукай "троянець", а не "trojan".', 'In the Ukrainian game the street speaks Ukrainian: look for "троянець", not "trojan".');
   if (got === undefined) {
     if (!/\breturn\b/.test(bare)) return fox('Функція нічого не повернула. Відповідь треба віддати через return.', 'The function returned nothing. Hand the answer back with return.');
     if (/\[\s*\w+\.length\s*\]/.test(bare)) return fox('Отримав undefined: клітинки з номером length немає, вона вже за кінцем. Рахуємо з нуля, тож остання — [length - 1].', 'Got undefined: there is no cell number length, it’s already past the end. We count from zero, so the last one is [length - 1].');
+    if (/\[\s*\d+\s*\]/.test(bare)) return fox('Отримав undefined: схоже, в коді стоїть конкретний номер клітинки, а в цьому тесті її немає — тести бувають різної довжини.', 'Got undefined: it looks like the code uses a fixed cell number, and this test doesn’t have that cell — tests have different lengths.');
     return fox('Функція повернула undefined. Чи доходить код до return з відповіддю?', 'The function returned undefined. Does the code reach a return with the answer?');
   }
   if (/\bif\s*\((?:[^()]|\([^()]*\))*?[^=!<>]=(?!=)/.test(bare)) return fox('В if стоїть один знак =: він записує значення, а не порівнює. Порівнюють через ===.', 'There is a single = inside the if: it stores a value instead of comparing. Compare with ===.');

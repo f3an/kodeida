@@ -303,6 +303,44 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['What do you need to remember while walking the column?', 'best = the first ship; for each next one: if it is bigger, it becomes the new best.', 'for (let i = 1; i < ships.length; i++) if (ships[i] > best) best = ships[i];'],
     lesson: 'One pass and one “best so far” variable — that is how you find a maximum.',
     doc: ['The biggest ship', 'ships[i] — the number of oars of ship i (the array is not empty).', 'Return the largest.'],
+    tool: {
+      name: 'a “best so far” variable',
+      text: [
+        'To find the biggest, you don’t have to remember every ship: one is enough — the best of those you’ve already seen.',
+        'Start with the first. Compare each next one with the best using <code>&gt;</code>; if the new one is bigger, it becomes the best.',
+      ],
+      code: 'let tallest = heights[0];\nfor (let i = 1; i < heights.length; i++) {\n  if (heights[i] > tallest) tallest = heights[i];\n}',
+    },
+    talk: [
+      'Ha! My winds have scattered your fleet. Go on, try to find one decent ship among these splinters!',
+      'I’m up the mast. I see them all, but I’ll only remember the best. A fox needs no more.',
+    ],
+    quip: 'Now that’s a ship! We’ll sail at the front on it. I even counted the oars, so you needn’t doubt.',
+  },
+  'sea.swap': {
+    title: 'Swap on the flanks', topic: 'swapping two elements',
+    brief: '<b>Swap on the flanks.</b> Swap the first and the last ship of the column.',
+    statement: [
+      'The wind rearranged the ships: the flagship sails last, and the smallest boat sails first.',
+      'Swap <code>ships[0]</code> and the last ship <b>in place</b> — in the same array, returning nothing.',
+      'Columns have different lengths, so work out the number of the last one with <code>length</code>.',
+    ],
+    hints: ['What happens to the first ship if you write the last one into its place straight away?', 'Put the first ship aside in a variable, then move them.', 'const t = ships[0]; ships[0] = ships[ships.length - 1]; ships[ships.length - 1] = t;'],
+    lesson: 'To swap two values, put one aside first: a temporary variable is like a third cup.',
+    doc: ['Swap on the flanks', 'Swap the first and the last ship of ships (in place).'],
+    tool: {
+      name: 'a swap through a temporary variable',
+      text: [
+        'To swap two values, you first have to <b>put one aside</b>. Otherwise, when you write the second over the first, the first is lost.',
+        'Like with two cups: to swap the tea and the coffee in them you need a third, empty cup.',
+      ],
+      code: 'const cup = a[0];   // put the first aside\na[0] = a[1];        // the second takes its place\na[1] = cup;         // and the saved one takes the second place',
+    },
+    talk: [
+      'The flagship ended up at the back, and the smallest boat leads! There’s order for you.',
+      'Swap them. Just carefully: if you simply write one over the other, the first ship is lost in the waves.',
+    ],
+    quip: 'The flagship is in front again! I thought we’d have to row backwards.',
   },
   'sea.reverse': {
     title: 'Column reversed', topic: 'in-place reversal',
@@ -315,6 +353,19 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['Who has to swap places with whom?', 'The first with the last, the second with the second to last… until they meet in the middle.', 'let i = 0, j = n − 1; while (i < j) { swap ships[i] and ships[j]; i++; j--; }'],
     lesson: 'Two ends moving towards each other and a swap — the array is reversed without a single copy.',
     doc: ['Column reversed', 'Reverse ships in place. reverse() is forbidden.'],
+    tool: {
+      name: 'two pointers towards each other',
+      text: [
+        'Keep two numbers: <code>i</code> from the start and <code>j</code> from the end. Swap <code>ships[i]</code> and <code>ships[j]</code>, then move <code>i</code> forward and <code>j</code> back.',
+        'Stop in the middle, when <code>i</code> and <code>j</code> meet. Otherwise the pairs get swapped again and return to their places.',
+      ],
+      code: 'let i = 0, j = a.length - 1;\nwhile (i < j) {\n  // swap a[i] and a[j] here\n  i++;\n  j--;\n}',
+    },
+    talk: [
+      'I turned the wind around! Now your column sails backwards.',
+      'Then let’s turn the column around too. The first swaps with the last, the second with the one before last… You already know how to swap; now go from both ends.',
+    ],
+    quip: 'See? A swap plus two ends towards each other, and the column is reversed without a single extra ship.',
   },
   'sea.zeroes': {
     title: 'Wrecks to the back', topic: 'two indices',
@@ -327,6 +378,19 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['What if you write intact ships straight to their place?', 'Keep an index k — where the next intact ship goes. At the end fill the tail with zeros.', 'k = 0; for each x ≠ 0: nums[k++] = x; while k < n: nums[k++] = 0.'],
     lesson: 'A slow “where to write” index and a fast “what to read” one — the array is sorted out in one pass.',
     doc: ['Wrecks to the back', '0 — a wrecked ship. Move zeros to the end in place,', 'keeping the order of the others.'],
+    tool: {
+      name: 'a “where to write” index',
+      text: [
+        'Two variables with different jobs: <code>i</code> reads the array in order, and <code>k</code> shows <b>where to write</b> the next value you want to keep.',
+        '<code>k</code> grows only when you find something to keep. So everything you need gathers at the start of the array, and the rest can be filled in afterwards.',
+      ],
+      code: 'let k = 0;\nfor (let i = 0; i < words.length; i++) {\n  if (words[i] !== "") words[k++] = words[i];\n}\n// the first k places hold the non-empty words',
+    },
+    talk: [
+      'Half the ships are wrecked! They only get in the column’s way.',
+      'Let’s not throw them away — let’s move them to the end. The whole ones sail in front in the same order. One index reads, the other writes.',
+    ],
+    quip: 'Whole ones in front, wrecks at the back. Like a parade, only wetter.',
   },
   'sea.sort': {
     title: 'Line up by size', topic: 'simple sorting',
@@ -339,6 +403,20 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['If two neighbours are in the wrong order — what do you do?', 'A pass that swaps wrong neighbours pushes the biggest ship to the end. Repeat n times.', 'for (i < n) for (j < n−1−i) if (ships[j] > ships[j+1]) swap.'],
     lesson: 'Bubble sort is simple, but compares every ship with every other — O(n²). The final problem needs a trick.',
     doc: ['Line up by size', 'Sort ships ascending in place. sort() is forbidden.'],
+    tool: {
+      name: 'a nested loop',
+      text: [
+        'A loop inside a loop: for every step of the outer one, the inner one runs all the way through.',
+        'In bubble sort the inner loop swaps neighbours that are in the wrong order and pushes the biggest ship to the end. The outer loop repeats that until everyone is in place.',
+      ],
+      code: 'for (let round = 0; round < 3; round++) {\n  for (let j = 0; j < 2; j++) {\n    console.log(round, j);  // 6 lines: 3 × 2\n  }\n}',
+    },
+    talk: [
+      'Big ones, small ones, all mixed up! My winds know a thing or two about chaos.',
+      'Swap neighbours if the left one is bigger. One pass, and the biggest ship is already at the back. Now repeat.',
+      'Heh-heh. Comparing every one with every other — that’s my way. Tasty and slow.',
+    ],
+    quip: 'See that? Every one with every other! That’s how I count. Well, let’s see how you manage the final without me.',
   },
   'sea.colors': {
     title: 'Three sails', topic: 'three pointers in one pass',
@@ -351,6 +429,20 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['There are only three colours. Do you need to compare ships with each other?', 'Three borders: low — where the next red goes, high — where the next blue goes, mid — the ship under inspection.', 'low = mid = 0, high = n−1; while mid ≤ high: 0 → swap with low, low++, mid++; 1 → mid++; 2 → swap with high, high--.'],
     lesson: 'When there are few values, borders between groups matter more than comparisons: three pointers, one pass.',
     doc: ['Three sails', '0 — red, 1 — white, 2 — blue. Sort nums in place.', 'sort() is forbidden.'],
+    tool: {
+      name: 'three boundaries',
+      text: [
+        'When there are only three values, you don’t need to compare ships with each other. It’s enough to keep the boundaries of the groups.',
+        '<code>low</code> — where the reds end, <code>high</code> — where the blues begin, <code>mid</code> — whoever is being inspected now. Every inspected ship goes to its own group.',
+      ],
+      code: '// [ reds | whites | not seen yet | blues ]\n//        low      mid           high\n// 0 → swap with low;   1 → leave;   2 → swap with high',
+    },
+    talk: [
+      'The last trial! Red, white and blue sails, all mixed up. And the Wolf is already on my cloud comparing every one with every other.',
+      'Every one with every other, every one with every other… until the storm ends. Or until I get hungry.',
+      'We won’t compare at all. There are only three colours — keep three boundaries, and in one pass everything falls into place.',
+    ],
+    quip: 'Well… all right. The fleet is in order, my winds have calmed down. Sail on to Carthage, you clever lot.',
   },
   'carthage.meet': {
     title: 'Meet in the middle', topic: 'two pointers towards each other',
