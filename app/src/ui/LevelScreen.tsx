@@ -176,9 +176,11 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     setBusy(''); setReport(rep); setLogs(rep.logs);
     if (rep.verdict === 'error') stumble(rep.error!);
     else if (rep.verdict === 'wrong') {
-      const bad = rep.cases.find((c) => c.verdict === 'wrong')!;
+      const badIdx = rep.cases.findIndex((c) => c.verdict === 'wrong');
+      const bad = rep.cases[badIdx];
+      const badTc = planned[badIdx]?.tc;
       oops();
-      const tip = (level.scene.type === 'array' ? adviseRun(level, code[lang], { value: bad.got, argsAfter: level.inPlace !== undefined ? Object.assign([], { [level.inPlace]: bad.got }) : undefined, events: [] } as unknown as CallResult, bad.why ?? '') : null) ?? adviseJudge(level, code[lang], rep);
+      const tip = (level.scene.type === 'array' ? adviseRun(level, code[lang], { value: bad.got, argsAfter: level.inPlace !== undefined ? Object.assign([], { [level.inPlace]: bad.got }) : undefined, events: [] } as unknown as CallResult, bad.why ?? '', badTc) : null) ?? adviseJudge(level, code[lang], rep);
       if (tip) say(tip.who, tip.text, 'error');
       else say('host', () => L(`Суд богів не згоден (${bad.kind === 'hidden' ? 'прихований тест' : bad.label}): ${bad.why}.`, `The gods disagree (${bad.kind === 'hidden' ? 'hidden test' : bad.label}): ${bad.why}.`), 'error');
     } else if (rep.verdict === 'timeout') { oops(); if (/while|for/.test(code[lang])) { const tip = adviseTimeout(level, code[lang]); say(tip.who, () => `${L('Юнона сміється: шторм ще не скінчився. ', 'Juno laughs: the storm isn’t over. ')}${tip.text()}`, 'taunt'); } else say('juno', () => L('Ха! Мій шторм ще не скінчився, а ти вже видихся. Котрийсь тест не вклався в час.', 'Ha! My storm isn’t over and you’re already worn out. One of the tests ran out of time.'), 'taunt'); }

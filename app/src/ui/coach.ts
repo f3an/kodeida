@@ -4,8 +4,9 @@
  * Кожна функція повертає пораду або null — тоді гра каже своє звичне.
  */
 import type { Level } from '../engine/level.ts';
-import type { CallResult, JudgeReport } from '../engine/types.ts';
+import type { CallResult, JudgeReport, TestCase } from '../engine/types.ts';
 import { L, uiLang } from '../i18n.ts';
+import { expectedOf } from '../engine/judge.ts';
 
 export interface Advice { who: 'fox' | 'sibyl' | 'host'; text: () => string }
 
@@ -96,7 +97,7 @@ export function adviseTimeout(_level: Level, code: string): Advice {
 }
 
 /** Запуск на прикладі пройшов без помилки, але відповідь не та. `why` — пояснення судді. */
-export function adviseRun(level: Level, code: string, r: CallResult, why: string): Advice | null {
+export function adviseRun(level: Level, code: string, r: CallResult, why: string, tc?: TestCase): Advice | null {
   const { code: c, bare } = clean(code);
   if (level.scene.type === 'street') {
     const acted = r.events.some((e) => e.t === 'act');
@@ -114,7 +115,9 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
   // для вправ «на місці» відповідь — змінений масив, а не те, що повернула функція
   const got = level.inPlace !== undefined ? (r.argsAfter?.[level.inPlace] ?? r.value) : r.value;
   const lang = uiLang();
-  const input = level.examples[0]?.args[level.inPlace ?? 0];
+  // тест, на якому впало: на Суді богів це може бути не перший приклад
+  const ex = tc ?? level.examples[0];
+  const input = ex?.args[level.inPlace ?? 0];
   const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
   if (level.inPlace !== undefined && Array.isArray(got) && Array.isArray(input)) {
     if (/\breturn\s+[\w[]/.test(bare) && same(got, input)) return fox('Масив лишився таким самим. Тут треба змінити сам масив на місці, а не повертати новий.', 'The array stayed the same. Here you have to change the array itself in place, not return a new one.');
@@ -139,7 +142,29 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
     return fox('Функція повернула undefined. Чи доходить код до return з відповіддю?', 'The function returned undefined. Does the code reach a return with the answer?');
   }
   if (/\bif\s*\((?:[^()]|\([^()]*\))*?[^=!<>]=(?!=)/.test(bare)) return fox('В if стоїть один знак =: він записує значення, а не порівнює. Порівнюють через ===.', 'There is a single = inside the if: it stores a value instead of comparing. Compare with ===.');
-  const args = level.examples[0]?.args[0];
+  // світ 2: два кінці назустріч
+  const want = ex ? expectedOf(level, ex) : undefined;
+  if (level.id === 'carthage.meet' && Array.isArray(got) && Array.isArray(want) && Array.isArray(input)) {
+    if (got.length === want.length - 1) return fox('Камінь посередині лишився без пари. Після циклу перевір: якщо left === right, додай і його.', 'The middle stone was left without a pair. After the loop, check: if left === right, add it too.');
+    if (got.length === want.length + 1 || (got.length === want.length && got.at(-1) === 2 * (input[Math.floor(input.length / 2)] as number))) return fox('Середній камінь склався сам із собою. Цикл має йти, поки left < right, а не <=.', 'The middle stone was added to itself. The loop should run while left < right, not <=.');
+  }
+  if ((level.id === 'carthage.mirror' || level.id === 'carthage.palindrome') && got === true && want === false && !/return\s+false/.test(bare))
+    return fox('Функція завжди каже true. Щойно знайшлася розбіжність, одразу поверни false.', 'The function always says true. As soon as you find a mismatch, return false straight away.');
+  if (level.id === 'carthage.palindrome' && got === false && want === true) {
+    if (!/toLowerCase|toUpperCase/.test(bare)) return fox('«A» і «a» — для JS різні символи. Порівнюй літери в одному регістрі: toLowerCase().', '“A” and “a” are different characters to JS. Compare letters in one case: toLowerCase().');
+    return fox('Коми, пробіли й двокрапки теж потрапляють у порівняння. Пропускай усе, що не літера й не цифра.', 'Commas, spaces and colons get into the comparison too. Skip everything that isn’t a letter or a digit.');
+  }
+  if (level.id === 'carthage.twosum' && Array.isArray(got) && got.length === 2 && ex) {
+    const [a, t] = ex.args as [number[], number];
+    if (a[got[0] as number] + a[got[1] as number] === t) return fox('Пару знайдено, але номери треба з одиниці, а не з нуля: поверни [l + 1, r + 1].', 'You found the pair, but the numbers must start from one, not zero: return [l + 1, r + 1].');
+  }
+  if (level.id === 'carthage.dups') {
+    if (Array.isArray(got)) return fox('Поверни число k — скільки мірок лишилось, а не сам масив. Масив ти змінюєш на місці.', 'Return the number k — how many measures are left, not the array itself. You change the array in place.');
+    if (typeof got === 'number' && typeof want === 'number' && got === want - 1) return fox('Мірок на одну менше, ніж треба. Перша мірка завжди унікальна, тож k починається з 1.', 'One measure short. The first measure is always unique, so k starts at 1.');
+  }
+  if (level.id === 'carthage.dido' && /height\[l\]\s*>\s*height\[r\]\s*\)\s*l\+\+|height\[l\]\s*<\s*height\[r\]\s*\)\s*r--/.test(bare))
+    return fox('Ти зсуваєш вищий стовп. Але вода стоїть до нижчого: поки він на місці, вужча ділянка не дасть більше. Зсувай нижчий.', 'You move the higher post. But the water rises only to the lower one: while it stays, a narrower plot can’t give more. Move the lower one.');
+  const args = ex?.args[0];
   if (level.id === 'troy.total' && Array.isArray(args) && got === args.length) return fox('Ти порахував мішки, а треба зерно: додавай не 1, а nums[i].', 'You counted the sacks, but we need the grain: add nums[i], not 1.');
   if (level.id === 'troy.sum' && Array.isArray(args)) {
     if (typeof got === 'number') return fox('Треба повернути масив, а не одне число: записуй суму в result після кожного мішка через push.', 'You need to return an array, not one number: write the sum into result after every sack with push.');

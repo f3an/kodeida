@@ -89,7 +89,7 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 
 **Pre-alpha, ready for the first playtest.**
 
-- **Playable:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–2. That is 22 exercises, from the first `enei.move()` to *Container With Most Water*, with tests, hints, stars and the Wolf comparison.
+- **Playable:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–2. That is 23 exercises, from the first `enei.move()` to *Container With Most Water*, with tests, hints, stars and the Wolf comparison.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
 - **Shipped:** installers for macOS, Windows and Linux on every release tag, auto-update from GitHub Releases.
 

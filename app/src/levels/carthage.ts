@@ -1,7 +1,7 @@
 import { rng, type Level, type World } from '../engine/level.ts';
 import type { TestCase } from '../engine/types.ts';
 import { lc, starter } from './util.ts';
-import { L } from '../i18n.ts';
+import { L, uiLang } from '../i18n.ts';
 
 const arr = (a: number[]): TestCase => ({ args: [a], label: JSON.stringify(a) });
 
@@ -15,6 +15,20 @@ const meet: Level = {
     'Поверни масив сум: <code>[walls[0] + walls[n−1], walls[1] + walls[n−2], …]</code>. Якщо камінь посередині один — додай його як є.',
     'Тут з\'являється пара, що йде <b>з двох кінців назустріч</b>, — головна хитрість Карфагена.',
   ],
+  tool: {
+    name: 'два вказівники в одному циклі',
+    text: [
+      'Два номери можна рухати в <b>одному</b> циклі: <code>left</code> іде вправо, <code>right</code> — вліво. Цикл триває, поки <code>left &lt; right</code>, тобто поки вони не зустрілися.',
+      'Якщо елементів непарна кількість, після циклу посередині лишається один, без пари: <code>left === right</code>.',
+    ],
+    code: 'let left = 0, right = a.length - 1;\nwhile (left < right) {\n  console.log(a[left], a[right]);\n  left++;\n  right--;\n}\nif (left === right) console.log("посередині:", a[left]);',
+  },
+  talk: [
+    { who: 'dido', text: 'Вітаю в Карфагені, троянці. Мені потрібні мірки муру — від двох кінців одночасно, бо часу обмаль.' },
+    { who: 'enei', text: 'Я стану зліва, Микита — справа. Микито? Микито!' },
+    { who: 'fox', text: 'Та тут я, тут. Просто придворні Дидони такі… уважні. Іду на свій кінець.' },
+  ],
+  quip: { who: 'dido', text: 'Мірки зійшлися. Ви ходите парою краще, ніж мої вартові.' },
   entry: 'meetSums', observe: ['walls'],
   starter: {
     ts: starter('meetSums', [['walls', 'number[]']], 'number[]', DOC_MEET(), '  const sums: number[] = [];\n  let left = 0, right = walls.length - 1;\n  // Слово ладу пиши тут\n\n  return sums;\n').ts,
@@ -33,6 +47,42 @@ function DOC_MEET() { return ['Зустрітися посередині', 'По
 function palRef(s: string): boolean { const t = s.toLowerCase().replace(/[^a-z0-9]/g, ''); return t === [...t].reverse().join(''); }
 const str = (s: string): TestCase => ({ args: [s], label: JSON.stringify(s) });
 
+/** Слово мовою інтерфейсу: в англійській грі печатки англійські. */
+const word2 = (uk: string, en: string): TestCase => ({ get args() { return [uiLang() === 'en' ? en : uk]; }, get label() { return JSON.stringify(uiLang() === 'en' ? en : uk); } });
+function mirrorRef(word: string): boolean { return word === [...word].reverse().join(''); }
+
+const mirror: Level = {
+  id: 'carthage.mirror', world: 2, title: 'Ім\'я на печатці', topic: 'порівняння з двох кінців',
+  brief: '<b>Ім\'я на печатці.</b> Чи читається ім\'я на печатці однаково зліва направо й справа наліво?',
+  statement: [
+    'Біля воріт Карфагена гості показують печатки. Справжня печатка — та, де ім\'я однаково читається з обох боків, як <code>"анна"</code> чи <code>"потоп"</code>.',
+    'Поверни <code>true</code>, якщо слово <code>word</code> однакове з обох боків, і <code>false</code>, якщо ні. Тут лише малі літери, без пробілів і знаків.',
+    'Порівнюй символи з двох кінців назустріч. Метод <code>reverse()</code> не знадобиться.',
+  ],
+  tool: {
+    name: 'ранній return',
+    text: [
+      '<code>return</code> можна написати будь-де: функція одразу закінчується. Щойно знайшлася хоч одна розбіжність — відповідь уже відома, і далі перевіряти не треба.',
+      'А якщо цикл пройшов до кінця й нічого не знайшов — після циклу повертаєш протилежне.',
+    ],
+    code: 'for (let i = 0; i < guests.length; i++) {\n  if (guests[i] === "Вовк") return false;  // далі можна не дивитися\n}\nreturn true;  // Вовка серед гостей немає',
+  },
+  talk: [
+    { who: 'dido', text: 'Кожен знатний гість має печатку з іменем. Справжня — та, що читається однаково з обох боків.' },
+    { who: 'fox', text: 'Порівнюй першу літеру з останньою, другу з передостанньою. Знайшов розбіжність — фальшивка, далі можна не дивитися.' },
+  ],
+  quip: { who: 'fox', text: 'Хе, моє ім\'я на печатці не вийде: «Микита» навпаки — «атиким». Звучить як заклинання.' },
+  entry: 'isMirror', observe: ['word'],
+  starter: starter('isMirror', [['word', 'string']], 'boolean', ['Ім\'я на печатці', 'true, якщо word читається однаково з обох боків.'], '  let left = 0, right = word.length - 1;\n  // Слово ладу пиши тут\n\n  return true;\n'),
+  examples: [word2('потоп', 'level'), word2('печатка', 'stamp')],
+  hidden: [word2('а', 'a'), word2('аа', 'aa'), word2('ab', 'ab'), word2('радар', 'radar'), word2('абба', 'abba'), word2('абвга', 'abcda')],
+  reference: mirrorRef,
+  hints: ['Яку літеру треба порівняти з першою?', 'Порівнюй word[left] і word[right], доки вони не зустрілися. Розбіжність — одразу false.', 'while (left < right) { if (word[left] !== word[right]) return false; left++; right--; } return true;'],
+  solution: 'function isMirror(word: string): boolean {\n  let left = 0, right = word.length - 1;\n  while (left < right) {\n    if (word[left] !== word[right]) return false;\n    left++;\n    right--;\n  }\n  return true;\n}',
+  lesson: 'Дзеркало перевіряють з двох кінців: одна розбіжність — і відповідь уже відома.',
+  scene: { type: 'array', skin: 'letter', mode: 'pointers' },
+};
+
 const palindrome: Level = {
   id: 'carthage.palindrome', world: 2, title: 'Напис над воротами', topic: 'два вказівники на рядку',
   leetcode: lc(125, 'Valid Palindrome'),
@@ -42,6 +92,19 @@ const palindrome: Level = {
     'Поверни <code>true</code>, якщо рядок <code>s</code> — паліндром, враховуючи лише літери й цифри та не зважаючи на регістр.',
     'Допоміжне: <code>/[a-z0-9]/i.test(ch)</code> — чи це літера латиниці або цифра; <code>ch.toLowerCase()</code>.',
   ],
+  tool: {
+    name: 'пропуск зайвого і нижній регістр',
+    text: [
+      'Усередині великого циклу можна поставити маленькі цикли, що <b>пропускають</b> зайве: поки на лівому місці не літера — <code>left++</code>.',
+      '<code>ch.toLowerCase()</code> робить літеру малою, тож «А» і «а» стануть однаковими. <code>/[a-z0-9]/i.test(ch)</code> перевіряє, чи це латинська літера або цифра.',
+    ],
+    code: 'let i = 0;\nwhile (i < s.length && s[i] === " ") i++;   // пропустили пробіли\nconsole.log(s[i].toLowerCase());',
+  },
+  talk: [
+    { who: 'dido', text: 'А тепер напис над моїми воротами. Тут і великі літери, і коми, і пробіли.' },
+    { who: 'fox', text: 'Те саме дзеркало, тільки зайве пропускай, а великі літери роби малими. Кома нам не свідок.' },
+  ],
+  quip: { who: 'dido', text: 'Справжній напис. Значить, і ворота справжні. Проходьте.' },
   entry: 'isPalindrome', observe: ['s'],
   starter: starter('isPalindrome', [['s', 'string']], 'boolean', ['Напис над воротами', 'true, якщо s — паліндром (лише літери й цифри, без регістру).']),
   examples: [str('A man, a plan, a canal: Panama'), str('race a car')],
@@ -65,6 +128,20 @@ const twoSum: Level = {
     'Знайди двох різних купців, чиї ціни разом дають <code>target</code>, і поверни їхні номери <b>з одиниці</b>: <code>[i + 1, j + 1]</code>, де <code>i &lt; j</code>. Відповідь завжди одна.',
     'Обмеження: <code>n ≤ 10⁴</code>. Вовк питає кожну пару купців — ринок закриється раніше.',
   ],
+  tool: {
+    name: 'відсортований ряд підказує напрям',
+    text: [
+      'На відсортованому ряді сума лівого й правого підказує, куди йти. Замала — лівий зсувається вправо до дорожчих. Завелика — правий зсувається вліво до дешевших.',
+      'Кожен крок відкидає цілого купця, якому вже точно немає пари. Тому всі пари перебирати не треба.',
+    ],
+    code: '// ціни: [2, 5, 9, 14], треба 14\n// 2 + 14 = 16 → завелика → правий вліво\n// 2 + 9  = 11 → замала  → лівий вправо\n// 5 + 9  = 14 → знайшли!',
+  },
+  talk: [
+    { who: 'dido', text: 'На ринку купець продає товар, якщо хтось інший докладе решту до ціни. Ряд стоїть за ціною, від дешевих до дорогих.' },
+    { who: 'wolf', text: 'А я спитаю кожну пару! Кожного з кожним! Ринок довгий, а я нікуди не поспішаю.' },
+    { who: 'fox', text: 'Ринок закриють раніше, ніж ти дійдеш до середини. Ряд відсортований — він сам підкаже, кого відпустити.' },
+  ],
+  quip: { who: 'wolf', text: 'Як? Уже? Я ще й першого купця не допитав…' },
   entry: 'twoSum', observe: ['numbers', null],
   starter: starter('twoSum', [['numbers', 'number[]'], ['target', 'number']], 'number[]', ['Два купці', 'numbers відсортовано за зростанням. Поверни [i + 1, j + 1],', 'де numbers[i] + numbers[j] === target.'], '  // Слово ладу пиши тут\n\n  return [];\n'),
   examples: [ts2([2, 7, 11, 15], 9), ts2([2, 3, 4], 6)],
@@ -108,6 +185,19 @@ const removeDup: Level = {
     'Уламок заплутав мірки: на стрічці <code>nums</code> (відсортованій) деякі повторюються.',
     'Залиш кожну мірку один раз <b>на місці</b>: перші <code>k</code> елементів мають бути унікальними мірками в тому ж порядку. Поверни <code>k</code>. Що лишиться після <code>k</code> — неважливо.',
   ],
+  tool: {
+    name: 'повільний і швидкий вказівники',
+    text: [
+      'Це вже знайомий з моря індекс «куди писати». <code>k</code> — довжина чистої частини, <code>i</code> біжить уперед і шукає нову мірку.',
+      'Масив відсортований, тож повтори стоять поруч: досить порівняти з останньою записаною міркою <code>nums[k - 1]</code>.',
+    ],
+    code: '// [1, 1, 2, 2, 3]\n//  k=1: чиста частина — [1]\n//  i бачить 2 ≠ 1 → пишемо на місце k, k = 2\n//  i бачить 3 ≠ 2 → k = 3',
+  },
+  talk: [
+    { who: 'enei', text: 'Мірки на стрічці повторюються: одна й та сама по три рази.' },
+    { who: 'fox', text: 'Пам\'ятаєш море? Один вказівник читає, інший пише. Тут те саме, тільки пишемо нову мірку, а повтори пропускаємо.' },
+  ],
+  quip: { who: 'dido', text: 'Тепер мірки чисті. Ще трохи — і мур зійдеться.' },
   entry: 'removeDuplicates', observe: ['nums'],
   starter: starter('removeDuplicates', [['nums', 'number[]']], 'number', ['Мірки без повторів', 'nums відсортовано. Перші k елементів — унікальні мірки; поверни k.'], '  let k = 0;\n  // Слово ладу пиши тут\n\n  return k;\n'),
   examples: [arr([1, 1, 2]), arr([0, 0, 1, 1, 1, 2, 2, 3, 3, 4])],
@@ -145,6 +235,19 @@ const dido: Level = {
     'Поверни найбільшу кількість води: <code>(j − i) · min(height[i], height[j])</code>.',
     'Обмеження: <code>2 ≤ n ≤ 10⁵</code>, <code>0 ≤ height[i] ≤ 10⁴</code>. Світ рахує, скільки разів код дивиться на стовпи: Вовк перебирає всі пари, а шкура тим часом висихає.',
   ],
+  tool: {
+    name: 'відкинути гіршого',
+    text: [
+      'Почни з найширшої ділянки: крайні стовпи. Вода стоїть до <b>нижчого</b> з них.',
+      'Якщо зсунути вищий, ділянка звузиться, а вода вище не підніметься: її тримає той самий нижчий. Тож нижчий стовп уже дав найкраще, що міг, — його й відкидаємо.',
+    ],
+    code: '// [4, 8, 6, 3]  l = 0 (4), r = 3 (3)\n// площа = 3 × min(4, 3) = 9\n// нижчий — праворуч (3): зсуваємо r',
+  },
+  talk: [
+    { who: 'dido', text: 'Скільки землі обгородиш шкурою, стільки й моя. Стовпи вже стоять — обери два, між якими вміститься найбільше води.' },
+    { who: 'wolf', text: 'Кожна пара! Кожна! Я перерахую всі, а шкура тим часом… ой, висихає.' },
+    { who: 'fox', text: 'Почнемо з крайніх. А далі щоразу відкидаємо гіршого — той, що нижчий. Чому саме його — подумай, поки я усміхаюся придворним.' },
+  ],
   entry: 'maxArea', observe: ['height'],
   starter: starter('maxArea', [['height', 'number[]']], 'number', ['Задача Дидони', 'height[i] — висота i-го стовпа.', 'Поверни, скільки найбільше води вміщає ділянка між двома стовпами.'], '  let best = 0;\n  // Слово ладу пиши тут\n\n  return best;\n'),
   examples: [arr([1, 8, 6, 2, 5, 4, 8, 3, 7]), arr([1, 1])],
@@ -166,5 +269,5 @@ export const carthage: World = {
   n: 2, name: 'Карфаген Дидони', song: 'Пісня II · Гостини', topic: 'Two Pointers', fox: '#9b3a87',
   host: { who: 'Дидона', line: 'Скільки землі обгородиш шкурою, стільки й моя. Стовпи вже стоять, обери два.' },
   motif: 'rhombs', trick: 'Два вказівники',
-  levels: [meet, palindrome, twoSum, removeDup, dido],
+  levels: [meet, mirror, palindrome, twoSum, removeDup, dido],
 };

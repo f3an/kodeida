@@ -455,6 +455,45 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['Where are Aeneas and Mykyta after each step?', 'left moves right, right moves left, while left < right. At the end check whether a stone is left in the middle.', 'while (left < right) sums.push(walls[left++] + walls[right--]); if (left === right) sums.push(walls[left]);'],
     lesson: 'Two pointers from opposite ends walk the array together just once.',
     doc: ['Meet in the middle', 'Return [walls[0]+walls[n−1], walls[1]+walls[n−2], …];', 'the middle stone (if any) as is.'],
+    tool: {
+      name: 'two pointers in one loop',
+      text: [
+        'Two numbers can move in <b>one</b> loop: <code>left</code> goes right, <code>right</code> goes left. The loop runs while <code>left &lt; right</code>, that is, until they meet.',
+        'If there is an odd number of elements, one is left in the middle after the loop, without a pair: <code>left === right</code>.',
+      ],
+      code: 'let left = 0, right = a.length - 1;\nwhile (left < right) {\n  console.log(a[left], a[right]);\n  left++;\n  right--;\n}\nif (left === right) console.log("middle:", a[left]);',
+    },
+    talk: [
+      'Welcome to Carthage, Trojans. I need the wall measured — from both ends at once, for time is short.',
+      'I’ll take the left, Mykyta the right. Mykyta? Mykyta!',
+      'I’m here, I’m here. Dido’s courtiers are just so… attentive. Going to my end.',
+    ],
+    quip: 'The measures met. You walk in pairs better than my guards.',
+  },
+  'carthage.mirror': {
+    title: 'The name on the seal', topic: 'comparing from both ends',
+    brief: '<b>The name on the seal.</b> Does the name on the seal read the same left to right and right to left?',
+    statement: [
+      'At the gates of Carthage guests show their seals. A true seal is one whose name reads the same from both ends, like <code>"level"</code> or <code>"radar"</code>.',
+      'Return <code>true</code> if the word <code>word</code> is the same from both ends, and <code>false</code> if not. Only lower-case letters here, no spaces or punctuation.',
+      'Compare characters from both ends towards each other. You won’t need <code>reverse()</code>.',
+    ],
+    hints: ['Which letter should the first one be compared with?', 'Compare word[left] and word[right] until they meet. A mismatch — false straight away.', 'while (left < right) { if (word[left] !== word[right]) return false; left++; right--; } return true;'],
+    lesson: 'A mirror is checked from both ends: one mismatch and the answer is known.',
+    doc: ['The name on the seal', 'true if word reads the same from both ends.'],
+    tool: {
+      name: 'an early return',
+      text: [
+        '<code>return</code> can be written anywhere: the function ends right away. As soon as you find a single mismatch, the answer is known and there’s no need to check further.',
+        'And if the loop got to the end and found nothing, return the opposite after the loop.',
+      ],
+      code: 'for (let i = 0; i < guests.length; i++) {\n  if (guests[i] === "Wolf") return false;  // no need to look further\n}\nreturn true;  // no Wolf among the guests',
+    },
+    talk: [
+      'Every noble guest has a seal with their name. A true one reads the same from both ends.',
+      'Compare the first letter with the last, the second with the one before last. Found a mismatch — it’s a fake, no need to look further.',
+    ],
+    quip: 'Heh, my name won’t make a seal: “Mykyta” backwards is “atykym”. Sounds like a spell.',
   },
   'carthage.palindrome': {
     title: 'The inscription over the gate', topic: 'two pointers on a string',
@@ -467,6 +506,19 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['What if you compare characters from both ends?', 'left and right towards each other; skip characters that are not letters or digits; compare in lower case.', 'while (l < r) { skip the rest; if s[l] ≠ s[r] → false; l++; r--; } return true;'],
     lesson: 'Two pointers work on strings too: compare the ends and move to the middle.',
     doc: ['The inscription over the gate', 'true if s is a palindrome (letters and digits only, any case).'],
+    tool: {
+      name: 'skipping and lower case',
+      text: [
+        'Inside a big loop you can put small loops that <b>skip</b> what you don’t need: while the left place isn’t a letter — <code>left++</code>.',
+        '<code>ch.toLowerCase()</code> makes a letter lower case, so “A” and “a” become the same. <code>/[a-z0-9]/i.test(ch)</code> checks whether it’s a Latin letter or a digit.',
+      ],
+      code: 'let i = 0;\nwhile (i < s.length && s[i] === " ") i++;   // skipped the spaces\nconsole.log(s[i].toLowerCase());',
+    },
+    talk: [
+      'Now the inscription over my gates. It has capital letters, commas and spaces.',
+      'The same mirror, only skip what’s extra and make capitals small. A comma is no witness to us.',
+    ],
+    quip: 'A true inscription. So the gates are true as well. Come in.',
   },
   'carthage.twosum': {
     title: 'Two merchants', topic: 'two pointers on a sorted array',
@@ -479,6 +531,20 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['The row is sorted. What happens to the sum if the left merchant moves right?', 'Start with the cheapest and the most expensive. Sum too small — left moves right; too big — right moves left.', 'l = 0, r = n − 1; while l < r: s = a[l] + a[r]; s === t → [l+1, r+1]; s < t → l++; else r--.'],
     lesson: 'In a sorted row every comparison rules out a whole merchant: two pointers instead of all pairs.',
     doc: ['Two merchants', 'numbers is sorted ascending. Return [i + 1, j + 1],', 'where numbers[i] + numbers[j] === target.'],
+    tool: {
+      name: 'a sorted row shows the way',
+      text: [
+        'On a sorted row, the sum of the left and the right tells you where to go. Too small — the left moves right towards pricier goods. Too big — the right moves left towards cheaper ones.',
+        'Each step discards a whole merchant who surely has no pair. That’s why you don’t need to try every pair.',
+      ],
+      code: '// prices: [2, 5, 9, 14], need 14\n// 2 + 14 = 16 → too big   → right moves left\n// 2 + 9  = 11 → too small → left moves right\n// 5 + 9  = 14 → found it!',
+    },
+    talk: [
+      'At the market a merchant sells if someone else adds the rest of the price. The row stands by price, from cheap to dear.',
+      'And I’ll ask every pair! Every one with every other! The market is long, and I’m in no hurry.',
+      'The market will close before you reach the middle. The row is sorted — it will tell you whom to let go.',
+    ],
+    quip: 'What? Already? I haven’t finished questioning the first merchant…',
   },
   'carthage.dups': {
     title: 'Measures without repeats', topic: 'slow and fast pointers',
@@ -490,6 +556,19 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['Repeats stand next to each other. Where should the next new measure go?', 'k is the length of the clean part. The fast pointer i looks for a measure different from nums[k−1].', 'k = 1; for (i = 1..n−1) if (nums[i] !== nums[k−1]) nums[k++] = nums[i]; return k.'],
     lesson: 'The slow pointer keeps the clean part, the fast one looks for something new — and no tail shifting.',
     doc: ['Measures without repeats', 'nums is sorted. The first k elements are the unique measures; return k.'],
+    tool: {
+      name: 'slow and fast pointers',
+      text: [
+        'This is the “where to write” index you know from the sea. <code>k</code> is the length of the clean part, <code>i</code> runs ahead looking for a new measure.',
+        'The array is sorted, so repeats stand next to each other: it’s enough to compare with the last written measure <code>nums[k - 1]</code>.',
+      ],
+      code: '// [1, 1, 2, 2, 3]\n//  k=1: clean part is [1]\n//  i sees 2 ≠ 1 → write it at k, k = 2\n//  i sees 3 ≠ 2 → k = 3',
+    },
+    talk: [
+      'The measures on the tape repeat: the same one three times over.',
+      'Remember the sea? One pointer reads, the other writes. Same here, only we write a new measure and skip the repeats.',
+    ],
+    quip: 'Now the measures are clean. A little more and the wall will close.',
   },
   'carthage.dido': {
     title: 'Dido’s problem', topic: 'two pointers',
@@ -507,6 +586,19 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     ],
     lesson: 'The lower post has already given its best: move it, and in n steps everything that matters is checked.',
     doc: ['Dido’s problem', 'height[i] — the height of post i.', 'Return the most water a plot between two posts can hold.'],
+    tool: {
+      name: 'discard the worse one',
+      text: [
+        'Start with the widest plot: the outermost posts. The water rises only to the <b>lower</b> of them.',
+        'If you move the higher one, the plot narrows, and the water won’t rise: the same lower post holds it. So the lower post has already given its best — that’s the one we discard.',
+      ],
+      code: '// [4, 8, 6, 3]  l = 0 (4), r = 3 (3)\n// area = 3 × min(4, 3) = 9\n// the lower one is on the right (3): move r',
+    },
+    talk: [
+      'As much land as you can fence with a hide is mine. The posts are already standing — pick two that hold the most water.',
+      'Every pair! Every one! I’ll count them all, and meanwhile the hide… oh, it’s drying out.',
+      'Let’s start with the outermost. Then every time we discard the worse one — the lower one. Why exactly that one — think it over while I smile at the courtiers.',
+    ],
   },
 };
 
