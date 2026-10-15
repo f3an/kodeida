@@ -1591,6 +1591,30 @@ function forestBg(sp){sky(sp,['#bfe0c8','#d9eed9','#eef6ea'],0,92);[[12,92,36],[
 function barrelBack(sp,f){const x=89,y=92,w=34;sp.fill(ell(x+w/2,y,w/2,3.5),'#3a2414');sp.fill(ell(x+w/2,y+0.5,w/2-2,2.4),(xx,yy)=>RAINBOW[(Math.floor(f/2)+((xx>>2)))%RAINBOW.length]);}
 function barrelFront(ctx,s,f){const x=89,y=92,w=34,h=24;for(let yy=y+1;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++){const band=(yy===y+5||yy===y+6||yy===y+17||yy===y+18);const edge=xx===x||xx===x+w-1;px(ctx,xx*s,yy*s,s,band?'#3a2414':(edge?'#5b3a20':((xx-x)%6===0?'#6b4420':'#7a4a24')));}
   for(let xx=x;xx<x+w;xx++)px(ctx,xx*s,y*s,s,'#3a2414');}
+
+/* вцілілі троянці: воїн, моряк із мішком, старий зі стрижнем, жінка з клунком */
+function makeTrojan(kind){
+  const s=new Spr(40,66),SK='#e6b08a',SKs='#c48c66';
+  const P={warrior:{tu:'#9b1c1c',tus:'#701313',cl:'#5b3a20'},sailor:{tu:'#2f55a0',tus:'#203a72',cl:'#d9cfb6'},elder:{tu:'#8a8478',tus:'#6b665c',cl:'#4a4540'},woman:{tu:'#3f7a3a',tus:'#2f5a28',cl:'#b3202a'}}[kind];
+  const longRobe=kind==='elder'||kind==='woman';
+  if(longRobe){s.fill(poly([[13,24],[27,24],[31,62],[9,62]]),(x)=>x>23?P.tus:P.tu);s.fill(rect(12,62,6,3),'#4a3020');s.fill(rect(22,62,6,3),'#3a2416');}
+  else{s.fill(rect(14,46,5,16),SK);s.fill(rect(21,46,5,16),SKs);s.fill(rect(13,60,7,3),'#4a3020');s.fill(rect(21,60,7,3),'#3a2416');
+    s.fill(poly([[13,24],[27,24],[29,48],[11,48]]),(x)=>x>23?P.tus:P.tu);s.fill(rect(12,40,17,2),'#8b5a2b');}
+  s.fill(poly([[13,25],[8,38],[11,40],[15,30]]),P.tu);s.fill(ell(9,40,2,2),SK);
+  s.fill(poly([[27,25],[32,38],[29,40],[25,30]]),P.tus);s.fill(ell(31,40,2,2),SKs);
+  s.fill(rect(17,20,6,5),SK);
+  s.fill(ell(20,15,5.5,6.5),(x)=>x>22?SKs:SK);
+  s.fill(rect(17,15,2,1),BK);s.fill(rect(22,15,2,1),BK);
+  if(kind==='warrior'){s.fill(ell(20,11,6.5,5),'#c08a3e');s.fill(rect(14,11,2,7),'#c08a3e');s.fill(rect(24,11,2,7),'#8f6228');s.fill(path([[14,6],[20,2],[27,6]],2.2),'#c0392b');
+    s.fill(line(34,6,35,64,1.4),'#6b4a2a');s.fill(poly([[33,8],[34.5,2],[36,8]]),'#cdd2da');s.fill(path([[17,19],[20,21],[23,19]],1),'#5b3a20');}
+  if(kind==='sailor'){s.fill(ell(20,10,6,3.5),'#3a2414');s.fill(rect(14,11,12,2),'#f2d27a');s.fill(ell(31,24,6,5),'#c9a466');s.fill(line(27,22,34,27),'#8b7244');}
+  if(kind==='elder'){s.fill(ell(20,10,6,3.5),'#e9e6df');s.fill(poly([[15,17],[25,17],[23,29],[17,29]]),'#e9e6df');s.fill(line(7,22,7,64,1.4),'#7a5a32');}
+  if(kind==='woman'){s.fill(poly([[13,13],[27,13],[28,24],[12,24]]),P.cl);s.fill(ell(20,10,7.5,5),P.cl);s.fill(ell(20,15.5,4.3,5),SK);s.fill(rect(17,15,2,1),BK);s.fill(rect(22,15,2,1),BK);
+    s.fill(ell(10,38,5,4),'#d9cfb6');s.fill(line(6,36,14,40),'#a3243a');}
+  return s.outline(0.6);
+}
+const TROJANS=['warrior','sailor','elder','woman'].map(makeTrojan);
+function drawSack(ctx,x,y){ctx.fillStyle='#1f1b16';ctx.fillRect(x-10,y-14,20,18);ctx.fillStyle='#a8844a';ctx.fillRect(x-9,y-12,18,15);ctx.fillStyle='#c9a466';ctx.fillRect(x-8,y-12,10,6);ctx.fillStyle='#7a5a32';ctx.fillRect(x-3,y-17,6,5);ctx.fillStyle='#e9d9a6';ctx.fillRect(x-1,y-6,2,2);}
 const OB=[
   OBX[0],OBX[1],
   {kind:'заставка',title:'Мішок вітрів',narr:'Еол розв\'язує мішок, і вітри виривається на волю. Хмари крутяться над Олімпом.',lines:[['Еол','Ану, хлопці, гуляйте!']],act:'Дивиться.',
@@ -1640,7 +1664,34 @@ const OB=[
      ctx.fillStyle='#141b17';ctx.fillRect(126*s,8*s,68*s,34*s);ctx.fillStyle='#8c968e';ctx.fillRect(130*s,12*s,4*s,2*s);
      const typed='enei.move();',n=Math.round(typed.length*prog(t,0.05,0.35));ctx.fillStyle='#e7e0cf';ctx.font=`${7*s}px "Fira Code", monospace`;ctx.fillText(typed.slice(0,n),137*s,19*s);
      const pulse=t<0.42?(Math.sin(f)*0.5+0.5):0;ctx.fillStyle=t>0.4&&t<0.46?'#b85a1f':'#e2702b';ctx.fillRect(130*s,27*s,(28+pulse*2)*s,10*s);ctx.fillStyle='#1a120b';ctx.fillText('▶ Run',133*s,34.5*s);}},
-  OBX[6],OBX[7],OBX[8],
+  OBX[6],
+  /* Збори ватаги: Еней іде вулицею, підбирає мішки, і вцілілі троянці стають за ним у ватагу */
+  {kind:'інтерактив',title:'Збори ватаги',narr:'Еней збирає вцілілих троянців і зерно. Перші вправи світу 0: цикл, умова, змінна-лічильник.',lines:[['Еней','Збираймо своїх, і зерно не лишаймо.'],['Микита','Можна й руками кожен мішок… але цикл хитріший.']],act:'Проходить вправи світу 0 і фінальну задачу Running Sum.',
+   bg:(sp,f)=>{ruins(sp,f);},
+   fg:(ctx,f,s)=>{const t=(f%64)/64,ex=8+t*330,G=SH_*s,homes=[96,170,236,300];
+     homes.forEach((hx,k)=>{const sx=hx-16;if(ex+34<sx)drawSack(ctx,sx,G-8);});
+     let n=0;const followers=[];
+     homes.forEach((hx,k)=>{if(ex+34>=hx-16)followers.push(k);});
+     homes.forEach((hx,k)=>{const fi=followers.indexOf(k);const T=TROJANS[k];
+       if(fi<0){T.draw(ctx,hx,G-T.h-2+(k%2),1);}
+       else{n++;const x=Math.max(2,ex-34*(fi+1)),bob=Math.floor(f/2+k)%2;T.draw(ctx,Math.round(x),G-T.h-2-bob,1);}});
+     const eb=Math.floor(f/2)%2;ENEI_SCENE.draw(ctx,Math.round(ex),G-72-eb,1);
+     ctx.fillStyle='rgba(20,27,23,.82)';ctx.fillRect(8,8,128,22);ctx.fillStyle='#f2d27a';ctx.font='600 12px "Fira Code", monospace';ctx.fillText(`ватага = ${n} / 4`,16,23);}},
+  /* Відплиття: корабель з Енеєм, Микитою і ватагою пливе до тріщини */
+  {kind:'інтерактив',title:'Відплиття',narr:'Корабель заходить у тріщину між світами, Микита перефарбовується в морський синій. Так почалась Кодеїда.',lines:[['Микита','Чую… пахне морем і уламком. Туди!']],act:'Відкривається мапа світів і порожня вишиванка Енея.',
+   bg:(sp,f)=>{sky(sp,['#5a4a8a','#c96f7a','#f2b880'],0,80);sp.fill(ell(60,78,14,14),'#ffd98a');sea(sp,f,80,'#3a4f86','#2a3a6a','#f2b880');
+     for(let y=14;y<96;y++){const x=172+Math.round(Math.sin(y*0.4+f*0.3)*2);for(let k=-6;k<=6;k++){const a=Math.abs(k);if(a<2)sp.set(x+k,y,'#ffffff');else if(a<4&&(y+f)%2)sp.set(x+k,y,'#9fe3ff');else if((x+k+y)%3===0)sp.set(x+k,y,'#6fb6e3');}}},
+   fg:(ctx,f,s)=>{const sx=2+(f%40)*1.3,bob=(f%4<2?0:1),dk=98+bob,W2=118;
+     poly([[sx+46,24],[sx+82,60],[sx+46,90]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,(y===58||y===59)?RD:'#efe7d4'));
+     poly([[sx+42,36],[sx+16,72],[sx+42,88]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,'#e2d9c3'));
+     line(sx+44,dk,sx+44,20).forEach(([x,y])=>{px(ctx,x*s,y*s,s,'#3a2414');px(ctx,(x+1)*s,y*s,s,'#3a2414');});
+     const crew=[[TROJANS[2],sx+4],[ENEI_SCENE,sx+20],[TROJANS[0],sx+46],[TROJANS[3],sx+66],[FOX_SEA,sx+88]];
+     crew.forEach(([sp_,x])=>sp_.draw(ctx,Math.round(x*s),dk*s-sp_.h+2,1));
+     poly([[sx,dk],[sx+W2,dk],[sx+W2-10,dk+14],[sx+10,dk+14]]).forEach(([x,y])=>px(ctx,x*s,y*s,s,y<dk+2?'#7a4a24':(y>dk+10?'#3a2414':'#5b3a20')));
+     for(let k=0;k<8;k++)px(ctx,(sx+14+k*12)*s,(dk+6)*s,s,'#2a1a10');
+     const oa=Math.sin(f*0.5)*0.5;line(sx+30,dk+4,sx+18+Math.round(oa*8),dk+20).forEach(([x,y])=>px(ctx,x*s,y*s,s,'#8b5a2b'));
+     line(sx+70,dk+4,sx+58+Math.round(oa*8),dk+20).forEach(([x,y])=>px(ctx,x*s,y*s,s,'#8b5a2b'));}},
+
 ];
 const obC=document.getElementById('ob-canvas'),obList=document.getElementById('ob-steps'),obScroll=document.getElementById('ob-scroll'),obDots=document.getElementById('ob-dots');
 let obActive=0,obSince=performance.now();
