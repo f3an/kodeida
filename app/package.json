@@ -95,13 +95,49 @@
       ]
     },
     "dmg": {
-      "artifactName": "Kodeida-${version}.${ext}"
+      "artifactName": "Kodeida-${version}.${ext}",
+      "title": "Kodeida ${version}",
+      "background": "build/background.png",
+      "iconSize": 100,
+      "window": {
+        "width": 660,
+        "height": 400
+      },
+      "contents": [
+        {
+          "x": 170,
+          "y": 200,
+          "type": "file"
+        },
+        {
+          "x": 490,
+          "y": 200,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     },
     "win": {
       "target": "nsis"
     },
     "nsis": {
-      "artifactName": "Kodeida-Setup-${version}.${ext}"
+      "artifactName": "Kodeida-Setup-${version}.${ext}",
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Kodeida",
+      "uninstallDisplayName": "Kodeida",
+      "installerSidebar": "build/installerSidebar.bmp",
+      "uninstallerSidebar": "build/uninstallerSidebar.bmp",
+      "installerHeader": "build/installerHeader.bmp",
+      "multiLanguageInstaller": true,
+      "installerLanguages": [
+        "uk_UA",
+        "en_US"
+      ],
+      "runAfterFinish": true
     },
     "linux": {
       "target": [
