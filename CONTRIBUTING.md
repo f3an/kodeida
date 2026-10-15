@@ -50,6 +50,32 @@ Every push to `main` that touches `site/` redeploys GitHub Pages.
 - Keep pull requests scoped to one change and fill in the template.
 - For anything security-related, see [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
+## Releases
+
+Releases are built by [`.github/workflows/release.yml`](.github/workflows/release.yml) and published to
+[GitHub Releases](https://github.com/f3an/kodeida/releases); the installed app checks them on start and every
+6 hours and updates itself (`electron-updater`).
+
+1. Bump `version` in `app/package.json` (the tag must match it).
+2. Commit, then tag and push the tag:
+   ```bash
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
+3. The workflow builds macOS (`.dmg` + `.zip`), Windows (NSIS `.exe`) and Linux (`.AppImage`) and publishes the
+   release with auto-generated notes. Running it manually from the Actions tab builds without publishing.
+
+macOS signing and notarization need these repository secrets (the same ones Mova-Flow uses). Without them the macOS
+build is unsigned: Gatekeeper warns on first launch and auto-update does not work on macOS.
+
+| Secret | What it is |
+|---|---|
+| `CSC_LINK` | Developer ID Application certificate with its private key, exported as `.p12`, **base64-encoded** |
+| `CSC_KEY_PASSWORD` | Password of that `.p12` |
+| `APPLE_API_KEY_B64` | App Store Connect API key (`AuthKey_XXXXXXXXXX.p8`), **base64-encoded** |
+| `APPLE_API_KEY_ID` | Its key ID (the `XXXXXXXXXX` part) |
+| `APPLE_API_ISSUER` | Issuer ID from App Store Connect → Users and Access → Integrations |
+
 ## Licensing of contributions
 
 Code contributions are accepted under the [Apache License 2.0](LICENSE); story, lore and design-document contributions under [CC BY-SA 4.0](LICENSE-CONTENT.md).

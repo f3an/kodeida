@@ -1462,4 +1462,4 @@ const OB=[
 
 ];
 
-export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, drawSack, drawEgg, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };
+export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, drawSack, drawEgg, eggCells, EGG_PAL, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };

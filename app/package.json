@@ -1,7 +1,7 @@
 {
   "name": "kodeida",
   "productName": "Kodeida",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "A game where your code moves the hero.",
   "license": "Apache-2.0",
@@ -14,28 +14,82 @@
     "start": "npm run build && electron .",
     "electron:dev": "KODEIDA_DEV_URL=http://localhost:5173 electron .",
     "selftest": "node scripts/selftest.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "dist": "npm run build && electron-builder --publish never"
   },
   "dependencies": {
+    "electron-updater": "6.8.9"
+  },
+  "devDependencies": {
     "@fontsource/fira-code": "5.3.0",
     "@fontsource/manrope": "5.3.0",
     "@fontsource/unbounded": "5.3.0",
-    "electron-updater": "6.8.9",
-    "monaco-editor": "0.57.0",
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "sucrase": "3.35.1"
-  },
-  "devDependencies": {
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "electron": "44.7.2",
     "electron-builder": "26.15.3",
+    "monaco-editor": "0.57.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sucrase": "3.35.1",
     "typescript": "7.0.2",
     "vite": "8.3.4"
   },
   "overrides": {
     "dompurify": "3.4.17"
+  },
+  "homepage": "https://f3an.github.io/kodeida/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/f3an/kodeida.git"
+  },
+  "build": {
+    "appId": "ua.kodeida.app",
+    "productName": "Kodeida",
+    "copyright": "© 2026 Ihor Cherniavskyi",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "f3an",
+        "repo": "kodeida"
+      }
+    ],
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "artifactName": "Kodeida-${version}-${arch}-mac.${ext}",
+      "category": "public.app-category.education",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "dmg": {
+      "artifactName": "Kodeida-${version}.${ext}"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "artifactName": "Kodeida-Setup-${version}.${ext}"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Education",
+      "artifactName": "Kodeida-${version}-${arch}.${ext}"
+    }
   }
 }
