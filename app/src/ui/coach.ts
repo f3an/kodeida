@@ -90,7 +90,9 @@ export function adviseError(level: Level, code: string, err: { message: string; 
 }
 
 /** Код працював понад 2 секунди. */
-export function adviseTimeout(_level: Level, code: string): Advice {
+export function adviseTimeout(level: Level, code: string): Advice {
+  if (level.world === 5 && !isPy(code) && /\blo\s*=\s*mid\s*[;\n}]/.test(clean(code).bare + '\n'))
+    return fox('lo = mid може ніколи не зрушити: коли hi = lo + 1, середина дорівнює lo, і цикл стоїть на місці. Пиши lo = mid + 1.', 'lo = mid may never move: when hi = lo + 1, the middle equals lo and the loop stands still. Write lo = mid + 1.');
   if (isPy(code)) return fox('Цикл не закінчується. Перевір, чи змінюється щось, від чого залежить умова while (наприклад, чи є крок усередині).', 'The loop never ends. Check whether anything that the while condition depends on changes (for example, is there a step inside?).');
   const { bare } = clean(code);
   const w = bare.match(/while\s*\(([^)]*\)?)\)\s*\{?([\s\S]*)/);
@@ -141,6 +143,14 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
   // мова вулиці: в англійській грі вулиця англійська, і навпаки
   if (/"троянець"|'троянець'/.test(c) && lang === 'en') return fox('In the English game the street speaks English: look for "trojan", not "троянець".', 'In the English game the street speaks English: look for "trojan", not "троянець".');
   if (/"trojan"|'trojan'/.test(c) && lang !== 'en') return fox('В українській грі вулиця говорить українською: шукай "троянець", а не "trojan".', 'In the Ukrainian game the street speaks Ukrainian: look for "троянець", not "trojan".');
+  // світ 5: поділ навпіл
+  if (level.world === 5) {
+    const want = ex ? expectedOf(level, ex) : undefined;
+    if (/\(\s*\w+\s*\+\s*\w+\s*\)\s*\/\s*2/.test(bare) && !/Math\.(floor|trunc)|>>|\|\s*0/.test(bare)) return fox('(lo + hi) / 2 буває дробовим: nums[2.5] — це undefined. Середина має бути цілою: Math.floor((lo + hi) / 2).', '(lo + hi) / 2 can be a fraction: nums[2.5] is undefined. The middle must be whole: Math.floor((lo + hi) / 2).');
+    if (level.id === 'konotop.insert' && got === -1) return fox('Тут -1 не буває: якщо козака немає, поверни місце, куди йому стати. Після циклу це lo.', 'There is no -1 here: if the Cossack isn’t there, return the place where he should stand. After the loop that is lo.');
+    if ((level.id === 'konotop.search' || level.id === 'konotop.rotated') && want === -1 && got !== -1) return fox('Такої хати немає, тож відповідь -1. Повертай місце, лише коли nums[mid] справді дорівнює target.', 'There is no such house, so the answer is -1. Return a place only when nums[mid] really equals target.');
+    if (level.id === 'konotop.pies' && !/Math\.ceil/.test(bare) && typeof got === 'number' && typeof want === 'number' && got < want) return fox('Неповна миска теж забирає цілу годину. Години рахуй з округленням угору: Math.ceil(p / k).', 'A partly full bowl still takes a whole hour. Count the hours rounding up: Math.ceil(p / k).');
+  }
   if (got === undefined) {
     if (!/\breturn\b/.test(bare)) return fox('Функція нічого не повернула. Відповідь треба віддати через return.', 'The function returned nothing. Hand the answer back with return.');
     if (/\[\s*\w+\.length\s*\]/.test(bare)) return fox('Отримав undefined: клітинки з номером length немає, вона вже за кінцем. Рахуємо з нуля, тож остання — [length - 1].', 'Got undefined: there is no cell number length, it’s already past the end. We count from zero, so the last one is [length - 1].');
@@ -232,6 +242,8 @@ export function adviseSolved(level: Level, code: string): string | null {
 export function adviseWolf(level: Level, code: string): Advice | null {
   if (isPy(code)) return null;
   const { bare } = clean(code);
+  if (level.world === 5 && !/mid|\/\s*2|>>/.test(bare))
+    return fox('Відповіді правильні, але ти перевіряєш усіх по черзі — так сотник кидає в став увесь Конотоп. Ряд упорядкований: дивись у середину й відкидай половину.', 'The answers are right, but you check everyone in turn — that’s how the captain throws all of Konotop into the pond. The row is ordered: look in the middle and drop half.');
   if (level.world === 3 && /\.(includes|indexOf|lastIndexOf|filter|some|find|findIndex|count)\s*\(/.test(bare) && usesLoop(bare))
     return fox('Відповіді правильні, але includes, indexOf чи filter щоразу обходять увесь масив — це той самий Вовк, тільки тихіший. Запам\'ятовуй у Set чи Map.', 'The answers are right, but includes, indexOf or filter walk the whole array every time — it’s the same Wolf, just quieter. Remember things in a Set or a Map.');
   return null;

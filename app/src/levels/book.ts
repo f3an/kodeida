@@ -71,4 +71,20 @@ for (let i = 0; i < a.length; i++) {
     complexity: 'Час O(n), пам\'ять O(n).',
     problems: ['20. Valid Parentheses', '155. Min Stack', '150. Evaluate Reverse Polish Notation', '739. Daily Temperatures', '496. Next Greater Element I'],
   },
+  {
+    world: 5,
+    title: 'Ромб навпіл: бінарний пошук',
+    motif: 'halved',
+    when: ['Дані відсортовані або відповідь у якийсь момент змінюється з «ні» на «так».', 'Треба знайти місце, з якого щось починається: перша зіпсована, перший не менший.', 'Відповідь можна перевірити, і все, що більше за неї, теж підходить.'],
+    idea: 'Тримай межі lo і hi, де відповідь ще може бути. Дивись у середину й відкидай половину, де її точно немає. Кожен погляд ділить діапазон навпіл: 10 000 елементів — 14 поглядів. Інколи навпіл ділять не масив, а можливі відповіді.',
+    template: `let lo = 0, hi = n;          // відповідь у [lo, hi)
+while (lo < hi) {
+  const mid = Math.floor((lo + hi) / 2);
+  if (ok(mid)) hi = mid;       // mid підходить — шукай лівіше
+  else lo = mid + 1;           // ні — правіше
+}
+return lo;`,
+    complexity: 'Час O(log n) (або O(n log max) при пошуку відповіді), пам\'ять O(1).',
+    problems: ['704. Binary Search', '35. Search Insert Position', '278. First Bad Version', '33. Search in Rotated Sorted Array', '875. Koko Eating Bananas'],
+  },
 ];

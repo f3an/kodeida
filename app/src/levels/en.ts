@@ -880,6 +880,135 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     lesson: 'A monotonic stack keeps those still waiting for an answer: every new element answers all the weaker ones on top, and every day goes through the stack only once.',
     doc: ['When it gets warmer', 'For every day — how many days until it is warmer (or 0).'],
   },
+  'konotop.search': {
+    title: 'The captain’s house', topic: 'splitting in half',
+    brief: '<b>The captain’s house.</b> The house numbers are written in ascending order. Find the house numbered <code>target</code> without visiting them all.',
+    statement: [
+      'Konotop is in a drought, and Captain Zabrokha hunts for the culprits by checking everyone in turn. Let’s start small: the register <code>nums</code> holds house numbers <b>in ascending order</b>, without repeats.',
+      'Return the place of the house numbered <code>target</code> in the register, or <code>-1</code> if there is none.',
+      'Constraints: <code>n ≤ 10⁴</code>, and the world allows only a few dozen looks. One look in the middle, and half the register is already gone.',
+    ],
+    tool: {
+      name: 'splitting in half',
+      text: [
+        'Keep boundaries <code>lo</code> and <code>hi</code> — where the answer can still be. Look at the middle <code>mid = Math.floor((lo + hi) / 2)</code>.',
+        'If it holds less than you’re looking for, the answer is to the right: <code>lo = mid + 1</code>. If more, to the left: <code>hi = mid - 1</code>. Every time half drops away, so 14 looks are enough for 10,000 houses.',
+      ],
+      code: '// looking for 9 in [1, 3, 5, 7, 9, 11]\n// lo=0 hi=5 mid=2 → 5 < 9 → lo = 3\n// lo=3 hi=5 mid=4 → 9 — found!',
+    },
+    talk: [
+      'A drought means witches! We’ll check everyone in turn, from the first house to the last.',
+      'Captain, the register is in order. Let’s look in the middle — and half the houses can already be left alone.',
+      'What do you mean, “split in half”? Well, go on, try.',
+    ],
+    quip: 'Fourteen looks for all of Konotop? Hm. And I had the whole pond ready.',
+    hints: ['Look in the middle. What does it tell you about the left and right halves?', 'While lo ≤ hi: mid is the middle; found — return it; less — lo = mid + 1; more — hi = mid − 1.', 'while (lo <= hi) { const mid = Math.floor((lo + hi) / 2); if (nums[mid] === target) return mid; if (nums[mid] < target) lo = mid + 1; else hi = mid - 1; }'],
+    lesson: 'On an ordered row, one look in the middle drops half: 10,000 houses — 14 looks.',
+    doc: ['The captain’s house', 'nums is sorted ascending. Return the place of target or -1.'],
+  },
+  'konotop.insert': {
+    title: 'A place in the rank', topic: 'where it would stand',
+    brief: '<b>A place in the rank.</b> The Cossacks stand by height. Where should a newcomer stand so the rank stays even?',
+    statement: [
+      'The captain lines the Cossacks up by height: <code>nums</code> are the heights in ascending order, without repeats.',
+      'Return the place of the Cossack of height <code>target</code> if he is already in the rank, and if not — the place where he should stand so the order doesn’t break.',
+      'It’s the same splitting in half, only there is always an answer: wherever the search stopped, that’s the place.',
+    ],
+    tool: {
+      name: 'the boundary where the search stopped',
+      text: [
+        'Look for <b>the first place</b> where the height is not smaller than <code>target</code>. Boundaries: <code>lo = 0</code>, <code>hi = n</code> (you can stand past the end of the rank too).',
+        'If the middle is smaller, the answer is to the right: <code>lo = mid + 1</code>. Otherwise it is here or to the left: <code>hi = mid</code>. When <code>lo</code> and <code>hi</code> meet, that’s the place.',
+      ],
+      code: '// [10, 20, 30, 40], the newcomer is 25\n// lo=0 hi=4 mid=2 → 30 ≥ 25 → hi = 2\n// lo=0 hi=2 mid=1 → 20 < 25 → lo = 2\n// lo = hi = 2: stand at place 2',
+    },
+    talk: [
+      'A new Cossack has come! Stand… well, somewhere there. No, not there!',
+      'Even if there’s no such height in the rank, splitting in half stops exactly where his place is.',
+    ],
+    quip: 'Standing nice and straight. Almost a pity to throw them in the pond.',
+    hints: ['What if you look for the first place where the height is no longer smaller than target?', 'lo = 0, hi = n. While lo < hi: smaller in the middle — lo = mid + 1, otherwise hi = mid. The answer is lo.', 'while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (nums[mid] < target) lo = mid + 1; else hi = mid; } return lo;'],
+    lesson: 'Splitting in half finds not just “is it there” but “where the boundary is”: the place where everything not smaller begins.',
+    doc: ['A place in the rank', 'nums is sorted. Return the place of target, or where to insert it.'],
+  },
+  'konotop.barrel': {
+    title: 'The first bad barrel', topic: 'the first “yes”',
+    brief: '<b>The first bad barrel.</b> The barrels in the cellar stand in a row: good ones first, then spoiled ones. Find the first spoiled one.',
+    statement: [
+      'A witch put a hex on the captain’s cellar: from some barrel on, the cabbage turned sour, and every barrel after it is spoiled too. <code>barrels[i]</code> is <code>true</code> if barrel <code>i</code> is spoiled.',
+      'Return the number of the first spoiled barrel. There is always at least one.',
+      'The row looks like <code>[false, false, …, true, true]</code>. The boundary between “no” and “yes” is found by the same splitting in half.',
+    ],
+    tool: {
+      name: 'finding the “no → yes” boundary',
+      text: [
+        'If the middle barrel is spoiled, the first spoiled one is here or to the left: <code>hi = mid</code>. If it is good, it is surely to the right: <code>lo = mid + 1</code>.',
+        'While <code>lo &lt; hi</code>, the boundaries close in. When they meet, <code>lo</code> points at the first “yes”.',
+      ],
+      code: '// [F, F, F, T, T]\n// lo=0 hi=4 mid=2 → F → lo = 3\n// lo=3 hi=4 mid=3 → T → hi = 3\n// lo = hi = 3',
+    },
+    talk: [
+      'The cabbage has gone sour! Open every barrel in turn and sniff each one!',
+      'My nose won’t last long in your cellar. Let’s open the middle one: if it’s sour, all after it are too, and we look to the left.',
+    ],
+    quip: 'Found it after opening just a few barrels. My nose survived, though it smells a bit of cabbage.',
+    hints: ['What does a spoiled barrel in the middle tell you about the barrels to its right?', 'While lo < hi: the middle is spoiled — hi = mid, good — lo = mid + 1. The answer is lo.', 'while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (barrels[mid]) hi = mid; else lo = mid + 1; } return lo;'],
+    lesson: 'Any “first no, then yes” is searched in halves: the boundary is found in log n looks.',
+    doc: ['The first bad barrel', 'barrels[i] is true if the barrel is spoiled. All after the first spoiled one are spoiled too.', 'Return the number of the first spoiled one.'],
+  },
+  'konotop.rotated': {
+    title: 'The shifted register', topic: 'halving a shifted row',
+    brief: '<b>The shifted register.</b> The witch twisted the register: the ordered row was shifted round. Find house <code>target</code>.',
+    statement: [
+      'The register is ordered again, but the witch cut off a piece and moved it to the front: <code>[4, 5, 6, 7, 0, 1, 2]</code>.',
+      'Return the place of <code>target</code> or <code>-1</code>. The numbers don’t repeat.',
+      'Even though the row is shifted, after splitting in half <b>one of the halves is always in order</b>. Check whether <code>target</code> is in it, and drop the other.',
+    ],
+    tool: {
+      name: 'which half is straight',
+      text: [
+        'If <code>nums[lo] &lt;= nums[mid]</code>, the left half is in order. Then, if <code>target</code> is between <code>nums[lo]</code> and <code>nums[mid]</code>, search to the left, otherwise to the right.',
+        'Otherwise the right half is in order — and you check in the same way whether <code>target</code> is between <code>nums[mid]</code> and <code>nums[hi]</code>.',
+      ],
+      code: '// [4, 5, 6, 7, 0, 1, 2], looking for 0\n// mid = 3 (7): the left [4..7] is straight, 0 is not in it → right\n// lo = 4: [0, 1, 2] — ordinary splitting in half',
+    },
+    talk: [
+      'The register is ruined! Half the houses at the start, half at the end. Now we’ll surely have to check everyone.',
+      'Oh, my method! In turn! Everyone! Into the pond!',
+      'Not so fast. Cut the row in half: at least one half is straight. See whether what we’re looking for is in it — and you drop half again.',
+    ],
+    quip: 'Well, there. And I’d already taken off my hat to dive in.',
+    hints: ['Cut the row in the middle. Which of the two halves is surely without the shift?', 'If nums[lo] ≤ nums[mid] — the left is straight: target in [nums[lo], nums[mid]) → hi = mid − 1, otherwise lo = mid + 1. Otherwise the right is straight — likewise.', 'if (nums[lo] <= nums[mid]) { if (nums[lo] <= target && target < nums[mid]) hi = mid - 1; else lo = mid + 1; } else { if (nums[mid] < target && target <= nums[hi]) lo = mid + 1; else hi = mid - 1; }'],
+    lesson: 'Splitting in half works as long as you can tell which half holds the answer. Even in a shifted row one half is always straight.',
+    doc: ['The shifted register', 'nums is an ordered row shifted round. Return the place of target or -1.'],
+  },
+  'konotop.pies': {
+    title: 'The Wolf and the pies', topic: 'halving the answer',
+    brief: '<b>The Wolf and the pies.</b> What is the slowest speed at which the Wolf can eat all the pies before the captain returns?',
+    statement: [
+      'While the captain chases witches, the Wolf has got into his pantry. <code>piles[i]</code> is how many pies are in bowl <code>i</code>, and the captain returns in <code>h</code> hours.',
+      'In an hour the Wolf eats at most <code>k</code> pies from one bowl (if the bowl has fewer, he finishes it and rests until the hour is up). Return the smallest <code>k</code> with which he manages everything in <code>h</code> hours.',
+      'Constraints: <code>n ≤ 10⁴</code>. Trying <code>k</code> = 1, 2, 3… takes long. But “he manages with <code>k</code>” is again “first no, then yes”. Search <b>the answer itself</b> in halves.',
+    ],
+    tool: {
+      name: 'halving the answer',
+      text: [
+        'Sometimes you halve not the array but <b>the possible answers</b>. The speed is from 1 to the biggest bowl. For a middle speed, count the hours: <code>Math.ceil(p / k)</code> for every bowl.',
+        'He manages — try slower (<code>hi = mid</code>); he doesn’t — faster (<code>lo = mid + 1</code>). Every check is one pass over the bowls, and there are only log(max) checks.',
+      ],
+      code: '// piles = [3, 6, 7, 11], h = 8\n// k = 6: 1 + 1 + 2 + 2 = 6 h ≤ 8 → slower\n// k = 3: 1 + 2 + 3 + 4 = 10 h > 8 → faster\n// k = 4: 1 + 2 + 2 + 3 = 8 h — the smallest',
+    },
+    talk: [
+      'Pies! A whole pantry! The captain is back in a few hours — I’ll manage if I eat properly.',
+      'And what is “properly”? What’s the slowest speed you’ll manage at? Faster and your belly will ache.',
+      'I’ll check! Speed one, two, three, four… until it works.',
+      'Aeneas, and we’ll split the speed itself in half. “Manages or not” is the same “no → yes” boundary.',
+    ],
+    quip: 'Exactly as much as needed, and not a pie more. A shame, but filling.',
+    hints: ['If the Wolf manages at speed k, will he manage at k + 1?', 'lo = 1, hi = the biggest bowl. While lo < hi: mid; hours = sum of Math.ceil(p / mid); manages — hi = mid, not — lo = mid + 1.', 'while (lo < hi) { const mid = Math.floor((lo + hi) / 2); let hours = 0; for (p of piles) hours += Math.ceil(p / mid); if (hours <= h) hi = mid; else lo = mid + 1; }'],
+    lesson: 'If an answer can be checked and “fits” comes after “doesn’t fit”, search the answer itself in halves.',
+    doc: ['The Wolf and the pies', 'piles[i] is the pies in bowl i, h the hours. Return the smallest speed k', 'at which the Wolf eats everything in h hours (up to k from one bowl per hour).'],
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -888,6 +1017,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   2: { host: { who: 'Dido', line: 'As much land as you can fence with a hide is mine. The posts are already standing, pick two.' }, trick: 'Two pointers' },
   3: { host: { who: 'King Lion', line: 'Nobody remembers who sells what. Put things in order, and Mykyta will be chancellor again. For a minute.' }, trick: 'The chest of cells: a hash map' },
   4: { host: { who: 'The mitten’s residents', line: 'Whoever got in last gets out first. Otherwise the mitten will burst!' }, trick: 'The tower: a stack' },
+  5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
 };
 
 export const BOOK_EN: Record<number, { title: string; when: string[]; idea: string; complexity: string }> = {
@@ -914,6 +1044,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['The last thing that arrived is the first that matters: brackets, undo, nested structures.', 'For each element you need the next greater (or smaller) one.', 'An expression is evaluated step by step, each operation taking the latest values.'],
     idea: 'Keep an array and work only with its end: push puts on top, pop takes the top. A monotonic stack keeps the elements still waiting for an answer; each new one answers all the weaker ones on top, so every element is pushed and popped once.',
     complexity: 'Time O(n), memory O(n).',
+  },
+  5: {
+    title: 'The halved rhombus: binary search',
+    when: ['The data is sorted, or the answer turns from “no” to “yes” at some point.', 'You need the place where something starts: the first bad, the first not smaller.', 'You can check a candidate answer, and every bigger one works too.'],
+    idea: 'Keep the boundaries lo and hi where the answer can still be. Look at the middle and drop the half where it surely isn’t. Every look halves the range: 10,000 elements take 14 looks. Sometimes you halve not the array but the possible answers.',
+    complexity: 'Time O(log n) (or O(n log max) when searching the answer), memory O(1).',
   },
 };
 

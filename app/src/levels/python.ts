@@ -321,9 +321,50 @@ export const PY: Record<string, PyPart> = {
     wolf: 'def daily_temperatures(temperatures):\n    answer = [0] * len(temperatures)\n    for i in range(len(temperatures)):\n        for j in range(i + 1, len(temperatures)):\n            if temperatures[j] > temperatures[i]:\n                answer[i] = j - i\n                break\n    return answer\n',
     hint: 'for i in range(len(t)):\n    while stack and t[i] > t[stack[-1]]:\n        j = stack.pop(); answer[j] = i - j\n    stack.append(i)',
   },
+  'konotop.search': {
+    body: `    lo, hi = 0, len(nums) - 1\n${HERE}\n    return -1\n`,
+    solution: 'def search(nums, target):\n    lo, hi = 0, len(nums) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        v = nums[mid]\n        if v == target:\n            return mid\n        if v < target:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return -1\n',
+    wolf: 'def search(nums, target):\n    for i in range(len(nums)):\n        if nums[i] == target:\n            return i\n    return -1\n',
+    hint: 'while lo <= hi:\n    mid = (lo + hi) // 2\n    if nums[mid] == target: return mid\n    if nums[mid] < target: lo = mid + 1\n    else: hi = mid - 1',
+    tool: {
+      code: '# шукаємо 9 у [1, 3, 5, 7, 9, 11]\n# lo=0 hi=5 mid=2 → 5 < 9 → lo = 3\n# lo=3 hi=5 mid=4 → 9 — знайшли!',
+      text: { 0: ['Тримай межі <code>lo</code> і <code>hi</code> — де ще може бути відповідь. Дивись на середину <code>mid = (lo + hi) // 2</code> (<code>//</code> — ділення з відкиданням остачі).', 'Keep boundaries <code>lo</code> and <code>hi</code> — where the answer can still be. Look at the middle <code>mid = (lo + hi) // 2</code> (<code>//</code> is division dropping the remainder).'] },
+    },
+  },
+  'konotop.insert': {
+    body: `    lo, hi = 0, len(nums)\n${HERE}\n    return lo\n`,
+    solution: 'def search_insert(nums, target):\n    lo, hi = 0, len(nums)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid\n    return lo\n',
+    wolf: 'def search_insert(nums, target):\n    i = 0\n    while i < len(nums) and nums[i] < target:\n        i += 1\n    return i\n',
+    hint: 'while lo < hi:\n    mid = (lo + hi) // 2\n    if nums[mid] < target: lo = mid + 1\n    else: hi = mid\nreturn lo',
+    tool: { code: '# [10, 20, 30, 40], новий — 25\n# lo=0 hi=4 mid=2 → 30 ≥ 25 → hi = 2\n# lo=0 hi=2 mid=1 → 20 < 25 → lo = 2\n# lo = hi = 2: ставай на місце 2' },
+  },
+  'konotop.barrel': {
+    body: `    lo, hi = 0, len(barrels) - 1\n${HERE}\n    return lo\n`,
+    solution: 'def first_bad(barrels):\n    lo, hi = 0, len(barrels) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if barrels[mid]:\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo\n',
+    wolf: 'def first_bad(barrels):\n    for i in range(len(barrels)):\n        if barrels[i]:\n            return i\n    return -1\n',
+    hint: 'while lo < hi:\n    mid = (lo + hi) // 2\n    if barrels[mid]: hi = mid\n    else: lo = mid + 1\nreturn lo',
+    tool: { code: '# [F, F, F, T, T]\n# lo=0 hi=4 mid=2 → F → lo = 3\n# lo=3 hi=4 mid=3 → T → hi = 3\n# lo = hi = 3' },
+  },
+  'konotop.rotated': {
+    body: `    lo, hi = 0, len(nums) - 1\n${HERE}\n    return -1\n`,
+    solution: 'def search_rotated(nums, target):\n    lo, hi = 0, len(nums) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        m = nums[mid]\n        if m == target:\n            return mid\n        l, h = nums[lo], nums[hi]\n        if l <= m:\n            if l <= target < m:\n                hi = mid - 1\n            else:\n                lo = mid + 1\n        else:\n            if m < target <= h:\n                lo = mid + 1\n            else:\n                hi = mid - 1\n    return -1\n',
+    wolf: 'def search_rotated(nums, target):\n    for i in range(len(nums)):\n        if nums[i] == target:\n            return i\n    return -1\n',
+    hint: 'if nums[lo] <= nums[mid]:\n    if nums[lo] <= target < nums[mid]: hi = mid - 1\n    else: lo = mid + 1\nelse:\n    if nums[mid] < target <= nums[hi]: lo = mid + 1\n    else: hi = mid - 1',
+    tool: { code: '# [4, 5, 6, 7, 0, 1, 2], шукаємо 0\n# mid = 3 (7): ліва [4..7] рівна, 0 не в ній → праворуч\n# lo = 4: [0, 1, 2] — звичайний поділ навпіл' },
+  },
+  'konotop.pies': {
+    body: `    lo, hi = 1, 1\n${HERE}\n    return lo\n`,
+    solution: 'def min_eating_speed(piles, h):\n    lo, hi = 1, 1\n    for i in range(len(piles)):\n        hi = max(hi, piles[i])\n    while lo < hi:\n        mid = (lo + hi) // 2\n        hours = 0\n        for i in range(len(piles)):\n            hours += (piles[i] + mid - 1) // mid\n        if hours <= h:\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo\n',
+    wolf: 'def min_eating_speed(piles, h):\n    k = 1\n    while True:\n        hours = 0\n        for i in range(len(piles)):\n            hours += (piles[i] + k - 1) // k\n        if hours <= h:\n            return k\n        k += 1\n',
+    hint: 'while lo < hi:\n    mid = (lo + hi) // 2\n    hours = sum((p + mid - 1) // mid for p in piles)\n    if hours <= h: hi = mid\n    else: lo = mid + 1',
+    tool: {
+      code: '# piles = [3, 6, 7, 11], h = 8\n# k = 6: 1 + 1 + 2 + 2 = 6 год ≤ 8 → повільніше\n# k = 3: 1 + 2 + 3 + 4 = 10 год > 8 → швидше\n# k = 4: 1 + 2 + 2 + 3 = 8 год — найменше',
+      text: { 0: ['Іноді навпіл ділять не масив, а <b>можливі відповіді</b>. Швидкість — від 1 до найбільшої миски. Для середньої швидкості рахуєш години: <code>(p + k - 1) // k</code> — ділення з округленням угору — для кожної миски.', 'Sometimes you halve not the array but <b>the possible answers</b>. The speed is from 1 to the biggest bowl. For a middle speed, count the hours: <code>(p + k - 1) // k</code> — division rounding up — for every bowl.'] },
+    },
+  },
 };
 
-const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None']];
+const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None']];
 const pyType = (t: string) => TYPES.reduce((s, [re, to]) => s.replace(re, to), t);
 
 /** Підпис функції з TS-стартеру: `function name(a: T, b: U): R` → [name, [[a, T], [b, U]], R]. */
