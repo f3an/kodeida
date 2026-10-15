@@ -1,5 +1,5 @@
 name: Bug report
-description: Something on the website (or later, in the game) isn't working as expected
+description: Something in the game or on the website isn't working as expected
 labels: ['bug']
 body:
   - type: dropdown
@@ -7,6 +7,7 @@ body:
     attributes:
       label: Where
       options:
+        - Game app
         - Landing page
         - Artbook
         - Design documents (docs/)

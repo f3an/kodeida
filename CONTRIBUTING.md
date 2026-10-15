@@ -68,7 +68,7 @@ Releases are built by [`.github/workflows/release.yml`](.github/workflows/releas
    git tag v0.1.0
    git push origin v0.1.0
    ```
-3. The workflow builds macOS (`.dmg` + `.zip`), Windows (NSIS `.exe`) and Linux (`.AppImage`) and publishes the
+3. The workflow builds macOS (`.dmg` + `.zip`, Apple Silicon and Intel), Windows (NSIS `.exe`) and Linux (`.AppImage`) and publishes the
    release with auto-generated notes. Running it manually from the Actions tab builds without publishing.
 
 macOS signing and notarization need these repository secrets (the same ones Mova-Flow uses). Without them the macOS

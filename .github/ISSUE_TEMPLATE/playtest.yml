@@ -1,0 +1,67 @@
+name: Playtest feedback · Відгук після гри
+description: How did the game go? Where did you get stuck? · Як пройшла гра і де ти застряг?
+title: 'Playtest: '
+labels: ['playtest']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Дякуємо, що зіграли! Відповідати можна українською або англійською.
+        Thanks for playing! Answer in Ukrainian or English.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version and system · Версія і система
+      description: The game fills this in when you open the form from it. · Гра заповнює це сама.
+      placeholder: 'Kodeida 0.1.1 · macOS · UA'
+    validations:
+      required: true
+
+  - type: textarea
+    id: progress
+    attributes:
+      label: How far did you get · Докуди дійшли
+      description: Filled in by the game. · Заповнює гра.
+      placeholder: 'World 0: 6/6 · World 1: 3/5 · World 2: 0/5'
+
+  - type: dropdown
+    id: leetcode
+    attributes:
+      label: After world 2, could you solve the real Container With Most Water on LeetCode without the game? · Після світу 2 — чи розв'язали справжню Container With Most Water на LeetCode без гри?
+      options:
+        - Yes, on my own · Так, сам(а)
+        - Yes, after a hint or two · Так, з підказкою
+        - No · Ні
+        - Didn't get to world 2 · Не дійшли до світу 2
+        - Didn't try · Не пробували
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: In your own words, why can you move the pointer at the lower post? · Своїми словами — чому можна зсувати вказівник біля нижчого стовпа?
+      description: Optional, but it tells us whether the trick stuck. · Необов'язково, але так ми бачимо, чи засвоїлась хитрість.
+
+  - type: textarea
+    id: stuck
+    attributes:
+      label: Where did you get stuck or confused? · Де застрягли або заплутались?
+      placeholder: 'Exercise, what you expected, what happened · Вправа, чого чекали, що сталося'
+
+  - type: textarea
+    id: liked
+    attributes:
+      label: What did you like, what would you change? · Що сподобалось, що змінили б?
+
+  - type: dropdown
+    id: background
+    attributes:
+      label: Your background · Ваш досвід
+      options:
+        - Student · Студент(ка)
+        - Junior developer · Джун
+        - Preparing for interviews · Готуюсь до співбесід
+        - Experienced developer · Досвідчений розробник
+        - Other · Інше

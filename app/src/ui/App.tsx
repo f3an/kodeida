@@ -73,7 +73,7 @@ export function App() {
         {screen.name === 'map' && <MapScreen progress={progress} go={go} />}
         {screen.name === 'book' && <BookScreen progress={progress} />}
         {screen.name === 'shirt' && <ShirtScreen progress={progress} />}
-        {screen.name === 'settings' && <SettingsScreen settings={settings} setSettings={setSettings} updates={updates} onReset={reset} go={go} />}
+        {screen.name === 'settings' && <SettingsScreen settings={settings} setSettings={setSettings} updates={updates} onReset={reset} go={go} progress={progress} />}
       </div>
     </div>
   );

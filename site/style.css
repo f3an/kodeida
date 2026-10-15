@@ -750,3 +750,4 @@ html.snap .wrap{padding-block:0}
 .dl-all{margin-top:14px}
 .dl-all a{color:var(--fg)}
 @media (max-width:900px){.dl-grid{grid-template-columns:1fr}}
+.dl-alt{font:12px var(--mono);color:var(--fg)}

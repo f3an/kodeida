@@ -126,6 +126,7 @@ function buildMenu() {
   const about = { label: M('Про Кодеїду', 'About Kodeida'), click: () => app.showAboutPanel() };
   const site = { label: M('Сайт Кодеїди', 'Kodeida website'), click: () => shell.openExternal('https://f3an.github.io/kodeida/') };
   const issues = { label: M('Повідомити про помилку', 'Report a problem'), click: () => shell.openExternal('https://github.com/f3an/kodeida/issues/new/choose') };
+  const feedback = { label: M('Залишити відгук…', 'Leave Feedback…'), click: () => shell.openExternal(`https://github.com/f3an/kodeida/issues/new?template=playtest.yml&title=Playtest%3A+&version=${encodeURIComponent(`Kodeida ${app.getVersion()} · ${{ darwin: 'macOS', win32: 'Windows', linux: 'Linux' }[process.platform] || process.platform}`)}`) };
   const mac = process.platform === 'darwin';
   // Кожен стандартний пункт підписуємо самі: Electron лишає ролі англійською.
   const template = [
@@ -147,7 +148,7 @@ function buildMenu() {
       { role: 'minimize', label: M('Згорнути', 'Minimize') }, ...(mac ? [{ role: 'zoom', label: M('Масштаб вікна', 'Zoom') }] : []),
       { role: 'close', label: M('Закрити вікно', 'Close Window') },
       ...(mac ? [{ type: 'separator' }, { role: 'front', label: M('Усі вікна наперед', 'Bring All to Front') }] : [])] },
-    { label: M('Довідка', 'Help'), role: 'help', submenu: [...(mac ? [] : [check, about, { type: 'separator' }]), site, issues] },
+    { label: M('Довідка', 'Help'), role: 'help', submenu: [...(mac ? [] : [check, about, { type: 'separator' }]), feedback, issues, { type: 'separator' }, site] },
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }

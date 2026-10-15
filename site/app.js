@@ -2,6 +2,8 @@
 (function(){
 /* ================= МОВА: UA / EN ================= */
 const DICT={
+"Apple Silicon і Intel · .dmg":"Apple Silicon and Intel · .dmg",
+"Для Mac з Intel ↓":"For Intel Macs ↓",
 // завантаження
 "Завантажити ·":"Download ·",
 "Завантажити гру ↓":"Download the game ↓",
@@ -2268,7 +2270,8 @@ function buildFrames(sh,st){
   const NAME={mac:'Mac',win:'Windows',linux:'Linux'};
   if(mine){const card=box.querySelector(`.dl[data-os="${mine}"]`);if(card)card.classList.add('mine');
     const hero=document.getElementById('hero-dl');if(hero)hero.textContent=`Завантажити для ${NAME[mine]} ↓`;}
-  const pick={mac:a=>/\.dmg$/i.test(a.name),win:a=>/\.exe$/i.test(a.name),linux:a=>/\.AppImage$/i.test(a.name)};
+  // macOS: основна кнопка — Apple Silicon (arm64 або старий образ без архітектури), окреме посилання — Intel (x64)
+  const pick={mac:a=>/\.dmg$/i.test(a.name)&&!/x64\.dmg$/i.test(a.name),win:a=>/\.exe$/i.test(a.name),linux:a=>/\.AppImage$/i.test(a.name)};
   fetch('https://api.github.com/repos/f3an/kodeida/releases/latest',{headers:{Accept:'application/vnd.github+json'}})
     .then(r=>r.ok?r.json():Promise.reject(r.status))
     .then(rel=>{
@@ -2279,6 +2282,8 @@ function buildFrames(sh,st){
         const a=(rel.assets||[]).find(pick[card.dataset.os]);if(!a)return;
         const btn=card.querySelector('.dl-btn');btn.href=a.browser_download_url;btn.setAttribute('download','');
         const meta=card.querySelector('.dl-meta');if(meta)meta.textContent=`${a.name} · ${Math.round(a.size/1048576)} МБ`;
+        const alt=card.querySelector('.dl-alt'),intel=card.dataset.os==='mac'&&(rel.assets||[]).find(x=>/x64\.dmg$/i.test(x.name));
+        if(alt&&intel){alt.href=intel.browser_download_url;alt.setAttribute('download','');alt.hidden=false;const sub=card.querySelector('.dl-sub');if(sub)sub.textContent='Apple Silicon і Intel · .dmg';}
       });
     })
     .catch(()=>{/* релізу ще немає або ліміт API — кнопки ведуть на сторінку релізів */});

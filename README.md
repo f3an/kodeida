@@ -41,7 +41,9 @@ Languages: TypeScript and JavaScript today, then Python, then C#, C++ and Go. Th
 
 ## Download
 
-Installers are on the [Releases page](https://github.com/f3an/kodeida/releases): `.dmg` for macOS, `Kodeida-Setup-….exe` for Windows, `.AppImage` for Linux. The app checks for new versions on start and every 6 hours (also **Kodeida → Check for Updates…** in the menu and **Settings → Updates**), downloads them in the background and installs on restart.
+Installers are on the [Releases page](https://github.com/f3an/kodeida/releases): `.dmg` for macOS (Apple Silicon and, from 0.1.2, Intel), `Kodeida-Setup-….exe` for Windows, `.AppImage` for Linux. The app checks for new versions on start and every 6 hours (also **Kodeida → Check for Updates…** in the menu and **Settings → Updates**), downloads them in the background and installs on restart.
+
+Playtesters: **Leave feedback** in the main menu, in Settings or in **Help** opens a short form on GitHub with your version and progress filled in.
 
 ## What's in this repository
 

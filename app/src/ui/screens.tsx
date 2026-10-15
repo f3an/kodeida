@@ -7,6 +7,7 @@ import { levelOpen, nextLevel, shardOf, solved, starsOf, worldOpen, type Progres
 import { bridge, APP_VERSION, type UpdateState } from './bridge.ts';
 import type { Screen } from './App.tsx';
 import type { Lang } from '../engine/types.ts';
+import { feedbackUrl } from './feedback.ts';
 import { L, siteT, uiLang, type UiLang } from '../i18n.ts';
 import { lt, wt } from '../levels/text.ts';
 import { OB_EN, BOOK_EN } from '../levels/en.ts';
@@ -49,6 +50,7 @@ export function Menu({ progress, go, ui, setUi, updates }: { progress: Progress;
           {started && <button className="btn big" onClick={() => go({ name: 'onboarding' })}>{L('Переглянути вступ', 'Watch the intro')}</button>}
           <button className="btn big" onClick={() => go({ name: 'settings' })}>{L('Налаштування', 'Settings')}</button>
         </div>
+        <a className="feedback-link" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Залишити відгук', 'Leave feedback')}</a>
         <UpdateLine updates={updates} checking={checking} onCheck={async () => { setChecking(true); await bridge?.updates.check(); setChecking(false); }} />
         <p className="muted small">{L('Версія', 'Version')} {APP_VERSION} · {L('офлайн, без AI-підказок', 'offline, no AI hints')} · <a href="https://github.com/f3an/kodeida" target="_blank" rel="noreferrer">github.com/f3an/kodeida</a></p>
       </div>
@@ -228,8 +230,8 @@ export function ShirtScreen({ progress }: { progress: Progress }) {
 
 /* ============================== Налаштування ============================== */
 
-export function SettingsScreen({ settings, setSettings, updates, onReset, go }: {
-  settings: Settings; setSettings: (f: (s: Settings) => Settings) => void; updates: UpdateState | null; onReset: () => void; go: Go;
+export function SettingsScreen({ settings, setSettings, updates, onReset, go, progress }: {
+  settings: Settings; setSettings: (f: (s: Settings) => Settings) => void; updates: UpdateState | null; onReset: () => void; go: Go; progress: Progress;
 }) {
   const [confirm, setConfirm] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -275,6 +277,12 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go }: 
               </div>
             </>
           ) : <p className="muted">{L('Оновлення працюють у встановленому застосунку: він сам перевіряє нові версії на GitHub.', 'Updates work in the installed app: it checks GitHub for new versions on its own.')}</p>}
+        </section>
+
+        <section>
+          <h2>{L('Відгук', 'Feedback')}</h2>
+          <p className="muted">{L('Розкажи, де застряг і чи вдалося потім розв\'язати задачу на LeetCode без гри. Форма відкриється на GitHub, версія й прогрес уже будуть заповнені.', 'Tell us where you got stuck and whether you could solve the problem on LeetCode without the game afterwards. The form opens on GitHub with your version and progress filled in.')}</p>
+          <div className="row-actions"><a className="btn" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Залишити відгук', 'Leave feedback')}</a></div>
         </section>
 
         <section>

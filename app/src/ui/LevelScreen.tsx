@@ -15,6 +15,7 @@ import type { Screen } from './App.tsx';
 import { L, fmt } from '../i18n.ts';
 import { lt, wt, starterOf } from '../levels/text.ts';
 import { TROJANS_EN } from '../levels/en.ts';
+import { feedbackUrl } from './feedback.ts';
 
 type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system';
 /** Текст — функція, щоб після перемикання мови репліка теж перекладалась. */
@@ -320,7 +321,10 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
             ? <button className="btn next" onClick={() => go({ name: 'departure' })}>{L('Відплиття', 'Set sail')} ▸</button>
             : justSolved && (canNext
             ? <button className="btn next" onClick={() => go({ name: 'level', id: next!.id })}>{L('Далі', 'Next')}: {lt(next!).title} ▸</button>
-            : <button className="btn next" onClick={() => go({ name: 'map' })}>{L('До мапи', 'To the map')} ▸</button>)} />
+            : <span className="row-actions">
+                {level.id === 'carthage.dido' && <a className="btn" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Розкажи, як пройшло', 'Tell us how it went')}</a>}
+                <button className="btn next" onClick={() => go({ name: 'map' })}>{L('До мапи', 'To the map')} ▸</button>
+              </span>)} />
         {hasWolf ? (
           <div className="cmp">
             <div className="cmp-h">

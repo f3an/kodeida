@@ -377,3 +377,6 @@ body[data-platform="win32"] .lang-switch { right: 160px; }
 
 /* піксель-арт лишається чітким за будь-якого масштабу (4K, зум) */
 canvas { image-rendering: pixelated; }
+.feedback-link { color: var(--fox-soft); font: 13px var(--mono); text-decoration: none; }
+.feedback-link:hover { text-decoration: underline; }
+.speech-action .btn:not(.next) { color: #1f1b16; border-color: #c9bfa6; text-decoration: none; }
