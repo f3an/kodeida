@@ -20,6 +20,10 @@ export interface Level {
   statement: string[];
   /** Новий інструмент вправи: назва, пояснення простими словами й мініприклад (не відповідь). */
   tool?: Tool;
+  /** Розмова на вході у вправу: репліки йдуть по черзі, поки вправу не пройдено. */
+  talk?: Line[];
+  /** Репліка після першої перемоги: жарт або слово того, хто приєднався до ватаги. */
+  quip?: Line;
   entry: string;
   /** Назви аргументів-масивів і рядків, за якими стежить світ (null — не стежити). */
   observe: (string | null)[];
@@ -43,6 +47,10 @@ export interface Level {
   lesson: string;
   scene: SceneSpec;
 }
+
+/** Хто говорить у діалогах вправ. */
+export type Voice = 'enei' | 'fox' | 'sibyl' | 'anchises' | 'warrior' | 'sailor' | 'woman';
+export interface Line { who: Voice; text: string }
 
 export interface Tool {
   name: string;

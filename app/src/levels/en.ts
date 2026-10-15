@@ -9,6 +9,9 @@ export interface LevelEn {
   /** Lines of the comment at the top of the starter code. */
   doc: string[];
   tool?: { name: string; text: string[]; code: string };
+  /** Same order as `talk` in the level; `quip` — the line after the first win. */
+  talk?: string[];
+  quip?: string;
 }
 
 export const LEVELS_EN: Record<string, LevelEn> = {
@@ -32,6 +35,10 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['The code is ready — just run it.', 'The “Run” button is at the top right, or press ⌘↵.', 'enei.move();'],
     lesson: 'The word of order is a sequence of commands. The world runs them one by one.',
     doc: ['First step', 'enei.move() — one step forward.'],
+    talk: [
+      'Mykyta, stay close: it is still smouldering here.',
+      'I’m a fox, not an ember. But closer it is.',
+    ],
   },
   'troy.well': {
     title: 'To the well', topic: 'a sequence of commands',
@@ -52,6 +59,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['How many cells are there between Aeneas and the well?', 'Each line enei.move(); is one step. You need four.', 'enei.move(); ×4'],
     lesson: 'Commands run one after another, top to bottom.',
     doc: ['To the well', 'The well is 4 steps away. enei.move() — one step forward.'],
+    talk: [
+      'The Trojans need water. The well is four steps away.',
+      'Four steps, four lines. The world here is literal: you get exactly what you say.',
+    ],
+    quip: 'Water! I’m with you, Aeneas. I can swing a spear; counting is your job.',
   },
   'troy.far': {
     title: 'The far well', topic: 'the for loop',
@@ -73,6 +85,12 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['Fifteen identical lines… What if you repeated one line 15 times?', 'In a for loop, the number in the condition i < … is how many times to repeat.', 'for (let i = 0; i < 15; i++) { enei.move(); }'],
     lesson: 'A loop replaces many identical lines with one: change the number and you change how many times it repeats.',
     doc: ['The far well', 'The well is 15 steps away. enei.move() — one step forward.', 'Try a for loop: it repeats a command as many times as you say.'],
+    talk: [
+      'This well is dry. The next one is way over there, fifteen steps away.',
+      'Fifteen identical lines? My fingers will fall off.',
+      'That’s my point. There’s a clever word — for. Look at the new tool.',
+    ],
+    quip: 'A sailor joins the crew! On a ship we row in a loop too: one-two, one-two.',
   },
   'troy.sacks': {
     title: 'Sacks by the gate', topic: 'several commands in a loop',
@@ -93,6 +111,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['What do you need to do for one sack?', 'For each sack: a step, then a pick-up. Five times.', 'for (let i = 0; i < 5; i++) { enei.move(); enei.take(); }'],
     lesson: 'The loop body is a group of commands that repeats as a whole: step, take, step, take…',
     doc: ['Sacks by the gate', 'Each of the 5 cells ahead has a sack.', 'enei.move() — step, enei.take() — pick up the sack.'],
+    talk: [
+      'Son, there are sacks of grain by the gate. Without bread we won’t sail far.',
+      'Every sack is a step and a bend. Two actions, five times. A loop repeats both.',
+    ],
+    quip: 'That’s it, son. Young hands, a clever head — we can set off. I’m coming with you.',
   },
   'troy.gather': {
     title: 'Grain along the street', topic: 'the parameter n',
@@ -113,6 +136,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['How do the streets in the tests differ? And what does the function know about it?', 'Take the loop from the last exercise, but put n instead of the number 5.', 'for (let i = 0; i < n; i++) { enei.move(); enei.take(); }'],
     lesson: 'Don’t write a number into the code if it can change: take it from a parameter, and the code works for any street.',
     doc: ['Grain along the street', 'Each of the n cells ahead has a sack. n is 3, 5, 8 or 12.', 'enei.move() — step, enei.take() — pick up the sack.'],
+    talk: [
+      'Aeneas! Our streets have sacks too. Three on one, twelve on another.',
+      'Just don’t write a number into the loop. n tells you how many sacks the street has.',
+    ],
+    quip: 'I’ll take my bundle and come with you. Someone has to know how much grain we have.',
   },
   'troy.walk': {
     title: 'The well out there', topic: 'the while loop',
@@ -133,6 +161,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['Until when does Aeneas need to walk?', 'While Aeneas is not at the end of the street, take a step.', 'while (!enei.atEnd()) { enei.move(); }'],
     lesson: 'for — when you know how many times. while — when you know until when.',
     doc: ['The well out there', 'The well is at the end of the street, length unknown.', 'enei.move() — step; enei.atEnd() — is Aeneas at the end yet.'],
+    talk: [
+      'The smoke is so thick I can’t see my own forelock. Where is that well?',
+      'Somewhere at the end. How many steps, I can’t say. But you’ll feel it when you get there: enei.atEnd().',
+    ],
+    quip: 'See? for — when you know how many. while — when you know until when. Foxes walk like that all their lives.',
   },
   'troy.fire': {
     title: 'Around the fire', topic: 'the if / else condition',
@@ -153,6 +186,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['Take the loop from the last exercise. What has changed on the street?', 'Until the end of the street: if there is fire ahead, jump; otherwise step.', 'while (!enei.atEnd()) { if (enei.fireAhead()) enei.jump(); else enei.move(); }'],
     lesson: 'A condition picks an action from the state of the world, and the loop repeats that choice at every step.',
     doc: ['Around the fire', 'enei.fireAhead() — is it burning ahead; enei.jump() — jump over;', 'enei.move() — step; enei.atEnd() — is this the end of the street.'],
+    talk: [
+      'Careful, Aeneas! The rubble is still smouldering.',
+      'Look ahead before every step: if it burns, jump; if not, walk. The trick is to decide every single time.',
+    ],
+    quip: 'Not a single burn! And these trousers, by the way, are the best in all of Troy.',
   },
   'troy.last': {
     title: 'At the end of the street', topic: 'arrays and indexes',
@@ -174,6 +212,12 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['If the street has 4 cells, what is the number of the last one? Remember, we count from zero.', 'The number of the last cell is street.length - 1.', 'return street[street.length - 1];'],
     lesson: 'Arrays count from zero: the first element is [0], the last is [length - 1].',
     doc: ['At the end of the street', 'street[i] — what lies on cell i.', 'Return what lies on the last cell.'],
+    talk: [
+      'I wrote the street down on a scroll: what lies where, in order.',
+      'And what is at the very end?',
+      'Count from zero, like scribes do. Then the last place is one less than the total.',
+    ],
+    quip: 'Whoever counts from one will someday walk right past the well. Tried and tested.',
   },
   'troy.count': {
     title: 'Count the Trojans', topic: 'a counter variable',
@@ -194,6 +238,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['You need a number that grows while you walk the street.', 'Walk street with a loop; if street[i] is a Trojan, add one to count.', 'for (let i = 0; i < street.length; i++) if (street[i] === "trojan") count++;'],
     lesson: 'A variable remembers what you have already counted while the loop moves on.',
     doc: ['Count the Trojans', 'street[i] is "trojan", "sack" or "ash".', 'Return the number of Trojans.'],
+    talk: [
+      'How many of us survived?',
+      'I saw a few on that street. But counting isn’t for me, I row.',
+    ],
+    quip: 'We have a crew. Now, son, even the sea isn’t so frightening.',
   },
   'troy.total': {
     title: 'All the grain', topic: 'a sum',
@@ -214,6 +263,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['What changes in the variable with every sack?', 'Walk the array with a loop and add nums[i] to total.', 'for (let i = 0; i < nums.length; i++) total += nums[i];'],
     lesson: 'An accumulator builds the answer piece by piece: each sack is added to what has already been counted.',
     doc: ['All the grain', 'nums[i] — grain in sack i.', 'Return how much grain there is in all the sacks together.'],
+    talk: [
+      'Before we load, I want to know how much grain we have. The sacks are all different.',
+      'It’s like counting Trojans, only you add what’s in the sack instead of one.',
+    ],
+    quip: 'That will last a long time. As long as the sailor doesn’t snack at night.',
   },
   'troy.sum': {
     title: 'Supplies', topic: 'running total',
@@ -234,6 +288,10 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     hints: ['Take “All the grain”: the sum is already being accumulated there. What is missing?', 'After every addition to sum, write sum into result.', 'let sum = 0; for (…) { sum += nums[i]; result.push(sum); }'],
     lesson: 'Don’t recount what you already know: the previous sum is half of the answer.',
     doc: ['Supplies', 'nums[i] — grain in sack i.', 'Return the running sums: [nums[0], nums[0]+nums[1], …].'],
+    talk: [
+      'Loading! After every sack, tell us how much is on board.',
+      'You already know how to count the sum. Now just write it down after every sack.',
+    ],
   },
   'sea.max': {
     title: 'The biggest ship', topic: 'maximum of an array',

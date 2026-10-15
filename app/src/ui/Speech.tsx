@@ -5,9 +5,9 @@
  */
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PixelCanvas } from './PixelCanvas.tsx';
-import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod } from '../world/sprites.js';
+import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod, makeAnchises, makeTrojan } from '../world/sprites.js';
 
-export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus';
+export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus' | 'anchises' | 'warrior' | 'sailor' | 'woman';
 export type Tone = 'say' | 'error' | 'win' | 'taunt';
 
 type Sprite = { w: number; h: number; draw: (...a: unknown[]) => void };
@@ -25,6 +25,8 @@ function frames(who: Speaker, fox: string): Sprite[] {
       case 'dido': return [makeDido(), makeDido()];
       case 'eol': return [makeEol(), makeEol()];
       case 'wolf': return [makeWolf({ drool: 2 }), makeWolf({ drool: 1 })];
+      case 'anchises': return [makeAnchises(), makeAnchises()];
+      case 'warrior': case 'sailor': case 'woman': return [makeTrojan(who), makeTrojan(who)];
       // боги жестикулюють, поки говорять: кадр з піднятою рукою
       default: return [makeGod(who), makeGod(who, { raise: true })];
     }

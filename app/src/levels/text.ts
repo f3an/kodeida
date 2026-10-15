@@ -14,6 +14,8 @@ export function lt(level: Level) {
     hints: en?.hints ?? level.hints,
     lesson: en?.lesson ?? level.lesson,
     tool: level.tool && (en?.tool ?? level.tool),
+    talk: level.talk?.map((l, i) => ({ who: l.who, text: en?.talk?.[i] ?? l.text })),
+    quip: level.quip && { who: level.quip.who, text: en?.quip ?? level.quip.text },
   };
 }
 

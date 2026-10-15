@@ -4,6 +4,28 @@
 const DPR = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1;
 const REDUCED = typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const DICT={
+"Apple Silicon і Intel · .dmg":"Apple Silicon and Intel · .dmg",
+"Для Mac з Intel ↓":"For Intel Macs ↓",
+// завантаження
+"Завантажити ·":"Download ·",
+"Завантажити гру ↓":"Download the game ↓",
+"Завантажити гру":"Download the game",
+"Завантажити":"Download",
+"остання версія":"latest version",
+"Грай на своєму комп'ютері":"Play on your computer",
+"Безкоштовно й офлайн, без реєстрації. Гра сама оновлюється, щойно виходить нова версія.":"Free and offline, no sign-up. The game updates itself as soon as a new version is out.",
+"твоя система":"your system",
+"Apple Silicon (M1 і новіші) · .dmg":"Apple Silicon (M1 and newer) · .dmg",
+"Завантажити для Mac":"Download for Mac",
+"Підписано й нотаризовано Apple: відкривається без попереджень.":"Signed and notarized by Apple: opens without warnings.",
+"Windows 10 і 11 · інсталятор .exe":"Windows 10 and 11 · .exe installer",
+"Завантажити для Windows":"Download for Windows",
+"Якщо SmartScreen попередить: «Докладніше» → «Усе одно запустити».":"If SmartScreen warns you: “More info” → “Run anyway”.",
+"x64 · AppImage, без встановлення":"x64 · AppImage, no installation",
+"Завантажити для Linux":"Download for Linux",
+"Дозволь запуск: chmod +x Kodeida-*.AppImage — і відкривай.":"Allow it to run: chmod +x Kodeida-*.AppImage — then open it.",
+"Усі версії й нотатки до релізів →":"All versions and release notes →",
+"вийшла 0.1":"0.1 is out",
 "Вправи":"Exercises",
 "Мапа":"Map",
 // артбук
@@ -238,7 +260,7 @@ const DICT={
 "Подивитись, як це працює ↓":"See how it works ↓","★ GitHub · скоро":"★ GitHub · soon",
 "Застосунок для Mac, Windows, Linux · офлайн":"Desktop app for Mac, Windows, Linux · works offline",
 "TypeScript · JavaScript · Python, далі C# · C++ · Go":"TypeScript · JavaScript · Python, then C# · C++ · Go",
-"Чому Кодеїда":"Why Kodeida","LeetCode без зубріння":"LeetCode without cramming",
+"Чому Кодеїда":"Why Kodeida","▶ Дивитися трейлер":"▶ Watch the trailer","Трейлер":"Trailer","Кодеїда за 40 секунд":"Kodeida in 40 seconds","Від бенкету богів до справжньої задачі з LeetCode: як код рухає героя і чому Вовк програє хитрості.":"From the gods’ feast to a real LeetCode problem: how code moves the hero and why the Wolf loses to a trick.","Трейлер Кодеїди":"Kodeida trailer","LeetCode без зубріння":"LeetCode without cramming",
 "Більшість застосунків дають задачі. Кодеїда вчить бачити в задачі прийом і розуміти, чому він працює.":"Most apps hand you problems. Kodeida teaches you to spot the technique inside a problem and understand why it works.",
 "Хитрощі, а не відповіді":"Tricks, not answers",
 "Кожен світ — один прийом: два вказівники, ковзне вікно, хеш-мапа, графи, DP. Підвідні вправи ведуть до справжньої задачі.":"Each world is one technique: two pointers, sliding window, hash map, graphs, DP. Warm-up exercises lead to a real problem.",
@@ -1688,4 +1710,4 @@ const OB=[
 
 ];
 
-export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, drawSack, drawEgg, eggCells, EGG_PAL, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };
+export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, makeAnchises, drawSack, drawEgg, eggCells, EGG_PAL, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };

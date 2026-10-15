@@ -19,7 +19,7 @@ import { feedbackUrl } from './feedback.ts';
 import { adviseError, adviseJudge, adviseRun, adviseSolved, adviseTimeout } from './coach.ts';
 import type { CallResult } from '../engine/types.ts';
 
-type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system';
+type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 'warrior' | 'sailor' | 'woman';
 /** Текст — функція, щоб після перемикання мови репліка теж перекладалась. */
 interface Bubble { who: Who; text: () => string; tone: Tone; seq: number; enter: 'in' | 'nod' }
 /** Хто говорить за «господаря» світу: Микита на попелищі, Еол у морі, Дидона в Карфагені. */
@@ -55,8 +55,12 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   const tutorial = level.id === 'troy.step' && !progress.toured;
   const [ranOnce, setRanOnce] = useState(false);
   const [touring, setTouring] = useState(false);
+  // розмова на вході: поки вправу не пройдено, герої перемовляються; потім — звична репліка господаря
+  const talk = !tutorial && !solved(progress, level) ? level.talk ?? [] : [];
+  const talkLine = (k: number): Bubble => ({ who: talk[k].who, text: () => lt(level).talk![k].text, tone: 'say', seq: k, enter: k && talk[k - 1].who === talk[k].who ? 'nod' : 'in' });
   const start: Bubble = tutorial
     ? { who: 'sibyl', text: () => L('Скажи слово, і світ послухає. Слово вже написано — натисни «Запустити».', 'Say the word and the world will obey. The word is already written — press “Run”.'), tone: 'say', seq: 0, enter: 'in' }
+    : talk.length ? talkLine(0)
     : { who: 'host', text: () => wt(world).host.line, tone: 'say', seq: 0, enter: 'in' };
   const crew = level.world === 0 ? crewOf(progress) : 0;
   const [bubble, setBubble] = useState<Bubble>(start);
@@ -68,10 +72,24 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
 
   useEffect(() => { save(codeKey('ts'), code.ts); save(codeKey('js'), code.js); }, [code]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const WHO: Record<Who, string> = { host: WT.host.who, fox: L('Микита', 'Mykyta'), juno: L('Юнона', 'Juno'), sibyl: L('Сивілла', 'Sibyl'), system: L('Еней', 'Aeneas') };
-  const SPRITE: Record<Who, Speaker> = { host: HOST_SPRITE[world.n] ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei' };
+  const WHO: Record<Who, string> = {
+    host: WT.host.who, fox: L('Микита', 'Mykyta'), juno: L('Юнона', 'Juno'), sibyl: L('Сивілла', 'Sibyl'), system: L('Еней', 'Aeneas'),
+    enei: L('Еней', 'Aeneas'), anchises: L('Анхіз', 'Anchises'), warrior: L('Воїн', 'Warrior'), sailor: L('Моряк', 'Sailor'), woman: L('Троянка', 'Trojan woman'),
+  };
+  const SPRITE: Record<Who, Speaker> = {
+    host: HOST_SPRITE[world.n] ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei',
+    enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman',
+  };
   const say = (who: Who, text: () => string, tone: Tone = 'say') =>
     setBubble((b) => ({ who, text, tone, seq: b.seq + 1, enter: SPRITE[b.who] === SPRITE[who] ? 'nod' : 'in' }));
+  // наступна репліка розмови — коли попередню дочитано; будь-яка дія гравця розмову перериває
+  useEffect(() => {
+    const k = bubble.seq;
+    if (!talk.length || bubble.who !== talk[Math.min(k, talk.length - 1)].who || k >= talk.length - 1 || bubble.tone !== 'say') return;
+    const t = setTimeout(() => setBubble((b) => (b.seq === k && b.who === talk[k].who ? talkLine(k + 1) : b)), 1600 + talk[k].text.length * 40);
+    return () => clearTimeout(t);
+  }, [bubble]); // eslint-disable-line react-hooks/exhaustive-deps
+
   /** Помилка має бути видно одразу: Еней каже про неї сам, сцена здригається, рядок у редакторі блимає. */
   const [shake, setShake] = useState(0);
   useEffect(() => { if (!shake) return; const t = setTimeout(() => setShake(0), 520); return () => clearTimeout(t); }, [shake]);
@@ -176,6 +194,8 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
         `That’s the fox way! ${lt(level).lesson}${shard ? ` Shard found: a new pattern appeared on the shirt, and the Book of Tricks has a new page — “${wt(world).trick}”.` : ''}${joins ? ` ${TROJANS_EN[joinIdx][0].toUpperCase() + TROJANS_EN[joinIdx].slice(1)} joined the crew: crew = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
       ) + (nudge ? ` ${nudge}` : ''), 'win');
     }
+    const quip = rep.verdict === 'fox' && !solved(progress, level) ? lt(level).quip : undefined;
+    if (quip) setTimeout(() => setBubble((b) => (b.tone === 'win' ? { who: quip.who, text: () => lt(level).quip!.text, tone: 'say', seq: b.seq + 1, enter: 'in' } : b)), 7000);
     const stars = rep.verdict === 'fox' ? (mine.hintsUsed === 0 ? 3 : 2) : rep.verdict === 'wolf' ? 1 : 0;
     if (stars > 0) { patchLevel(level.id, { stars }); setJustSolved(true); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
