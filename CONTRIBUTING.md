@@ -65,8 +65,8 @@ Releases are built by [`.github/workflows/release.yml`](.github/workflows/releas
 1. Bump `version` in `app/package.json` (the tag must match it).
 2. Commit, then tag and push the tag:
    ```bash
-   git tag v0.2.0
-   git push origin v0.2.0
+   git tag v0.1.0
+   git push origin v0.1.0
    ```
 3. The workflow builds macOS (`.dmg` + `.zip`), Windows (NSIS `.exe`) and Linux (`.AppImage`) and publishes the
    release with auto-generated notes. Running it manually from the Actions tab builds without publishing.
