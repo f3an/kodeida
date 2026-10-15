@@ -32,7 +32,7 @@ code, pre { font-family: var(--mono); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .muted { color: var(--dim); }
 
-.app { height: 100%; display: grid; grid-template-rows: 36px 1fr 24px; min-width: 1000px; }
+.app { height: 100%; display: grid; grid-template-rows: 36px 1fr 24px; min-width: 1160px; }
 
 /* заголовок */
 .titlebar { display: flex; align-items: center; gap: 16px; padding: 0 14px; background: var(--bar); border-bottom: 1px solid var(--line); font: 12px var(--mono); color: var(--mute); -webkit-app-region: drag; }
@@ -362,3 +362,14 @@ a { color: var(--fox-soft); }
 @media (prefers-reduced-motion: reduce) { .j-dash, .j-card.pop { animation: none; } }
 .update-line { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
 .update-line .btn { border-color: var(--line); }
+
+/* вікно без системного заголовка */
+body[data-platform="darwin"] .titlebar { padding-left: 84px; }
+body[data-platform="win32"] .titlebar { padding-right: 150px; }
+.drag-strip { position: fixed; top: 0; left: 0; right: 0; height: 36px; -webkit-app-region: drag; z-index: 30; }
+.lang-switch, .titlebar button, .titlebar select, .update-pill { -webkit-app-region: no-drag; }
+.lang-switch { z-index: 40; }
+body[data-platform="win32"] .lang-switch { right: 160px; }
+
+/* піксель-арт лишається чітким за будь-якого масштабу (4K, зум) */
+canvas { image-rendering: pixelated; }

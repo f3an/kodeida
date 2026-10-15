@@ -13,6 +13,9 @@ export type Screen =
   | { name: 'menu' } | { name: 'onboarding' } | { name: 'departure' } | { name: 'map' } | { name: 'level'; id: string }
   | { name: 'book' } | { name: 'shirt' } | { name: 'settings' };
 
+/** Смуга, за яку тягнуть вікно на екранах без панелі заголовка (меню, заставки). */
+const DragStrip = () => (bridge ? <div className="drag-strip" aria-hidden="true" /> : null);
+
 export function App() {
   const { progress, setProgress, patchLevel, reset } = useProgress();
   const [settings, setSettings] = useSettings();
@@ -22,19 +25,21 @@ export function App() {
   useEffect(() => save('screen', screen), [screen]);
   // меню застосунку й діалоги оновлень говорять мовою гри
   useEffect(() => { bridge?.setLang?.(settings.ui); }, [settings.ui]);
+  // платформа для стилів вікна: місце під «світлофор» macOS і кнопки Windows
+  useEffect(() => { document.body.dataset.platform = bridge?.platform ?? 'web'; }, []);
   const go = (s: Screen) => setScreen(s);
 
   const level = screen.name === 'level' ? levelById(screen.id) : undefined;
   if (screen.name === 'level' && !level) setScreen({ name: 'map' });
 
-  if (screen.name === 'menu') return <Menu progress={progress} go={go} updates={updates} ui={settings.ui} setUi={(ui) => setSettings((s) => ({ ...s, ui }))} />;
+  if (screen.name === 'menu') return <><DragStrip /><Menu progress={progress} go={go} updates={updates} ui={settings.ui} setUi={(ui) => setSettings((s) => ({ ...s, ui }))} /></>;
   if (screen.name === 'onboarding') {
     const finish = () => { setProgress((p) => ({ ...p, onboarded: true })); go({ name: 'level', id: worlds[0].levels[0].id }); };
-    return <Onboarding scenes={INTRO_SCENES} finishLabel={L('Перший крок ▸', 'First step ▸')} onDone={finish} onSkip={finish} />;
+    return <><DragStrip /><Onboarding scenes={INTRO_SCENES} finishLabel={L('Перший крок ▸', 'First step ▸')} onDone={finish} onSkip={finish} /></>;
   }
   if (screen.name === 'departure') {
     const sail = () => { setProgress((p) => ({ ...p, departed: true })); go({ name: 'map' }); };
-    return <Onboarding scenes={DEPARTURE_SCENES} finishLabel={L('До мапи світів ▸', 'To the world map ▸')} onDone={sail} />;
+    return <><DragStrip /><Onboarding scenes={DEPARTURE_SCENES} finishLabel={L('До мапи світів ▸', 'To the world map ▸')} onDone={sail} /></>;
   }
 
   const nav: [Screen['name'], string, string][] = [['level', '☰', L('Вправи', 'Exercises')], ['map', '◈', L('Мапа світів', 'World map')], ['book', '✦', L('Книга хитрощів', 'Book of Tricks')], ['shirt', '✚', L('Вишиванка', 'Embroidered shirt')], ['settings', '⚙', L('Налаштування', 'Settings')]];

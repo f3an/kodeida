@@ -18,7 +18,7 @@ export function PixelCanvas({ width, height, draw, interval, className, label }:
 
   useEffect(() => {
     const c = ref.current!;
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const dpr = Math.min(devicePixelRatio || 1, 3);
     c.width = width * dpr; c.height = height * dpr;
     const ctx = c.getContext('2d')!;
     let f = 0, timer = 0, visible = true;

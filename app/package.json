@@ -74,7 +74,25 @@
       "category": "public.app-category.education",
       "hardenedRuntime": true,
       "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist"
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "LSHasLocalizedDisplayName": true,
+        "CFBundleDevelopmentRegion": "en",
+        "CFBundleLocalizations": [
+          "en",
+          "uk"
+        ]
+      },
+      "extraResources": [
+        {
+          "from": "build/locales/uk.lproj",
+          "to": "uk.lproj"
+        },
+        {
+          "from": "build/locales/en.lproj",
+          "to": "en.lproj"
+        }
+      ]
     },
     "dmg": {
       "artifactName": "Kodeida-${version}.${ext}"

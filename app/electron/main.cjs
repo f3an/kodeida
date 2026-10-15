@@ -45,11 +45,16 @@ function createWindow() {
   const win = mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
-    minWidth: 1100,
-    minHeight: 680,
+    // менше розкладка вправи (бічна панель + редактор + світ) не вміщається
+    minWidth: 1200,
+    minHeight: 740,
     backgroundColor: '#141b17',
     title: 'Кодеїда',
     show: !SMOKE,
+    // Без білого системного заголовка: на macOS «світлофор» сидить у нашій темній панелі,
+    // на Windows кнопки вікна малюються поверх неї в кольорах гри; Linux лишає рамку системи.
+    ...(process.platform === 'darwin' ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 14, y: 11 } } : {}),
+    ...(process.platform === 'win32' ? { titleBarStyle: 'hidden', titleBarOverlay: { color: '#0f1512', symbolColor: '#e7e0cf', height: 36 } } : {}),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -67,6 +72,21 @@ function createWindow() {
   });
   if (SMOKE) smoke(win);
   win.loadURL(DEV_URL || 'app://kodeida/index.html');
+  // Автомасштаб: інтерфейс розрахований на ~1500×940; на великих і 4K-екранах збільшуємо все пропорційно.
+  // Ручний зум з меню множиться на авто.
+  const fit = () => {
+    const [w, h] = win.getContentSize();
+    autoZoom = Math.round(Math.min(2.6, Math.max(1, Math.min(w / 1500, h / 940))) * 20) / 20;
+    win.webContents.setZoomFactor(autoZoom * userZoom);
+  };
+  win.on('resize', fit);
+  win.webContents.on('did-finish-load', fit);
+}
+
+let autoZoom = 1, userZoom = 1;
+function setUserZoom(z) {
+  userZoom = Math.round(Math.min(2, Math.max(0.6, z)) * 10) / 10;
+  mainWindow?.webContents.setZoomFactor(autoZoom * userZoom);
 }
 
 // KODEIDA_SMOKE=1: завантажити вікно, перевірити, що редактор і світ на місці, і вийти з кодом 0/1.
@@ -107,12 +127,26 @@ function buildMenu() {
   const site = { label: M('Сайт Кодеїди', 'Kodeida website'), click: () => shell.openExternal('https://f3an.github.io/kodeida/') };
   const issues = { label: M('Повідомити про помилку', 'Report a problem'), click: () => shell.openExternal('https://github.com/f3an/kodeida/issues/new/choose') };
   const mac = process.platform === 'darwin';
+  // Кожен стандартний пункт підписуємо самі: Electron лишає ролі англійською.
   const template = [
-    ...(mac ? [{ label: app.name, submenu: [about, check, { type: 'separator' }, { role: 'hide', label: M('Сховати Кодеїду', 'Hide Kodeida') }, { role: 'hideOthers' }, { role: 'unhide' }, { type: 'separator' }, { role: 'quit', label: M('Вийти з Кодеїди', 'Quit Kodeida') }] }] : []),
+    ...(mac ? [{ label: M('Кодеїда', 'Kodeida'), submenu: [about, check, { type: 'separator' },
+      { role: 'hide', label: M('Сховати Кодеїду', 'Hide Kodeida') }, { role: 'hideOthers', label: M('Сховати інші', 'Hide Others') }, { role: 'unhide', label: M('Показати всі', 'Show All') },
+      { type: 'separator' }, { role: 'quit', label: M('Вийти з Кодеїди', 'Quit Kodeida') }] }] : []),
     ...(mac ? [] : [{ label: M('Файл', 'File'), submenu: [{ role: 'quit', label: M('Вийти', 'Exit') }] }]),
-    { label: M('Правка', 'Edit'), submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
-    { label: M('Вигляд', 'View'), submenu: [{ role: 'resetZoom' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { type: 'separator' }, { role: 'togglefullscreen' }, ...(app.isPackaged ? [] : [{ role: 'toggleDevTools' }])] },
-    { label: M('Вікно', 'Window'), role: 'windowMenu' },
+    { label: M('Правка', 'Edit'), submenu: [
+      { role: 'undo', label: M('Скасувати', 'Undo') }, { role: 'redo', label: M('Повторити', 'Redo') }, { type: 'separator' },
+      { role: 'cut', label: M('Вирізати', 'Cut') }, { role: 'copy', label: M('Копіювати', 'Copy') }, { role: 'paste', label: M('Вставити', 'Paste') },
+      { role: 'selectAll', label: M('Виділити все', 'Select All') }] },
+    { label: M('Вигляд', 'View'), submenu: [
+      { label: M('Звичайний розмір', 'Actual Size'), accelerator: 'CmdOrCtrl+0', click: () => setUserZoom(1) },
+      { label: M('Збільшити', 'Zoom In'), accelerator: 'CmdOrCtrl+=', click: () => setUserZoom(userZoom + 0.1) },
+      { label: M('Зменшити', 'Zoom Out'), accelerator: 'CmdOrCtrl+-', click: () => setUserZoom(userZoom - 0.1) },
+      { type: 'separator' }, { role: 'togglefullscreen', label: M('На весь екран', 'Toggle Full Screen') },
+      ...(app.isPackaged ? [] : [{ role: 'toggleDevTools', label: M('Інструменти розробника', 'Developer Tools') }])] },
+    { label: M('Вікно', 'Window'), submenu: [
+      { role: 'minimize', label: M('Згорнути', 'Minimize') }, ...(mac ? [{ role: 'zoom', label: M('Масштаб вікна', 'Zoom') }] : []),
+      { role: 'close', label: M('Закрити вікно', 'Close Window') },
+      ...(mac ? [{ type: 'separator' }, { role: 'front', label: M('Усі вікна наперед', 'Bring All to Front') }] : [])] },
     { label: M('Довідка', 'Help'), role: 'help', submenu: [...(mac ? [] : [check, about, { type: 'separator' }]), site, issues] },
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));

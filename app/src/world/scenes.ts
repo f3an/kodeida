@@ -49,7 +49,7 @@ abstract class SceneBase {
   private raf = 0;
 
   constructor(canvas: HTMLCanvasElement, protected onState: (s: SceneState) => void, protected fox: string) {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const dpr = Math.min(devicePixelRatio || 1, 3);
     canvas.width = W * dpr; canvas.height = H * dpr;
     this.ctx = canvas.getContext('2d')!;
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
