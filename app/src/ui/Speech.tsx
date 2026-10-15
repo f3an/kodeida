@@ -5,9 +5,9 @@
  */
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PixelCanvas } from './PixelCanvas.tsx';
-import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod, makeAnchises, makeTrojan, makeLion } from '../world/sprites.js';
+import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod, makeAnchises, makeTrojan, makeLion, makeMitten } from '../world/sprites.js';
 
-export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'lion';
+export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'lion' | 'mitten';
 export type Tone = 'say' | 'error' | 'win' | 'taunt';
 
 type Sprite = { w: number; h: number; draw: (...a: unknown[]) => void };
@@ -27,6 +27,7 @@ function frames(who: Speaker, fox: string): Sprite[] {
       case 'wolf': return [makeWolf({ drool: 2 }), makeWolf({ drool: 1 })];
       case 'anchises': return [makeAnchises(), makeAnchises()];
       case 'lion': return [makeLion(), makeLion()];
+      case 'mitten': return [makeMitten(), makeMitten()];
       case 'warrior': case 'sailor': case 'woman': return [makeTrojan(who), makeTrojan(who)];
       // боги жестикулюють, поки говорять: кадр з піднятою рукою
       default: return [makeGod(who), makeGod(who, { raise: true })];
@@ -77,7 +78,8 @@ export function Speech({ who, name, text, tone, fox, seq, enter, action }: Props
   const draw = (ctx: CanvasRenderingContext2D, f: number) => {
     const s = spr[talking ? f % 2 : f % 23 === 0 ? 1 : 0];
     // погруддя: голова й плечі, по центру рамки
-    const scale = 2, w = s.w * scale;
+    // широкі спрайти (рукавичка) малюємо вдвічі менше, щоб вмістилися в рамку портрета
+    const scale = s.w > 60 ? 1 : 2, w = s.w * scale;
     const y = talking && f % 2 ? 1 : 0;
     s.draw(ctx, Math.round((PW - w) / 2 / 2) * 2, 6 + y * 2, scale);
   };

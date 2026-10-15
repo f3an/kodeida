@@ -182,6 +182,14 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
   }
   if (level.id === 'forest.groups' && got !== undefined && !Array.isArray(got)) return fox('Поверни масив груп, а не саму скриню: [...fam.values()].', 'Return an array of groups, not the chest itself: [...fam.values()].');
   if (level.id === 'forest.topk' && Array.isArray(got) && got.some(Array.isArray)) return fox('Поверни самі номери товарів, без лічильників: .map((p) => p[0]).', 'Return just the goods numbers, without the counts: .map((p) => p[0]).');
+  // світ 4: стек
+  if (level.world === 4 && /\.shift\s*\(/.test(bare)) return fox('shift() бере з початку масиву — це черга, а не стек. З рукавички першим виходить той, хто біля входу: pop() бере з кінця.', 'shift() takes from the start of the array — that’s a queue, not a stack. The one by the mitten’s entrance gets out first: pop() takes from the end.');
+  if (level.id === 'mitten.parens' && got === true && want === false && !/length\s*===?\s*0|!\s*stack\b|stack\.length\s*\)/.test(bare)) return fox('Наприкінці в стеку можуть лишитися незакриті дужки. Поверни true, лише якщо стек порожній: stack.length === 0.', 'Unclosed brackets may be left on the stack at the end. Return true only if the stack is empty: stack.length === 0.');
+  if (level.id === 'mitten.rpn') {
+    if (typeof got === 'string' || (got !== want && !/Number\(|parseInt|parseFloat|\+\s*t\b/.test(bare))) return fox('Вийшов рядок: "2" + "1" — це "21". Перетворюй числа з рядків: Number(t).', 'You got a string: "2" + "1" is "21". Turn the strings into numbers: Number(t).');
+    if (typeof got === 'number' && !Number.isInteger(got)) return fox('Ділення тут ціле, з відкиданням дробової частини: Math.trunc(a / b).', 'Division here is integer, dropping the fraction: Math.trunc(a / b).');
+  }
+  if (level.id === 'mitten.temps' && /stack\.push\(\s*(temperatures\[i\]|today|t\[i\])\s*\)/.test(bare)) return fox('Клади в стек номер дня i, а не температуру: інакше не порахуєш, скільки днів чекали. Температуру завжди дістанеш як temperatures[j].', 'Push the day’s index i, not its temperature: otherwise you can’t tell how many days they waited. You can always get the temperature as temperatures[j].');
   const args = ex?.args[0];
   if (level.id === 'troy.total' && Array.isArray(args) && got === args.length) return fox('Ти порахував мішки, а треба зерно: додавай не 1, а nums[i].', 'You counted the sacks, but we need the grain: add nums[i], not 1.');
   if (level.id === 'troy.sum' && Array.isArray(args)) {

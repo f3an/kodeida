@@ -19,11 +19,11 @@ import { feedbackUrl } from './feedback.ts';
 import { adviseError, adviseJudge, adviseRun, adviseSolved, adviseTimeout, adviseWolf } from './coach.ts';
 import type { CallResult } from '../engine/types.ts';
 
-type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'wolf' | 'lion';
+type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'wolf' | 'lion' | 'mitten';
 /** Текст — функція, щоб після перемикання мови репліка теж перекладалась. */
 interface Bubble { who: Who; text: () => string; tone: Tone; seq: number; enter: 'in' | 'nod' }
 /** Хто говорить за «господаря» світу: Микита на попелищі, Еол у морі, Дидона в Карфагені. */
-const HOST_SPRITE: Speaker[] = ['fox', 'eol', 'dido', 'lion'];
+const HOST_SPRITE: Speaker[] = ['fox', 'eol', 'dido', 'lion', 'mitten'];
 type Tab = 'code' | 'statement' | 'hints' | 'sheet';
 type Panel = 'tests' | 'console';
 
@@ -77,19 +77,23 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   const WHO: Record<Who, string> = {
     host: WT.host.who, fox: L('Микита', 'Mykyta'), juno: L('Юнона', 'Juno'), sibyl: L('Сивілла', 'Sibyl'), system: L('Еней', 'Aeneas'),
     enei: L('Еней', 'Aeneas'), anchises: L('Анхіз', 'Anchises'), warrior: L('Воїн', 'Warrior'), sailor: L('Моряк', 'Sailor'), woman: L('Троянка', 'Trojan woman'),
-    eol: L('Еол', 'Aeolus'), dido: L('Дидона', 'Dido'), wolf: L('Вовк Неситий', 'Greedy Wolf'), lion: L('Цар Лев', 'King Lion'),
+    eol: L('Еол', 'Aeolus'), dido: L('Дидона', 'Dido'), wolf: L('Вовк Неситий', 'Greedy Wolf'), lion: L('Цар Лев', 'King Lion'), mitten: L('Мишка-шкряботушка', 'Mousie-Scratcher'),
   };
   const SPRITE: Record<Who, Speaker> = {
     host: HOST_SPRITE[world.n] ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei',
-    enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman', eol: 'eol', dido: 'dido', wolf: 'wolf', lion: 'lion',
+    enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman', eol: 'eol', dido: 'dido', wolf: 'wolf', lion: 'lion', mitten: 'mitten',
   };
-  const say = (who: Who, text: () => string, tone: Tone = 'say') =>
+  // розмова на вході триває, доки гравець нічого не зробив; будь-яка репліка гри її зупиняє
+  const talking = useRef(true);
+  const say = (who: Who, text: () => string, tone: Tone = 'say') => {
+    talking.current = false;
     setBubble((b) => ({ who, text, tone, seq: b.seq + 1, enter: SPRITE[b.who] === SPRITE[who] ? 'nod' : 'in' }));
+  };
   // наступна репліка розмови — коли попередню дочитано; будь-яка дія гравця розмову перериває
   useEffect(() => {
     const k = bubble.seq;
-    if (!talk.length || bubble.who !== talk[Math.min(k, talk.length - 1)].who || k >= talk.length - 1 || bubble.tone !== 'say') return;
-    const t = setTimeout(() => setBubble((b) => (b.seq === k && b.who === talk[k].who ? talkLine(k + 1) : b)), 1600 + talk[k].text.length * 40);
+    if (!talking.current || !talk.length || bubble.who !== talk[Math.min(k, talk.length - 1)].who || k >= talk.length - 1 || bubble.tone !== 'say') return;
+    const t = setTimeout(() => setBubble((b) => (talking.current && b.seq === k && b.who === talk[k].who ? talkLine(k + 1) : b)), 1600 + talk[k].text.length * 40);
     return () => clearTimeout(t);
   }, [bubble]); // eslint-disable-line react-hooks/exhaustive-deps
 

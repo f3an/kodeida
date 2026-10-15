@@ -55,4 +55,20 @@ for (const x of a) {
     complexity: 'Час O(n), пам\'ять O(n).',
     problems: ['1. Two Sum', '217. Contains Duplicate', '242. Valid Anagram', '49. Group Anagrams', '347. Top K Frequent Elements'],
   },
+  {
+    world: 4,
+    title: 'Вежа: стек',
+    motif: 'tower',
+    when: ['Важливе те, що прийшло останнім: дужки, скасування дій, вкладені структури.', 'Для кожного елемента треба знайти наступний більший (чи менший).', 'Вираз рахується крок за кроком, і кожна дія бере останні значення.'],
+    idea: 'Тримай масив і працюй лише з його кінцем: push кладе нагору, pop знімає верхнього. Монотонний стек тримає тих, хто ще чекає відповіді; кожен новий відповідає всім слабшим на верхівці, тож кожен елемент кладеться й знімається лише раз.',
+    template: `const stack = [];
+for (let i = 0; i < a.length; i++) {
+  while (stack.length && a[i] > a[stack[stack.length - 1]]) {
+    const j = stack.pop(); // a[i] — відповідь для j
+  }
+  stack.push(i);
+}`,
+    complexity: 'Час O(n), пам\'ять O(n).',
+    problems: ['20. Valid Parentheses', '155. Min Stack', '150. Evaluate Reverse Polish Notation', '739. Daily Temperatures', '496. Next Greater Element I'],
+  },
 ];

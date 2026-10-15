@@ -279,6 +279,48 @@ export const PY: Record<string, PyPart> = {
       },
     },
   },
+  'mitten.order': {
+    body: `    stack = []\n    out = []\n${HERE}\n    return out\n`,
+    solution: 'def exit_order(ops):\n    stack = []\n    out = []\n    for i in range(len(ops)):\n        if ops[i] == "-":\n            out.append(stack.pop())\n        else:\n            stack.append(ops[i])\n    return out\n',
+    hint: 'for op in ops:\n    if op == "-": out.append(stack.pop())\n    else: stack.append(op)',
+    tool: {
+      code: 'plates = []\nplates.append("синя")\nplates.append("червона")\nplates.pop()   # "червона" — поклали останньою\nplates.pop()   # "синя"',
+      name: ['стек: append і pop', 'a stack: append and pop'],
+      text: { 0: ['<b>Стек</b> — це звичайний список, з яким працюють лише з одного кінця. <code>stack.append(x)</code> кладе нагору, <code>stack.pop()</code> знімає верхнього й повертає його.', 'A <b>stack</b> is an ordinary list you work with from one end only. <code>stack.append(x)</code> puts on top, <code>stack.pop()</code> takes the top one off and returns it.'] },
+    },
+  },
+  'mitten.parens': {
+    body: `    stack = []\n${HERE}\n    return True\n`,
+    solution: 'def is_valid(s):\n    pair = {")": "(", "]": "[", "}": "{"}\n    stack = []\n    for i in range(len(s)):\n        ch = s[i]\n        if ch in pair:\n            if not stack or stack.pop() != pair[ch]:\n                return False\n        else:\n            stack.append(ch)\n    return len(stack) == 0\n',
+    hint: 'for ch in s:\n    if ch in pair:\n        if not stack or stack.pop() != pair[ch]: return False\n    else: stack.append(ch)\nreturn not stack',
+    tool: {
+      code: 'pair = {")": "(", "]": "[", "}": "{"}\nstack = ["(", "["]\nstack[-1]                 # "[" — верхівка\nstack.pop() == pair["]"]  # True',
+      text: {
+        0: ['Верхній елемент стеку — <code>stack[-1]</code>. А <code>stack.pop()</code> знімає його і повертає, тож можна одразу порівняти. З порожнього стеку <code>pop()</code> дає помилку, тож спершу перевір <code>not stack</code>.', 'The top element of a stack is <code>stack[-1]</code>. And <code>stack.pop()</code> takes it off and returns it, so you can compare right away. <code>pop()</code> on an empty stack is an error, so check <code>not stack</code> first.'],
+        1: ['Зручно мати пари під рукою: словник <code>{")": "(", "]": "[", "}": "{"}</code> каже, яка відкрита дужка потрібна для кожної закритої.', 'It helps to keep the pairs at hand: the dict <code>{")": "(", "]": "[", "}": "{"}</code> tells which opening bracket each closing one needs.'],
+      },
+    },
+  },
+  'mitten.min': {
+    body: `    stack = []\n    mins = []\n    out = []\n${HERE}\n    return out\n`,
+    solution: 'def min_answers(ops):\n    stack = []\n    mins = []\n    out = []\n    for i in range(len(ops)):\n        op = ops[i]\n        if op == "?":\n            out.append(mins[-1])\n        elif op == "-":\n            stack.pop()\n            mins.pop()\n        else:\n            v = int(op)\n            stack.append(v)\n            mins.append(min(v, mins[-1]) if mins else v)\n    return out\n',
+    hint: 'if op == "?": out.append(mins[-1])\nelif op == "-": stack.pop(); mins.pop()\nelse: v = int(op); stack.append(v); mins.append(min(v, mins[-1]) if mins else v)',
+  },
+  'mitten.rpn': {
+    body: `    stack = []\n${HERE}\n    return 0\n`,
+    solution: 'def eval_rpn(tokens):\n    stack = []\n    for i in range(len(tokens)):\n        t = tokens[i]\n        if t in ("+", "-", "*", "/"):\n            b = stack.pop()\n            a = stack.pop()\n            if t == "+":\n                stack.append(a + b)\n            elif t == "-":\n                stack.append(a - b)\n            elif t == "*":\n                stack.append(a * b)\n            else:\n                stack.append(int(a / b))\n        else:\n            stack.append(int(t))\n    return stack[0]\n',
+    hint: 'if t in ("+", "-", "*", "/"): b = stack.pop(); a = stack.pop(); stack.append(compute)\nelse: stack.append(int(t))',
+    tool: {
+      code: '# ["4", "13", "5", "/", "+"]\n# 4 → [4];  13 → [4, 13];  5 → [4, 13, 5]\n# "/" → b = 5, a = 13 → [4, 2]\n# "+" → [6]',
+      text: { 1: ['Порядок важливий для <code>-</code> і <code>/</code>: друге зняте число стоїть зліва. Ціле ділення до нуля в Python — <code>int(a / b)</code>, а не <code>a // b</code> (воно округлює вниз). Наприкінці у стеку лишається одна відповідь.', 'The order matters for <code>-</code> and <code>/</code>: the second number taken off is on the left. Integer division towards zero in Python is <code>int(a / b)</code>, not <code>a // b</code> (that rounds down). At the end one answer is left on the stack.'] },
+    },
+  },
+  'mitten.temps': {
+    body: `    answer = [0] * len(temperatures)\n    stack = []\n${HERE}\n    return answer\n`,
+    solution: 'def daily_temperatures(temperatures):\n    answer = [0] * len(temperatures)\n    stack = []\n    for i in range(len(temperatures)):\n        today = temperatures[i]\n        while stack and today > temperatures[stack[-1]]:\n            j = stack.pop()\n            answer[j] = i - j\n        stack.append(i)\n    return answer\n',
+    wolf: 'def daily_temperatures(temperatures):\n    answer = [0] * len(temperatures)\n    for i in range(len(temperatures)):\n        for j in range(i + 1, len(temperatures)):\n            if temperatures[j] > temperatures[i]:\n                answer[i] = j - i\n                break\n    return answer\n',
+    hint: 'for i in range(len(t)):\n    while stack and t[i] > t[stack[-1]]:\n        j = stack.pop(); answer[j] = i - j\n    stack.append(i)',
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None']];

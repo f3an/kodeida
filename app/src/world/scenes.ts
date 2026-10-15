@@ -325,7 +325,7 @@ export class ArrayScene extends SceneBase {
     overlay?.();
 
     if (this.world === 2) { const d = makeDidoOnce(); d.draw(c, 4, this.path - d.h * 2, 2); }
-    if (this.world >= 3) { const a = artOf(this.world); if (a.npc) a.npc.draw(c, 6, this.path - a.npc.h * 2, 2); }
+    if (this.world >= 3) { const a = artOf(this.world); if (a.npc) { const k = a.npc.w > 60 ? 1 : 2; a.npc.draw(c, 6, this.path - a.npc.h * k, k); } }
     if (this.mem.size || this.memTouch) this.drawChest(now);
     if (this.world === 1) { const e = makeEolOnce(); e.draw(c, 18, 26 + Math.round(Math.sin(t * 1.5) * 3), 2); }
     this.drawHeroes(now, this.enei, this.actor === 'wolf' ? null : this.foxW, this.actor === 'wolf');

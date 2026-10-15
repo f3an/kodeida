@@ -753,6 +753,133 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     lesson: 'First one pass into memory, then work with the totals: a fair of ten thousand records shrinks to a short list.',
     doc: ['Best-selling goods', 'Return the k numbers that appear in nums most often (any order).'],
   },
+  'mitten.order': {
+    title: 'Who gets out first', topic: 'a stack: push and pop',
+    brief: '<b>Who gets out first.</b> Animals crawl into the mitten and out of it. Write down the order in which they came out.',
+    statement: [
+      'It’s cramped in the mitten: only the one by the entrance can get out, that is, the one who got in <b>last</b>.',
+      'The array <code>ops</code> is what happened: an animal’s name means “got in”, and <code>"-"</code> means “someone got out”. Return the names in the order the animals came out.',
+      'In the tests nobody tries to get out of an empty mitten.',
+    ],
+    tool: {
+      name: 'a stack: push and pop',
+      text: [
+        'A <b>stack</b> is an ordinary array you work with from one end only. <code>stack.push(x)</code> puts on top, <code>stack.pop()</code> takes the top one off and returns it.',
+        'So the last one put in is the first one taken off. Just like in the mitten.',
+      ],
+      code: 'const plates = [];\nplates.push("blue");\nplates.push("red");\nplates.pop();   // "red" — put last\nplates.pop();   // "blue"',
+    },
+    talk: [
+      'Help! They climb in wherever, and nobody lets anyone out! The mitten is about to burst!',
+      'I got in first… and now I’m at the very bottom. Cold, cramped, and somebody’s sitting on my tail.',
+      'Easy. Whoever got in last gets out first. Let’s write down how it went.',
+    ],
+    quip: 'Phew, that’s better! At least now it’s clear who’s after whom.',
+    hints: ['Who is standing by the entrance of the mitten?', 'Keep a stack: a name — push, “-” — pop, and add whatever you took off to out.', 'for (op of ops) { if (op === "-") out.push(stack.pop()); else stack.push(op); }'],
+    lesson: 'A stack is an array you work with only at the end: the last one put in is the first one taken out.',
+    doc: ['Who gets out first', 'ops[i] is a name (got in) or "-" (someone got out).', 'Return the names in the order they came out.'],
+  },
+  'mitten.parens': {
+    title: 'Did everyone get out properly', topic: 'a stack: matching brackets',
+    brief: '<b>Did everyone get out properly.</b> Every bracket that opens must close with its own kind, and in the right order.',
+    statement: [
+      'The animals wrote their moves down as brackets: an opening bracket — got in, a closing one — got out. Different animals, different brackets: <code>()</code>, <code>[]</code>, <code>{}</code>.',
+      'Return <code>true</code> if everyone who got in came out, and in the right order: a closing bracket must match the <b>last</b> one still open. Otherwise <code>false</code>.',
+      'For example, <code>"([])"</code> — yes, but <code>"([)]"</code> — no: the square one closed before its turn.',
+    ],
+    tool: {
+      name: 'the top of the stack',
+      text: [
+        'The top element of a stack is <code>stack[stack.length - 1]</code>. And <code>stack.pop()</code> takes it off and returns it, so you can compare right away.',
+        'It helps to keep the pairs at hand: the object <code>{ ")": "(", "]": "[", "}": "{" }</code> tells which opening bracket each closing one needs.',
+      ],
+      code: 'const pair = { ")": "(", "]": "[", "}": "{" };\nconst stack = ["(", "["];\nstack[stack.length - 1];   // "[" — the top\nstack.pop() === pair["]"]; // true',
+    },
+    talk: [
+      'Someone got out before the one sitting on top of them! How is that even possible?!',
+      'It isn’t, if everything is honest. Let’s check the records: every exit must match the last one who got in and hasn’t left yet.',
+    ],
+    quip: 'The records are honest. And the one who “got out earlier” was just sitting on me. I remember.',
+    hints: ['What do you need to know at the moment a closing bracket arrives?', 'Put an opening bracket into the stack. A closing one must match the one on top; otherwise false. At the end the stack must be empty.', 'for (ch of s) { if (ch in pair) { if (stack.pop() !== pair[ch]) return false; } else stack.push(ch); } return stack.length === 0;'],
+    lesson: 'A stack remembers who opened last: you check every closing only against the top.',
+    doc: ['Did everyone get out properly', 'true if every bracket closes with its own kind and in the right order.'],
+  },
+  'mitten.min': {
+    title: 'The smallest in the mitten', topic: 'a stack of minimums',
+    brief: '<b>The smallest in the mitten.</b> Animals get in and out, and the Bear keeps asking who is the smallest right now.',
+    statement: [
+      'The animals are of different heights. <code>ops</code> is a log: a number — an animal of that height got in, <code>"-"</code> — the top one got out, <code>"?"</code> — the question “what is the smallest height inside now?”.',
+      'Return the answers to all questions in order. Nobody asks about an empty mitten or gets out of one.',
+      'Going through the whole mitten for every question is slow. It’s craftier to remember the smallest for <b>every level</b> of the stack: when the top one leaves, the smallest among the rest is already known.',
+    ],
+    tool: {
+      name: 'a second stack — for minimums',
+      text: [
+        'Next to the stack of animals keep a stack <code>mins</code>: on every level, the smallest of everyone at that level or below.',
+        'When an animal gets in, push the smaller of the two into <code>mins</code>: its height or the previous minimum. When it gets out, pop from both stacks. The answer to a question is the top of <code>mins</code>.',
+      ],
+      code: '// animals: [5, 3, 7]\n// mins:    [5, 3, 3]   ← on every level the smallest below\n// 7 leaves → mins [5, 3]: the smallest is still 3',
+    },
+    talk: [
+      'The Bear wants to know who’s the smallest here. He says it’s so he knows whom not to sit on.',
+      'If we go through everyone every time, the Bear will fall asleep. Let’s remember the smallest on every floor.',
+    ],
+    quip: 'The Bear is happy and crushed nobody. A good day.',
+    hints: ['When an animal leaves, how do you know the smallest of the rest without going through anyone?', 'mins keeps the smallest on every level: push(min(x, top of mins)); "-" — pop from both; "?" — top of mins.', 'if (op === "?") out.push(mins[mins.length - 1]); else if (op === "-") { stack.pop(); mins.pop(); } else { const v = Number(op); stack.push(v); mins.push(mins.length ? Math.min(v, mins[mins.length - 1]) : v); }'],
+    lesson: 'Whatever you can work out in advance for every level of a stack, you won’t have to search for later.',
+    doc: ['The smallest in the mitten', 'ops[i] is a number (got in), "-" (the top one got out) or "?" (the smallest now).', 'Return the answers to every "?".'],
+  },
+  'mitten.rpn': {
+    title: 'Mr Cat’s sum', topic: 'a stack for calculations',
+    brief: '<b>Mr Cat’s sum.</b> The cat dictates the expression backwards: numbers first, then the operation. Work it out.',
+    statement: [
+      'Mr Cat dictates the sum in reverse Polish notation: <code>["2", "1", "+", "3", "*"]</code> means <code>(2 + 1) * 3</code>. Two numbers first, then the operation on them.',
+      'Return the result. Operations: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>. Division is integer, dropping the fraction towards zero: <code>Math.trunc(a / b)</code>.',
+      'When an operation arrives, it takes the two <b>latest</b> numbers. Sounds like a stack.',
+    ],
+    tool: {
+      name: 'a stack as scrap paper',
+      text: [
+        'Put numbers onto the stack. When an operation comes, take the top two off: first <code>b</code>, then <code>a</code> — and push back <code>a ⊕ b</code>.',
+        'The order matters for <code>-</code> and <code>/</code>: the second number taken off is on the left. At the end one answer is left on the stack.',
+      ],
+      code: '// ["4", "13", "5", "/", "+"]\n// 4 → [4];  13 → [4, 13];  5 → [4, 13, 5]\n// "/" → b = 5, a = 13 → [4, 2]\n// "+" → [6]',
+    },
+    talk: [
+      'Mr Cat is counting how much room everyone got. But he dictates it sort of backwards.',
+      'It isn’t backwards, it’s the cat’s way. Every operation takes the two latest numbers. A stack will help us.',
+    ],
+    quip: 'The sum checks out. The cat even purred — and cats don’t purr for nothing.',
+    hints: ['What do you do with a number, and what with an operation?', 'A number goes onto the stack. An operation — take off b, then a, push the result. At the end the answer is the only element on the stack.', 'if ("+-*/".includes(t) && t.length === 1) { const b = stack.pop(), a = stack.pop(); stack.push(compute a t b); } else stack.push(Number(t));'],
+    lesson: 'A stack is scrap paper for calculations: an operation always takes what was put last.',
+    doc: ['Mr Cat’s sum', 'tokens are numbers and operations + - * / in reverse Polish notation. Return the result.', 'Division is integer: Math.trunc(a / b).'],
+  },
+  'mitten.temps': {
+    title: 'When it gets warmer', topic: 'a monotonic stack',
+    brief: '<b>When it gets warmer.</b> For every day, find out how long to wait for a warmer one, so the animals can leave the mitten.',
+    statement: [
+      'Winter. The animals sit in the mitten waiting for warmth. <code>temperatures[i]</code> is the temperature of day <code>i</code>.',
+      'Return an array where position <code>i</code> holds how many days later it will be <b>warmer</b> than on day <code>i</code>. If it never gets warmer — <code>0</code>.',
+      'Constraints: <code>n ≤ 10⁴</code>. For every day the Wolf looks ahead until he finds a warm one — and winters can be long.',
+    ],
+    tool: {
+      name: 'a monotonic stack',
+      text: [
+        'Keep on the stack <b>the numbers of the days still waiting</b> for warmth. The temperatures on the stack go down: each next day on the stack is no warmer than the one before.',
+        'When a warm day comes, it “answers” all the colder ones on top: take them off and write down how long they waited. Every day is pushed and popped only once.',
+      ],
+      code: '// t = [73, 74, 75, 71, 69, 72]\n// day 3 (71) and day 4 (69) wait on the stack\n// day 5 (72): 72 > 69 → day 4 waited 1\n//             72 > 71 → day 3 waited 2',
+    },
+    talk: [
+      'When will it finally get warmer? We’re all sitting on each other’s heads in here!',
+      'And I’ll stuff everything in and for every day look into the future until I find warmth! Oh… something’s creaking…',
+      'That’s the mitten creaking because of you. Aeneas, let’s keep the days still waiting on a stack. A warm day will wake them up itself.',
+    ],
+    quip: 'Warmth is here! Out one at a time — whoever got in last goes first. Mouse, you’re last.',
+    hints: ['Which days can today’s warm day “answer”?', 'The stack holds the numbers of days without an answer. While today is warmer than the day on top, pop it and write down the difference of the numbers. Then push today.', 'for (i) { while (stack.length && t[i] > t[stack[stack.length - 1]]) { const j = stack.pop(); answer[j] = i - j; } stack.push(i); }'],
+    lesson: 'A monotonic stack keeps those still waiting for an answer: every new element answers all the weaker ones on top, and every day goes through the stack only once.',
+    doc: ['When it gets warmer', 'For every day — how many days until it is warmer (or 0).'],
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -760,6 +887,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   1: { host: { who: 'Aeolus', line: 'Ha! My winds scattered your fleet. Go on, try lining it up!' }, trick: 'Waves: in-place ordering' },
   2: { host: { who: 'Dido', line: 'As much land as you can fence with a hide is mine. The posts are already standing, pick two.' }, trick: 'Two pointers' },
   3: { host: { who: 'King Lion', line: 'Nobody remembers who sells what. Put things in order, and Mykyta will be chancellor again. For a minute.' }, trick: 'The chest of cells: a hash map' },
+  4: { host: { who: 'The mitten’s residents', line: 'Whoever got in last gets out first. Otherwise the mitten will burst!' }, trick: 'The tower: a stack' },
 };
 
 export const BOOK_EN: Record<number, { title: string; when: string[]; idea: string; complexity: string }> = {
@@ -779,6 +907,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     title: 'The chest of cells: a hash map',
     when: ['You keep asking “have I seen this already?” or “how many times?”.', 'You look for a pair, but the array is not sorted.', 'Items need to be grouped by a shared feature.'],
     idea: 'Don’t search again — remember. A Set answers “have I seen it?”, a Map keeps “key → value” (a count, an index, a group). Every check is instant, so one pass replaces a loop inside a loop.',
+    complexity: 'Time O(n), memory O(n).',
+  },
+  4: {
+    title: 'The tower: a stack',
+    when: ['The last thing that arrived is the first that matters: brackets, undo, nested structures.', 'For each element you need the next greater (or smaller) one.', 'An expression is evaluated step by step, each operation taking the latest values.'],
+    idea: 'Keep an array and work only with its end: push puts on top, pop takes the top. A monotonic stack keeps the elements still waiting for an answer; each new one answers all the weaker ones on top, so every element is pushed and popped once.',
     complexity: 'Time O(n), memory O(n).',
   },
 };
