@@ -5,9 +5,9 @@
  */
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PixelCanvas } from './PixelCanvas.tsx';
-import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod, makeAnchises, makeTrojan, makeLion, makeMitten, makeSotnyk, makeAcestes } from '../world/sprites.js';
+import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod, makeAnchises, makeTrojan, makeLion, makeMitten, makeSotnyk, makeAcestes, makeOx } from '../world/sprites.js';
 
-export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'lion' | 'mitten' | 'sotnyk' | 'acestes';
+export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox';
 export type Tone = 'say' | 'error' | 'win' | 'taunt';
 
 type Sprite = { w: number; h: number; draw: (...a: unknown[]) => void };
@@ -30,6 +30,7 @@ function frames(who: Speaker, fox: string): Sprite[] {
       case 'mitten': return [makeMitten(), makeMitten()];
       case 'sotnyk': return [makeSotnyk(), makeSotnyk()];
       case 'acestes': return [makeAcestes(), makeAcestes()];
+      case 'ox': return [makeOx(), makeOx()];
       case 'warrior': case 'sailor': case 'woman': return [makeTrojan(who), makeTrojan(who)];
       // боги жестикулюють, поки говорять: кадр з піднятою рукою
       default: return [makeGod(who), makeGod(who, { raise: true })];

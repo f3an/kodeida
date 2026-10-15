@@ -32,6 +32,7 @@ class _St:
         self.record = False
         self.mem = False
         self.forbid = set()
+        self.nodes = []
 
 _S = _St()
 
@@ -55,6 +56,66 @@ def _ban(name):
     if name in _S.forbid:
         raise _WorldErr(_M('У цій вправі ' + name + '() заборонено — зроби це сам.', 'In this exercise ' + name + '() is forbidden — do it yourself.'))
 
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+class _WNode(ListNode):
+    # вузол валки: val і next рахують погляди, зміна next — нова зачіпка
+    def __init__(self, val, name, i):
+        self.__dict__['_v'] = val
+        self.__dict__['_nx'] = None
+        self.__dict__['_n'] = name
+        self.__dict__['_i'] = i
+    @property
+    def val(self):
+        _read(self._n, self._i)
+        return self.__dict__['_v']
+    @val.setter
+    def val(self, v):
+        self.__dict__['_v'] = v
+        _push({'t': 'write', 'arr': self._n, 'i': self._i, 'v': _plain(v)})
+    @property
+    def next(self):
+        _read(self._n, self._i)
+        return self.__dict__['_nx']
+    @next.setter
+    def next(self, v):
+        self.__dict__['_nx'] = v
+        j = v.__dict__['_i'] if isinstance(v, _WNode) and v.__dict__['_n'] == self._n else -1
+        _push({'t': 'write', 'arr': self._n, 'i': self._i, 'v': {'next': j}})
+
+def _nodes_plain(h):
+    # список у масив значень без підрахунку поглядів; цикл обриваємо
+    out, seen = [], set()
+    while h is not None:
+        if id(h) in seen or len(out) > 20000:
+            out.append('…')
+            break
+        seen.add(id(h))
+        if isinstance(h, _WNode):
+            out.append(_plain(h.__dict__['_v']))
+            h = h.__dict__['_nx']
+        else:
+            out.append(_plain(h.val))
+            h = h.next
+    return out
+
+def _make_list(a, name):
+    vals, pos = a['$list'], a.get('pos', -1)
+    if pos is None:
+        pos = -1
+    nodes = [(_WNode(v, name, i) if name else ListNode(v)) for i, v in enumerate(vals)]
+    _S.nodes.extend(nodes)
+    for i, n in enumerate(nodes):
+        nx = nodes[i + 1] if i + 1 < len(nodes) else (nodes[pos] if pos >= 0 else None)
+        if name:
+            n.__dict__['_nx'] = nx
+        else:
+            n.next = nx
+    return nodes[0] if nodes else None
+
 def _plain(v, d=0):
     if v is None or isinstance(v, bool):
         return v
@@ -64,6 +125,8 @@ def _plain(v, d=0):
         return int(v)
     if isinstance(v, float):
         return v if (v == v and v not in (float('inf'), float('-inf'))) else str(v)
+    if isinstance(v, ListNode):
+        return _nodes_plain(v)
     if d > 6:
         return '…'
     if isinstance(v, list):
@@ -408,7 +471,7 @@ def _compile(code, entry, en):
         co = compile(tree, SOURCE, 'exec')
     except SyntaxError as e:
         return json.dumps({'error': {'message': _tr_syntax(e.msg or 'SyntaxError'), 'line': e.lineno}})
-    ns = {'__name__': '__main__', '_WDict': _WDict, '_WSet': _WSet, 'print': _print, 'sorted': _sorted}
+    ns = {'__name__': '__main__', '_WDict': _WDict, '_WSet': _WSet, 'print': _print, 'sorted': _sorted, 'ListNode': ListNode}
     _S.reads = 0
     _S.over = False
     _S.budget = float('inf')
@@ -437,6 +500,7 @@ def _call(args_json, spec_json):
     s.limit = spec['limit']
     s.mem = bool(spec.get('memory')) and s.record
     s.forbid = set(spec.get('forbid') or [])
+    s.nodes = []
     _EN[0] = bool(spec.get('en'))
     observe = spec.get('observe') or []
     args = []
@@ -446,6 +510,8 @@ def _call(args_json, spec_json):
         if isinstance(a, dict) and a.get('$actor') == 'enei':
             street = _Enei(a['setup'])
             args.append(street)
+        elif isinstance(a, dict) and isinstance(a.get('$list'), list):
+            args.append(_make_list(a, name))
         elif isinstance(a, list) and name:
             args.append(_WList(a, name))
         elif isinstance(a, str) and name:
@@ -475,5 +541,12 @@ def _call(args_json, spec_json):
         'street': street._state() if street is not None else None,
     }
     s.events = []
+    # довгий ланцюжок вузлів звільняється рекурсивно й переповнює стек у WebAssembly — розриваємо зачіпки по одній
+    for n in s.nodes:
+        if isinstance(n, _WNode):
+            n.__dict__['_nx'] = None
+        else:
+            n.next = None
+    s.nodes = []
     return json.dumps(res)
 `;

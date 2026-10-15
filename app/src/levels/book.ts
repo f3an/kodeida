@@ -105,4 +105,19 @@ for (let right = 0; right < a.length; right++) {
     complexity: 'Вікно: час O(n), пам\'ять O(1) або O(k). Купа: O(log n) на операцію.',
     problems: ['643. Maximum Average Subarray I', '121. Best Time to Buy and Sell Stock', '3. Longest Substring Without Repeating Characters', '1046. Last Stone Weight', '703. Kth Largest Element in a Stream'],
   },
+  {
+    world: 7,
+    title: 'Ланцюжок: зв\'язний список',
+    motif: 'chain',
+    when: ['Дані — це вузли, і кожен знає лише наступного.', 'Треба розвернути, злити чи розрізати список без копіювання.', 'Потрібна середина чи цикл — за один прохід і без додаткової пам\'яті.'],
+    idea: 'Ходи від голови через next, доки не прийде null. Перш ніж перечепити зачіпку, запам\'ятай, куди вона вела (prev, node, next). Фіктивна голова прибирає особливий випадок на початку. Повільний і швидкий вказівники знаходять середину й цикл: на колі вони неодмінно зустрінуться.',
+    template: `let slow = head, fast = head;
+while (fast && fast.next) {
+  slow = slow.next;
+  fast = fast.next.next;
+  if (slow === fast) { /* коло */ }
+}`,
+    complexity: 'Час O(n), пам\'ять O(1).',
+    problems: ['206. Reverse Linked List', '876. Middle of the Linked List', '21. Merge Two Sorted Lists', '141. Linked List Cycle', '19. Remove Nth Node From End of List'],
+  },
 ];

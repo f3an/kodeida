@@ -1137,6 +1137,132 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     lesson: 'To know the k-th best you don’t need to keep everyone: a heap of the k best gives the answer from its top.',
     doc: ['The live scoreboard', 'After every number in adds, return the k-th largest among nums and those already added.'],
   },
+  'chumak.walk': {
+    title: 'How much salt in the train', topic: 'walking a list',
+    brief: '<b>How much salt in the train.</b> The carts are hooked to one another. Walk the train from the first cart to the last and count the salt.',
+    statement: [
+      'The chumaks carry salt from Crimea. A train is carts, each hooked to the next: <code>node.val</code> is how many sacks of salt the cart has, <code>node.next</code> is the next cart, or <code>null</code> if it is the last.',
+      'You are given only the first cart — <code>head</code>. Return how much salt the whole train carries. If there is no train (<code>head</code> is <code>null</code>), return <code>0</code>.',
+      'There are no numbers here as in an array: you reach the fifth cart only by going through the four before it.',
+    ],
+    tool: {
+      name: 'a linked list',
+      text: [
+        'Every node knows only its value <code>val</code> and the next node <code>next</code>. To walk the list, keep a variable <code>node</code> and move on: <code>node = node.next</code>.',
+        'When <code>node</code> becomes <code>null</code>, the carts have run out. Hence the loop condition: <code>while (node)</code>.',
+      ],
+      code: 'let node = head;\nwhile (node) {\n  console.log(node.val);   // what this cart carries\n  node = node.next;        // on to the next one\n}',
+    },
+    talk: [
+      'Moooo. Third night we wander the steppe, and nobody knows how much salt we carry. Every cart remembers only the one in front.',
+      'And that’s all we need. From the first cart to the next, from the next onwards, until the carts run out.',
+    ],
+    quip: 'So much salt! Now at least I know why it’s so heavy.',
+    hints: ['How do you get from the first cart to the second?', 'node = head; while node is not null: add node.val and move to node.next.', 'for (let node = head; node; node = node.next) total += node.val;'],
+    lesson: 'A linked list is walked from the head, step by step through next, until null comes.',
+    doc: ['How much salt in the train', 'node.val — salt on the cart, node.next — the next cart or null.', 'Return the total over all carts.'],
+  },
+  'chumak.reverse': {
+    title: 'Back to Crimea', topic: 're-hooking the links',
+    brief: '<b>Back to Crimea.</b> Reverse the train: now every cart must be hooked to the one that was behind it.',
+    statement: [
+      'The chumaks forgot their kobza in Crimea and have to go back. The train must be reversed: the last cart becomes the first.',
+      'Re-hook the <code>next</code> of every cart to the previous one and return the new head — the former last cart. Don’t create new carts.',
+      'There is one danger: as soon as you re-hook <code>next</code>, you lose the way forward. So remember who is ahead first.',
+    ],
+    tool: {
+      name: 'three pointers: prev, node, next',
+      text: [
+        '<code>prev</code> is the part already reversed, <code>node</code> the current cart. At every step: remember <code>next = node.next</code>, re-hook <code>node.next = prev</code>, then move both forward.',
+        'When <code>node</code> becomes <code>null</code>, <code>prev</code> is the new head.',
+      ],
+      code: '// 1 → 2 → 3          prev = null, node = 1\n// null ← 1   2 → 3   prev = 1,    node = 2\n// null ← 1 ← 2   3   prev = 2,    node = 3\n// null ← 1 ← 2 ← 3   prev = 3 — the new head',
+    },
+    talk: [
+      'Moooo! We left the kobza in Crimea! Turn the train around, but carefully: the carts are hooked to one another.',
+      'Re-hook them one at a time. But first remember who’s ahead — unhook it, and half the train is lost.',
+    ],
+    quip: 'We turned around and lost nobody. And the kobza — there it is, on the first cart.',
+    hints: ['What happens to the rest of the train if you write node.next = prev straight away?', 'While node: next = node.next; node.next = prev; prev = node; node = next. Return prev.', 'while (node) { const next = node.next; node.next = prev; prev = node; node = next; } return prev;'],
+    lesson: 'Before re-hooking a link, remember where it led: prev, node and next — and the list is reversed without a single new node.',
+    doc: ['Back to Crimea', 'Reverse the list and return the new head. Don’t create new nodes.'],
+  },
+  'chumak.middle': {
+    title: 'The middle cart', topic: 'slow and fast',
+    brief: '<b>The middle cart.</b> Find the cart in the middle of the train without counting its length first.',
+    statement: [
+      'The ataman rides on the middle cart — from there he sees both the head and the tail. But nobody knows how many carts there are.',
+      'Return the middle cart (the rest of the train from it is your answer). If the number of carts is even there are two middle ones — return the <b>second</b>.',
+      'You could count the carts first and then walk half. Or do it in one pass: the ox walks one cart at a time, the fox two.',
+    ],
+    tool: {
+      name: 'slow and fast',
+      text: [
+        'Two pointers start at the head: <code>slow</code> takes one step (<code>slow.next</code>), <code>fast</code> two (<code>fast.next.next</code>).',
+        'When the fast one reaches the end, the slow one has walked exactly half. The loop runs while <code>fast</code> and <code>fast.next</code> are not <code>null</code>.',
+      ],
+      code: '// 1 → 2 → 3 → 4 → 5\n// slow: 1, 2, 3\n// fast: 1, 3, 5 — nowhere further\n// slow on 3 — the middle',
+    },
+    talk: [
+      'The ataman asks where the middle of the train is. But I’m slow; to the end and back would take me till morning.',
+      'Let’s walk together: you one cart at a time, me two. When I reach the tail, you’ll be right in the middle.',
+    ],
+    quip: 'Slow, but got where I needed to. Moooo — that was proudly.',
+    hints: ['If one walks twice as fast, where is the other when the first reaches the end?', 'While fast and fast.next: slow = slow.next; fast = fast.next.next. Return slow.', 'while (fast && fast.next) { slow = slow.next; fast = fast.next.next; } return slow;'],
+    lesson: 'Slow and fast pointers find the middle in one pass: when the fast one is at the end, the slow one is in the middle.',
+    doc: ['The middle cart', 'Return the middle node (of two middles — the second).'],
+  },
+  'chumak.merge': {
+    title: 'Two trains into one', topic: 'a dummy head',
+    brief: '<b>Two trains into one.</b> Merge two trains ordered by weight into one, also ordered.',
+    statement: [
+      'Two trains met at the crossing. In each the carts go from lighter to heavier: <code>list1</code> and <code>list2</code>.',
+      'Re-hook the carts into one train, also from lighter to heavier, and return its head. Don’t create new carts — just re-hook.',
+      'It’s handy to start with a <b>dummy</b> cart: it holds the head’s place, and at the end you just unhook it.',
+    ],
+    tool: {
+      name: 'a dummy head',
+      text: [
+        'Create an empty cart <code>new ListNode(0)</code> and a variable <code>tail</code> pointing at the end of the train collected so far.',
+        'At every step pick the lighter of the two front carts, hook it to <code>tail</code> and move <code>tail</code>. When one train runs out, hook the rest of the other whole. The answer is <code>dummy.next</code>.',
+      ],
+      code: '// dummy → (empty)\n// list1: 1 → 4   list2: 2 → 3\n// dummy → 1 → 2 → 3 → 4\n// the answer: dummy.next',
+    },
+    talk: [
+      'Two trains at one crossing! Who goes first? Who’s heavier? Moooo, we’ll lock horns.',
+      'We put an empty cart at the head and each time hook the lighter of the two front ones. The tail of the other train — in one go.',
+    ],
+    quip: 'One train, lighter to heavier. The crossing has never been so calm.',
+    hints: ['Which cart should come next in the collected train?', 'While both trains are there: hook the lighter of list1 and list2 to tail, move its train and tail. Then hook the rest.', 'while (list1 && list2) { if (list1.val <= list2.val) { tail.next = list1; list1 = list1.next; } else { tail.next = list2; list2 = list2.next; } tail = tail.next; } tail.next = list1 ?? list2;'],
+    lesson: 'A dummy head removes the special case of “what’s at the start”: hook onto the tail, and the answer is dummy.next.',
+    doc: ['Two trains into one', 'list1 and list2 are ordered. Merge them into one ordered list.'],
+  },
+  'chumak.cycle': {
+    title: 'A train in a circle', topic: 'the ox and the fox: will they meet',
+    brief: '<b>A train in a circle.</b> Prove the train is going in a circle: its tail is hooked to one of the carts ahead.',
+    statement: [
+      'A shard mixed up the links: the last cart seems to be hooked to someone in the middle, and the train has been circling the steppe for the third night.',
+      'Return <code>true</code> if, following <code>next</code>, you can come back to a cart you’ve already visited, and <code>false</code> if the train ends (<code>null</code>).',
+      'Constraints: <code>n ≤ 10⁴</code>. For every cart the Wolf checks whether he has seen it before by walking everything from the start. It’s craftier to send the ox and the fox on the road.',
+    ],
+    tool: {
+      name: 'the ox and the fox (Floyd’s algorithm)',
+      text: [
+        'The slow <code>slow</code> goes one cart at a time, the fast <code>fast</code> two. If the train has an end, the fast one reaches <code>null</code>.',
+        'But if the train is a circle, the fast one catches up with the slow one from the other side of the loop — and they end up on the same cart: <code>slow === fast</code>.',
+      ],
+      code: '// 1 → 2 → 3 → 4 ┐\n//     └─────────┘   (4 is hooked to 2)\n// slow: 1, 2, 3, 4\n// fast: 1, 3, 2, 4 — met on 4: a circle!',
+    },
+    talk: [
+      'Moooo… This well again. Or is it a different one? I think we’re going in circles, but I’m not sure.',
+      'I’ll check! For every cart I’ll walk the train from the start and see whether I’ve seen it. I’ll be done soon. Well, some day.',
+      'Ox, let’s go: you one cart at a time, me two. If we meet, it’s a circle. If I reach the end, it isn’t.',
+    ],
+    quip: 'We met! So it’s a circle. Now we re-hook the tail — and home, to Crimea. Moooo!',
+    hints: ['What happens to someone walking twice as fast if the road is closed into a loop?', 'slow — one at a time, fast — two. While fast and fast.next: take the steps; if slow === fast — true. Left the loop — false.', 'while (fast && fast.next) { slow = slow.next; fast = fast.next.next; if (slow === fast) return true; } return false;'],
+    lesson: 'Slow and fast pointers on a loop are bound to meet: a cycle is found in O(n) steps and without any memory of the road.',
+    doc: ['A train in a circle', 'true if the list has a cycle.'],
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1147,6 +1273,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   4: { host: { who: 'The mitten’s residents', line: 'Whoever got in last gets out first. Otherwise the mitten will burst!' }, trick: 'The tower: a stack' },
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
+  7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
 };
 
 export const BOOK_EN: Record<number, { title: string; when: string[]; idea: string; complexity: string }> = {
@@ -1185,6 +1312,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['You need the best stretch of consecutive elements: a sum, a length, no repeats.', 'Neighbouring windows differ only at their edges.', 'At every step you need the largest or the smallest, or the k best.'],
     idea: 'Don’t recompute each window from scratch: move it — add what comes in on the right, remove what leaves on the left. A window can be fixed or stretch and shrink. When you keep needing the biggest or smallest, hold the candidates in a heap: putting in and taking out cost log n.',
     complexity: 'Window: time O(n), memory O(1) or O(k). Heap: O(log n) per operation.',
+  },
+  7: {
+    title: 'The chain: a linked list',
+    when: ['Data comes as nodes, each knowing only the next one.', 'You need to reverse, merge or cut a list without copying it.', 'You need the middle or a cycle in one pass and without extra memory.'],
+    idea: 'Walk from the head through next until null. Before re-hooking a link, remember where it led (prev, node, next). A dummy head removes the special case at the start. Slow and fast pointers find the middle and a cycle: on a loop they are bound to meet.',
+    complexity: 'Time O(n), memory O(1).',
   },
 };
 

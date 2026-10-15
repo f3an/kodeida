@@ -65,6 +65,8 @@ export function adviseError(level: Level, code: string, err: { message: string; 
     if (name === 'i') return fox(plain(`${at(err.line)}лічильник i живе тільки всередині свого циклу for. Поза { } його вже немає.`), plain(`${at(err.line)}the counter i only lives inside its for loop. Outside the { } it no longer exists.`));
     return fox(plain(`${at(err.line)}«${name}» ніхто не створював. Перевір написання (великі й малі літери різні) або створи змінну через let.`), plain(`${at(err.line)}nobody created “${name}”. Check the spelling (upper and lower case differ) or create the variable with let.`));
   }
+  if (level.world === 7 && /of null \(reading '(next|val)'\)/.test(m))
+    return fox(plain(`${at(err.line)}віз виявився порожнім (null), а в нього попросили .next чи .val. Перш ніж іти далі, перевір, що віз є: while (fast && fast.next).`), plain(`${at(err.line)}the cart turned out to be empty (null), and you asked it for .next or .val. Before going on, check the cart exists: while (fast && fast.next).`));
   if (/Cannot read propert(y|ies) of undefined/.test(m))
     return fox(plain(`${at(err.line)}ти береш щось у того, чого немає (undefined). Часто це вихід за межі масиву: останній елемент — [length - 1].`), plain(`${at(err.line)}you are taking something from a thing that doesn’t exist (undefined). Often that means going past the end of an array: the last element is [length - 1].`));
   if (/Assignment to constant/.test(m))
@@ -91,6 +93,8 @@ export function adviseError(level: Level, code: string, err: { message: string; 
 
 /** Код працював понад 2 секунди. */
 export function adviseTimeout(level: Level, code: string): Advice {
+  if (level.world === 7 && !isPy(code) && /while\s*\(\s*(node|cur|head)\s*\)/.test(clean(code).bare) && !/\b(node|cur|head)\s*=\s*\1\.next/.test(clean(code).bare))
+    return fox('Цикл стоїть на одному возі: не забудь перейти до наступного — node = node.next.', 'The loop stays on one cart: don’t forget to move to the next one — node = node.next.');
   if (level.world === 5 && !isPy(code) && /\blo\s*=\s*mid\s*[;\n}]/.test(clean(code).bare + '\n'))
     return fox('lo = mid може ніколи не зрушити: коли hi = lo + 1, середина дорівнює lo, і цикл стоїть на місці. Пиши lo = mid + 1.', 'lo = mid may never move: when hi = lo + 1, the middle equals lo and the loop stands still. Write lo = mid + 1.');
   if (isPy(code)) return fox('Цикл не закінчується. Перевір, чи змінюється щось, від чого залежить умова while (наприклад, чи є крок усередині).', 'The loop never ends. Check whether anything that the while condition depends on changes (for example, is there a step inside?).');
@@ -159,6 +163,20 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
     if (level.id === 'sicily.song' && /\bif\s*\(\s*\w+\.has\(/.test(bare) && !/\bwhile\s*\(/.test(bare)) return fox('Одного кроку зліва буває замало: повтор може сидіти глибше у вікні. Стискай вікно в циклі while, доки повтор не зникне.', 'One step on the left is sometimes not enough: the repeat may sit deeper in the window. Shrink the window in a while loop until the repeat is gone.');
     if (level.id === 'sicily.fight' && got === undefined) return fox('Коли бійців не лишилось, відповідь — 0, а не порожнеча: return heap.size() ? heap.dequeue() : 0.', 'When no fighters are left, the answer is 0, not nothing: return heap.size() ? heap.dequeue() : 0.');
     if (level.id === 'sicily.board' && /MaxPriorityQueue/.test(bare) && !/MinPriorityQueue/.test(bare)) return fox('Тут потрібна MinPriorityQueue: нагорі має бути найменший з k найкращих — він і є k-й найбільший.', 'You need a MinPriorityQueue here: the smallest of the k best must be on top — that is the k-th largest.');
+  }
+  // світ 7: валка
+  if (level.world === 7) {
+    const want = ex ? expectedOf(level, ex) : undefined;
+    const g = Array.isArray(got) ? got : got === null ? [] : got;
+    if (Array.isArray(g) && Array.isArray(want)) {
+      if (level.id === 'chumak.reverse' && g.length === 1 && want.length > 1) return /return\s+head\b/.test(bare)
+        ? fox('head тепер — останній віз розвернутої валки. Поверни prev: це нова голова.', 'head is now the last cart of the reversed train. Return prev: that’s the new head.')
+        : fox('Від валки лишився один віз: ти перечепив зачіпку, не запам\'ятавши, куди вона вела. Спершу const next = node.next.', 'Only one cart is left: you re-hooked the link without remembering where it led. First const next = node.next.');
+      if (level.id === 'chumak.middle' && g.length === want.length + 1) return fox('З двох середніх поверни другого. Цикл має йти, поки fast && fast.next — тоді slow зробить ще один крок.', 'Of the two middle ones, return the second. The loop should run while fast && fast.next — then slow takes one more step.');
+      if (level.id === 'chumak.merge' && g.length === want.length + 1 && g[0] === 0) return fox('Перший віз — це фіктивний dummy. Поверни dummy.next.', 'The first cart is the dummy. Return dummy.next.');
+      if (level.id === 'chumak.merge' && g.length < want.length) return fox('Коли одна валка скінчилась, решту другої причепи цілком: tail.next = list1 ?? list2.', 'When one train runs out, hook the rest of the other whole: tail.next = list1 ?? list2.');
+    }
+    if (level.id === 'chumak.cycle' && got === true && want === false && /\.val\s*===?\s*\w+\.val/.test(bare)) return fox('Порівнюй самі вози (slow === fast), а не їхній вантаж: однакова сіль буває на різних возах.', 'Compare the carts themselves (slow === fast), not their load: the same salt can sit on different carts.');
   }
   if (got === undefined) {
     if (!/\breturn\b/.test(bare)) return fox('Функція нічого не повернула. Відповідь треба віддати через return.', 'The function returned nothing. Hand the answer back with return.');

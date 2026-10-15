@@ -11,6 +11,9 @@ export type WorldEvent =
   /** Пам'ять гравця (світ 3): операція з Map чи Set; ключ і значення — уже як короткий текст. */
   | { t: 'mem'; op: 'set' | 'get' | 'has' | 'add' | 'delete'; k: string; v?: string; hit?: boolean };
 
+/** Зв'язний список у тесті (світ 7): значення вузлів і, якщо є, куди замикається хвіст (pos — індекс, -1 — немає циклу). */
+export interface ListArg { $list: number[]; pos?: number }
+
 /** Стан вулиці для вправ з командами Енея. */
 export type StreetCell = 'empty' | 'sack' | 'fire' | 'well' | 'trojan';
 export interface StreetSetup { cells: StreetCell[]; start?: number }

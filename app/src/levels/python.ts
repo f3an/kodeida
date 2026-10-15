@@ -414,9 +414,52 @@ export const PY: Record<string, PyPart> = {
       },
     },
   },
+  'chumak.walk': {
+    body: `    total = 0\n${HERE}\n    return total\n`,
+    solution: 'def total_salt(head):\n    total = 0\n    node = head\n    while node:\n        total += node.val\n        node = node.next\n    return total\n',
+    hint: 'node = head\nwhile node:\n    total += node.val\n    node = node.next',
+    tool: {
+      code: 'node = head\nwhile node:\n    print(node.val)   # що на цьому возі\n    node = node.next  # до наступного',
+      text: { 1: ['Коли <code>node</code> стане <code>None</code>, вози скінчились. Звідси й умова циклу: <code>while node:</code>.', 'When <code>node</code> becomes <code>None</code>, the carts have run out. Hence the loop condition: <code>while node:</code>.'] },
+    },
+  },
+  'chumak.reverse': {
+    body: `    prev = None\n    node = head\n${HERE}\n    return prev\n`,
+    solution: 'def reverse_list(head):\n    prev = None\n    node = head\n    while node:\n        nxt = node.next\n        node.next = prev\n        prev = node\n        node = nxt\n    return prev\n',
+    hint: 'while node:\n    nxt = node.next\n    node.next = prev\n    prev, node = node, nxt\nreturn prev',
+    tool: {
+      code: '# 1 → 2 → 3          prev = None, node = 1\n# None ← 1   2 → 3   prev = 1,    node = 2\n# None ← 1 ← 2   3   prev = 2,    node = 3\n# None ← 1 ← 2 ← 3   prev = 3 — нова голова',
+      text: { 0: ['<code>prev</code> — вже розвернута частина, <code>node</code> — поточний віз. На кожному кроці: запам\'ятай <code>nxt = node.next</code>, перечепи <code>node.next = prev</code>, а тоді посунь обидва вперед.', '<code>prev</code> is the part already reversed, <code>node</code> the current cart. At every step: remember <code>nxt = node.next</code>, re-hook <code>node.next = prev</code>, then move both forward.'] },
+    },
+  },
+  'chumak.middle': {
+    body: `    slow = fast = head\n${HERE}\n    return slow\n`,
+    solution: 'def middle_node(head):\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n    return slow\n',
+    hint: 'while fast and fast.next:\n    slow = slow.next\n    fast = fast.next.next\nreturn slow',
+    tool: { code: '# 1 → 2 → 3 → 4 → 5\n# slow: 1, 2, 3\n# fast: 1, 3, 5 — далі нікуди\n# slow на 3 — середина' },
+  },
+  'chumak.merge': {
+    body: `    dummy = ListNode(0)\n    tail = dummy\n${HERE}\n    return dummy.next\n`,
+    solution: 'def merge_two_lists(list1, list2):\n    dummy = ListNode(0)\n    tail = dummy\n    while list1 and list2:\n        if list1.val <= list2.val:\n            tail.next = list1\n            list1 = list1.next\n        else:\n            tail.next = list2\n            list2 = list2.next\n        tail = tail.next\n    tail.next = list1 if list1 else list2\n    return dummy.next\n',
+    hint: 'while list1 and list2:\n    if list1.val <= list2.val: tail.next = list1; list1 = list1.next\n    else: tail.next = list2; list2 = list2.next\n    tail = tail.next\ntail.next = list1 or list2',
+    tool: {
+      code: '# dummy → (порожньо)\n# list1: 1 → 4   list2: 2 → 3\n# dummy → 1 → 2 → 3 → 4\n# відповідь: dummy.next',
+      text: { 0: ['Створи порожній віз <code>ListNode(0)</code> і змінну <code>tail</code>, що вказує на кінець уже зібраної валки.', 'Create an empty cart <code>ListNode(0)</code> and a variable <code>tail</code> pointing at the end of the train collected so far.'] },
+    },
+  },
+  'chumak.cycle': {
+    body: `    slow = fast = head\n${HERE}\n    return False\n`,
+    solution: 'def has_cycle(head):\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            return True\n    return False\n',
+    wolf: 'def has_cycle(head):\n    i = 0\n    node = head\n    while node:\n        p = head\n        for j in range(i):\n            if p is node:\n                return True\n            p = p.next\n        node = node.next\n        i += 1\n    return False\n',
+    hint: 'while fast and fast.next:\n    slow = slow.next\n    fast = fast.next.next\n    if slow is fast: return True\nreturn False',
+    tool: {
+      code: '# 1 → 2 → 3 → 4 ┐\n#     └─────────┘   (4 зачеплено за 2)\n# slow: 1, 2, 3, 4\n# fast: 1, 3, 2, 4 — зустрілися на 4: коло!',
+      text: { 1: ['Якщо ж валка по колу, швидкий наздожене повільного з іншого боку кола — і вони опиняться на тому самому возі: <code>slow is fast</code>.', 'But if the train is a circle, the fast one catches up with the slow one from the other side of the loop — and they end up on the same cart: <code>slow is fast</code>.'] },
+    },
+  },
 };
 
-const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None']];
+const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None'], [/\bnull\b/g, 'None']];
 const pyType = (t: string) => TYPES.reduce((s, [re, to]) => s.replace(re, to), t);
 
 /** Підпис функції з TS-стартеру: `function name(a: T, b: U): R` → [name, [[a, T], [b, U]], R]. */

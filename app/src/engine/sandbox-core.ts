@@ -98,6 +98,21 @@ class PriorityQueue<T> {
   toArray() { return this.h.slice(); }
 }
 const asNum = (x: unknown) => x as number;
+
+/** Вузол зв'язного списку, як на LeetCode. */
+export class ListNode {
+  val: number;
+  next: ListNode | null;
+  constructor(val = 0, next: ListNode | null = null) { this.val = val; this.next = next; }
+}
+const isListArg = (a: unknown): a is { $list: number[]; pos?: number } => !!a && typeof a === 'object' && Array.isArray((a as { $list?: unknown }).$list);
+/** Список вузлів у масив значень; цикл обриваємо, щоб не зависнути. */
+function listToArray(head: ListNode | null): unknown[] {
+  const out: unknown[] = [];
+  const seen = new Set<ListNode>();
+  for (let n = head; n; n = n.next) { if (seen.has(n) || out.length > 20000) { out.push('…'); break; } seen.add(n); out.push(n.val); }
+  return out;
+}
 class MinPriorityQueue<T> extends PriorityQueue<T> { constructor(prio: (x: T) => number = asNum) { super(prio, 1); } }
 class MaxPriorityQueue<T> extends PriorityQueue<T> { constructor(prio: (x: T) => number = asNum) { super(prio, -1); } }
 
@@ -109,10 +124,10 @@ export function compile(code: string, lang: Lang, entry: string): { fn: PlayerFn
     return { error: errorOf(err) };
   }
   // Обгортка стоїть на першому рядку коду, тож номери рядків у стеку збігаються з редактором.
-  const src = `(function(console,MinPriorityQueue,MaxPriorityQueue){"use strict";${js}\n;return typeof ${entry}==="function"?${entry}:undefined;})\n//# sourceURL=${SOURCE_URL}`;
+  const src = `(function(console,MinPriorityQueue,MaxPriorityQueue,ListNode){"use strict";${js}\n;return typeof ${entry}==="function"?${entry}:undefined;})\n//# sourceURL=${SOURCE_URL}`;
   let fn: unknown;
   try {
-    fn = (0, eval)(src)(playerConsole, MinPriorityQueue, MaxPriorityQueue);
+    fn = (0, eval)(src)(playerConsole, MinPriorityQueue, MaxPriorityQueue, ListNode);
   } catch (err) {
     return { error: errorOf(err) };
   }
@@ -231,10 +246,28 @@ export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallR
       },
     });
 
+  /**
+   * Валка возів: вузли з того самого класу ListNode, але val і next — властивості, що рахують погляди.
+   * Зміна next записується як подія write з v = { next: номер воза } (-1 — кінець або чужий вузол).
+   */
+  const makeList = (a: { $list: number[]; pos?: number }, name: string | null) => {
+    const nodes = a.$list.map((v) => new ListNode(v));
+    const index = new Map<ListNode, number>();
+    nodes.forEach((n, i) => index.set(n, i));
+    nodes.forEach((n, i) => { n.next = nodes[i + 1] ?? (a.pos !== undefined && a.pos >= 0 ? nodes[a.pos] : null); });
+    if (name) nodes.forEach((n, i) => {
+      let val = n.val, next = n.next;
+      Object.defineProperty(n, 'val', { get() { if (counting) read(name, i); return val; }, set(v) { val = v; if (counting) push({ t: 'write', arr: name, i, v }); }, enumerable: true });
+      Object.defineProperty(n, 'next', { get() { if (counting) read(name, i); return next; }, set(v: ListNode | null) { next = v; if (counting) push({ t: 'write', arr: name, i, v: { next: v ? index.get(v) ?? -1 : -1 } }); }, enumerable: true });
+    });
+    return nodes[0] ?? null;
+  };
+
   let street: StreetState | undefined;
   const raw = spec.args.map((a) => (Array.isArray(a) ? a.slice() : a));
   const args = raw.map((a, i) => {
     if (isActor(a)) { const s = makeStreet(a.setup, push); street = s.st; return s.api; }
+    if (isListArg(a)) return makeList(a, spec.observe[i]);
     if (Array.isArray(a) && spec.observe[i]) return watch(a, spec.observe[i]!);
     if (typeof a === 'string' && spec.observe[i] && spec.record) return watchString(a, spec.observe[i]!, read);
     return a;
@@ -294,6 +327,7 @@ function isIndex(p: string): boolean {
 /** Значення, яке можна передати з Worker'а: без Proxy, функцій і циклів. */
 function plain(v: unknown, depth = 0): unknown {
   if (v === null || typeof v !== 'object') return typeof v === 'function' ? '[function]' : v;
+  if (v instanceof ListNode) return listToArray(v);
   if (depth > 6) return '…';
   if (Array.isArray(v)) return Array.from(v, (x) => plain(x, depth + 1));
   const out: Record<string, unknown> = {};

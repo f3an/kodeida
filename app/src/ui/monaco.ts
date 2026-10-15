@@ -25,7 +25,9 @@ const pqLib = `declare class PriorityQueueBase<T> { enqueue(x: T): this; dequeue
 /** Купа: dequeue() повертає найменший елемент. */
 declare class MinPriorityQueue<T = number> extends PriorityQueueBase<T> { constructor(priority?: (x: T) => number); }
 /** Купа: dequeue() повертає найбільший елемент. */
-declare class MaxPriorityQueue<T = number> extends PriorityQueueBase<T> { constructor(priority?: (x: T) => number); }`;
+declare class MaxPriorityQueue<T = number> extends PriorityQueueBase<T> { constructor(priority?: (x: T) => number); }
+/** Вузол зв'язного списку, як на LeetCode. */
+declare class ListNode { val: number; next: ListNode | null; constructor(val?: number, next?: ListNode | null); }`;
 ts.typescriptDefaults.addExtraLib(pqLib, 'ts:kodeida/pq.d.ts');
 ts.javascriptDefaults.addExtraLib(pqLib, 'ts:kodeida/pq.d.ts');
 // Еней у світі 0: команди, які дає вулиця (sandbox-core.ts → makeStreet). Опис — мовою інтерфейсу.

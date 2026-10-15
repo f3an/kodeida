@@ -211,6 +211,9 @@ export class ArrayScene extends SceneBase {
   private base = 280; private path = 384;
   /** «Скриня» світу 3: що код гравця поклав у Map чи Set. */
   private mem = new Map<string, string>();
+  /** Світ 7: зачіпки валки — для кожного воза номер наступного (-1 — кінець). null — звичайний масив. */
+  private links0: number[] | null = null;
+  private links: number[] | null = null;
   private memTouch: { k: string; at: number; ok: boolean } | null = null;
 
   constructor(canvas: HTMLCanvasElement, onState: (s: SceneState) => void, fox: string, private world: number, private skin: Skin, private mode: Mode) {
@@ -225,7 +228,8 @@ export class ArrayScene extends SceneBase {
     if (world >= 3) { this.base = 226; this.x0 = 110; }
   }
 
-  load(values: unknown[] | string, arrName: string, events: WorldEvent[], actor: Actor, result: string | null = null) {
+  load(values: unknown[] | string, arrName: string, events: WorldEvent[], actor: Actor, result: string | null = null, links: number[] | null = null) {
+    this.links0 = links;
     this.initial = typeof values === 'string' ? [...values] : values.slice();
     this.arrName = arrName;
     this.events = events.filter((e) => ((e.t === 'read' || e.t === 'write') && e.arr === arrName) || e.t === 'mem');
@@ -236,7 +240,7 @@ export class ArrayScene extends SceneBase {
 
   reset() {
     this.values = this.initial.slice();
-    this.k = 0; this.playing = false; this.reads = []; this.nReads = 0; this.glow.clear(); this.best = 0; this.bestPair = null; this.mem.clear(); this.memTouch = null;
+    this.k = 0; this.playing = false; this.reads = []; this.nReads = 0; this.glow.clear(); this.best = 0; this.bestPair = null; this.mem.clear(); this.memTouch = null; this.links = this.links0 ? this.links0.slice() : null;
     const n = this.values.length;
     this.enei = { x: this.ix(0) - 30, tx: this.ix(0) - 30, y: this.path, ty: this.path, face: 1 };
     const fx = this.mode === 'scan' ? W - 30 : this.ix(Math.max(0, n - 1)) + 28;
@@ -270,7 +274,9 @@ export class ArrayScene extends SceneBase {
       return;
     }
     if ((e.t !== 'read' && e.t !== 'write') || e.i < 0 || e.i >= this.values.length) return;
-    if (e.t === 'write') this.values[e.i] = e.v;
+    const nextOf = e.t === 'write' && e.v && typeof e.v === 'object' && 'next' in (e.v as object) ? (e.v as { next: number }).next : null;
+    if (nextOf !== null) { if (this.links) this.links[e.i] = nextOf; }
+    else if (e.t === 'write') this.values[e.i] = e.v;
     else this.nReads++;
     this.reads.push(e.i);
     if (!silent) this.glow.set(e.i, { at: performance.now(), write: e.t === 'write' });
@@ -317,6 +323,7 @@ export class ArrayScene extends SceneBase {
       for (let x = xl; x <= xr; x += 6) { const k = (x - xl) / Math.max(1, xr - xl); c.fillRect(x, Math.round(y - Math.sin(k * Math.PI) * 12), 3, 2); }
     }
 
+    if (this.links) this.drawLinks();
     for (let i = 0; i < n; i++) {
       const f = this.glow.get(i);
       const glow = f ? Math.max(0, 1 - (now - f.at) / 520) : 0;
@@ -339,6 +346,29 @@ export class ArrayScene extends SceneBase {
         c.fillRect(Math.round(x / 2) * 2, Math.round(y / 2) * 2, 2, 2);
       }
     }
+  }
+
+  /** Зачіпки валки: стрілка від воза до наступного; назад або через кілька — дугою над валкою. */
+  private drawLinks() {
+    const c = this.ctx, y = this.base - 13;
+    this.links!.forEach((j, i) => {
+      if (j < 0) return;
+      const x1 = this.ix(i) + 3, x2 = this.ix(j) + 3;
+      c.fillStyle = '#e9e1cc';
+      if (j === i + 1) {
+        for (let x = x1 + 20; x < x2 - 22; x += 2) c.fillRect(x, y, 2, 2);
+        c.fillRect(x2 - 26, y - 2, 2, 6); c.fillRect(x2 - 24, y - 1, 2, 4);
+        return;
+      }
+      // дуга: над валкою, вища для дальших зачіпок; назад — жовта, бо це підозра на коло
+      const h = 24 + Math.min(70, Math.abs(j - i) * 10);
+      c.fillStyle = j <= i ? '#f2d27a' : '#e9e1cc';
+      for (let k = 0; k <= 40; k++) {
+        const t = k / 40, x = x1 + (x2 - x1) * t, yy = y - 30 - Math.sin(t * Math.PI) * h;
+        c.fillRect(Math.round(x), Math.round(yy), 2, 2);
+      }
+      c.fillRect(x2 - 1, y - 32, 4, 4);
+    });
   }
 
   /** Скриня з комірками: кожна комірка — ключ і значення з пам'яті гравця. */

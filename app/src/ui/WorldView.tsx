@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { ArrayScene, StreetScene, W, H, type Actor, type SceneState } from '../world/scenes.ts';
 import type { Level } from '../engine/level.ts';
-import type { ActorArg, TestCase, WorldEvent } from '../engine/types.ts';
+import type { ActorArg, ListArg, TestCase, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
 
 export interface WorldHandle {
@@ -29,7 +29,14 @@ export const WorldView = forwardRef<WorldHandle, Props>(function WorldView({ lev
   const show = (tc: TestCase, events: WorldEvent[], actor: Actor = 'heroes', result: string | null = null) => {
     const s = scene.current;
     if (s instanceof StreetScene) s.load((tc.args[0] as ActorArg).setup.cells, events);
-    else if (s instanceof ArrayScene) s.load(tc.args[observed] as unknown[] | string, level.observe[observed]!, events, actor, result);
+    else if (s instanceof ArrayScene) {
+      const arg = tc.args[observed] as unknown[] | string | ListArg;
+      // зв'язний список: значення возів і зачіпки (останній — на pos, якщо валка замкнена)
+      if (arg && typeof arg === 'object' && !Array.isArray(arg)) {
+        const n = arg.$list.length, pos = arg.pos ?? -1;
+        s.load(arg.$list, level.observe[observed]!, events, actor, result, arg.$list.map((_, i) => (i + 1 < n ? i + 1 : pos)));
+      } else s.load(arg, level.observe[observed]!, events, actor, result);
+    }
   };
 
   useEffect(() => {
