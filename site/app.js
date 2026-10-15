@@ -38,7 +38,7 @@ const DICT={
 "Нові кампанії":"New campaigns","Алгоритми, структури даних, ООП — за останнім уламком Писанки.":"Algorithms, data structures, OOP — behind the last Pysanka shard.",
 "Хочеш спробувати першим?":"Want to try it first?",
 "Шукаємо перших гравців і контриб'юторів: розробників, художників, методистів.":"We're looking for first players and contributors: developers, artists, teachers.",
-"★ Зірочка на GitHub · скоро":"★ Star on GitHub · soon","Стати тестувальником · скоро":"Become a tester · soon",
+"★ Зірочка на GitHub":"★ Star on GitHub","Запропонувати ідею":"Suggest an idea",
 "Кодеїда — open-source гра про алгоритми. Персонажі намальовані з нуля за текстами в суспільному надбанні: Котляревський, Франко, Леся Українка, Коцюбинський, Квітка-Основ'яненко, народні казки.":"Kodeida is an open-source game about algorithms. Characters are drawn from scratch after public-domain texts: Kotliarevsky, Franko, Lesya Ukrainka, Kotsiubynsky, Kvitka-Osnovianenko, folk tales.",
 // journey card
 "Микита:":"Mykyta:","Мешканці:":"Locals:",
