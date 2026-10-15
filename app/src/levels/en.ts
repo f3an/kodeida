@@ -8,6 +8,7 @@ export interface LevelEn {
   lesson: string;
   /** Lines of the comment at the top of the starter code. */
   doc: string[];
+  tool?: { name: string; text: string[]; code: string };
 }
 
 export const LEVELS_EN: Record<string, LevelEn> = {
@@ -17,8 +18,17 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     statement: [
       'Aeneas stands among the ashes, and one step away is Mykyta, who has just fallen from the sky.',
       'The code is already written: <code>enei.move()</code> is one step forward. Press “Run” (or ⌘↵).',
-      'This is what the word of order looks like: the world does exactly what is written, nothing more.',
+      'This is what the word of order — the code — looks like: the world does exactly what is written, nothing more.',
     ],
+    tool: {
+      name: 'a command',
+      text: [
+        '<code>enei</code> is Aeneas, and <code>.move()</code> is a command he carries out. The dot means “Aeneas has this action”.',
+        'The brackets <code>()</code> mean “do it now”. Without them the command is only mentioned, not given.',
+        'The semicolon <code>;</code> at the end is like a full stop in a sentence.',
+      ],
+      code: 'enei.move();   // Aeneas takes one step forward',
+    },
     hints: ['The code is ready — just run it.', 'The “Run” button is at the top right, or press ⌘↵.', 'enei.move();'],
     lesson: 'The word of order is a sequence of commands. The world runs them one by one.',
     doc: ['First step', 'enei.move() — one step forward.'],
@@ -28,58 +38,200 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>To the well.</b> The well is four steps away. Lead Aeneas to it.',
     statement: [
       'The Trojans need water. The well is four cells away from Aeneas.',
-      'Each <code>enei.move()</code> is one step. Commands run from top to bottom.',
+      'One <code>enei.move()</code> is one step. Write as many steps as you need.',
       'If Aeneas walks past the well, the road ends and he stumbles.',
     ],
-    hints: ['How many steps to the well?', 'Each line enei.move(); is one step. You need four.', 'enei.move(); ×4'],
+    tool: {
+      name: 'several commands',
+      text: [
+        'Commands run one after another, <b>from top to bottom</b>, each on its own line.',
+        'The world doesn’t guess what you meant: Aeneas takes exactly as many steps as you write.',
+      ],
+      code: 'enei.move();   // first step\nenei.move();   // second step',
+    },
+    hints: ['How many cells are there between Aeneas and the well?', 'Each line enei.move(); is one step. You need four.', 'enei.move(); ×4'],
     lesson: 'Commands run one after another, top to bottom.',
     doc: ['To the well', 'The well is 4 steps away. enei.move() — one step forward.'],
   },
-  'troy.gather': {
-    title: 'Grain along the street', topic: 'a loop',
-    brief: '<b>Grain along the street.</b> Each of the <code>n</code> cells ahead has a sack. Collect them all.',
+  'troy.far': {
+    title: 'The far well', topic: 'the for loop',
+    brief: '<b>The far well.</b> This well is 15 steps away. You could write 15 lines… or one clever word.',
     statement: [
-      'Sacks of grain lie along the street — one on each of the <code>n</code> cells ahead of Aeneas.',
-      '<code>enei.move()</code> is a step, <code>enei.take()</code> picks up the sack where you stand.',
-      'The tests use different <code>n</code> (3, 5, 8, 12), so writing commands by hand won’t work — you need a <b>loop</b>: <code>for (let i = 0; i &lt; n; i++) { … }</code>.',
+      'The near well has dried up. The next one is at the very end of the street, 15 cells away.',
+      'You could write <code>enei.move()</code> fifteen times, and it would work. But what if the well were a hundred steps away? A thousand?',
+      'When the same thing has to be repeated many times, programmers write a <b>loop</b>. Look at the new tool below.',
     ],
-    hints: ['What repeats for every sack?', 'For each sack: step and pick it up. Repeat n times.', 'for (let i = 0; i < n; i++) { enei.move(); enei.take(); }'],
-    lesson: 'A loop repeats the same steps as many times as needed — 3 or 3000.',
-    doc: ['Grain along the street', 'Each of the n cells ahead has a sack.', 'enei.move() — step, enei.take() — pick up the sack.'],
+    tool: {
+      name: 'the for loop',
+      text: [
+        '<code>for</code> repeats everything between <code>{</code> and <code>}</code> as many times as you say.',
+        '<code>let i = 0</code> — the counter starts at zero. <code>i &lt; 3</code> — keep repeating while the counter is less than 3. <code>i++</code> — after each round, add 1 to the counter.',
+        'So the counter goes 0, 1, 2 — three rounds. To repeat 10 times, write <code>i &lt; 10</code>.',
+      ],
+      code: 'for (let i = 0; i < 3; i++) {\n  enei.move();   // runs 3 times\n}',
+    },
+    hints: ['Fifteen identical lines… What if you repeated one line 15 times?', 'In a for loop, the number in the condition i < … is how many times to repeat.', 'for (let i = 0; i < 15; i++) { enei.move(); }'],
+    lesson: 'A loop replaces many identical lines with one: change the number and you change how many times it repeats.',
+    doc: ['The far well', 'The well is 15 steps away. enei.move() — one step forward.', 'Try a for loop: it repeats a command as many times as you say.'],
+  },
+  'troy.sacks': {
+    title: 'Sacks by the gate', topic: 'several commands in a loop',
+    brief: '<b>Sacks by the gate.</b> Each of the five cells ahead has a sack. Collect all five.',
+    statement: [
+      'Sacks of grain lie by the gate — one on each of the five cells ahead of Aeneas.',
+      'A new command: <code>enei.take()</code> picks up the sack where Aeneas stands. To take a sack, he has to walk to it first.',
+      'Every sack needs two actions: a step and a pick-up. A loop can repeat not just one command but a whole group.',
+    ],
+    tool: {
+      name: 'the loop body',
+      text: [
+        'Everything between <code>{</code> and <code>}</code> is called the <b>loop body</b>. The body runs in full, from the first line to the last, and only then does the next round begin.',
+        'In the example below Aeneas takes two steps per round, so six steps in 3 rounds.',
+      ],
+      code: 'for (let i = 0; i < 3; i++) {\n  enei.move();\n  enei.move();\n}',
+    },
+    hints: ['What do you need to do for one sack?', 'For each sack: a step, then a pick-up. Five times.', 'for (let i = 0; i < 5; i++) { enei.move(); enei.take(); }'],
+    lesson: 'The loop body is a group of commands that repeats as a whole: step, take, step, take…',
+    doc: ['Sacks by the gate', 'Each of the 5 cells ahead has a sack.', 'enei.move() — step, enei.take() — pick up the sack.'],
+  },
+  'troy.gather': {
+    title: 'Grain along the street', topic: 'the parameter n',
+    brief: '<b>Grain along the street.</b> Now the streets differ: 3 sacks here, 12 there. <code>n</code> tells you how many.',
+    statement: [
+      'The Trojans found more streets with sacks. On each one the sacks lie in a row, one per cell, but their number differs.',
+      'Your code will run on four streets: with <b>3, 5, 8 and 12</b> sacks. If you put the number 3 into the loop, Aeneas will stop too early on the others.',
+      'That’s why the function receives <code>n</code> — the number of sacks on the current street. Use it instead of a fixed number.',
+    ],
+    tool: {
+      name: 'a parameter',
+      text: [
+        'A <b>parameter</b> is a value the function gets from outside, in the brackets after its name. Whoever calls the function decides what it is.',
+        'The code is the same, but the result depends on what was passed in. That’s how one function works for every street.',
+      ],
+      code: 'function clap(times) {\n  for (let i = 0; i < times; i++) console.log("clap!");\n}\nclap(2);    // clap! clap!\nclap(5);    // five times',
+    },
+    hints: ['How do the streets in the tests differ? And what does the function know about it?', 'Take the loop from the last exercise, but put n instead of the number 5.', 'for (let i = 0; i < n; i++) { enei.move(); enei.take(); }'],
+    lesson: 'Don’t write a number into the code if it can change: take it from a parameter, and the code works for any street.',
+    doc: ['Grain along the street', 'Each of the n cells ahead has a sack. n is 3, 5, 8 or 12.', 'enei.move() — step, enei.take() — pick up the sack.'],
+  },
+  'troy.walk': {
+    title: 'The well out there', topic: 'the while loop',
+    brief: '<b>The well out there.</b> The well is at the end of the street, but how many steps away — nobody knows.',
+    statement: [
+      'Night, smoke, you can’t see a thing. The well is surely at the end of the street, but the streets have different lengths, and this time nobody gives you <code>n</code>.',
+      'But Aeneas can check whether he has arrived: <code>enei.atEnd()</code> returns <code>true</code> if Aeneas is at the end of the street and <code>false</code> if not.',
+      'When you don’t know how many times to repeat, but you know <b>until when</b>, you need a <code>while</code> loop.',
+    ],
+    tool: {
+      name: 'the while loop and !',
+      text: [
+        '<code>while (condition) { … }</code> repeats the body <b>while</b> the condition is true. The condition is checked again before every round.',
+        'The sign <code>!</code> means “not”: <code>!true</code> is <code>false</code>, and the other way round. So <code>!enei.atEnd()</code> reads “Aeneas is not at the end yet”.',
+      ],
+      code: 'let water = 0;\nwhile (water < 3) {\n  water++;   // repeats while water is below 3\n}',
+    },
+    hints: ['Until when does Aeneas need to walk?', 'While Aeneas is not at the end of the street, take a step.', 'while (!enei.atEnd()) { enei.move(); }'],
+    lesson: 'for — when you know how many times. while — when you know until when.',
+    doc: ['The well out there', 'The well is at the end of the street, length unknown.', 'enei.move() — step; enei.atEnd() — is Aeneas at the end yet.'],
   },
   'troy.fire': {
-    title: 'Around the fire', topic: 'a condition',
-    brief: '<b>Around the fire.</b> Reach the end of the street. Where it burns ahead — jump over.',
+    title: 'Around the fire', topic: 'the if / else condition',
+    brief: '<b>Around the fire.</b> Reach the well at the end of the street. Where it burns ahead — jump over.',
     statement: [
       'The rubble is still smouldering. Reach the well at the end of the street without getting burnt.',
-      '<code>enei.fireAhead()</code> tells whether the next cell is on fire; <code>enei.jump()</code> jumps over one cell; <code>enei.atEnd()</code> tells whether Aeneas is at the end.',
-      'The fire is somewhere else in every test. You need a <b>condition</b>: <code>if (…) { … } else { … }</code>, and <code>while (!enei.atEnd())</code> to walk a street of any length.',
+      '<code>enei.fireAhead()</code> tells whether the next cell is on fire (<code>true</code> or <code>false</code>). <code>enei.jump()</code> jumps over one cell.',
+      'The fire is somewhere else in every test, so before each step you have to <b>decide</b> what to do: step or jump. Walking to the end you already know.',
     ],
-    hints: ['Before every step, look at what is ahead.', 'Until the end of the street: if there is fire ahead, jump; otherwise step.', 'while (!enei.atEnd()) { if (enei.fireAhead()) enei.jump(); else enei.move(); }'],
-    lesson: 'A condition picks an action from the state of the world, and a while loop keeps going until the goal is reached.',
+    tool: {
+      name: 'the if / else condition',
+      text: [
+        '<code>if (condition) { … }</code> runs an action only if the condition is true. <code>else { … }</code> says what to do otherwise.',
+        'This is how code picks one of two actions depending on what is happening in the world.',
+      ],
+      code: 'if (raining) {\n  takeUmbrella();   // if it rains\n} else {\n  takeCap();        // if not\n}',
+    },
+    hints: ['Take the loop from the last exercise. What has changed on the street?', 'Until the end of the street: if there is fire ahead, jump; otherwise step.', 'while (!enei.atEnd()) { if (enei.fireAhead()) enei.jump(); else enei.move(); }'],
+    lesson: 'A condition picks an action from the state of the world, and the loop repeats that choice at every step.',
     doc: ['Around the fire', 'enei.fireAhead() — is it burning ahead; enei.jump() — jump over;', 'enei.move() — step; enei.atEnd() — is this the end of the street.'],
+  },
+  'troy.last': {
+    title: 'At the end of the street', topic: 'arrays and indexes',
+    brief: '<b>At the end of the street.</b> Now the street is a list. Return what lies on the last cell.',
+    statement: [
+      'Mykyta wrote the street down: what lies on each cell, in order. In programming such a list is called an <b>array</b>: <code>street</code>.',
+      'Return what lies on the <b>last</b> cell. The streets in the tests have different lengths, so you’ll have to work out the number of the last cell.',
+      'To give the answer back, write <code>return</code> and the value.',
+    ],
+    tool: {
+      name: 'array, index, length, return',
+      text: [
+        'Array elements are numbered <b>from zero</b>: the first is <code>days[0]</code>, the second is <code>days[1]</code>. An element’s number is called its index.',
+        '<code>days.length</code> is how many elements the array has. Since we count from zero, the last element has index <code>length - 1</code>.',
+        '<code>return</code> ends the function and hands the value back to whoever called it.',
+      ],
+      code: 'const days = ["Mon", "Tue", "Wed"];\ndays[0];        // "Mon"\ndays.length;    // 3\nreturn days[1]; // returns "Tue"',
+    },
+    hints: ['If the street has 4 cells, what is the number of the last one? Remember, we count from zero.', 'The number of the last cell is street.length - 1.', 'return street[street.length - 1];'],
+    lesson: 'Arrays count from zero: the first element is [0], the last is [length - 1].',
+    doc: ['At the end of the street', 'street[i] — what lies on cell i.', 'Return what lies on the last cell.'],
   },
   'troy.count': {
     title: 'Count the Trojans', topic: 'a counter variable',
     brief: '<b>Count the Trojans.</b> How many survivors stand in the street?',
     statement: [
-      'Aeneas gathers his crew. The street holds Trojans, sacks and ashes: an array of strings <code>street</code>.',
-      'Return how many <code>"trojan"</code> it contains.',
-      'Keep a <b>counter variable</b>: <code>let count = 0</code>, walk the array and add 1 whenever you meet a Trojan.',
+      'Aeneas gathers his crew. The array <code>street</code> is the street: Trojans, sacks and ashes.',
+      'Return how many <code>"trojan"</code> it contains. To do that you have to walk the whole street and count.',
+      'To walk the array, use a <code>for</code> loop from <code>0</code> to <code>street.length</code>; to count, use a variable that remembers how many you have found.',
     ],
-    hints: ['You need a number that grows while you walk the street.', 'let count = 0; for each element: if it is a Trojan — count++.', 'for (const x of street) if (x === "trojan") count++;'],
+    tool: {
+      name: 'a counter and ===',
+      text: [
+        '<code>let count = 0</code> creates a variable that remembers a number. <code>count++</code> adds 1 to it.',
+        '<code>===</code> checks whether two values are the same. Don’t mix it up with <code>=</code>, which stores a value in a variable.',
+      ],
+      code: 'const fruits = ["apple", "pear", "apple"];\nlet apples = 0;\nfor (let i = 0; i < fruits.length; i++) {\n  if (fruits[i] === "apple") apples++;\n}\n// apples === 2',
+    },
+    hints: ['You need a number that grows while you walk the street.', 'Walk street with a loop; if street[i] is a Trojan, add one to count.', 'for (let i = 0; i < street.length; i++) if (street[i] === "trojan") count++;'],
     lesson: 'A variable remembers what you have already counted while the loop moves on.',
     doc: ['Count the Trojans', 'street[i] is "trojan", "sack" or "ash".', 'Return the number of Trojans.'],
+  },
+  'troy.total': {
+    title: 'All the grain', topic: 'a sum',
+    brief: '<b>All the grain.</b> The sacks differ. How much grain is there in all of them together?',
+    statement: [
+      'Before sailing, Anchises wants to know how much grain is in the supplies. <code>nums[i]</code> is the grain in sack <code>i</code>.',
+      'Return the sum of all numbers in the array.',
+      'It’s almost the same as counting Trojans, except you add the contents of the sack instead of 1.',
+    ],
+    tool: {
+      name: 'accumulating a sum, +=',
+      text: [
+        '<code>total += x</code> is the same as <code>total = total + x</code>: take what you already have and add the new value.',
+        'A variable you add values to step by step is called an <b>accumulator</b>. It starts at zero.',
+      ],
+      code: 'const coins = [5, 10, 2];\nlet money = 0;\nfor (let i = 0; i < coins.length; i++) money += coins[i];\n// money === 17',
+    },
+    hints: ['What changes in the variable with every sack?', 'Walk the array with a loop and add nums[i] to total.', 'for (let i = 0; i < nums.length; i++) total += nums[i];'],
+    lesson: 'An accumulator builds the answer piece by piece: each sack is added to what has already been counted.',
+    doc: ['All the grain', 'nums[i] — grain in sack i.', 'Return how much grain there is in all the sacks together.'],
   },
   'troy.sum': {
     title: 'Supplies', topic: 'running total',
     brief: '<b>Supplies.</b> Sacks stand in a row. For each one, count the grain in it and in all the sacks before it.',
     statement: [
-      'The Trojans load supplies onto the ship. <code>nums[i]</code> is the grain in sack <code>i</code>.',
-      'Return an array where position <code>i</code> holds <code>nums[0] + … + nums[i]</code>.',
+      'The Trojans load supplies onto the ship and after every sack write down how much is loaded so far. <code>nums[i]</code> is the grain in sack <code>i</code>.',
+      'Return an array where position <code>i</code> holds <code>nums[0] + … + nums[i]</code>. For example, for <code>[1, 2, 3, 4]</code> it is <code>[1, 3, 6, 10]</code>.',
       'Constraints: <code>1 ≤ n ≤ 10⁴</code>. The world counts how often the code looks at the sacks: recounting everything for each sack would make the Wolf proud.',
     ],
-    hints: ['The sum up to sack i is the sum up to sack i−1 plus sack i itself.', 'Keep a variable sum and add each next sack to it.', 'let sum = 0; for (x of nums) { sum += x; result.push(sum); }'],
+    tool: {
+      name: 'push',
+      text: [
+        '<code>result.push(x)</code> appends the value <code>x</code> to the end of the array <code>result</code>.',
+        'You already know how to accumulate a sum. Now write it into the result after every step, not only at the end.',
+      ],
+      code: 'const log = [];\nlog.push("morning");\nlog.push("evening");\n// log is ["morning", "evening"]',
+    },
+    hints: ['Take “All the grain”: the sum is already being accumulated there. What is missing?', 'After every addition to sum, write sum into result.', 'let sum = 0; for (…) { sum += nums[i]; result.push(sum); }'],
     lesson: 'Don’t recount what you already know: the previous sum is half of the answer.',
     doc: ['Supplies', 'nums[i] — grain in sack i.', 'Return the running sums: [nums[0], nums[0]+nums[1], …].'],
   },

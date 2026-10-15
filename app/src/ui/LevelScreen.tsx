@@ -245,7 +245,10 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
             </select>
           </label>
         </div>
-        <div className="brief" dangerouslySetInnerHTML={{ __html: T.brief }} />
+        <div className="brief">
+          <span dangerouslySetInnerHTML={{ __html: T.brief }} />
+          {T.tool && tab !== 'statement' && <button className="tool-chip" onClick={() => setTab('statement')}>🔧 {L('Новий інструмент', 'New tool')}: {T.tool.name} ▸</button>}
+        </div>
         <div className="center">
           <div className={`pane${tab === 'code' ? '' : ' hidden'}`}>
             <Editor value={code[lang]} lang={lang} error={error}
@@ -256,6 +259,14 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
             <div className="pane doc">
               <h2>{T.title}</h2>
               {T.statement.map((p, i) => <p key={i} dangerouslySetInnerHTML={{ __html: p }} />)}
+              {T.tool && (
+                <section className="tool-card" aria-label={L('Новий інструмент', 'New tool')}>
+                  <h3>🔧 {L('Новий інструмент', 'New tool')}: {T.tool.name}</h3>
+                  {T.tool.text.map((p, i) => <p key={i} dangerouslySetInnerHTML={{ __html: p }} />)}
+                  <pre>{T.tool.code}</pre>
+                  <button className="btn" onClick={() => setTab('code')}>{L('До коду', 'Back to the code')} ▸</button>
+                </section>
+              )}
               <h3>{L('Приклад', 'Example')}</h3>
               {level.examples.map((e, i) => <pre key={i}>{level.entry}({e.label}){expectedOf(level, e) !== undefined ? ` → ${short(expectedOf(level, e))}` : ''}</pre>)}
             </div>

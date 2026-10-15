@@ -72,6 +72,13 @@ code, pre { font-family: var(--mono); }
 .brief { padding: 9px 14px; border-bottom: 1px solid var(--line); color: var(--mute); font-size: 12.5px; }
 .brief b { color: var(--fg); }
 .brief code, .doc code { color: #7fc4ae; font-size: .95em; }
+.brief { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.tool-chip { margin-left: auto; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--fox-soft, #f08a45); background: transparent; color: var(--fox-soft, #f08a45); font: inherit; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.tool-chip:hover { background: rgba(240, 138, 69, .12); }
+.tool-card { margin: 18px 0; padding: 14px 16px 16px; border: 1px solid var(--line); border-left: 3px solid var(--fox-soft, #f08a45); border-radius: 8px; background: rgba(240, 138, 69, .05); }
+.tool-card h3 { margin: 0 0 8px; font-size: 14px; }
+.tool-card p { margin: 6px 0; }
+.tool-card pre { margin: 10px 0 12px; }
 .center { position: relative; min-height: 0; }
 .pane { position: absolute; inset: 0; }
 .pane.hidden { visibility: hidden; }

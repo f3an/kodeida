@@ -54,7 +54,8 @@ export function levelOpen(p: Progress, l: Level): boolean {
   const w = worlds[l.world];
   if (!worldOpen(p, w)) return false;
   const i = w.levels.indexOf(l);
-  return i === 0 || solved(p, w.levels[i - 1]);
+  // пройдене лишається відкритим, навіть якщо перед ним з'явилася нова вправа
+  return i === 0 || solved(p, l) || solved(p, w.levels[i - 1]);
 }
 
 /** Уламок (візерунок і запис у Книзі) — за лисяче рішення фінальної задачі світу. */

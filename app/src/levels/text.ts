@@ -13,6 +13,7 @@ export function lt(level: Level) {
     statement: en?.statement ?? level.statement,
     hints: en?.hints ?? level.hints,
     lesson: en?.lesson ?? level.lesson,
+    tool: level.tool && (en?.tool ?? level.tool),
   };
 }
 

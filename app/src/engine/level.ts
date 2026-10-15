@@ -18,6 +18,8 @@ export interface Level {
   brief: string;
   /** Умова: абзаци, дозволено <b> і <code>. */
   statement: string[];
+  /** Новий інструмент вправи: назва, пояснення простими словами й мініприклад (не відповідь). */
+  tool?: Tool;
   entry: string;
   /** Назви аргументів-масивів і рядків, за якими стежить світ (null — не стежити). */
   observe: (string | null)[];
@@ -40,6 +42,13 @@ export interface Level {
   /** Що сказати після розв'язку: суть хитрощі одним реченням. */
   lesson: string;
   scene: SceneSpec;
+}
+
+export interface Tool {
+  name: string;
+  /** Пояснення, дозволено <b> і <code>. */
+  text: string[];
+  code: string;
 }
 
 export interface World {
