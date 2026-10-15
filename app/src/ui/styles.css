@@ -317,7 +317,7 @@ a { color: var(--fox-soft); }
 
 /* ============ мапа світів (як на сайті) ============ */
 .map-page { max-width: 1480px; }
-.journey { position: relative; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr); gap: 28px; align-items: center; }
+.journey { position: relative; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr); gap: 28px; align-items: start; }
 .j-map { display: grid; gap: 10px; min-width: 0; }
 .mapbox { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #1d3f66; }
 .mapbox canvas { width: 100%; display: block; }
@@ -325,6 +325,10 @@ a { color: var(--fox-soft); }
 .pin { position: absolute; transform: translate(-50%, -50%); width: 34px; height: 34px; border-radius: 7px; background: transparent; cursor: pointer; }
 .pin::after { content: attr(aria-label); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap; background: #141b17; color: #ece4d2; padding: 3px 7px; border-radius: 6px; font: 500 11px/1.2 var(--mono); opacity: 0; pointer-events: none; transition: opacity .2s; }
 .pin:hover::after, .pin:focus-visible::after, .pin.on::after { opacity: 1; }
+/* підпис біля краю мапи не виходить за рамку: вирівнюємо його всередину */
+.pin.tip-l::after { left: auto; right: 50%; transform: none; }
+.pin.tip-r::after { left: 50%; transform: none; }
+.pin.tip-b::after { bottom: auto; top: calc(100% + 6px); }
 .pin:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .isle-label { position: absolute; transform: translate(-50%, -100%); font: 600 11px/1 var(--mono); color: #fbf3e6; background: rgba(10, 20, 35, .55); padding: 3px 7px; border-radius: 999px; white-space: nowrap; pointer-events: none; }
 .j-ctrl { display: flex; align-items: center; gap: 12px; }
@@ -343,7 +347,7 @@ a { color: var(--fox-soft); }
 .j-card.pop { animation: card-pop .55s cubic-bezier(.2, .7, .2, 1); }
 @keyframes card-pop { from { transform: translateY(10px) scale(.98); opacity: .4; } to { transform: none; opacity: 1; } }
 .j-card canvas { width: 100%; display: block; }
-.j-card .j-body { padding: 14px 18px 16px; display: grid; gap: 7px; }
+.j-card .j-body { padding: 14px 18px 16px; display: grid; gap: 7px; align-content: start; min-height: 300px; }
 .j-card .eyebrow { color: #b3202a; }
 .j-card h3 { font: 800 24px var(--display); margin: 0; }
 .j-card .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
