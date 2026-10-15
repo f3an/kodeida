@@ -24,6 +24,16 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
 - `site/` — the website (no build step). `app.js` holds the pixel-art renderer, all scenes and the i18n dictionary; `style.css` holds the light and dark themes.
 - `docs/` — design documents: `NOTES.md` (idea, decisions, plan), `MVP.md`, `BRAND.md`, `LORE.md`, `STORY.md`, `ONBOARDING.md`. `docs/media/` holds the logo and the README GIFs (see below).
 
+## Writing an exercise
+
+World 0 is for people who are only starting with JavaScript, so it follows one rule: **one new idea per exercise**, and the player first feels why it is needed (fifteen identical lines before a `for` loop, streets of different length before the parameter `n`). Every exercise in `app/src/levels` can have:
+
+- `tool` — the *New tool* card: a name, a plain-words explanation and a small example that is **not** the answer;
+- `talk` — a short exchange shown when the exercise opens (speakers: `enei`, `fox`, `sibyl`, `anchises`, `warrior`, `sailor`, `woman`), and `quip` — one line after the first win;
+- English versions of all of these in `en.ts` (`tool`, `talk` in the same order, `quip`).
+
+Typical beginner mistakes are explained by `app/src/ui/coach.ts`: when you add an exercise, think about what a newcomer will get wrong and add a rule there.
+
 ## Running the site
 
 ```bash

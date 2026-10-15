@@ -24,7 +24,7 @@ type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 
 interface Bubble { who: Who; text: () => string; tone: Tone; seq: number; enter: 'in' | 'nod' }
 /** Хто говорить за «господаря» світу: Микита на попелищі, Еол у морі, Дидона в Карфагені. */
 const HOST_SPRITE: Speaker[] = ['fox', 'eol', 'dido'];
-type Tab = 'code' | 'statement' | 'hints';
+type Tab = 'code' | 'statement' | 'hints' | 'sheet';
 type Panel = 'tests' | 'console';
 
 interface Props {
@@ -260,6 +260,12 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
             </button>
           );
         })}
+        {world.n === 0 && !progress.skipBasics && !solved(progress, world.levels[world.levels.length - 1]) && (
+          <button className="skip-basics" onClick={() => { const fin = world.levels[world.levels.length - 1]; setProgress((p) => ({ ...p, skipBasics: true })); go({ name: 'level', id: fin.id }); }}
+            title={L('Відкрити всі вправи світу 0 і перейти до фінальної задачі', 'Open every world 0 exercise and go to the final problem')}>
+            {L('Знаю основи JS — до «Припасів» ▸', 'I know JS basics — skip to “Supplies” ▸')}
+          </button>
+        )}
         {level.leetcode && (
           <a className="lc" href={`https://leetcode.com/problems/${level.leetcode.slug}/`} target="_blank" rel="noreferrer">
             {L('Перевір себе на LeetCode', 'Try it on LeetCode')}: {level.leetcode.n}. {level.leetcode.title} ↗
@@ -271,7 +277,8 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
         <div className="tabs" role="tablist">
           <button role="tab" aria-selected={tab === 'code'} className={tab === 'code' ? 'on' : ''} onClick={() => setTab('code')}>solution.{lang}</button>
           <button role="tab" aria-selected={tab === 'statement'} className={tab === 'statement' ? 'on' : ''} onClick={() => setTab('statement')}>{L('Умова', 'Problem')}</button>
-          <button role="tab" data-tab="hints" aria-selected={tab === 'hints'} className={tab === 'hints' ? 'on' : ''} onClick={() => setTab('hints')}>{L('Підказки Сивілли', 'Sibyl’s hints')}</button>
+          <button role="tab" data-tab="hints" aria-selected={tab === 'hints'} className={tab === 'hints' ? 'on' : ''} onClick={() => setTab('hints')} title={L('Підказки Сивілли', 'Sibyl’s hints')}>{L('Підказки', 'Hints')}</button>
+          <button role="tab" aria-selected={tab === 'sheet'} className={tab === 'sheet' ? 'on' : ''} onClick={() => setTab('sheet')}>{L('Шпаргалка', 'Cheat sheet')}</button>
           <label className="lang">
             <span className="sr">{L('Мова коду', 'Code language')}</span>
             <select value={lang} onChange={(e) => { setSettings((s) => ({ ...s, lang: e.target.value as Lang })); setError(null); }}>
@@ -304,6 +311,22 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
               )}
               <h3>{L('Приклад', 'Example')}</h3>
               {level.examples.map((e, i) => <pre key={i}>{level.entry}({e.label}){expectedOf(level, e) !== undefined ? ` → ${short(expectedOf(level, e))}` : ''}</pre>)}
+            </div>
+          )}
+          {tab === 'sheet' && (
+            <div className="pane doc sheet">
+              <h2>{L('Шпаргалка', 'Cheat sheet')}</h2>
+              <p className="muted">{L('Усе, що ти вже бачив у світі 0: коротко й з прикладом.', 'Everything you have met in world 0, briefly and with an example.')}</p>
+              {worlds[0].levels.filter((l, i) => l.tool && (level.world > 0 || i <= worlds[0].levels.indexOf(level))).map((l) => {
+                const tool = lt(l).tool!;
+                return (
+                  <section key={l.id} className="tool-card">
+                    <h3>{tool.name}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: tool.text[0] }} />
+                    <pre>{tool.code}</pre>
+                  </section>
+                );
+              })}
             </div>
           )}
           {tab === 'hints' && (

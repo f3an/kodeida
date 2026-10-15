@@ -15,6 +15,8 @@ export interface Progress {
   /** Заставку «Відплиття» вже показано (сцена 13). */
   departed?: boolean;
   last?: string;
+  /** «Знаю основи JS»: усі вправи світу 0 відкриті одразу. */
+  skipBasics?: boolean;
 }
 export interface Settings { lang: Lang; speed: number; /** Мова інтерфейсу. */ ui: UiLang }
 
@@ -53,6 +55,7 @@ export function worldOpen(p: Progress, w: World): boolean {
 export function levelOpen(p: Progress, l: Level): boolean {
   const w = worlds[l.world];
   if (!worldOpen(p, w)) return false;
+  if (w.n === 0 && p.skipBasics) return true;
   const i = w.levels.indexOf(l);
   // пройдене лишається відкритим, навіть якщо перед ним з'явилася нова вправа
   return i === 0 || solved(p, l) || solved(p, w.levels[i - 1]);

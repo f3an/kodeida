@@ -67,7 +67,8 @@ code, pre { font-family: var(--mono); }
 /* редактор */
 .ed { display: grid; grid-template-rows: 34px auto 1fr 210px; border-right: 1px solid var(--line); min-width: 0; min-height: 0; }
 .tabs { display: flex; background: var(--bar); border-bottom: 1px solid var(--line); font: 12px var(--mono); }
-.tabs button { padding: 0 14px; color: var(--mute); border-right: 1px solid var(--line); }
+.tabs button { padding: 0 14px; color: var(--mute); border-right: 1px solid var(--line); white-space: nowrap; }
+@media (max-width: 1320px) { .tabs button { padding: 0 9px; } }
 .tabs button.on { color: var(--fg); background: var(--bg); box-shadow: inset 0 2px 0 var(--fox); }
 .brief { padding: 9px 14px; border-bottom: 1px solid var(--line); color: var(--mute); font-size: 12.5px; }
 .brief b { color: var(--fg); }
@@ -79,6 +80,10 @@ code, pre { font-family: var(--mono); }
 .tool-card h3 { margin: 0 0 8px; font-size: 14px; }
 .tool-card p { margin: 6px 0; }
 .tool-card pre { margin: 10px 0 12px; }
+.sheet .tool-card { margin: 10px 0; padding: 10px 14px; }
+.sheet .tool-card pre { margin: 8px 0 2px; }
+.skip-basics { margin: 10px 8px 0; padding: 7px 10px; border: 1px dashed var(--line); border-radius: 6px; background: transparent; color: var(--mute); font: inherit; font-size: 11.5px; text-align: left; cursor: pointer; }
+.skip-basics:hover { color: var(--fox-soft); border-color: var(--fox-soft); }
 .center { position: relative; min-height: 0; }
 .pane { position: absolute; inset: 0; }
 .pane.hidden { visibility: hidden; }
