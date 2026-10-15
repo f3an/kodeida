@@ -258,7 +258,7 @@ const DICT={
 "Подивитись, як це працює ↓":"See how it works ↓","★ GitHub · скоро":"★ GitHub · soon",
 "Застосунок для Mac, Windows, Linux · офлайн":"Desktop app for Mac, Windows, Linux · works offline",
 "TypeScript · JavaScript · Python, далі C# · C++ · Go":"TypeScript · JavaScript · Python, then C# · C++ · Go",
-"Чому Кодеїда":"Why Kodeida","LeetCode без зубріння":"LeetCode without cramming",
+"Чому Кодеїда":"Why Kodeida","▶ Дивитися трейлер":"▶ Watch the trailer","Трейлер":"Trailer","Кодеїда за 40 секунд":"Kodeida in 40 seconds","Від бенкету богів до справжньої задачі з LeetCode: як код рухає героя і чому Вовк програє хитрості.":"From the gods’ feast to a real LeetCode problem: how code moves the hero and why the Wolf loses to a trick.","Трейлер Кодеїди":"Kodeida trailer","LeetCode без зубріння":"LeetCode without cramming",
 "Більшість застосунків дають задачі. Кодеїда вчить бачити в задачі прийом і розуміти, чому він працює.":"Most apps hand you problems. Kodeida teaches you to spot the technique inside a problem and understand why it works.",
 "Хитрощі, а не відповіді":"Tricks, not answers",
 "Кожен світ — один прийом: два вказівники, ковзне вікно, хеш-мапа, графи, DP. Підвідні вправи ведуть до справжньої задачі.":"Each world is one technique: two pointers, sliding window, hash map, graphs, DP. Warm-up exercises lead to a real problem.",
@@ -456,6 +456,7 @@ function retranslateLight(el){const w=document.createTreeWalker(el,NodeFilter.SH
 function setLang(l){
   LANG=l;try{localStorage.setItem('kd-lang',l);}catch(e){}
   document.documentElement.lang=l==='en'?'en':'uk';document.title=IS_ARTBOOK?(l==='en'?'Kodeida Artbook':'Артбук Кодеїди'):(l==='en'?'Kodeida':'Кодеїда');
+  const tv=document.getElementById('trailerVideo');if(tv){const b=tv.dataset[l==='en'?'en':'uk'];if(tv.getAttribute('src')!==b+'.mp4'){tv.pause();tv.poster=b+'.jpg';tv.src=b+'.mp4';}}
   const word=document.querySelector('#heroTitle [data-split]:not(.brace)');if(word)word.textContent=l==='en'?'Kodeida':'Кодеїда';
   mo.disconnect();retranslate(document.body);mo.observe(document.body,{subtree:true,childList:true,characterData:true});
   document.querySelectorAll('#lang button').forEach(b=>{const on=b.dataset.l===l;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});

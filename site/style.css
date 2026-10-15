@@ -751,3 +751,7 @@ html.snap .wrap{padding-block:0}
 .dl-all a{color:var(--fg)}
 @media (max-width:900px){.dl-grid{grid-template-columns:1fr}}
 .dl-alt{font:12px var(--mono);color:var(--fg)}
+
+/* трейлер: 16:9, завжди вміщується в один екран */
+.trailer{display:grid;place-items:center}
+.trailer video{display:block;width:min(100%,calc(66vh*16/9));aspect-ratio:16/9;border-radius:14px;background:#0b100d;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.35)}

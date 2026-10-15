@@ -24,6 +24,7 @@
 
 <p align="center">
   <a href="https://github.com/f3an/kodeida/releases/latest"><b>Download</b></a> ·
+  <a href="https://f3an.github.io/kodeida/#trailer">▶ Trailer</a> ·
   <a href="https://f3an.github.io/kodeida/">Website</a> ·
   <a href="https://f3an.github.io/kodeida/artbook.html">Artbook</a> ·
   <a href="README.uk.md">Українською</a>
