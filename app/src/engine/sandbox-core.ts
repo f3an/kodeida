@@ -123,6 +123,33 @@ function makeStreet(setup: ActorArg['setup'], push: (e: WorldEvent) => void) {
   return { api, st };
 }
 
+/** Короткий текст ключа чи значення для «скрині». */
+const memText = (v: unknown) => { const s = typeof v === 'string' ? v : Array.isArray(v) ? `[${v.length}]` : JSON.stringify(v) ?? String(v); return s.length > 14 ? s.slice(0, 13) + '…' : s; };
+
+/**
+ * На час виклику Map і Set гравця записують свої операції: так світ показує, що код запам'ятовує.
+ * Повертає функцію, що повертає справжні класи на місце.
+ */
+function watchMemory(push: (e: WorldEvent) => void): () => void {
+  const G = globalThis as unknown as { Map: MapConstructor; Set: SetConstructor };
+  const RealMap = G.Map, RealSet = G.Set;
+  class WatchedMap<K, V> extends RealMap<K, V> {
+    set(k: K, v: V) { push({ t: 'mem', op: 'set', k: memText(k), v: memText(v) }); return super.set(k, v); }
+    get(k: K) { const v = super.get(k); push({ t: 'mem', op: 'get', k: memText(k), hit: super.has(k) }); return v; }
+    has(k: K) { const h = super.has(k); push({ t: 'mem', op: 'has', k: memText(k), hit: h }); return h; }
+    delete(k: K) { push({ t: 'mem', op: 'delete', k: memText(k) }); return super.delete(k); }
+  }
+  class WatchedSet<T> extends RealSet<T> {
+    add(v: T) { if (this.ready) push({ t: 'mem', op: 'add', k: memText(v) }); return super.add(v); }
+    has(v: T) { const h = super.has(v); push({ t: 'mem', op: 'has', k: memText(v), hit: h }); return h; }
+    delete(v: T) { push({ t: 'mem', op: 'delete', k: memText(v) }); return super.delete(v); }
+    private ready = true;
+  }
+  G.Map = WatchedMap as unknown as MapConstructor;
+  G.Set = WatchedSet as unknown as SetConstructor;
+  return () => { G.Map = RealMap; G.Set = RealSet; };
+}
+
 /** Викликає функцію гравця один раз. Масиви з `observe` загортаються в Proxy, що рахує читання. */
 export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallResult {
   const events: WorldEvent[] = [];
@@ -171,10 +198,13 @@ export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallR
   const t0 = performance.now();
   let value: unknown;
   let error: CodeError | undefined;
+  const restore = spec.memory && spec.record ? watchMemory(push) : null;
   try {
     value = fn(...args);
   } catch (err) {
     if (!overBudget && !(err instanceof OverBudget)) error = errorOf(err);
+  } finally {
+    restore?.();
   }
   // Рядок під наглядом поводиться майже як справжній; якщо код на це спіткнувся — повтор без нагляду.
   if (error && spec.record && raw.some((a, i) => typeof a === 'string' && spec.observe[i])) {

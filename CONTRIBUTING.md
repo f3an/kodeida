@@ -2,7 +2,7 @@
 
 By taking part you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Accessibility barriers are bugs — see [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
-Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist, and the game app has its MVP — the onboarding and worlds 0–2, released for macOS, Windows and Linux. That shapes what kind of help is most useful right now.
+Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist, and the game app's released MVP contains the onboarding and worlds 0–2 for macOS, Windows and Linux. The current source adds playable world 3, Mykyta's Forest.
 
 ## What helps most today
 
@@ -16,7 +16,7 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
 ## Project layout
 
 - `app/` — the game (Electron + React + TypeScript + Monaco).
-  - `src/engine` runs player code in a Worker and judges it; `src/levels` holds the worlds as data (`troy.ts`, `sea.ts`, `carthage.ts`), their English texts (`en.ts`) and the Book of Tricks.
+  - `src/engine` runs player code in a Worker and judges it; `src/levels` holds the worlds as data (`troy.ts`, `sea.ts`, `carthage.ts`, `forest.ts`), their English texts (`en.ts`) and the Book of Tricks.
   - `src/world/sprites.js` is **generated** from `site/app.js` by `npm run sync-sprites` — change sprites, cutscenes and the journey map on the site, then sync. `src/world/scenes.ts` draws the in-level scenes.
   - `src/ui` holds the screens; interface text goes through `L('укр', 'eng')` from `src/i18n.ts`.
   - `electron/` is the main process: window, `app://` protocol with CSP, menu, auto-update (`updater.cjs`).
@@ -29,7 +29,7 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
 World 0 is for people who are only starting with JavaScript, so it follows one rule: **one new idea per exercise**, and the player first feels why it is needed (fifteen identical lines before a `for` loop, streets of different length before the parameter `n`). Every exercise in `app/src/levels` can have:
 
 - `tool` — the *New tool* card: a name, a plain-words explanation and a small example that is **not** the answer;
-- `talk` — a short exchange shown when the exercise opens (speakers: `enei`, `fox`, `sibyl`, `anchises`, `warrior`, `sailor`, `woman`), and `quip` — one line after the first win;
+- `talk` — a short exchange shown when the exercise opens (speakers: `enei`, `fox`, `sibyl`, `anchises`, `warrior`, `sailor`, `woman`, `lion`, `wolf`), and `quip` — one line after the first win;
 - English versions of all of these in `en.ts` (`tool`, `talk` in the same order, `quip`).
 
 Typical beginner mistakes are explained by `app/src/ui/coach.ts`: when you add an exercise, think about what a newcomer will get wrong and add a rule there.

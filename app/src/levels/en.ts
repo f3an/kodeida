@@ -600,12 +600,166 @@ export const LEVELS_EN: Record<string, LevelEn> = {
       'Let’s start with the outermost. Then every time we discard the worse one — the lower one. Why exactly that one — think it over while I smile at the courtiers.',
     ],
   },
+  'forest.dup': {
+    title: 'Two of a kind', topic: 'Set: have I seen it',
+    brief: '<b>Two of a kind.</b> Are two identical goods for sale at the fair?',
+    statement: [
+      'Everything got mixed up at the animals’ fair: they say someone is selling the same thing twice. <code>nums[i]</code> is the number of the goods at stall <code>i</code>.',
+      'Return <code>true</code> if some number appears at least twice, and <code>false</code> if they are all different.',
+      'Constraints: <code>n ≤ 10⁴</code>. For every item the Wolf walks the whole fair again. You just <b>remember</b> what you have already seen.',
+    ],
+    tool: {
+      name: 'Set',
+      text: [
+        'A <code>Set</code> is a bag in which every value lies only once. <code>seen.add(x)</code> puts a value in, <code>seen.has(x)</code> tells you instantly whether it’s already there.',
+        'Instantly is the point: <code>has</code> doesn’t go through the contents like <code>includes</code> on an array, it goes straight to the right place.',
+      ],
+      code: 'const seen = new Set();\nseen.add("fox");\nseen.has("fox");   // true\nseen.has("wolf");  // false',
+    },
+    talk: [
+      'My forest! I’m home! And I’m ginger again, without a drop of paint.',
+      'Mykyta? The same Mykyta? Well, well. The fair is a complete muddle now: someone sells the same thing twice.',
+      'Aeneas, don’t run round the fair every time. Remember what you’ve already seen. That’s what a Set is for.',
+    ],
+    quip: 'Hm. Quick. Maybe something will come of you after all, Mykyta.',
+    hints: ['What do you need to remember while walking past the stalls?', 'For every item: if it is already in seen, you found a repeat; otherwise put it into seen.', 'for (x of nums) { if (seen.has(x)) return true; seen.add(x); } return false;'],
+    lesson: 'Remember what you’ve seen in a Set: the “was it here already?” check becomes instant, and you walk the fair only once.',
+    doc: ['Two of a kind', 'true if some number in nums appears twice.'],
+  },
+  'forest.most': {
+    title: 'The best seller', topic: 'Map: a counter',
+    brief: '<b>The best seller.</b> Which goods sell most often at the fair?',
+    statement: [
+      'King Lion wants to know what the fair has most of. <code>goods</code> is the list of the morning’s sales, one entry per sale.',
+      'Return the goods that appear most often. In the tests there is always exactly one such item.',
+      'For every item you need to remember not just “have I seen it” but <b>how many times</b>. That calls for a <code>Map</code>.',
+    ],
+    tool: {
+      name: 'Map: key and value',
+      text: [
+        'A <code>Map</code> keeps “key → value” pairs. <code>m.set(k, v)</code> stores, <code>m.get(k)</code> fetches the value for a key.',
+        'If the key isn’t there yet, <code>get</code> returns <code>undefined</code>. That’s why a counter is written as <code>(m.get(x) ?? 0) + 1</code> — “what was there, or 0, plus one”.',
+      ],
+      code: 'const votes = new Map();\nfor (const name of ["fox", "wolf", "fox"]) {\n  votes.set(name, (votes.get(name) ?? 0) + 1);\n}\nvotes.get("fox");  // 2',
+    },
+    talk: [
+      'To restore trade, I need to know what the animals buy most.',
+      'Knowing whether we’ve seen it isn’t enough here. We need to count how many times. A chest of cells: on each cell, the goods and a number.',
+    ],
+    quip: 'So that’s it. And I thought everyone only bought my glory.',
+    hints: ['You need a number for every item. Where do you keep it?', 'Walk goods and increase count for every item. Then find the key with the biggest number.', 'count.set(x, (count.get(x) ?? 0) + 1); then for (const [k, c] of count) — look for the biggest c.'],
+    lesson: 'A Map counts in one pass: the key is what you saw, the value is how many times.',
+    doc: ['The best seller', 'goods[i] is a sold item. Return the one that appears most often.'],
+  },
+  'forest.anagram': {
+    title: 'The same things', topic: 'Map: counting up and down',
+    brief: '<b>The same things.</b> Are two carts loaded with the same things, just in a different order?',
+    statement: [
+      'Two carts came to the fair. Every thing is marked with a letter: <code>s</code> is the load of the first cart, <code>t</code> of the second.',
+      'Return <code>true</code> if the carts hold the same things in the same amounts (order doesn’t matter), otherwise <code>false</code>. The letters are lower-case Latin, as on LeetCode.',
+      'You can count up for the first cart and down for the second. If everything comes to zero, the carts are the same.',
+    ],
+    tool: {
+      name: 'a counter going up and down',
+      text: [
+        'One <code>Map</code> can count both ways: <code>+1</code> for every thing in the first cart, <code>-1</code> for every thing in the second.',
+        'If every counter is 0 at the end, the amounts match. And if the lengths differ, you know the answer before you count.',
+      ],
+      code: 'const bal = new Map();\nbal.set("a", (bal.get("a") ?? 0) + 1);  // took one\nbal.set("a", (bal.get("a") ?? 0) - 1);  // gave one back\nbal.get("a");  // 0 — even',
+    },
+    talk: [
+      'The bear says the badger swapped his cart. The badger says it’s the same load, just packed differently.',
+      'Let’s count. Plus for the first cart, minus for the second. Whoever is lying, a non-zero will give them away.',
+    ],
+    quip: 'The badger is honest. The bear just packs carts badly.',
+    hints: ['What do you need to know about every letter in both carts?', 'Different lengths — false straight away. Otherwise: +1 for the letters of s, −1 for the letters of t; all zeros — true.', 'for (i < s.length) { m.set(s[i], (m.get(s[i]) ?? 0) + 1); m.set(t[i], (m.get(t[i]) ?? 0) - 1); } check that every value is 0.'],
+    lesson: 'You can compare contents without sorting: count one up, the other down, and see whether it all comes to zero.',
+    doc: ['The same things', 'true if t is made of the same letters as s.'],
+  },
+  'forest.twosum': {
+    title: 'Two animals', topic: 'Map: value → index',
+    brief: '<b>Two animals.</b> Find two animals whose goods together cost exactly <code>target</code>. The row is not sorted.',
+    statement: [
+      'The animals stand along the road any old how: <code>nums[i]</code> is the price of animal <code>i</code>’s goods. You can’t sort the row — the animals would be offended.',
+      'Return the numbers of two different animals <code>[i, j]</code> (from zero, in any order) whose prices add up to <code>target</code>. There is always exactly one answer.',
+      'Constraints: <code>n ≤ 10⁴</code>. Carthage’s two pointers won’t help here: the row isn’t sorted. But you can remember who has already stood where.',
+    ],
+    tool: {
+      name: 'Map: what I need → where I saw it',
+      text: [
+        'For every animal you know which price it lacks: <code>target - nums[i]</code>. The only question is whether such an animal has already come by.',
+        'Keep a <code>Map</code> “price → index” of those you’ve passed. Ask <code>has</code> first and only then store the current one — so an animal never pairs with itself.',
+      ],
+      code: 'const where = new Map();\nwhere.set(40, 0);       // price 40 stands at place 0\nwhere.has(100 - 60);    // true: there is a pair for 60\nwhere.get(40);          // 0',
+    },
+    talk: [
+      'A buyer wants exactly his sum — from two stalls. The animals stand wherever, and I won’t let anyone move them.',
+      'And I’ll ask every pair! Every one with every other! Oh… why is everyone hiding?',
+      'Because they remember you’re the Greedy one. Aeneas, for every animal we know whom it lacks. All that’s left is to remember whom we’ve already seen.',
+    ],
+    quip: 'They managed without me again. I’ll at least go and sniff those stalls.',
+    hints: ['For an animal with price x — what price is missing to reach target?', 'Walk the row; for every animal check whether where already has target − nums[i]. If not, store nums[i] → i.', 'for (i) { const need = target - nums[i]; if (where.has(need)) return [where.get(need), i]; where.set(nums[i], i); }'],
+    lesson: 'Don’t search for the pair — ask your memory: for each one you know whom it lacks, and a Map tells you instantly whether that one has been seen.',
+    doc: ['Two animals', 'Return [i, j] (from zero) where nums[i] + nums[j] === target.'],
+  },
+  'forest.groups': {
+    title: 'Animal families', topic: 'Map: a signature key',
+    brief: '<b>Animal families.</b> Sort the words into groups: one group holds words made of the same letters.',
+    statement: [
+      'At the fair the animals sign up by families, but the scribe mixed up the letters in the names. Words made of the same letters are one family.',
+      'Return an array of groups: each group is an array of words with the same set of letters. The order of the groups and of the words inside them doesn’t matter.',
+      'You need a <b>signature</b> that is the same for the whole family. For example, the word’s letters in alphabetical order: <code>"eat"</code> and <code>"tea"</code> both give <code>"aet"</code>.',
+    ],
+    tool: {
+      name: 'a signature key',
+      text: [
+        'A key in a <code>Map</code> can be any string, even one you made yourself. If it’s the same for all “relatives”, the Map gathers them together by itself.',
+        '<code>[...word].sort().join("")</code> — take the word apart into letters, put them in order and join them back. The value will be the array of the family’s words.',
+      ],
+      code: 'const fam = new Map();\nconst key = [..."tea"].sort().join("");  // "aet"\nfam.set(key, [...(fam.get(key) ?? []), "tea"]);\n[...fam.values()];  // [["tea"]]',
+    },
+    talk: [
+      'The scribe has botched it again: “tea”, “eat”, “ate”… You can’t tell who is related to whom.',
+      'Every family has the same set of letters. Let’s make a signature out of it, and the chest will sort everyone into cells by itself.',
+    ],
+    quip: 'Families together, the scribe has a day off. With no right of return.',
+    hints: ['What is the same about the words of one family?', 'A word’s signature is its letters in alphabetical order. Put the word into the Map under its signature.', 'for (w of strs) { const k = [...w].sort().join(""); fam.set(k, [...(fam.get(k) ?? []), w]); }'],
+    lesson: 'Come up with a key that’s the same for all “relatives”, and the Map will group them by itself.',
+    doc: ['Animal families', 'Group words with the same set of letters. Order doesn’t matter.'],
+  },
+  'forest.topk': {
+    title: 'Best-selling goods', topic: 'Map and sorting the totals',
+    brief: '<b>Best-selling goods.</b> Find the <code>k</code> goods that sell most often, so King Lion can restore trade.',
+    statement: [
+      'The day’s sales at the fair are written down: <code>nums[i]</code> is the number of the sold goods. King Lion wants to know the <code>k</code> best sellers.',
+      'Return <code>k</code> different numbers that appear most often, in any order. In the tests the answer is always unambiguous.',
+      'Constraints: <code>n ≤ 10⁴</code>. For every item the Wolf recounts the whole fair from scratch. One pass and the chest are enough for you.',
+    ],
+    tool: {
+      name: 'sort the totals, not the fair',
+      text: [
+        'First one pass: a <code>Map</code> “goods → how many times”. Then you sort not the whole fair but a short list of totals.',
+        '<code>[...count]</code> gives an array of <code>[goods, number]</code> pairs. <code>.sort((a, b) =&gt; b[1] - a[1])</code> puts the most frequent first, <code>.slice(0, k)</code> takes the first <code>k</code>.',
+      ],
+      code: 'const count = new Map([["honey", 3], ["cheese", 5], ["fish", 1]]);\n[...count]\n  .sort((a, b) => b[1] - a[1])\n  .slice(0, 2)\n  .map((p) => p[0]);   // ["cheese", "honey"]',
+    },
+    talk: [
+      'The last thing. Tell me what the animals buy most often, and the fair will work again. And you, Mykyta, I’ll make chancellor for a minute.',
+      'For every item I’ll walk the whole fair! I’ll count! Again! And again!',
+      'Aeneas, one pass and the chest will know everything. And we’ll sort only a short list of totals, not the whole forest.',
+    ],
+    quip: 'The fair is working. Mykyta, you’re chancellor! …The minute is up. But thank you.',
+    hints: ['What do you need to know about every item to pick the best sellers?', 'One pass — a Map “goods → how many”. Then sort the Map’s pairs by the number and take the first k.', 'for (x of nums) count.set(x, (count.get(x) ?? 0) + 1); return [...count].sort((a, b) => b[1] - a[1]).slice(0, k).map((p) => p[0]);'],
+    lesson: 'First one pass into memory, then work with the totals: a fair of ten thousand records shrinks to a short list.',
+    doc: ['Best-selling goods', 'Return the k numbers that appear in nums most often (any order).'],
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
   0: { host: { who: 'Mykyta', line: 'There are still plenty of our people and grain here. You could pick up every sack by hand… but a loop is craftier.' } },
   1: { host: { who: 'Aeolus', line: 'Ha! My winds scattered your fleet. Go on, try lining it up!' }, trick: 'Waves: in-place ordering' },
   2: { host: { who: 'Dido', line: 'As much land as you can fence with a hide is mine. The posts are already standing, pick two.' }, trick: 'Two pointers' },
+  3: { host: { who: 'King Lion', line: 'Nobody remembers who sells what. Put things in order, and Mykyta will be chancellor again. For a minute.' }, trick: 'The chest of cells: a hash map' },
 };
 
 export const BOOK_EN: Record<number, { title: string; when: string[]; idea: string; complexity: string }> = {
@@ -620,6 +774,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['The array or string is sorted or symmetric.', 'You are looking for a pair (sum, area, match) among all pairs.', 'You need to remove or rearrange elements in place.'],
     idea: 'Instead of trying all pairs in O(n²), keep two indices. Towards each other — from both ends (palindrome, Two Sum II, Dido’s problem). Slow and fast — in one direction (duplicates). Each step rules out options that can no longer be better.',
     complexity: 'Time O(n), memory O(1).',
+  },
+  3: {
+    title: 'The chest of cells: a hash map',
+    when: ['You keep asking “have I seen this already?” or “how many times?”.', 'You look for a pair, but the array is not sorted.', 'Items need to be grouped by a shared feature.'],
+    idea: 'Don’t search again — remember. A Set answers “have I seen it?”, a Map keeps “key → value” (a count, an index, a group). Every check is instant, so one pass replaces a loop inside a loop.',
+    complexity: 'Time O(n), memory O(n).',
   },
 };
 

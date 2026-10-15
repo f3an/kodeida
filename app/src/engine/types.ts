@@ -7,7 +7,9 @@ export type WorldEvent =
   | { t: 'write'; arr: string; i: number; v: unknown }
   | { t: 'log'; text: string }
   /** Команда Енея у світах з явними командами (світ 0): move, take, jump… */
-  | { t: 'act'; name: string; ok: boolean; note?: string };
+  | { t: 'act'; name: string; ok: boolean; note?: string }
+  /** Пам'ять гравця (світ 3): операція з Map чи Set; ключ і значення — уже як короткий текст. */
+  | { t: 'mem'; op: 'set' | 'get' | 'has' | 'add' | 'delete'; k: string; v?: string; hit?: boolean };
 
 /** Стан вулиці для вправ з командами Енея. */
 export type StreetCell = 'empty' | 'sack' | 'fire' | 'well' | 'trojan';
@@ -28,6 +30,8 @@ export interface CallSpec {
   readBudget?: number;
   /** Методи масивів, які в цій вправі заборонено (напр. 'sort'). */
   forbid?: string[];
+  /** Показувати «скриню»: записувати операції з Map і Set гравця. */
+  memory?: boolean;
 }
 
 export interface CallResult {

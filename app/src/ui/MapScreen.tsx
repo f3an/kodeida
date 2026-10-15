@@ -99,7 +99,7 @@ export function MapScreen({ progress, go }: { progress: Progress; go: (s: Screen
     <main className="page map-page">
       <header className="page-h">
         <h1>{L('Мапа світів', 'World map')}</h1>
-        <p className="muted">{L('Мандрівка світами української літератури: 16 світів, 6 пісень. У цій версії відкриті перші три.', 'A journey through Ukrainian literature: 16 worlds, 6 songs. This version opens the first three.')}</p>
+        <p className="muted">{L(`Мандрівка світами української літератури: 16 світів, 6 пісень. Зараз можна пройти світи 0–${worlds.length - 1}.`, `A journey through Ukrainian literature: 16 worlds, 6 songs. Worlds 0–${worlds.length - 1} are playable now.`)}</p>
       </header>
 
       <div className="journey" ref={wrap}>

@@ -57,7 +57,7 @@ You write a function with a real LeetCode signature. The world runs it step by s
 
 <p align="center"><img src="docs/media/intro-en.gif" width="760" alt="Opening cutscenes: the gods feast on Olympus, Juno plots with Aeolus, a storm shatters the Pysanka and the shards fly into books, Venus asks Zeus for help"></p>
 
-**Sixteen worlds, six songs.** Each world is one technique, from arrays and two pointers to graphs and dynamic programming. The first three are playable today.
+**Sixteen worlds, six songs.** Each world is one technique, from arrays and two pointers to graphs and dynamic programming. The current source has four playable worlds.
 
 <p align="center"><img src="docs/media/map-en.gif" width="680" alt="World map: islands for each song, a ship sailing between worlds, and a card with the world's scene, technique and LeetCode problem"></p>
 
@@ -89,7 +89,7 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 
 **Pre-alpha, ready for the first playtest.**
 
-- **Playable:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–2. That is 23 exercises, from the first `enei.move()` to *Container With Most Water*, with tests, hints, stars and the Wolf comparison.
+- **Playable in the current source:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–3. That is 29 exercises, from the first `enei.move()` to *Top K Frequent Elements* in Mykyta’s forest, with tests, hints, stars and the Wolf comparison.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
 - **Shipped:** installers for macOS, Windows and Linux on every release tag, auto-update from GitHub Releases.
 
@@ -143,7 +143,7 @@ app/                  the game: Electron + React + TypeScript + Monaco
   build/              icons, DMG background, installer art, entitlements
   scripts/            selftest (engine and every level), sync-sprites (site → game)
   src/engine/         sandbox Worker, runner, judge, no UI
-  src/levels/         worlds 0–2 as data, English texts, Book of Tricks
+  src/levels/         worlds 0–3 as data, English texts, Book of Tricks
   src/world/          sprites.js (generated from site/app.js) and the in-level scenes
   src/ui/             screens: menu, onboarding, level, map, book, shirt, settings
 site/                 the website, deployed to GitHub Pages
@@ -168,7 +168,7 @@ Every push to `main` that touches `site/` redeploys GitHub Pages. To publish a r
 ## Roadmap
 
 1. ✅ **Technical plan and the first level:** sandboxed runner, event log, animation, tests, the Wolf comparison.
-2. ✅ **MVP:** onboarding and worlds 0–2 (Ashes of Troy, Sea of Aeolus, Dido's Carthage), TypeScript and JavaScript, Ukrainian and English, installers, releases and auto-update.
+2. ✅ **MVP:** onboarding and worlds 0–3 (Ashes of Troy, Sea of Aeolus, Dido's Carthage, Mykyta's Forest), TypeScript and JavaScript, Ukrainian and English, installers, releases and auto-update.
 3. **First playtest** with 10–20 people. ← *we are here*
 4. **Python** in the app (Pyodide), then **all 16 worlds**, the Book of Tricks and the embroidered-shirt progress.
 5. **C#, C++, Go**, then new campaigns: algorithms, data structures, OOP.

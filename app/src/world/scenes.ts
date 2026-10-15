@@ -7,7 +7,7 @@
 import type { SceneSpec } from '../engine/level.ts';
 import type { StreetCell, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
-import { makeDido, makeEnei, makeFox, makeWolf, makeEol, Spr, hash, ruins, sky, sea, drawSack, TROJANS } from './sprites.js';
+import { makeDido, makeEnei, makeFox, makeWolf, makeEol, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf } from './sprites.js';
 
 export const W = 600, H = 390;
 
@@ -208,6 +208,9 @@ export class ArrayScene extends SceneBase {
   private foxW: Walker = { x: 0, tx: 0, y: 0, ty: 0, face: -1 };
   private x0 = 150; private x1 = W - 44;
   private base = 280; private path = 384;
+  /** «Скриня» світу 3: що код гравця поклав у Map чи Set. */
+  private mem = new Map<string, string>();
+  private memTouch: { k: string; at: number; ok: boolean } | null = null;
 
   constructor(canvas: HTMLCanvasElement, onState: (s: SceneState) => void, fox: string, private world: number, private skin: Skin, private mode: Mode) {
     super(canvas, onState, fox);
@@ -222,7 +225,7 @@ export class ArrayScene extends SceneBase {
   load(values: unknown[] | string, arrName: string, events: WorldEvent[], actor: Actor, result: string | null = null) {
     this.initial = typeof values === 'string' ? [...values] : values.slice();
     this.arrName = arrName;
-    this.events = events.filter((e) => (e.t === 'read' || e.t === 'write') && e.arr === arrName);
+    this.events = events.filter((e) => ((e.t === 'read' || e.t === 'write') && e.arr === arrName) || e.t === 'mem');
     this.actor = actor;
     this.result = result;
     this.reset();
@@ -230,7 +233,7 @@ export class ArrayScene extends SceneBase {
 
   reset() {
     this.values = this.initial.slice();
-    this.k = 0; this.playing = false; this.reads = []; this.nReads = 0; this.glow.clear(); this.best = 0; this.bestPair = null;
+    this.k = 0; this.playing = false; this.reads = []; this.nReads = 0; this.glow.clear(); this.best = 0; this.bestPair = null; this.mem.clear(); this.memTouch = null;
     const n = this.values.length;
     this.enei = { x: this.ix(0) - 30, tx: this.ix(0) - 30, y: this.path, ty: this.path, face: 1 };
     const fx = this.mode === 'scan' ? W - 30 : this.ix(Math.max(0, n - 1)) + 28;
@@ -257,6 +260,12 @@ export class ArrayScene extends SceneBase {
   private areaOf(p: [number, number] | null) { return p ? (p[1] - p[0]) * Math.min(this.num(this.values[p[0]]), this.num(this.values[p[1]])) : 0; }
 
   protected apply(e: WorldEvent, silent: boolean) {
+    if (e.t === 'mem') {
+      if (e.op === 'set' || e.op === 'add') this.mem.set(e.k, e.v ?? '');
+      else if (e.op === 'delete') this.mem.delete(e.k);
+      if (!silent) this.memTouch = { k: e.k, at: performance.now(), ok: e.op === 'set' || e.op === 'add' || !!e.hit };
+      return;
+    }
     if ((e.t !== 'read' && e.t !== 'write') || e.i < 0 || e.i >= this.values.length) return;
     if (e.t === 'write') this.values[e.i] = e.v;
     else this.nReads++;
@@ -313,6 +322,8 @@ export class ArrayScene extends SceneBase {
     overlay?.();
 
     if (this.world === 2) { const d = makeDidoOnce(); d.draw(c, 4, this.path - d.h * 2, 2); }
+    if (this.world >= 3) { const a = artOf(this.world); if (a.npc) a.npc.draw(c, 6, this.path - a.npc.h * 2, 2); }
+    if (this.mem.size || this.memTouch) this.drawChest(now);
     if (this.world === 1) { const e = makeEolOnce(); e.draw(c, 18, 26 + Math.round(Math.sin(t * 1.5) * 3), 2); }
     this.drawHeroes(now, this.enei, this.actor === 'wolf' ? null : this.foxW, this.actor === 'wolf');
 
@@ -325,6 +336,32 @@ export class ArrayScene extends SceneBase {
         c.fillRect(Math.round(x / 2) * 2, Math.round(y / 2) * 2, 2, 2);
       }
     }
+  }
+
+  /** Скриня з комірками: кожна комірка — ключ і значення з пам'яті гравця. */
+  private drawChest(now: number) {
+    const c = this.ctx, cols = 6, cw = 92, ch = 30, x0 = 24, y0 = 34;
+    const keys = [...this.mem.keys()];
+    const shown = keys.length > cols * 2 ? keys.slice(keys.length - cols * 2 + 1) : keys;
+    const rows = Math.max(1, Math.ceil((shown.length + (keys.length > shown.length ? 1 : 0)) / cols));
+    c.fillStyle = 'rgba(58,36,20,.92)'; c.fillRect(x0 - 8, y0 - 22, cols * cw + 10, rows * ch + 30);
+    c.fillStyle = '#c8962e'; c.fillRect(x0 - 8, y0 - 22, cols * cw + 10, 3);
+    c.font = '600 11px "Fira Code", monospace'; c.fillStyle = '#f2d27a';
+    c.fillText(`${L('скриня', 'chest')}: ${this.mem.size}`, x0, y0 - 8);
+    const cells = keys.length > shown.length ? ['…', ...shown] : shown;
+    const glow = this.memTouch ? Math.max(0, 1 - (now - this.memTouch.at) / 700) : 0;
+    cells.forEach((k, i) => {
+      const x = x0 + (i % cols) * cw, y = y0 + Math.floor(i / cols) * ch;
+      const hit = this.memTouch && this.memTouch.k === k && glow > 0;
+      c.fillStyle = hit ? (this.memTouch!.ok ? `rgba(120,200,110,${0.5 + glow / 2})` : `rgba(220,90,80,${0.5 + glow / 2})`) : '#6b4420';
+      c.fillRect(x, y, cw - 6, ch - 6);
+      c.fillStyle = '#efe2c0';
+      const v = this.mem.get(k);
+      const text = k === '…' ? '…' : v ? `${k}: ${v}` : k;
+      c.fillText(text.length > 12 ? text.slice(0, 11) + '…' : text, x + 5, y + 16);
+    });
+    // промах: ключа немає у скрині — коротко показуємо його червоним під скринею
+    if (this.memTouch && !this.memTouch.ok && glow > 0 && !this.mem.has(this.memTouch.k)) this.label(`${L('немає', 'missing')}: ${this.memTouch.k}`, x0 + 60, y0 + rows * ch + 6);
   }
 
   private postH(v: number) { return Math.max(4, Math.round((Math.max(0, v) / this.maxV()) * 180)); }
@@ -532,6 +569,8 @@ export class StreetScene extends SceneBase {
 
 function paintBackground(c: CanvasRenderingContext2D, world: number, skin: Skin | 'street') {
   if (world === 2) return paintCarthage(c, skin === 'post');
+  // світи 3+: фон тієї ж сцени, що на мапі й сайті (200×130), збільшений утричі
+  if (world >= 3) { const sp = new Spr(200, 130); artOf(world).bg(sp, 0); sp.draw(c, 0, 0, 3); return; }
   // Фони світів 0 і 1 — із сайту (сітка 200×130), збільшені втричі.
   const sp = new Spr(200, 130);
   if (world === 0) ruins(sp, 0);

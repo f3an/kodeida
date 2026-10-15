@@ -35,11 +35,22 @@ for (const level of levels) {
   });
   test(`${level.id}: анімований прогін дає події`, () => {
     const c = compile(level.solution, 'ts', level.entry);
-    const r = runCall(c.fn, { args: structuredClone(level.examples[0].args), observe: level.observe, record: true, forbid: level.forbid }, 5000);
+    const r = runCall(c.fn, { args: structuredClone(level.examples[0].args), observe: level.observe, record: true, forbid: level.forbid, memory: level.memory }, 5000);
     assert.equal(r.error, undefined, JSON.stringify(r.error));
     assert.ok(r.events.length > 0);
+    if (level.memory) assert.ok(r.events.some((e) => e.t === 'mem'), `${level.id}: memory operations were not recorded`);
   });
 }
+
+test('forest.twosum: великий тест має єдину пару', () => {
+  const level = levels.find((l) => l.id === 'forest.twosum');
+  const [nums, target] = level.big.make(level.big.n);
+  assert.equal(new Set(nums).size, nums.length);
+  assert.equal(target % 2, 1);
+  const odd = nums.filter((x) => x % 2 !== 0);
+  assert.equal(odd.length, 1);
+  assert.equal(nums.filter((x) => x === target - odd[0]).length, 1);
+});
 
 test('помилка виконання вказує рядок і перекладена', () => {
   const c = compile('function maxArea(height: number[]): number {\n  let best = 0;\n  return best + right;\n}', 'ts', 'maxArea');

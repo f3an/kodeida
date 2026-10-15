@@ -38,6 +38,8 @@ export interface Level {
   /** Власна перевірка: true або пояснення, що не так. */
   check?: (tc: TestCase, r: CallResult) => true | string;
   forbid?: string[];
+  /** Світ 3: показувати «скриню» з тим, що код кладе в Map і Set. */
+  memory?: boolean;
   /** Вовк: скільки читань робить перебір і як він виглядає. */
   wolf?: { reads: (n: number) => number; code: string };
   hints: [string, string, string];
@@ -49,7 +51,7 @@ export interface Level {
 }
 
 /** Хто говорить у діалогах вправ. */
-export type Voice = 'enei' | 'fox' | 'sibyl' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'juno' | 'wolf';
+export type Voice = 'enei' | 'fox' | 'sibyl' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'juno' | 'wolf' | 'lion';
 export interface Line { who: Voice; text: string }
 
 export interface Tool {

@@ -41,4 +41,18 @@ while (l < r) {
     complexity: 'Час O(n), пам\'ять O(1).',
     problems: ['11. Container With Most Water', '125. Valid Palindrome', '167. Two Sum II', '26. Remove Duplicates', '15. 3Sum'],
   },
+  {
+    world: 3,
+    title: 'Скриня з комірками: хеш-мапа',
+    motif: 'chest',
+    when: ['Постійно питаєш «чи вже бачив?» або «скільки разів?».', 'Шукаєш пару, але масив не відсортований.', 'Треба згрупувати елементи за спільною ознакою.'],
+    idea: 'Не шукай заново — запам\'ятовуй. Set відповідає «чи бачив», Map тримає «ключ → значення» (лічильник, номер, групу). Кожна перевірка миттєва, тож один прохід замінює цикл у циклі.',
+    template: `const seen = new Map();
+for (const x of a) {
+  if (seen.has(target - x)) { /* знайшли пару */ }
+  seen.set(x, (seen.get(x) ?? 0) + 1);
+}`,
+    complexity: 'Час O(n), пам\'ять O(n).',
+    problems: ['1. Two Sum', '217. Contains Duplicate', '242. Valid Anagram', '49. Group Anagrams', '347. Top K Frequent Elements'],
+  },
 ];

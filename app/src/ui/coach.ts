@@ -164,6 +164,18 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
   }
   if (level.id === 'carthage.dido' && /height\[l\]\s*>\s*height\[r\]\s*\)\s*l\+\+|height\[l\]\s*<\s*height\[r\]\s*\)\s*r--/.test(bare))
     return fox('Ти зсуваєш вищий стовп. Але вода стоїть до нижчого: поки він на місці, вужча ділянка не дасть більше. Зсувай нижчий.', 'You move the higher post. But the water rises only to the lower one: while it stays, a narrower plot can’t give more. Move the lower one.');
+  // світ 3: пам'ять
+  if (/\.get\([^()]*\)\s*[+-]\s*1/.test(bare) && !/\?\?|\|\|/.test(bare))
+    return fox('Першого разу m.get(x) дає undefined, а undefined + 1 — це NaN. Пиши (m.get(x) ?? 0) + 1.', 'The first time, m.get(x) gives undefined, and undefined + 1 is NaN. Write (m.get(x) ?? 0) + 1.');
+  if (level.id === 'forest.most' && typeof got === 'number') return fox('Поверни сам товар, а не скільки разів його продали.', 'Return the goods themselves, not how many times they were sold.');
+  if (level.id === 'forest.anagram' && got === true && want === false && !/length/.test(bare)) return fox('Вози різного розміру не можуть бути однаковими. Спершу порівняй s.length і t.length.', 'Carts of different sizes can’t be the same. Compare s.length and t.length first.');
+  if (level.id === 'forest.twosum' && Array.isArray(got) && got.length === 2 && ex) {
+    const [a, t] = ex.args as [number[], number];
+    if (got[0] === got[1]) return fox('Один звір не може бути парою сам собі. Спершу перевір where.has(need), а вже потім клади поточного.', 'An animal can’t pair with itself. Check where.has(need) first, and only then store the current one.');
+    if ((got as number[]).every((v) => a.includes(v)) && (got[0] as number) + (got[1] as number) === t && !(got as number[]).every((v) => Number.isInteger(v) && v < a.length)) return fox('Це ціни, а треба номери звірів. Тримай у Map «ціна → номер» і повертай номери.', 'Those are prices, but you need the animals’ indices. Keep “price → index” in the Map and return the indices.');
+  }
+  if (level.id === 'forest.groups' && got !== undefined && !Array.isArray(got)) return fox('Поверни масив груп, а не саму скриню: [...fam.values()].', 'Return an array of groups, not the chest itself: [...fam.values()].');
+  if (level.id === 'forest.topk' && Array.isArray(got) && got.some(Array.isArray)) return fox('Поверни самі номери товарів, без лічильників: .map((p) => p[0]).', 'Return just the goods numbers, without the counts: .map((p) => p[0]).');
   const args = ex?.args[0];
   if (level.id === 'troy.total' && Array.isArray(args) && got === args.length) return fox('Ти порахував мішки, а треба зерно: додавай не 1, а nums[i].', 'You counted the sacks, but we need the grain: add nums[i], not 1.');
   if (level.id === 'troy.sum' && Array.isArray(args)) {
@@ -197,5 +209,13 @@ export function adviseSolved(level: Level, code: string): string | null {
   const moves = (bare.match(/enei\.move\s*\(/g) ?? []).length;
   if ((level.id === 'troy.far' || level.id === 'troy.sacks') && !usesLoop(bare) && moves >= 5)
     return L(`Працює! Але ${moves} однакових рядків… Спробуй цикл for: тоді й сотня кроків — один рядок.`, `It works! But ${moves} identical lines… Try a for loop: then even a hundred steps is one line.`);
+  return null;
+}
+
+/** Відповіді правильні, але Вовк би так само: у циклі ховається ще один обхід масиву. */
+export function adviseWolf(level: Level, code: string): Advice | null {
+  const { bare } = clean(code);
+  if (level.world === 3 && /\.(includes|indexOf|lastIndexOf|filter|some|find|findIndex|count)\s*\(/.test(bare) && usesLoop(bare))
+    return fox('Відповіді правильні, але includes, indexOf чи filter щоразу обходять увесь масив — це той самий Вовк, тільки тихіший. Запам\'ятовуй у Set чи Map.', 'The answers are right, but includes, indexOf or filter walk the whole array every time — it’s the same Wolf, just quieter. Remember things in a Set or a Map.');
   return null;
 }

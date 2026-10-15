@@ -16,14 +16,14 @@ import { L, fmt } from '../i18n.ts';
 import { lt, wt, starterOf } from '../levels/text.ts';
 import { TROJANS_EN } from '../levels/en.ts';
 import { feedbackUrl } from './feedback.ts';
-import { adviseError, adviseJudge, adviseRun, adviseSolved, adviseTimeout } from './coach.ts';
+import { adviseError, adviseJudge, adviseRun, adviseSolved, adviseTimeout, adviseWolf } from './coach.ts';
 import type { CallResult } from '../engine/types.ts';
 
-type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'wolf';
+type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'wolf' | 'lion';
 /** Текст — функція, щоб після перемикання мови репліка теж перекладалась. */
 interface Bubble { who: Who; text: () => string; tone: Tone; seq: number; enter: 'in' | 'nod' }
 /** Хто говорить за «господаря» світу: Микита на попелищі, Еол у морі, Дидона в Карфагені. */
-const HOST_SPRITE: Speaker[] = ['fox', 'eol', 'dido'];
+const HOST_SPRITE: Speaker[] = ['fox', 'eol', 'dido', 'lion'];
 type Tab = 'code' | 'statement' | 'hints' | 'sheet';
 type Panel = 'tests' | 'console';
 
@@ -75,11 +75,11 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   const WHO: Record<Who, string> = {
     host: WT.host.who, fox: L('Микита', 'Mykyta'), juno: L('Юнона', 'Juno'), sibyl: L('Сивілла', 'Sibyl'), system: L('Еней', 'Aeneas'),
     enei: L('Еней', 'Aeneas'), anchises: L('Анхіз', 'Anchises'), warrior: L('Воїн', 'Warrior'), sailor: L('Моряк', 'Sailor'), woman: L('Троянка', 'Trojan woman'),
-    eol: L('Еол', 'Aeolus'), dido: L('Дидона', 'Dido'), wolf: L('Вовк Неситий', 'Greedy Wolf'),
+    eol: L('Еол', 'Aeolus'), dido: L('Дидона', 'Dido'), wolf: L('Вовк Неситий', 'Greedy Wolf'), lion: L('Цар Лев', 'King Lion'),
   };
   const SPRITE: Record<Who, Speaker> = {
     host: HOST_SPRITE[world.n] ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei',
-    enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman', eol: 'eol', dido: 'dido', wolf: 'wolf',
+    enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman', eol: 'eol', dido: 'dido', wolf: 'wolf', lion: 'lion',
   };
   const say = (who: Who, text: () => string, tone: Tone = 'say') =>
     setBubble((b) => ({ who, text, tone, seq: b.seq + 1, enter: SPRITE[b.who] === SPRITE[who] ? 'nod' : 'in' }));
@@ -130,7 +130,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     setBusy('run'); setError(null); setTab('code'); setJustSolved(false); setRanOnce(true);
     const tc = level.examples[0];
     const out = await runInSandbox(
-      { code: code[lang], lang, entry: level.entry, calls: [{ args: clone(tc.args), observe: level.observe, record: true, forbid: level.forbid }] },
+      { code: code[lang], lang, entry: level.entry, calls: [{ args: clone(tc.args), observe: level.observe, record: true, forbid: level.forbid, memory: level.memory }] },
       { timeoutMs: 2000, eventLimit: 5000 },
     );
     setBusy('');
@@ -184,6 +184,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
       if (tip) say(tip.who, tip.text, 'error');
       else say('host', () => L(`Суд богів не згоден (${bad.kind === 'hidden' ? 'прихований тест' : bad.label}): ${bad.why}.`, `The gods disagree (${bad.kind === 'hidden' ? 'hidden test' : bad.label}): ${bad.why}.`), 'error');
     } else if (rep.verdict === 'timeout') { oops(); if (/while|for/.test(code[lang])) { const tip = adviseTimeout(level, code[lang]); say(tip.who, () => `${L('Юнона сміється: шторм ще не скінчився. ', 'Juno laughs: the storm isn’t over. ')}${tip.text()}`, 'taunt'); } else say('juno', () => L('Ха! Мій шторм ще не скінчився, а ти вже видихся. Котрийсь тест не вклався в час.', 'Ha! My storm isn’t over and you’re already worn out. One of the tests ran out of time.'), 'taunt'); }
+    else if (rep.verdict === 'wolf' && adviseWolf(level, code[lang])) { const tip = adviseWolf(level, code[lang])!; say(tip.who, tip.text, 'taunt'); }
     else if (rep.verdict === 'wolf') say('fox', () => L(`Так розв'язав би Вовк Неситий: відповіді правильні, але на ${fmt(level.big!.n)} елементах код дивиться на них понад ${fmt(level.big!.readBudget(level.big!.n))} разів. Пошукай хитрість.`, `That’s how the Greedy Wolf would solve it: the answers are right, but on ${fmt(level.big!.n)} elements the code looks at them over ${fmt(level.big!.readBudget(level.big!.n))} times. Look for a trick.`), 'taunt');
     else {
       view.current?.flash('win');
@@ -208,7 +209,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     if (busy || !level.wolf) return;
     setBusy('wolf');
     const tc = level.examples[0];
-    const out = await runInSandbox({ code: level.wolf.code, lang: 'js', entry: level.entry, calls: [{ args: clone(tc.args), observe: level.observe, record: true }] });
+    const out = await runInSandbox({ code: level.wolf.code, lang: 'js', entry: level.entry, calls: [{ args: clone(tc.args), observe: level.observe, record: true, memory: level.memory }] });
     setBusy('');
     const r = out.results[0];
     if (!r) return;
