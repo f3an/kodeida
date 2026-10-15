@@ -16,6 +16,8 @@ import { L, fmt } from '../i18n.ts';
 import { lt, wt, starterOf } from '../levels/text.ts';
 import { TROJANS_EN } from '../levels/en.ts';
 import { feedbackUrl } from './feedback.ts';
+import { adviseError, adviseJudge, adviseRun, adviseSolved, adviseTimeout } from './coach.ts';
+import type { CallResult } from '../engine/types.ts';
 
 type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system';
 /** Текст — функція, щоб після перемикання мови репліка теж перекладалась. */
@@ -61,7 +63,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   const [scene, setScene] = useState<SceneState | null>(null);
   const [actor, setActor] = useState<'heroes' | 'wolf'>('heroes');
   const [justSolved, setJustSolved] = useState(false);
-  const pendingRun = useRef<{ ok: true | string; got: unknown } | null>(null);
+  const pendingRun = useRef<{ ok: true | string; got: unknown; r: CallResult } | null>(null);
   const view = useRef<WorldHandle>(null);
 
   useEffect(() => { save(codeKey('ts'), code.ts); save(codeKey('js'), code.js); }, [code]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -77,6 +79,9 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   const stumble = (e: { message: string; line?: number }) => {
     setError(e);
     oops();
+    // Микита пояснює типову помилку новачка; якщо не впізнав — Еней каже, що сталося
+    const tip = adviseError(level, code[lang], e);
+    if (tip) return say(tip.who, tip.text, 'error');
     say('system', () => (e.line ? L(`Ой! Я спіткнувся на рядку ${e.line}: ${e.message}`, `Oops! I stumbled on line ${e.line}: ${e.message}`) : L(`Ой! Я спіткнувся: ${e.message}`, `Oops! I stumbled: ${e.message}`)), 'error');
   };
 
@@ -93,7 +98,12 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     if (ok === true) say('host', () => (level.scene.type === 'street'
       ? L('Вийшло! Тепер на Суд богів (⌘⇧↵): там інші тести.', 'It worked! Now to the Judgement of the Gods (⌘⇧↵): it has other tests.')
       : L(`Повернуто ${short(p.got)} — правильно! Тепер на Суд богів (⌘⇧↵): там інші тести.`, `Returned ${short(p.got)} — correct! Now to the Judgement of the Gods (⌘⇧↵): it has other tests.`)));
-    else { oops(); say('host', () => L(`Не так: ${ok}.`, `Not quite: ${ok}.`), 'error'); }
+    else {
+      oops();
+      const tip = adviseRun(level, code[lang], p.r, ok);
+      if (tip) say(tip.who, tip.text, 'error');
+      else say('host', () => L(`Не так: ${ok}.`, `Not quite: ${ok}.`), 'error');
+    }
   };
 
   const run = useCallback(async () => {
@@ -111,6 +121,8 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     if (out.timedOutAt !== undefined || !r) {
       setPanel('console');
       oops();
+      const tip = adviseTimeout(level, code[lang]);
+      if (/while|for/.test(code[lang])) return say(tip.who, () => `${L('Юнона сміється: шторм ще не скінчився. ', 'Juno laughs: the storm isn’t over. ')}${tip.text()}`, 'taunt');
       return say('juno', () => L('Ха! Мій шторм ще не скінчився, а ти вже видихся. Код працював понад 2 секунди: чи не зациклився він?', 'Ha! My storm isn’t over and you’re already worn out. The code ran for over 2 seconds: is it stuck in a loop?'), 'taunt');
     }
     setActor('heroes');
@@ -120,7 +132,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
       view.current?.play();
       return stumble(r.error);
     }
-    pendingRun.current = { ok: judgeCall(level, tc, expectedOf(level, tc), r), got };
+    pendingRun.current = { ok: judgeCall(level, tc, expectedOf(level, tc), r), got, r };
     const shown = level.scene.type === 'array' && r.value !== undefined ? short(r.value, 40) : null;
     view.current?.show(tc, r.events, 'heroes', shown);
     if (r.events.some((e) => e.t !== 'log')) { say('fox', () => L('Дивимося, куди поведе нас твоє слово…', 'Let’s see where your word takes us…')); view.current?.play(); }
@@ -147,8 +159,10 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     else if (rep.verdict === 'wrong') {
       const bad = rep.cases.find((c) => c.verdict === 'wrong')!;
       oops();
-      say('host', () => L(`Суд богів не згоден (${bad.kind === 'hidden' ? 'прихований тест' : bad.label}): ${bad.why}.`, `The gods disagree (${bad.kind === 'hidden' ? 'hidden test' : bad.label}): ${bad.why}.`), 'error');
-    } else if (rep.verdict === 'timeout') { oops(); say('juno', () => L('Ха! Мій шторм ще не скінчився, а ти вже видихся. Котрийсь тест не вклався в час.', 'Ha! My storm isn’t over and you’re already worn out. One of the tests ran out of time.'), 'taunt'); }
+      const tip = adviseJudge(level, code[lang], rep) ?? (level.scene.type === 'array' ? adviseRun(level, code[lang], { value: bad.got, events: [] } as unknown as CallResult, bad.why ?? '') : null);
+      if (tip) say(tip.who, tip.text, 'error');
+      else say('host', () => L(`Суд богів не згоден (${bad.kind === 'hidden' ? 'прихований тест' : bad.label}): ${bad.why}.`, `The gods disagree (${bad.kind === 'hidden' ? 'hidden test' : bad.label}): ${bad.why}.`), 'error');
+    } else if (rep.verdict === 'timeout') { oops(); if (/while|for/.test(code[lang])) { const tip = adviseTimeout(level, code[lang]); say(tip.who, () => `${L('Юнона сміється: шторм ще не скінчився. ', 'Juno laughs: the storm isn’t over. ')}${tip.text()}`, 'taunt'); } else say('juno', () => L('Ха! Мій шторм ще не скінчився, а ти вже видихся. Котрийсь тест не вклався в час.', 'Ha! My storm isn’t over and you’re already worn out. One of the tests ran out of time.'), 'taunt'); }
     else if (rep.verdict === 'wolf') say('fox', () => L(`Так розв'язав би Вовк Неситий: відповіді правильні, але на ${fmt(level.big!.n)} елементах код дивиться на них понад ${fmt(level.big!.readBudget(level.big!.n))} разів. Пошукай хитрість.`, `That’s how the Greedy Wolf would solve it: the answers are right, but on ${fmt(level.big!.n)} elements the code looks at them over ${fmt(level.big!.readBudget(level.big!.n))} times. Look for a trick.`), 'taunt');
     else {
       view.current?.flash('win');
@@ -156,10 +170,11 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
       const shard = level.final && world.motif && firstFox;
       const joinIdx = level.world === 0 ? world.levels.indexOf(level) - 1 : -1;
       const joins = joinIdx >= 0 && joinIdx < CREW_MAX && !solved(progress, level);
+      const nudge = adviseSolved(level, code[lang]);
       say('fox', () => L(
         `Оце по-лисячому! ${lt(level).lesson}${shard ? ` Уламок знайдено: на вишиванці з'явився новий візерунок, а в Книзі хитрощів — «${wt(world).trick}».` : ''}${joins ? ` До ватаги приєднався ${TROJAN_NAMES[joinIdx]}: ватага = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
         `That’s the fox way! ${lt(level).lesson}${shard ? ` Shard found: a new pattern appeared on the shirt, and the Book of Tricks has a new page — “${wt(world).trick}”.` : ''}${joins ? ` ${TROJANS_EN[joinIdx][0].toUpperCase() + TROJANS_EN[joinIdx].slice(1)} joined the crew: crew = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
-      ), 'win');
+      ) + (nudge ? ` ${nudge}` : ''), 'win');
     }
     const stars = rep.verdict === 'fox' ? (mine.hintsUsed === 0 ? 3 : 2) : rep.verdict === 'wolf' ? 1 : 0;
     if (stars > 0) { patchLevel(level.id, { stars }); setJustSolved(true); }

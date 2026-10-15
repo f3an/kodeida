@@ -11,8 +11,14 @@ import { L, uiLang } from '../i18n.ts';
 // Підпис — геттер: перекладається на момент показу, а не завантаження модуля.
 const street = (cells: StreetCell[], uk: string, en: string): TestCase => ({ args: [{ $actor: 'enei', setup: { cells } }], get label() { return L(uk, en); } });
 const road = (n: number, end: StreetCell = 'well'): StreetCell[] => ['empty', ...Array<StreetCell>(n - 1).fill('empty'), end];
-const sacks = (n: number) => street(['empty', ...Array<StreetCell>(n).fill('sack')], `${n} мішків`, `${n} sacks`);
+const sacks = (n: number) => street(['empty', ...Array<StreetCell>(n).fill('sack')], ukN(n, 'мішок', 'мішки', 'мішків'), enN(n, 'sack', 'sacks'));
 const ENEI = ['enei', 'Enei'] as [string, string];
+/** Українська множина: 1 мішок, 3 мішки, 5 мішків. */
+const ukN = (n: number, one: string, few: string, many: string) => {
+  const d = n % 10, h = n % 100;
+  return `${n} ${d === 1 && h !== 11 ? one : d >= 2 && d <= 4 && (h < 12 || h > 14) ? few : many}`;
+};
+const enN = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 /** Вулиця з n мішків і саме n як другий аргумент; геттер підпису зберігається. */
 const withN = (n: number): TestCase => { const t = sacks(n); return { args: [...t.args, n], get label() { return t.label; } }; };
 const atWell = (_tc: TestCase, r: { street?: { cells: StreetCell[]; pos: number } }) => {
@@ -221,7 +227,7 @@ const TROJAN = new Set(['троянець', 'trojan']);
 function countCrewRef(street: string[]): number { let c = 0; for (const x of street) if (TROJAN.has(x)) c++; return c; }
 const crewCase = (a: string[]): TestCase => ({
   get args() { return [uiLang() === 'en' ? a.map((x) => WORD_EN[x] ?? x) : a]; },
-  get label() { return L(`${a.length} клітинок`, `${a.length} cells`); },
+  get label() { return L(ukN(a.length, 'клітинка', 'клітинки', 'клітинок'), enN(a.length, 'cell', 'cells')); },
 });
 
 const lastCell: Level = {
