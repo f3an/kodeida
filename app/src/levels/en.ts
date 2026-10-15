@@ -1009,6 +1009,134 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     lesson: 'If an answer can be checked and “fits” comes after “doesn’t fit”, search the answer itself in halves.',
     doc: ['The Wolf and the pies', 'piles[i] is the pies in bowl i, h the hours. Return the smallest speed k', 'at which the Wolf eats everything in h hours (up to k from one bowl per hour).'],
   },
+  'sicily.laps': {
+    title: 'The best k laps', topic: 'a fixed-size window',
+    brief: '<b>The best k laps.</b> Find the biggest sum of points over <code>k</code> laps of the race in a row.',
+    statement: [
+      'At Acestes’s games the chariots race lap after lap. <code>laps[i]</code> is the points scored on lap <code>i</code>. The scoreboard is broken, and the best stretch has to be found.',
+      'Return the biggest sum of points over <code>k</code> laps <b>in a row</b>. Always <code>1 ≤ k ≤ n</code>.',
+      'Constraints: <code>n ≤ 10⁴</code>, and <code>k</code> can be a thousand. For every stretch the Wolf adds up all <code>k</code> laps from scratch. But neighbouring stretches differ by only two laps.',
+    ],
+    tool: {
+      name: 'a sliding window',
+      text: [
+        'Add up the first window of <code>k</code> laps. Then <b>slide</b> it by one lap: add the lap that came in on the right and subtract the one that left on the left.',
+        'This way every lap is added once and subtracted once, however big the window is.',
+      ],
+      code: '// laps = [3, 1, 4, 1, 5], k = 3\n// [3 1 4] 1 5   sum 8\n// 3 [1 4 1] 5   8 - 3 + 1 = 6\n// 3 1 [4 1 5]   6 - 1 + 5 = 10',
+    },
+    talk: [
+      'Games in honour of Anchises! But the scoreboard is broken. Who drove the best laps?',
+      'I’m judging. Aeneas, don’t add up every stretch from zero: slide the frame by one lap — add one, subtract one.',
+    ],
+    quip: 'That’s where they raced fastest! Now at least we know who gets the wreath.',
+    hints: ['How do two neighbouring stretches of k laps differ?', 'The sum of the first window; then for every i from k: sum += laps[i] − laps[i − k], update the best.', 'for (i < k) sum += laps[i]; let best = sum; for (i = k; i < n; i++) { sum += laps[i] - laps[i - k]; best = Math.max(best, sum); }'],
+    lesson: 'A sliding window doesn’t recount: the new comes in, the old goes out, and the rest of the sum is ready.',
+    doc: ['The best k laps', 'laps[i] is the points for lap i. Return the biggest sum over k laps in a row.'],
+  },
+  'sicily.boat': {
+    title: 'A boat for sale', topic: 'the best so far',
+    brief: '<b>A boat for sale.</b> Boat prices change every day. When to buy and when to sell to earn the most?',
+    statement: [
+      'Mykyta decided to make money at the boat races. <code>prices[i]</code> is the price of a boat on day <code>i</code>.',
+      'You can buy once and sell once, <b>after</b> buying. Return the biggest profit; if no profit is possible — <code>0</code>.',
+      'Constraints: <code>n ≤ 10⁴</code>. The Wolf tries every pair of days. But it’s enough to remember the cheapest day that has already passed.',
+    ],
+    tool: {
+      name: 'the best so far',
+      text: [
+        'Going through the days, keep <code>minPrice</code> — the lowest price among the days already passed. Selling today pays best if you bought exactly then.',
+        'So for every day: the profit is <code>price - minPrice</code>, update the best, then update <code>minPrice</code>. One pass.',
+      ],
+      code: '// prices = [7, 1, 5, 3, 6, 4]\n// day 1: min = 1\n// day 4: 6 - 1 = 5 — the best',
+    },
+    talk: [
+      'Boats get cheaper and dearer every day. I want to buy low and sell high. A fox’s business!',
+      'And I’ll check every pair of days! Buy here, sell there, and there, and there…',
+      'You haven’t even finished the first day, and I already know: it’s enough to remember the cheapest day behind us.',
+    ],
+    quip: 'Bought low, sold high. Acestes says it isn’t a sport. I say it’s quite a sport.',
+    hints: ['If you sell today, when was the best time to buy?', 'Keep minPrice — the lowest price before today. best = max(best, price − minPrice); then update minPrice.', 'let minPrice = Infinity; for (p of prices) { best = Math.max(best, p - minPrice); minPrice = Math.min(minPrice, p); }'],
+    lesson: 'You don’t need to search all pairs for the best one: it’s enough to remember the best of what is already behind you.',
+    doc: ['A boat for sale', 'prices[i] is the price on day i. Return the biggest profit (buy earlier, sell later) or 0.'],
+  },
+  'sicily.song': {
+    title: 'A song without repeats', topic: 'a window of changing size',
+    brief: '<b>A song without repeats.</b> Find the longest stretch of a song where no note repeats.',
+    statement: [
+      'The singers compete in improvisation. The song is written as letter-notes: <code>s</code>. The judges look for the longest stretch <b>in a row</b> where all notes are different.',
+      'Return the length of that stretch.',
+      'The window here is elastic: add a note on the right, and if it is already in the window, throw notes out on the left until the repeat is gone.',
+    ],
+    tool: {
+      name: 'a window that stretches and shrinks',
+      text: [
+        'Two boundaries: <code>left</code> and <code>right</code>. <code>right</code> moves one note ahead each time. Keep what’s in the window in a <code>Set</code>.',
+        'If the new note is already in the window, move <code>left</code> and throw notes out of the <code>Set</code> until the repeat is gone. The window length is <code>right - left + 1</code>.',
+      ],
+      code: '// s = "abcabcbb"\n// [abc]abcbb       — 3, then an "a" came\n// a[bca]bcbb       — threw out the old "a"\n// longest without repeats: 3',
+    },
+    talk: [
+      'The singers sing on and on, and the judges argue: whose song went longest without repeating?',
+      'A frame can not only slide but stretch and shrink too. A new note — on the right; a repeat — we throw out on the left.',
+    ],
+    quip: 'The winner is the one who didn’t repeat himself. A pity this rule can’t be applied to speeches.',
+    hints: ['What do you do when the note that came on the right is already in the window?', 'right moves forward; while s[right] is in the Set — delete s[left] and left++; then add s[right] and update best.', 'for (right) { while (inWindow.has(s[right])) inWindow.delete(s[left++]); inWindow.add(s[right]); best = Math.max(best, right - left + 1); }'],
+    lesson: 'An elastic window: it grows on the right and shrinks on the left when the rule is broken. Every note comes in and goes out only once.',
+    doc: ['A song without repeats', 'Return the length of the longest stretch of s in a row where all characters differ.'],
+  },
+  'sicily.fight': {
+    title: 'The fist fight', topic: 'a heap: the biggest first',
+    brief: '<b>The fist fight.</b> Each time the two strongest fight. Who is left at the end, and how strong?',
+    statement: [
+      'A fist fight at Acestes’s games. <code>stones[i]</code> is the strength of fighter <code>i</code>. Each time <b>the two strongest</b> enter the arena.',
+      'If their strengths are equal, both drop out. If not, the weaker drops out and the stronger stays with strength reduced by the opponent’s. Return the strength of the last fighter, or <code>0</code> if nobody is left.',
+      'Finding the two strongest from scratch every time is slow. That’s what a <b>heap</b> is for: it always keeps the biggest ready.',
+    ],
+    tool: {
+      name: 'a heap (a priority queue)',
+      text: [
+        '<code>MaxPriorityQueue</code> is a heap: <code>enqueue(x)</code> puts in, <code>dequeue()</code> takes out the <b>biggest</b>, <code>size()</code> says how many are left. There is also <code>MinPriorityQueue</code> — for the smallest.',
+        'Putting in and taking out take log n steps, not a search through everyone. The same classes exist on LeetCode for JavaScript and TypeScript.',
+      ],
+      code: 'const heap = new MaxPriorityQueue();\nheap.enqueue(4); heap.enqueue(9); heap.enqueue(2);\nheap.dequeue();   // 9\nheap.size();      // 2',
+    },
+    talk: [
+      'A fist fight! By the rules the two strongest fight each time. Only nobody can tell who they are right now.',
+      'And I’ll look over everyone each time and search for the strongest. Slow? But honest!',
+      'A heap keeps the strongest on top by itself. Take two — and the fight begins.',
+    ],
+    quip: 'I’d enter the arena myself. But everyone there is so… strongest.',
+    hints: ['What do you need at hand at every step of the fight?', 'Put everyone into a MaxPriorityQueue. While more than one fighter is left: take two; if different, put back the difference.', 'for (s of stones) heap.enqueue(s); while (heap.size() > 1) { const a = heap.dequeue(), b = heap.dequeue(); if (a !== b) heap.enqueue(a - b); } return heap.size() ? heap.dequeue() : 0;'],
+    lesson: 'A heap always keeps the biggest (or smallest) ready: putting in and taking out cost log n, not a search.',
+    doc: ['The fist fight', 'Each time the two strongest fight. Return the strength of the last one or 0.'],
+  },
+  'sicily.board': {
+    title: 'The live scoreboard', topic: 'a heap of size k',
+    brief: '<b>The live scoreboard.</b> After every new result the board shows the <code>k</code>-th best. Bring Acestes’s scoreboard back to life.',
+    statement: [
+      'The winners’ board: <code>nums</code> are the results already there, <code>adds</code> are new ones arriving one at a time. After each new result the board must show the <code>k</code>-th largest result among all so far.',
+      'Return an array of these numbers — one after every new result. Whenever the board shows a number, there are always at least <code>k</code> results.',
+      'Constraints: <code>n ≤ 10⁴</code>. After every result the Wolf re-sorts the whole table. You only need to keep the <code>k</code> best — in a heap with the smallest of them on top.',
+    ],
+    tool: {
+      name: 'a heap of the k best',
+      text: [
+        'Keep a <code>MinPriorityQueue</code> of exactly <code>k</code> best results. On its top is the smallest of the best — which is exactly the <code>k</code>-th largest.',
+        'A new result: put it in, and if the heap now holds more than <code>k</code>, throw out the smallest. The answer is <code>heap.front()</code>.',
+      ],
+      code: '// k = 3, the heap holds [4, 5, 8]  → front = 4\n// 10 arrives → [4, 5, 8, 10] → threw out 4\n// now [5, 8, 10]              → front = 5',
+    },
+    talk: [
+      'The scoreboard! Bring it back to life, and the games will have winners again. But the results keep coming and coming.',
+      'After every result I’ll re-sort the whole table! From best to worst! Again! And again!',
+      'Why the whole table? The board shows the k-th best. Keep only the k best in a heap — the smallest of them is the answer.',
+    ],
+    quip: 'The scoreboard lives! Anchises would be proud. And you, Mykyta, get the judge’s wreath. Not a bet!',
+    hints: ['How many results do you really need to remember to know the k-th best?', 'A MinPriorityQueue of the k best: put the new one in, and if size() > k — dequeue(). The answer is front().', 'const add = (x) => { heap.enqueue(x); if (heap.size() > k) heap.dequeue(); }; nums.forEach(add); for (x of adds) { add(x); out.push(heap.front()); }'],
+    lesson: 'To know the k-th best you don’t need to keep everyone: a heap of the k best gives the answer from its top.',
+    doc: ['The live scoreboard', 'After every number in adds, return the k-th largest among nums and those already added.'],
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1018,6 +1146,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   3: { host: { who: 'King Lion', line: 'Nobody remembers who sells what. Put things in order, and Mykyta will be chancellor again. For a minute.' }, trick: 'The chest of cells: a hash map' },
   4: { host: { who: 'The mitten’s residents', line: 'Whoever got in last gets out first. Otherwise the mitten will burst!' }, trick: 'The tower: a stack' },
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
+  6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
 };
 
 export const BOOK_EN: Record<number, { title: string; when: string[]; idea: string; complexity: string }> = {
@@ -1050,6 +1179,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['The data is sorted, or the answer turns from “no” to “yes” at some point.', 'You need the place where something starts: the first bad, the first not smaller.', 'You can check a candidate answer, and every bigger one works too.'],
     idea: 'Keep the boundaries lo and hi where the answer can still be. Look at the middle and drop the half where it surely isn’t. Every look halves the range: 10,000 elements take 14 looks. Sometimes you halve not the array but the possible answers.',
     complexity: 'Time O(log n) (or O(n log max) when searching the answer), memory O(1).',
+  },
+  6: {
+    title: 'The frame: a sliding window and a heap',
+    when: ['You need the best stretch of consecutive elements: a sum, a length, no repeats.', 'Neighbouring windows differ only at their edges.', 'At every step you need the largest or the smallest, or the k best.'],
+    idea: 'Don’t recompute each window from scratch: move it — add what comes in on the right, remove what leaves on the left. A window can be fixed or stretch and shrink. When you keep needing the biggest or smallest, hold the candidates in a heap: putting in and taking out cost log n.',
+    complexity: 'Window: time O(n), memory O(1) or O(k). Heap: O(log n) per operation.',
   },
 };
 

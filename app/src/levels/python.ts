@@ -362,6 +362,58 @@ export const PY: Record<string, PyPart> = {
       text: { 0: ['Іноді навпіл ділять не масив, а <b>можливі відповіді</b>. Швидкість — від 1 до найбільшої миски. Для середньої швидкості рахуєш години: <code>(p + k - 1) // k</code> — ділення з округленням угору — для кожної миски.', 'Sometimes you halve not the array but <b>the possible answers</b>. The speed is from 1 to the biggest bowl. For a middle speed, count the hours: <code>(p + k - 1) // k</code> — division rounding up — for every bowl.'] },
     },
   },
+  'sicily.laps': {
+    body: `    total = 0\n${HERE}\n    return total\n`,
+    solution: 'def best_laps(laps, k):\n    total = 0\n    for i in range(k):\n        total += laps[i]\n    best = total\n    for i in range(k, len(laps)):\n        total += laps[i] - laps[i - k]\n        best = max(best, total)\n    return best\n',
+    wolf: 'def best_laps(laps, k):\n    best = float("-inf")\n    for i in range(len(laps) - k + 1):\n        s = 0\n        for j in range(i, i + k):\n            s += laps[j]\n        best = max(best, s)\n    return best\n',
+    hint: 'for i in range(k): total += laps[i]\nbest = total\nfor i in range(k, len(laps)):\n    total += laps[i] - laps[i - k]\n    best = max(best, total)',
+    tool: { code: '# laps = [3, 1, 4, 1, 5], k = 3\n# [3 1 4] 1 5   сума 8\n# 3 [1 4 1] 5   8 - 3 + 1 = 6\n# 3 1 [4 1 5]   6 - 1 + 5 = 10' },
+  },
+  'sicily.boat': {
+    body: `    best = 0\n${HERE}\n    return best\n`,
+    solution: 'def max_profit(prices):\n    best, min_price = 0, float("inf")\n    for i in range(len(prices)):\n        p = prices[i]\n        best = max(best, p - min_price)\n        min_price = min(min_price, p)\n    return best\n',
+    wolf: 'def max_profit(prices):\n    best = 0\n    for i in range(len(prices)):\n        for j in range(i + 1, len(prices)):\n            best = max(best, prices[j] - prices[i])\n    return best\n',
+    hint: 'min_price = float("inf")\nfor p in prices:\n    best = max(best, p - min_price)\n    min_price = min(min_price, p)',
+    tool: {
+      code: '# prices = [7, 1, 5, 3, 6, 4]\n# день 1: min = 1\n# день 4: 6 - 1 = 5 — найкраще',
+      text: { 0: ['Ідучи днями, тримай <code>min_price</code> — найнижчу ціну серед уже минулих днів. Продати сьогодні вигідніше за все, якщо купив саме тоді.', 'Going through the days, keep <code>min_price</code> — the lowest price among the days already passed. Selling today pays best if you bought exactly then.'], 1: ['Тож для кожного дня: заробіток <code>price - min_price</code>, онови найкращий, а потім онови <code>min_price</code>. Один прохід.', 'So for every day: the profit is <code>price - min_price</code>, update the best, then update <code>min_price</code>. One pass.'] },
+    },
+  },
+  'sicily.song': {
+    body: `    in_window = set()\n    left, best = 0, 0\n${HERE}\n    return best\n`,
+    solution: 'def longest_unique(s):\n    in_window = set()\n    left, best = 0, 0\n    for right in range(len(s)):\n        ch = s[right]\n        while ch in in_window:\n            in_window.remove(s[left])\n            left += 1\n        in_window.add(ch)\n        best = max(best, right - left + 1)\n    return best\n',
+    hint: 'for right in range(len(s)):\n    while s[right] in in_window:\n        in_window.remove(s[left]); left += 1\n    in_window.add(s[right])\n    best = max(best, right - left + 1)',
+    tool: {
+      code: '# s = "abcabcbb"\n# [abc]abcbb       — 3, далі прийшла "a"\n# a[bca]bcbb       — викинули стару "a"\n# найдовше без повторів: 3',
+      text: { 0: ['Дві межі: <code>left</code> і <code>right</code>. <code>right</code> щоразу йде на одну ноту вперед. Що є у вікні, тримай у множині <code>set</code>.', 'Two boundaries: <code>left</code> and <code>right</code>. <code>right</code> moves one note ahead each time. Keep what’s in the window in a <code>set</code>.'], 1: ['Якщо нова нота вже у вікні, посувай <code>left</code> і викидай ноти з множини (<code>remove</code>), доки повтор не зникне. Довжина вікна — <code>right - left + 1</code>.', 'If the new note is already in the window, move <code>left</code> and throw notes out of the set (<code>remove</code>) until the repeat is gone. The window length is <code>right - left + 1</code>.'] },
+    },
+  },
+  'sicily.fight': {
+    body: `    heap = []\n${HERE}\n    return 0\n`,
+    solution: 'import heapq\n\ndef last_stone(stones):\n    heap = []\n    for i in range(len(stones)):\n        heapq.heappush(heap, -stones[i])\n    while len(heap) > 1:\n        a = -heapq.heappop(heap)\n        b = -heapq.heappop(heap)\n        if a != b:\n            heapq.heappush(heap, -(a - b))\n    return -heap[0] if heap else 0\n',
+    hint: 'for s in stones: heapq.heappush(heap, -s)\nwhile len(heap) > 1:\n    a = -heapq.heappop(heap); b = -heapq.heappop(heap)\n    if a != b: heapq.heappush(heap, -(a - b))\nreturn -heap[0] if heap else 0',
+    tool: {
+      code: 'import heapq\nheap = []\nfor x in [4, 9, 2]:\n    heapq.heappush(heap, -x)   # мінус робить найбільший найменшим\n-heapq.heappop(heap)   # 9\nlen(heap)              # 2',
+      name: ['купа: heapq', 'a heap: heapq'],
+      text: {
+        0: ['У Python купа — модуль <code>heapq</code>: <code>heapq.heappush(heap, x)</code> кладе, <code>heapq.heappop(heap)</code> забирає <b>найменший</b>. Щоб першим ішов найбільший, клади числа зі знаком мінус.', 'In Python a heap is the <code>heapq</code> module: <code>heapq.heappush(heap, x)</code> puts in, <code>heapq.heappop(heap)</code> takes out the <b>smallest</b>. To get the biggest first, push the numbers with a minus sign.'],
+        1: ['Покласти й забрати — це log n кроків, а не перебір усіх. Не забудь <code>import heapq</code> на початку.', 'Putting in and taking out take log n steps, not a search through everyone. Don’t forget <code>import heapq</code> at the top.'],
+      },
+    },
+  },
+  'sicily.board': {
+    body: `    heap = []\n    out = []\n${HERE}\n    return out\n`,
+    solution: 'import heapq\n\ndef live_board(k, nums, adds):\n    heap = []\n    out = []\n    def add(x):\n        heapq.heappush(heap, x)\n        if len(heap) > k:\n            heapq.heappop(heap)\n    for i in range(len(nums)):\n        add(nums[i])\n    for i in range(len(adds)):\n        add(adds[i])\n        out.append(heap[0])\n    return out\n',
+    wolf: 'def live_board(k, nums, adds):\n    out = []\n    for t in range(len(adds)):\n        everything = []\n        for i in range(len(nums)):\n            everything.append(nums[i])\n        for i in range(t + 1):\n            everything.append(adds[i])\n        everything.sort(reverse=True)\n        out.append(everything[k - 1])\n    return out\n',
+    hint: 'def add(x):\n    heapq.heappush(heap, x)\n    if len(heap) > k: heapq.heappop(heap)\nfor x in nums: add(x)\nfor x in adds: add(x); out.append(heap[0])',
+    tool: {
+      code: '# k = 3, купа тримає [4, 5, 8]  → heap[0] = 4\n# прийшло 10 → [4, 5, 8, 10] → викинули 4\n# тепер [5, 8, 10]          → heap[0] = 5',
+      text: {
+        0: ['Тримай купу <code>heapq</code> рівно з <code>k</code> найкращих результатів. На її верхівці <code>heap[0]</code> — найменший з найкращих, тобто якраз <code>k</code>-й найбільший.', 'Keep a <code>heapq</code> heap of exactly <code>k</code> best results. On its top, <code>heap[0]</code>, is the smallest of the best — which is exactly the <code>k</code>-th largest.'],
+        1: ['Новий результат: <code>heapq.heappush</code>, і якщо в купі стало більше <code>k</code>, <code>heapq.heappop</code> викидає найменшого. Відповідь — <code>heap[0]</code>.', 'A new result: <code>heapq.heappush</code>, and if the heap now holds more than <code>k</code>, <code>heapq.heappop</code> throws out the smallest. The answer is <code>heap[0]</code>.'],
+      },
+    },
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None']];

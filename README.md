@@ -89,7 +89,7 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 
 **Pre-alpha, ready for the first playtest.**
 
-- **Playable in the current source:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–5. That is 39 exercises, from the first `enei.move()` to *Koko Eating Bananas* in Konotop, with tests, hints, stars and the Wolf comparison.
+- **Playable in the current source:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–6. That is 44 exercises, from the first `enei.move()` to *Kth Largest Element in a Stream* at Acestes’s games, with tests, hints, stars and the Wolf comparison.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
 - **Shipped:** installers for macOS, Windows and Linux on every release tag, auto-update from GitHub Releases.
 
@@ -143,7 +143,7 @@ app/                  the game: Electron + React + TypeScript + Monaco
   build/              icons, DMG background, installer art, entitlements
   scripts/            selftest (engine and every level), sync-sprites (site → game)
   src/engine/         sandbox Worker, runner, judge, no UI
-  src/levels/         worlds 0–5 as data, English texts, Book of Tricks
+  src/levels/         worlds 0–6 as data, English texts, Book of Tricks
   src/world/          sprites.js (generated from site/app.js) and the in-level scenes
   src/ui/             screens: menu, onboarding, level, map, book, shirt, settings
 site/                 the website, deployed to GitHub Pages

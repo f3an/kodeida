@@ -151,6 +151,15 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
     if ((level.id === 'konotop.search' || level.id === 'konotop.rotated') && want === -1 && got !== -1) return fox('Такої хати немає, тож відповідь -1. Повертай місце, лише коли nums[mid] справді дорівнює target.', 'There is no such house, so the answer is -1. Return a place only when nums[mid] really equals target.');
     if (level.id === 'konotop.pies' && !/Math\.ceil/.test(bare) && typeof got === 'number' && typeof want === 'number' && got < want) return fox('Неповна миска теж забирає цілу годину. Години рахуй з округленням угору: Math.ceil(p / k).', 'A partly full bowl still takes a whole hour. Count the hours rounding up: Math.ceil(p / k).');
   }
+  // світ 6: вікно й купа
+  if (level.world === 6) {
+    const want = ex ? expectedOf(level, ex) : undefined;
+    if (level.id === 'sicily.laps' && got === 0 && typeof want === 'number' && want < 0) return fox('Очки бувають від\'ємні, тож найкраще не може починатися з 0. Почни його із суми першого вікна.', 'Points can be negative, so the best can’t start at 0. Start it with the sum of the first window.');
+    if (level.id === 'sicily.boat' && typeof got === 'number' && got < 0) return fox('Якщо заробити не вийде, не купуй зовсім: відповідь 0, а не збиток. Почни best з 0.', 'If no profit is possible, don’t buy at all: the answer is 0, not a loss. Start best at 0.');
+    if (level.id === 'sicily.song' && /\bif\s*\(\s*\w+\.has\(/.test(bare) && !/\bwhile\s*\(/.test(bare)) return fox('Одного кроку зліва буває замало: повтор може сидіти глибше у вікні. Стискай вікно в циклі while, доки повтор не зникне.', 'One step on the left is sometimes not enough: the repeat may sit deeper in the window. Shrink the window in a while loop until the repeat is gone.');
+    if (level.id === 'sicily.fight' && got === undefined) return fox('Коли бійців не лишилось, відповідь — 0, а не порожнеча: return heap.size() ? heap.dequeue() : 0.', 'When no fighters are left, the answer is 0, not nothing: return heap.size() ? heap.dequeue() : 0.');
+    if (level.id === 'sicily.board' && /MaxPriorityQueue/.test(bare) && !/MinPriorityQueue/.test(bare)) return fox('Тут потрібна MinPriorityQueue: нагорі має бути найменший з k найкращих — він і є k-й найбільший.', 'You need a MinPriorityQueue here: the smallest of the k best must be on top — that is the k-th largest.');
+  }
   if (got === undefined) {
     if (!/\breturn\b/.test(bare)) return fox('Функція нічого не повернула. Відповідь треба віддати через return.', 'The function returned nothing. Hand the answer back with return.');
     if (/\[\s*\w+\.length\s*\]/.test(bare)) return fox('Отримав undefined: клітинки з номером length немає, вона вже за кінцем. Рахуємо з нуля, тож остання — [length - 1].', 'Got undefined: there is no cell number length, it’s already past the end. We count from zero, so the last one is [length - 1].');
@@ -242,6 +251,10 @@ export function adviseSolved(level: Level, code: string): string | null {
 export function adviseWolf(level: Level, code: string): Advice | null {
   if (isPy(code)) return null;
   const { bare } = clean(code);
+  if (level.id === 'sicily.laps' && /for\s*\([^)]*\)[\s\S]*for\s*\(/.test(bare))
+    return fox('Відповіді правильні, але кожне вікно ти складаєш заново. Сусідні вікна відрізняються лише двома колами: sum += laps[i] - laps[i - k].', 'The answers are right, but you add up every window from scratch. Neighbouring windows differ by only two laps: sum += laps[i] - laps[i - k].');
+  if (level.id === 'sicily.boat') return fox('Відповіді правильні, але пари днів перебирати не треба: пам\'ятай найдешевший день позаду й рахуй, скільки заробив би сьогодні.', 'The answers are right, but you don’t need to try pairs of days: remember the cheapest day behind you and count what you’d earn today.');
+  if (level.id === 'sicily.board') return fox('Відповіді правильні, але ти щоразу сортуєш усю таблицю. Тримай лише k найкращих у MinPriorityQueue: відповідь — її верхівка.', 'The answers are right, but you sort the whole table every time. Keep only the k best in a MinPriorityQueue: the answer is its top.');
   if (level.world === 5 && !/mid|\/\s*2|>>/.test(bare))
     return fox('Відповіді правильні, але ти перевіряєш усіх по черзі — так сотник кидає в став увесь Конотоп. Ряд упорядкований: дивись у середину й відкидай половину.', 'The answers are right, but you check everyone in turn — that’s how the captain throws all of Konotop into the pond. The row is ordered: look in the middle and drop half.');
   if (level.world === 3 && /\.(includes|indexOf|lastIndexOf|filter|some|find|findIndex|count)\s*\(/.test(bare) && usesLoop(bare))

@@ -87,4 +87,22 @@ return lo;`,
     complexity: 'Час O(log n) (або O(n log max) при пошуку відповіді), пам\'ять O(1).',
     problems: ['704. Binary Search', '35. Search Insert Position', '278. First Bad Version', '33. Search in Rotated Sorted Array', '875. Koko Eating Bananas'],
   },
+  {
+    world: 6,
+    title: 'Рамка: ковзне вікно й купа',
+    motif: 'frame',
+    when: ['Шукаєш найкращий відрізок підряд: суму, довжину, без повторів.', 'Сусідні вікна відрізняються лише краями.', 'На кожному кроці потрібен найбільший чи найменший, або k найкращих.'],
+    idea: 'Не рахуй кожне вікно заново: посувай його — додай те, що зайшло справа, прибери те, що вийшло зліва. Вікно буває сталим, а буває гумовим. Коли щоразу потрібен найбільший чи найменший, тримай кандидатів у купі: покласти й забрати — log n.',
+    template: `let left = 0;
+for (let right = 0; right < a.length; right++) {
+  // додай a[right] у вікно
+  while (/* вікно порушує правило */) {
+    // прибери a[left] з вікна
+    left++;
+  }
+  // онови відповідь: right - left + 1
+}`,
+    complexity: 'Вікно: час O(n), пам\'ять O(1) або O(k). Купа: O(log n) на операцію.',
+    problems: ['643. Maximum Average Subarray I', '121. Best Time to Buy and Sell Stock', '3. Longest Substring Without Repeating Characters', '1046. Last Stone Weight', '703. Kth Largest Element in a Stream'],
+  },
 ];

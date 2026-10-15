@@ -20,6 +20,14 @@ ts.javascriptDefaults.setCompilerOptions({ ...compilerOptions, allowJs: true, ch
 // У пісочниці є лише console.log; DOM гравцю недоступний.
 const consoleLib = 'declare const console: { log(...a: unknown[]): void; info(...a: unknown[]): void; warn(...a: unknown[]): void; error(...a: unknown[]): void };';
 ts.typescriptDefaults.addExtraLib(consoleLib, 'ts:kodeida/console.d.ts');
+// Черги з пріоритетом, як на LeetCode (світ 6: купа).
+const pqLib = `declare class PriorityQueueBase<T> { enqueue(x: T): this; dequeue(): T | undefined; front(): T | undefined; size(): number; isEmpty(): boolean; toArray(): T[]; }
+/** Купа: dequeue() повертає найменший елемент. */
+declare class MinPriorityQueue<T = number> extends PriorityQueueBase<T> { constructor(priority?: (x: T) => number); }
+/** Купа: dequeue() повертає найбільший елемент. */
+declare class MaxPriorityQueue<T = number> extends PriorityQueueBase<T> { constructor(priority?: (x: T) => number); }`;
+ts.typescriptDefaults.addExtraLib(pqLib, 'ts:kodeida/pq.d.ts');
+ts.javascriptDefaults.addExtraLib(pqLib, 'ts:kodeida/pq.d.ts');
 // Еней у світі 0: команди, які дає вулиця (sandbox-core.ts → makeStreet). Опис — мовою інтерфейсу.
 const eneiLib = (en: boolean) => `/** ${en ? 'Aeneas on the street of ashes.' : 'Еней на вулиці згарища.'} */
 interface Enei {

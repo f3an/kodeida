@@ -1,7 +1,7 @@
 # Кодеїда — нотатки: ідея, рішення, план
 
 > Стан на 2026-10-15: **пре-альфа**. Є сюжет, 16 світів, онбординг, персонажі, макет інтерфейсу і сайт
-> ([f3an.github.io/kodeida](https://f3an.github.io/kodeida/)). Поточний код `app/` містить 39 вправ у світах 0–5;
+> ([f3an.github.io/kodeida](https://f3an.github.io/kodeida/)). Поточний код `app/` містить 44 вправи у світах 0–6;
 > реліз містить світи 0–3 і мови TypeScript, JavaScript та Python. Інтерфейс українською й англійською, інсталятори для трьох ОС і автооновлення.
 > Наступний крок — перший тест.
 > Інші документи: [MVP.md](MVP.md) · [BRAND.md](BRAND.md) · [LORE.md](LORE.md) · [STORY.md](STORY.md) · [ONBOARDING.md](ONBOARDING.md).

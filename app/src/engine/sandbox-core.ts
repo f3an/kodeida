@@ -57,6 +57,50 @@ function translate(m: string): string {
 }
 
 /** TS → JS без зсуву рядків (sucrase лише знімає типи), далі eval у власній області видимості. */
+/**
+ * Черга з пріоритетом (купа), як на LeetCode для JS/TS: MinPriorityQueue і MaxPriorityQueue.
+ * enqueue(x), dequeue() → найменший (найбільший), front(), size(), isEmpty(). Необов'язковий
+ * аргумент конструктора — функція пріоритету: new MinPriorityQueue((x) => x.cost).
+ */
+class PriorityQueue<T> {
+  private h: T[] = [];
+  private prio: (x: T) => number;
+  private sign: 1 | -1;
+  constructor(prio: (x: T) => number, sign: 1 | -1) { this.prio = prio; this.sign = sign; }
+  private less(i: number, j: number) { return this.sign * (this.prio(this.h[i]) - this.prio(this.h[j])) < 0; }
+  private swap(i: number, j: number) { const t = this.h[i]; this.h[i] = this.h[j]; this.h[j] = t; }
+  enqueue(x: T) {
+    this.h.push(x);
+    let i = this.h.length - 1;
+    while (i > 0) { const p = (i - 1) >> 1; if (!this.less(i, p)) break; this.swap(i, p); i = p; }
+    return this;
+  }
+  dequeue(): T | undefined {
+    if (!this.h.length) return undefined;
+    const top = this.h[0], last = this.h.pop()!;
+    if (this.h.length) {
+      this.h[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < this.h.length && this.less(l, m)) m = l;
+        if (r < this.h.length && this.less(r, m)) m = r;
+        if (m === i) break;
+        this.swap(i, m); i = m;
+      }
+    }
+    return top;
+  }
+  front(): T | undefined { return this.h[0]; }
+  size() { return this.h.length; }
+  isEmpty() { return this.h.length === 0; }
+  toArray() { return this.h.slice(); }
+}
+const asNum = (x: unknown) => x as number;
+class MinPriorityQueue<T> extends PriorityQueue<T> { constructor(prio: (x: T) => number = asNum) { super(prio, 1); } }
+class MaxPriorityQueue<T> extends PriorityQueue<T> { constructor(prio: (x: T) => number = asNum) { super(prio, -1); } }
+
 export function compile(code: string, lang: Lang, entry: string): { fn: PlayerFn } | { error: CodeError } {
   let js: string;
   try {
@@ -65,10 +109,10 @@ export function compile(code: string, lang: Lang, entry: string): { fn: PlayerFn
     return { error: errorOf(err) };
   }
   // Обгортка стоїть на першому рядку коду, тож номери рядків у стеку збігаються з редактором.
-  const src = `(function(console){"use strict";${js}\n;return typeof ${entry}==="function"?${entry}:undefined;})\n//# sourceURL=${SOURCE_URL}`;
+  const src = `(function(console,MinPriorityQueue,MaxPriorityQueue){"use strict";${js}\n;return typeof ${entry}==="function"?${entry}:undefined;})\n//# sourceURL=${SOURCE_URL}`;
   let fn: unknown;
   try {
-    fn = (0, eval)(src)(playerConsole);
+    fn = (0, eval)(src)(playerConsole, MinPriorityQueue, MaxPriorityQueue);
   } catch (err) {
     return { error: errorOf(err) };
   }
