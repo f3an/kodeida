@@ -7,7 +7,7 @@
 import type { SceneSpec } from '../engine/level.ts';
 import type { StreetCell, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
-import { makeDido, makeEnei, makeFox, makeWolf, makeEol, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf } from './sprites.js';
+import { makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf } from './sprites.js';
 
 export const W = 600, H = 390;
 
@@ -27,6 +27,7 @@ interface Walker { x: number; tx: number; y: number; ty: number; face: 1 | -1 }
 
 const ENEI = makeEnei(1), ENEI_BLINK = makeEnei(1, { blink: true });
 const WOLF = makeWolf({ drool: 2 });
+const CREW = TROJANS.map((trojan, i) => i === 2 ? makeAnchises() : trojan);
 const foxes = new Map<string, [Sprite, Sprite]>();
 const foxOf = (c: string) => { if (!foxes.has(c)) foxes.set(c, [makeFox(c), makeFox(c, { cursorOff: true })]); return foxes.get(c)!; };
 const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -159,7 +160,7 @@ abstract class SceneBase {
     if (wolf) { drawFacing(c, WOLF, enei.x - WOLF.w, enei.y - WOLF.h * 2 - bob(enei), enei.face); return; }
     // ватага йде слідом за Енеєм
     for (let k = this.crew - 1; k >= 0; k--) {
-      const tj = TROJANS[k] as Sprite, x = Math.max(tj.w * 2 + 4 + (this.crew - 1 - k) * 34, enei.x - ENEI.w - 28 - k * 40);
+      const tj = CREW[k] as Sprite, x = Math.max(tj.w * 2 + 4 + (this.crew - 1 - k) * 34, enei.x - ENEI.w - 28 - k * 40);
       // ледь помітне «дихання» (~4 с), кожен у своїй фазі — без смикання
       tj.draw(c, Math.round(x - tj.w * 2), Math.round(enei.y - tj.h * 2 + Math.sin(t * 1.6 + k * 1.3)), 2);
     }
