@@ -174,7 +174,7 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
   if (/\.get\([^()]*\)\s*[+-]\s*1/.test(bare) && !/\?\?|\|\|/.test(bare))
     return fox('Першого разу m.get(x) дає undefined, а undefined + 1 — це NaN. Пиши (m.get(x) ?? 0) + 1.', 'The first time, m.get(x) gives undefined, and undefined + 1 is NaN. Write (m.get(x) ?? 0) + 1.');
   if (level.id === 'forest.most' && typeof got === 'number') return fox('Поверни сам товар, а не скільки разів його продали.', 'Return the goods themselves, not how many times they were sold.');
-  if (level.id === 'forest.anagram' && got === true && want === false && !/length/.test(bare)) return fox('Вози різного розміру не можуть бути однаковими. Спершу порівняй s.length і t.length.', 'Carts of different sizes can’t be the same. Compare s.length and t.length first.');
+  if (level.id === 'forest.anagram' && got === true && want === false && !/\.length\s*[!=]==?\s*\w+\.length/.test(bare)) return fox('Вози різного розміру не можуть бути однаковими. Спершу порівняй s.length і t.length.', 'Carts of different sizes can’t be the same. Compare s.length and t.length first.');
   if (level.id === 'forest.twosum' && Array.isArray(got) && got.length === 2 && ex) {
     const [a, t] = ex.args as [number[], number];
     if (got[0] === got[1]) return fox('Один звір не може бути парою сам собі. Спершу перевір where.has(need), а вже потім клади поточного.', 'An animal can’t pair with itself. Check where.has(need) first, and only then store the current one.');

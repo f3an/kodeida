@@ -221,6 +221,8 @@ export class ArrayScene extends SceneBase {
     if (world === 1) { this.base = 300; this.path = 386; }
     // світ 0: ліворуч іде ватага, тож ряд починається правіше, а Микита чекає праворуч
     if (world === 0) { this.base = 330; this.x0 = 230; this.x1 = W - 90; }
+    // світи 3+: ряд над головами героїв, щоб числа не ховались за Енеєм і Микитою
+    if (world >= 3) { this.base = 226; this.x0 = 110; }
   }
 
   load(values: unknown[] | string, arrName: string, events: WorldEvent[], actor: Actor, result: string | null = null) {
@@ -341,7 +343,7 @@ export class ArrayScene extends SceneBase {
 
   /** Скриня з комірками: кожна комірка — ключ і значення з пам'яті гравця. */
   private drawChest(now: number) {
-    const c = this.ctx, cols = 6, cw = 92, ch = 30, x0 = 24, y0 = 34;
+    const c = this.ctx, cols = 6, cw = 92, ch = 30, x0 = 24, y0 = 92;
     const keys = [...this.mem.keys()];
     const shown = keys.length > cols * 2 ? keys.slice(keys.length - cols * 2 + 1) : keys;
     const rows = Math.max(1, Math.ceil((shown.length + (keys.length > shown.length ? 1 : 0)) / cols));
