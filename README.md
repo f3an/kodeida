@@ -59,9 +59,13 @@ You write a function with a real LeetCode signature. The world runs it step by s
 
 <p align="center"><img src="docs/media/intro-en.gif" width="760" alt="Opening cutscenes: the gods feast on Olympus, Juno plots with Aeolus, a storm shatters the Pysanka and the shards fly into books, Venus asks Zeus for help"></p>
 
-**Sixteen worlds, six songs.** Each world is one technique, from arrays and two pointers to graphs and dynamic programming. The current source has nine playable worlds, 0–8.
+**Sixteen worlds, six songs.** Each world is one technique, from arrays and two pointers to graphs and dynamic programming. Nine of them are playable now: worlds 0–8.
 
 <p align="center"><img src="docs/media/map-en.gif" width="680" alt="World map: islands for each song, a ship sailing between worlds, and a card with the world's scene, technique and LeetCode problem"></p>
+
+**Never coded? Start with the ABC.** The menu asks whether you can code. *From scratch* opens the ABC: the Sibyl teaches Aeneas on Ukrainian fairy tales the night before Troy falls, in Python, JavaScript or TypeScript, and every printed line appears on a scroll.
+
+<p align="center"><img src="docs/media/abc-en.gif" width="760" alt="The menu asks “Can you code?”; the player picks “No, from scratch”, sees the cutscene where the Sibyl comes to Aeneas in Troy at night, chooses Python in the ABC and prints the Bun’s song, which appears line by line on a scroll"></p>
 
 ## The idea
 
@@ -103,8 +107,8 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 
 **Pre-alpha, ready for the first playtest.**
 
-- **Playable in the current source:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–8. That is 54 exercises, from the first `enei.move()` to *Combination Sum* in hell, with tests, hints, stars and the Wolf comparison. Cutscenes between worlds.
-- **The ABC (current source):** chapter 1, *The Bun* (output: the first words), 4 lessons in each of Python, JavaScript and TypeScript. Chapters 2–8 are planned: variables, strings, conditions, loops, lists, dictionaries and objects, functions.
+- **Playable (v0.3.0):** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–8. That is 54 exercises, from the first `enei.move()` to *Combination Sum* in hell, with tests, hints, stars and the Wolf comparison. Cutscenes between worlds.
+- **The ABC (v0.3.0):** chapter 1, *The Bun* (output: the first words), 4 lessons in each of Python, JavaScript and TypeScript. Chapters 2–8 are planned: variables, strings, conditions, loops, lists, dictionaries and objects, functions.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
 - **Shipped:** installers for macOS, Windows and Linux on every release tag, auto-update from GitHub Releases.
 
