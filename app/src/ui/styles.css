@@ -110,8 +110,8 @@ code, pre { font-family: var(--mono); }
 .v.fox { color: var(--ok); } .v.wolf { color: var(--gold); } .v.wrong, .v.error, .v.timeout { color: var(--bad); }
 .tests { padding: 6px 14px; font: 12px/23px var(--mono); color: var(--mute); overflow: auto; }
 .tests p { margin: 4px 0; font-family: var(--body); }
-.tests .tr { display: grid; grid-template-columns: 18px 64px minmax(0, 1fr) minmax(0, 1.6fr); gap: 8px; white-space: nowrap; align-items: start; }
-.tests .tr > span { overflow: hidden; text-overflow: ellipsis; }
+.tests .tr { display: grid; grid-template-columns: 18px 64px minmax(0, 1fr) minmax(0, 1.6fr); gap: 8px; white-space: normal; overflow-wrap: anywhere; align-items: start; }
+.tests .tr > span { min-width: 0; }
 .tests .kind { color: var(--dim); }
 .tests .tr.ok { color: #cfe9d2; } .tests .tr.ok .ck { color: var(--ok); }
 .tests .tr.wrong .ck, .tests .tr.error .ck, .tests .tr.timeout .ck { color: var(--bad); }
