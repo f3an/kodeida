@@ -396,7 +396,6 @@ canvas { image-rendering: pixelated; }
 /* ---------- Абетка ---------- */
 .tabs .lang.track { font: 12px var(--mono); color: var(--fox-soft); padding: 0 12px; }
 .doc pre.out { color: var(--ok); }
-.menu-actions .btn.abc { border-color: var(--fox-soft); }
 .abc-langs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 6px 0 16px; }
 .abc-langs button { text-align: left; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--side); color: var(--fg); cursor: pointer; display: flex; flex-direction: column; gap: 4px; font: inherit; }
 .abc-langs button b { font: 600 15px var(--mono); }
@@ -427,3 +426,9 @@ canvas { image-rendering: pixelated; }
 .path span { color: var(--mute); font-size: 13.5px; line-height: 1.5; flex: 1; }
 .path small { color: var(--fox-soft); font: 12px var(--mono); }
 @media (prefers-reduced-motion: reduce) { .path { transition: none; } .path:hover { transform: none; } }
+
+.menu .modes-h { margin: 2px 0 2px; color: var(--mute); }
+.menu-actions .btn.mode { display: flex; align-items: center; justify-content: flex-start; gap: 8px; text-align: left; }
+.menu-actions .btn.mode small { margin-left: auto; color: var(--fox-soft); font-size: 11px; }
+.menu-actions .btn.mode:hover { border-color: var(--fox); }
+.change-path { margin-top: -4px; color: var(--mute); font-size: 12px; text-decoration: underline; background: none; border: 0; cursor: pointer; }

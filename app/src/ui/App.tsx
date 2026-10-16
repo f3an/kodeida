@@ -6,7 +6,7 @@ import { AbetkaScreen } from './Abetka.tsx';
 import type { Lang } from '../engine/types.ts';
 import { Menu, StartScreen, Onboarding, BookScreen, ShirtScreen, SettingsScreen, updateText, INTRO_SCENES, DEPARTURE_SCENES } from './screens.tsx';
 import { levelById, worlds, worldOf } from '../levels/index.ts';
-import { useProgress, useSettings } from './progress.ts';
+import { useProgress, useSettings, levelOpen, solved, type Path, type Progress } from './progress.ts';
 import { bridge, useUpdates } from './bridge.ts';
 import { load, save } from './storage.ts';
 import { setUiLang, L } from '../i18n.ts';
@@ -44,12 +44,18 @@ export function App() {
   const level = screen.name === 'level' ? levelById(screen.id) : undefined;
   if (screen.name === 'level' && !level) setScreen({ name: 'map' });
 
-  if (screen.name === 'menu') return <><DragStrip /><Menu progress={progress} go={go} updates={updates} ui={settings.ui} setUi={(ui) => setSettings((s) => ({ ...s, ui }))} /></>;
-  if (screen.name === 'start') return <><DragStrip /><StartScreen go={go} choose={(path) => {
-    // «Так, хочу задач»: світ 0 відкритий для повторення, тур інтерфейсу пропускаємо
-    setProgress((p) => ({ ...p, path, ...(path === 'algo' ? { skipBasics: true, toured: true } : {}) }));
-    go(path === 'abc' ? { name: 'abetka' } : { name: 'onboarding' });
-  }} /></>;
+  // вибір рівня: з нуля → Абетка; трохи → світ 0; задачі → світ 1 (світ 0 відкритий для повторення, тур пропускаємо)
+  const choose = (path: Path) => {
+    const next: Progress = { ...progress, path, ...(path === 'algo' ? { skipBasics: true, toured: true } : {}) };
+    setProgress(() => next);
+    if (path === 'abc') return go({ name: 'abetka' });
+    if (!progress.onboarded) return go({ name: 'onboarding' });
+    // вступ уже бачили — одразу до першої нерозв'язаної вправи свого світу
+    const w = worlds[path === 'algo' ? 1 : 0];
+    go({ name: 'level', id: (w.levels.find((l) => levelOpen(next, l) && !solved(next, l)) ?? w.levels[0]).id });
+  };
+  if (screen.name === 'menu') return <><DragStrip /><Menu progress={progress} go={go} choose={choose} updates={updates} ui={settings.ui} setUi={(ui) => setSettings((s) => ({ ...s, ui }))} /></>;
+  if (screen.name === 'start') return <><DragStrip /><StartScreen go={go} choose={choose} /></>;
   if (screen.name === 'onboarding') {
     const finish = () => { setProgress((p) => ({ ...p, onboarded: true })); go({ name: 'level', id: (progress.path === 'algo' ? worlds[1] : worlds[0]).levels[0].id }); };
     return <><DragStrip /><Onboarding scenes={INTRO_SCENES} finishLabel={progress.path === 'algo' ? L('До моря Еола ▸', 'To the sea of Aeolus ▸') : L('Перший крок ▸', 'First step ▸')} onDone={finish} onSkip={finish} /></>;

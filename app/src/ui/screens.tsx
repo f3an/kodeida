@@ -21,9 +21,10 @@ const GINGER = '#e2702b';
 const HERO_ENEI = makeEnei(0), HERO_ENEI_BLINK = makeEnei(0, { blink: true });
 const HERO_FOX = [makeFox(GINGER), makeFox(GINGER, { cursorOff: true })];
 
-export function Menu({ progress, go, ui, setUi, updates }: { progress: Progress; go: Go; ui: UiLang; setUi: (l: UiLang) => void; updates: UpdateState | null }) {
+export function Menu({ progress, go, choose, ui, setUi, updates }: { progress: Progress; go: Go; choose: (p: Path) => void; ui: UiLang; setUi: (l: UiLang) => void; updates: UpdateState | null }) {
   const [checking, setChecking] = useState(false);
-  const started = Object.keys(progress.levels).length > 0 || progress.onboarded;
+  const started = Object.keys(progress.levels).length > 0 || progress.onboarded || !!progress.path;
+  const en = uiLang() === 'en' ? 1 : 0;
   // обрав «з нуля» й ще не грав у кампанію — головна кнопка веде в Абетку
   const abc = progress.path === 'abc' && !progress.onboarded;
   const next = nextLevel(progress);
@@ -43,18 +44,30 @@ export function Menu({ progress, go, ui, setUi, updates }: { progress: Progress;
         <h1><span className="brace">{'{'}</span>{L('Кодеїда', 'Kodeida')}</h1>
         <p className="tag">{L('Гра, де код рухає героя. Перехитри задачу.', 'A game where your code moves the hero. Outfox the problem.')}</p>
         <div className="menu-actions">
-          {abc ? (
-            <button className="btn big run" onClick={() => go({ name: 'abetka' })}>{L('Продовжити Абетку', 'Continue the ABC')}</button>
-          ) : started ? (
-            <button className="btn big run" onClick={() => go({ name: 'level', id: next.id })}>{L('Продовжити', 'Continue')}: {lt(next).title}</button>
+          {!started ? (
+            <>
+              <div className="eyebrow modes-h">{L('Чи вмієш ти програмувати?', 'Can you code?')}</div>
+              {PATHS.map((p) => (
+                <button key={p.id} className="btn big mode" onClick={() => choose(p.id)} title={p.text[en]}>
+                  <span aria-hidden="true">{p.icon}</span> {p.title[en]} <small>→ {p.to[en]}</small>
+                </button>
+              ))}
+            </>
           ) : (
-            <button className="btn big run" onClick={() => go({ name: progress.path ? 'onboarding' : 'start' })}>{L('Почати мандрівку', 'Start the journey')}</button>
+            <>
+              {abc ? (
+                <button className="btn big run" onClick={() => go({ name: 'abetka' })}>{L('Продовжити Абетку', 'Continue the ABC')}</button>
+              ) : (
+                <button className="btn big run" onClick={() => go({ name: 'level', id: next.id })}>{L('Продовжити', 'Continue')}: {lt(next).title}</button>
+              )}
+              <button className="btn big" onClick={() => go({ name: 'map' })}>{L('Мапа світів', 'World map')}</button>
+              {!abc && <button className="btn big" onClick={() => go({ name: 'abetka' })} title={L('Для тих, хто тільки вчить мову програмування', 'For those just learning a programming language')}>{L('Абетка: мова з нуля', 'The ABC: a language from scratch')}</button>}
+              <button className="btn big" onClick={() => go({ name: 'onboarding' })}>{L('Переглянути вступ', 'Watch the intro')}</button>
+            </>
           )}
-          <button className="btn big" onClick={() => go({ name: 'map' })}>{L('Мапа світів', 'World map')}</button>
-          <button className="btn big abc" onClick={() => go({ name: 'abetka' })} title={L('Для тих, хто тільки вчить мову програмування', 'For those just learning a programming language')}>{L('Абетка: мова з нуля', 'The ABC: a language from scratch')}</button>
-          {started && <button className="btn big" onClick={() => go({ name: 'onboarding' })}>{L('Переглянути вступ', 'Watch the intro')}</button>}
           <button className="btn big" onClick={() => go({ name: 'settings' })}>{L('Налаштування', 'Settings')}</button>
         </div>
+        {started && <button className="link change-path" onClick={() => go({ name: 'start' })}>{L('Змінити рівень', 'Change level')}</button>}
         <a className="feedback-link" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Залишити відгук', 'Leave feedback')}</a>
         <UpdateLine updates={updates} checking={checking} onCheck={async () => { setChecking(true); await bridge?.updates.check(); setChecking(false); }} />
         <p className="muted small">{L('Версія', 'Version')} {APP_VERSION} · {L('офлайн, без AI-підказок', 'offline, no AI hints')} · <a href="https://github.com/f3an/kodeida" target="_blank" rel="noreferrer">github.com/f3an/kodeida</a></p>
