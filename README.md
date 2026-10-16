@@ -6,7 +6,8 @@
 
 <p align="center">
   <b>A game where your code moves the hero.</b><br>
-  Learn the techniques behind LeetCode problems with Aeneas and Mykyta the Fox, in worlds from Ukrainian literature.
+  Learn the techniques behind LeetCode problems with Aeneas and Mykyta the Fox, in worlds from Ukrainian literature.<br>
+  Never coded before? Start with the ABC: Python, JavaScript or TypeScript from scratch, on Ukrainian fairy tales.
 </p>
 
 <p align="center">
@@ -38,6 +39,7 @@ You write a function with a real LeetCode signature. The world runs it step by s
 
 - [See it in action](#see-it-in-action)
 - [The idea](#the-idea)
+- [Three ways in](#three-ways-in)
 - [Download](#download)
 - [Status](#status)
 - [Playtesting](#playtesting)
@@ -57,7 +59,7 @@ You write a function with a real LeetCode signature. The world runs it step by s
 
 <p align="center"><img src="docs/media/intro-en.gif" width="760" alt="Opening cutscenes: the gods feast on Olympus, Juno plots with Aeolus, a storm shatters the Pysanka and the shards fly into books, Venus asks Zeus for help"></p>
 
-**Sixteen worlds, six songs.** Each world is one technique, from arrays and two pointers to graphs and dynamic programming. The current source has four playable worlds.
+**Sixteen worlds, six songs.** Each world is one technique, from arrays and two pointers to graphs and dynamic programming. The current source has nine playable worlds, 0–8.
 
 <p align="center"><img src="docs/media/map-en.gif" width="680" alt="World map: islands for each song, a ship sailing between worlds, and a card with the world's scene, technique and LeetCode problem"></p>
 
@@ -71,6 +73,18 @@ Most coding sites hand you problems. Kodeida teaches you to **recognise the tech
 - **Ukrainian classics.** The frame story is Kotliarevsky's *Eneida*. Aeneas sails from book to book to collect the shards: Franko's fox, *The Mitten*, Lesya Ukrainka's *Forest Song*, Kotsiubynsky's Carpathians, Kvitka-Osnovianenko's *Konotop Witch*.
 
 Languages: TypeScript, JavaScript and Python (via Pyodide, bundled, works offline) today, then C#, C++ and Go. The interface is in Ukrainian and English. The game works offline.
+
+## Three ways in
+
+A new player answers one question in the main menu: **can you code?**
+
+| Answer | Where it leads |
+|---|---|
+| 🌱 **No, from scratch** | **The ABC** — a separate track for adults who are learning their first language. Pick Python, JavaScript or TypeScript: every lesson is written for that language, and the program's output appears line by line on a scroll. The Sibyl teaches Aeneas on Ukrainian fairy tales the night before Troy falls; when the ABC is done, the story moves on to world 0. |
+| 🧭 **A little** | The intro and world 0, *Ashes of Troy*: one new idea per exercise — a command, a loop, a condition, a counter. |
+| ⚔️ **Yes, give me problems** | The intro, then straight to world 1, *Sea of Aeolus*. World 0 stays open for review. |
+
+Whichever way you choose, the Sibyl shows you around the interface on your first exercise. **Change level** in the menu reopens the choice without losing progress, and the ABC is always one click away in the sidebar.
 
 ## Download
 
@@ -89,7 +103,8 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 
 **Pre-alpha, ready for the first playtest.**
 
-- **Playable in the current source:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–8. That is 54 exercises, from the first `enei.move()` to *Combination Sum* in hell, with tests, hints, stars and the Wolf comparison.
+- **Playable in the current source:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–8. That is 54 exercises, from the first `enei.move()` to *Combination Sum* in hell, with tests, hints, stars and the Wolf comparison. Cutscenes between worlds.
+- **The ABC (current source):** chapter 1, *The Bun* (output: the first words), 4 lessons in each of Python, JavaScript and TypeScript. Chapters 2–8 are planned: variables, strings, conditions, loops, lists, dictionaries and objects, functions.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
 - **Shipped:** installers for macOS, Windows and Linux on every release tag, auto-update from GitHub Releases.
 
@@ -143,9 +158,9 @@ app/                  the game: Electron + React + TypeScript + Monaco
   build/              icons, DMG background, installer art, entitlements
   scripts/            selftest (engine and every level), sync-sprites (site → game)
   src/engine/         sandbox Worker, runner, judge, no UI
-  src/levels/         worlds 0–8 as data, English texts, Book of Tricks
+  src/levels/         worlds 0–8 as data, the ABC (abetka.ts), English texts, Book of Tricks
   src/world/          sprites.js (generated from site/app.js) and the in-level scenes
-  src/ui/             screens: menu, onboarding, level, map, book, shirt, settings
+  src/ui/             screens: menu, onboarding, level, map, ABC, book, shirt, settings; story.ts — ABC cutscenes
 site/                 the website, deployed to GitHub Pages
   index.html          landing page (UA / EN)
   artbook.html        artbook (UA / EN): animations, screens, UI kit, onboarding, identity
@@ -171,7 +186,8 @@ Every push to `main` that touches `site/` redeploys GitHub Pages. To publish a r
 2. ✅ **MVP:** onboarding and worlds 0–3 (Ashes of Troy, Sea of Aeolus, Dido's Carthage, Mykyta's Forest), TypeScript, JavaScript and Python, Ukrainian and English, installers, releases and auto-update.
 3. **First playtest** with 10–20 people. ← *we are here*
 4. ✅ **Python** in the app (Pyodide), then **all 16 worlds**, the Book of Tricks and the embroidered-shirt progress.
-5. **C#, C++, Go**, then new campaigns: algorithms, data structures, OOP.
+5. **The ABC** for complete beginners: ✅ the track, the three ways in and chapter 1; next, chapters 2–8.
+6. **C#, C++, Go**, then new campaigns: algorithms, data structures, OOP.
 
 ## Contributing
 

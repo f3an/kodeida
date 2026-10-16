@@ -2,23 +2,24 @@
 
 By taking part you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Accessibility barriers are bugs — see [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
-Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist, and the game app's released MVP contains the onboarding and worlds 0–2 for macOS, Windows and Linux. The current source adds playable world 3, Mykyta's Forest.
+Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist. The latest release (v0.2.0) has the onboarding and worlds 0–3 for macOS, Windows and Linux. The current source adds worlds 4–8, cutscenes between worlds, the three ways in (from scratch, a little, give me problems) and the ABC — a from-scratch track for Python, JavaScript and TypeScript (chapter 1 so far).
 
 ## What helps most today
 
 - **World ideas** — a work of Ukrainian literature in the public domain plus one algorithmic technique it can teach. Use the *World idea* issue template.
+- **ABC lessons** — chapters 2–8 of the ABC (variables, strings, conditions, loops, lists, dictionaries, functions), each built on a Ukrainian folk tale. See *Writing an ABC lesson* below.
 - **Story and dialogue** — lines for Mykyta, the Sibyl, Juno or the locals, in the tone of the brand book: Kotliarevsky's burlesque and Franko's irony, never mocking the player.
 - **Pixel art** — new characters, variants, scene details. Everything is drawn in code, see below.
 - **Translations** — the game, the landing page and the artbook are Ukrainian and English; proofreading the English is very welcome.
 - **Accessibility and UX feedback** on the game and the website.
-- **Playtesting** — install the latest [release](https://github.com/f3an/kodeida/releases/latest), play worlds 0–2 and press **Leave feedback** (main menu, Settings or the Help menu). It opens the *Playtest feedback* form with your version and progress filled in. Bugs go to **Help → Report a problem**. The technical plan is in [docs/MVP.md](docs/MVP.md).
+- **Playtesting** — install the latest [release](https://github.com/f3an/kodeida/releases/latest), play worlds 0–3 and press **Leave feedback** (main menu, Settings or the Help menu). It opens the *Playtest feedback* form with your version and progress filled in. Bugs go to **Help → Report a problem**. The technical plan is in [docs/MVP.md](docs/MVP.md).
 
 ## Project layout
 
 - `app/` — the game (Electron + React + TypeScript + Monaco).
-  - `src/engine` runs player code in a Worker and judges it; `src/levels` holds the worlds as data (`troy.ts`, `sea.ts`, `carthage.ts`, `forest.ts`), their English texts (`en.ts`) and the Book of Tricks.
+  - `src/engine` runs player code in a Worker and judges it; `src/levels` holds the worlds as data (`troy.ts`, `sea.ts`, `carthage.ts`, `forest.ts`, `mitten.ts`, `konotop.ts`, `sicily.ts`, `chumak.ts`, `hell.ts`), their English texts (`en.ts`), the Book of Tricks, the cutscenes between worlds (`voyages.ts`) and the ABC (`abetka.ts`).
   - `src/world/sprites.js` is **generated** from `site/app.js` by `npm run sync-sprites` — change sprites, cutscenes and the journey map on the site, then sync. `src/world/scenes.ts` draws the in-level scenes.
-  - `src/ui` holds the screens; interface text goes through `L('укр', 'eng')` from `src/i18n.ts`.
+  - `src/ui` holds the screens; interface text goes through `L('укр', 'eng')` from `src/i18n.ts`. `story.ts` holds the ABC cutscenes (scene numbers 100+, played by the same `Onboarding` component as the intro) and the scene lists for each way in; `Tour.tsx` is the Sibyl's interface tour.
   - Python: `src/levels/python.ts` holds, for every level, the starter body, the solution, the Wolf and the third hint (texts are converted from the JS wording by `pyText`); the engine is `src/engine/py-*.ts` on top of Pyodide, which `npm run dev`/`build` copy into `public/pyodide/` (`scripts/sync-pyodide.mjs`). A new level needs an entry there, or the selftest fails.
   - `electron/` is the main process: window, `app://` protocol with CSP, menu, auto-update (`updater.cjs`).
   - Run `npm run selftest` and `npm run typecheck` before sending changes. A new level needs a fox `solution` (and a `wolf` for levels with a big test); the self-test checks both.
@@ -30,10 +31,21 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
 World 0 is for people who are only starting with JavaScript, so it follows one rule: **one new idea per exercise**, and the player first feels why it is needed (fifteen identical lines before a `for` loop, streets of different length before the parameter `n`). Every exercise in `app/src/levels` can have:
 
 - `tool` — the *New tool* card: a name, a plain-words explanation and a small example that is **not** the answer;
-- `talk` — a short exchange shown when the exercise opens (speakers: `enei`, `fox`, `sibyl`, `anchises`, `warrior`, `sailor`, `woman`, `lion`, `wolf`), and `quip` — one line after the first win;
+- `talk` — a short exchange shown when the exercise opens (speakers: `enei`, `fox`, `sibyl`, `anchises`, `warrior`, `sailor`, `woman`, `eol`, `dido`, `juno`, `wolf`, `lion`, `mitten`, `sotnyk`, `acestes`, `ox`, `charon`), and `quip` — one line after the first win;
 - English versions of all of these in `en.ts` (`tool`, `talk` in the same order, `quip`).
 
 Typical beginner mistakes are explained by `app/src/ui/coach.ts`: when you add an exercise, think about what a newcomer will get wrong and add a rule there.
+
+## Writing an ABC lesson
+
+The ABC (`app/src/levels/abetka.ts`) is for adults who have never written code. It is a separate track per language, so a lesson is described **once** and built three times — Python, JavaScript and TypeScript — each with its own starter code, solution, hints and expected output.
+
+- **A chapter is a folk tale** (`Chapter`: `key`, `name`, `topic`, `host` — the Sibyl's opening line — and `lessons`). Chapters not written yet are listed in `PLANNED` and shown as *soon*.
+- **A lesson checks what the program prints.** `out(c, ...args)` returns the expected lines; the judge compares them with the program's output line by line (`print` and `console.log` differ, e.g. `True` / `true`, so `out` gets the language context `c`). Write `tests` as argument lists.
+- **Texts take the language context** `c` (`c.name`, `c.say('…')`, `c.py`, `c.ts`) and return `[Ukrainian, English]` pairs; English goes into `LEVELS_EN` automatically.
+- **Voices.** The ABC happens the night before Troy falls: the Sibyl teaches and Aeneas learns (`talk` alternates Sibyl → Aeneas). Mykyta has not arrived yet — do not use him here.
+- **One new idea per lesson**, as in world 0, and no syntax the player has not met yet.
+- `npm run selftest` checks every lesson in all three languages: the solution passes, the starter code compiles and does not pass, an extra printed line fails, and the texts contain no other language's syntax.
 
 ## Running the site
 
