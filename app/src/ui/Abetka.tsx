@@ -27,8 +27,8 @@ export function AbetkaScreen({ lang, progress, go }: { lang: Lang; progress: Pro
       <header className="page-h">
         <h1>{L('Абетка', 'The ABC')}</h1>
         <p className="muted">{L(
-          'Для тих, хто тільки починає: перші кроки в мові програмування на сюжетах українських казок. Обери мову — кожна вправа буде написана саме для неї.',
-          'For those just starting out: first steps in a programming language, told through Ukrainian fairy tales. Pick a language — every exercise is written for it.',
+          'Ніч перед падінням Трої. Сивілла вчить Енея абетки слова ладу — на українських казках. Для тих, хто тільки починає: обери мову, і кожна вправа буде написана саме для неї.',
+          'The night before Troy falls. The Sibyl teaches Aeneas the ABC of the word of order — on Ukrainian fairy tales. For those just starting out: pick a language, and every exercise is written for it.',
         )}</p>
       </header>
       <div className="abc-langs" role="tablist" aria-label={L('Мова програмування', 'Programming language')}>
@@ -45,6 +45,18 @@ export function AbetkaScreen({ lang, progress, go }: { lang: Lang; progress: Pro
         </button>
         <span className="muted">{L(`Пройдено ${done} з ${all.length}`, `${done} of ${all.length} done`)}</span>
       </div>
+      {!progress.onboarded && (
+        <div className={`abc-troy${all.every((l) => solved(progress, l)) ? ' ready' : ''}`}>
+          <div>
+            <div className="eyebrow">{L('Далі за сюжетом', 'Next in the story')}</div>
+            <b>{L('Світанок над Троєю', 'Dawn over Troy')}</b>
+            <p className="muted">{all.every((l) => solved(progress, l))
+              ? L('Абетку вивчено. Над Троєю здіймається заграва — час братися до справи.', 'The ABC is learned. A glow rises over Troy — time to get to work.')
+              : L('Коли пройдеш абетку, почнеться мандрівка. Можна й раніше — абетка нікуди не дінеться.', 'Once you finish the ABC, the journey begins. You can go earlier too — the ABC will wait.')}</p>
+          </div>
+          <button className={`btn${all.every((l) => solved(progress, l)) ? ' run' : ''}`} onClick={() => go({ name: 'onboarding', story: 'troy' })}>{L('До Трої', 'To Troy')} ▸</button>
+        </div>
+      )}
       <div className="abc-chapters">
         {chapters.map((w) => {
           const open = worldOpen(progress, w), W = wt(w);

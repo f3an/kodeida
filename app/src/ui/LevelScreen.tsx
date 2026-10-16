@@ -60,6 +60,12 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   const tutorial = level.id === 'troy.step' && !progress.toured;
   const [ranOnce, setRanOnce] = useState(false);
   const [touring, setTouring] = useState(false);
+  // Тур Сивілли — на першій вправі будь-якого шляху (у «Першому кроці» він іде після першого запуску)
+  useEffect(() => {
+    if (progress.toured || level.id === 'troy.step') return;
+    const t = setTimeout(() => setTouring(true), 900);
+    return () => clearTimeout(t);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // розмова на вході: поки вправу не пройдено, герої перемовляються; потім — звична репліка господаря
   const talk = !tutorial && !solved(progress, level) ? level.talk ?? [] : [];
   const talkLine = (k: number): Bubble => ({ who: talk[k].who, text: () => lt(level).talk![k].text, tone: 'say', seq: k, enter: k && talk[k - 1].who === talk[k].who ? 'nod' : 'in' });
@@ -85,12 +91,14 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     eol: L('Еол', 'Aeolus'), dido: L('Дидона', 'Dido'), wolf: L('Вовк Неситий', 'Greedy Wolf'), lion: L('Цар Лев', 'King Lion'), mitten: L('Мишка-шкряботушка', 'Mousie-Scratcher'), sotnyk: L('Сотник Забрьоха', 'Captain Zabrokha'), acestes: L('Ацест', 'Acestes'), ox: L('Віл Половий', 'Pale Ox'), charon: L('Харон', 'Charon'),
   };
   const SPRITE: Record<Who, Speaker> = {
-    host: (track ? undefined : HOST_SPRITE[world.n]) ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei',
+    host: track ? 'sibyl' : HOST_SPRITE[world.n] ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei',
     enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman', eol: 'eol', dido: 'dido', wolf: 'wolf', lion: 'lion', mitten: 'mitten', sotnyk: 'sotnyk', acestes: 'acestes', ox: 'ox', charon: 'charon',
   };
   // розмова на вході триває, доки гравець нічого не зробив; будь-яка репліка гри її зупиняє
   const talking = useRef(true);
-  const say = (who: Who, text: () => string, tone: Tone = 'say') => {
+  const say = (who0: Who, text: () => string, tone: Tone = 'say') => {
+    // у «Абетці» Микити ще немає: його поради каже Сивілла
+    const who: Who = track && who0 === 'fox' ? 'sibyl' : who0;
     talking.current = false;
     setBubble((b) => ({ who, text, tone, seq: b.seq + 1, enter: SPRITE[b.who] === SPRITE[who] ? 'nod' : 'in' }));
   };
@@ -207,7 +215,8 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
       const joinIdx = level.world === 0 && !track ? world.levels.indexOf(level) - 1 : -1;
       const joins = joinIdx >= 0 && joinIdx < CREW_MAX && !solved(progress, level);
       const nudge = adviseSolved(level, code[lang]);
-      say('fox', () => L(
+      if (track) say('sibyl', () => L(`Точне слово! ${lt(level, lang).lesson}`, `An exact word! ${lt(level, lang).lesson}`), 'win');
+      else say('fox', () => L(
         `Оце по-лисячому! ${lt(level, lang).lesson}${shard ? ` Уламок знайдено: на вишиванці з'явився новий візерунок, а в Книзі хитрощів — «${wt(world).trick}».` : ''}${joins ? ` До ватаги приєднався ${TROJAN_NAMES[joinIdx]}: ватага = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
         `That’s the fox way! ${lt(level, lang).lesson}${shard ? ` Shard found: a new pattern appeared on the shirt, and the Book of Tricks has a new page — “${wt(world).trick}”.` : ''}${joins ? ` ${TROJANS_EN[joinIdx][0].toUpperCase() + TROJANS_EN[joinIdx].slice(1)} joined the crew: crew = ${joinIdx + 1} / ${CREW_MAX}.` : ''}`,
       ) + (nudge ? ` ${nudge}` : ''), 'win');
@@ -372,7 +381,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
           <div className="ptabs" role="tablist">
             <button role="tab" aria-selected={panel === 'tests'} className={panel === 'tests' ? 'on' : ''} onClick={() => setPanel('tests')}>{L('Суд богів', 'Judgement')}</button>
             <button role="tab" aria-selected={panel === 'console'} className={panel === 'console' ? 'on' : ''} onClick={() => setPanel('console')}>{L('Консоль', 'Console')}{logs.length ? ` (${logs.length})` : ''}</button>
-            {report && <span className={`v ${report.verdict}`}>{VERDICT()[report.verdict]} · {passed}/{report.cases.length}</span>}
+            {report && <span className={`v ${report.verdict}`}>{track && report.verdict === 'fox' ? L('Точне слово', 'Exact word') : VERDICT()[report.verdict]} · {passed}/{report.cases.length}</span>}
           </div>
           {panel === 'tests' ? (
             <div className="tests">
@@ -413,6 +422,8 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
         <Speech who={SPRITE[bubble.who]} name={WHO[bubble.who]} text={bubble.text()} tone={bubble.tone} fox={world.fox} seq={bubble.seq} enter={bubble.enter}
           action={justSolved && level.id === 'troy.sum' && !progress.departed
             ? <button className="btn next" onClick={() => go({ name: 'departure' })}>{L('Відплиття', 'Set sail')} ▸</button>
+            : justSolved && track && !progress.onboarded && !next && chain.every((w) => w.levels.every((l) => l === level || solved(progress, l)))
+            ? <button className="btn next" onClick={() => go({ name: 'onboarding', story: 'troy' })}>{L('До Трої', 'To Troy')} ▸</button>
             : justSolved && level.final && !track && hasVoyage(level.world)
             ? <span className="row-actions">
                 {level.id === 'carthage.dido' && <a className="btn" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Розкажи, як пройшло', 'Tell us how it went')}</a>}
@@ -439,15 +450,17 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
         ) : (
           <div className="cmp lesson">
             <div className="cmp-h"><span>{L('Хитрість цієї вправи', 'The trick of this exercise')}</span></div>
-            <p><b>{T.topic[0].toUpperCase() + T.topic.slice(1)}.</b> {stars > 0 ? T.lesson : L('Розв\'яжи вправу — і Микита пояснить, у чому хитрість.', 'Solve the exercise and Mykyta will explain the trick.')}</p>
+            <p><b>{T.topic[0].toUpperCase() + T.topic.slice(1)}.</b> {stars > 0 ? T.lesson : (track ? L('Розв\'яжи вправу — і Сивілла пояснить, у чому суть.', 'Solve the exercise and the Sibyl will explain the point.') : L('Розв\'яжи вправу — і Микита пояснить, у чому хитрість.', 'Solve the exercise and Mykyta will explain the trick.'))}</p>
           </div>
         )}
       </section>
 
-      {touring && <Tour steps={SIBYL_TOUR()} onDone={() => {
+      {touring && <Tour steps={SIBYL_TOUR(track ? 'abc' : level.scene.type === 'street' ? 'street' : 'array', lang)} onDone={() => {
         setTouring(false);
         setProgress((p) => ({ ...p, toured: true }));
-        say('sibyl', () => L('Тепер на Суд богів (⌘⇧↵): він перевірить слово на всіх тестах.', 'Now to the Judgement of the Gods (⌘⇧↵): it checks the word on all tests.'));
+        say('sibyl', () => (tutorial
+          ? L('Тепер на Суд богів (⌘⇧↵): він перевірить слово на всіх тестах.', 'Now to the Judgement of the Gods (⌘⇧↵): it checks the word on all tests.')
+          : L('Прочитай умову, напиши слово ладу й натисни «Запустити» (⌘↵). А тоді — на Суд богів.', 'Read the problem, write the word of order and press “Run” (⌘↵). Then — to the Judgement of the Gods.')));
       }} />}
       <StatusBar level={level} cursor={cursor} complexity={complexity} stars={stars} lang={lang} />
     </>

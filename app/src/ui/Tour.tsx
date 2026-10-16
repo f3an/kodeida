@@ -6,7 +6,25 @@ import { L } from '../i18n.ts';
 
 export interface TourStep { target: string; title: string; text: string }
 
-export const SIBYL_TOUR = (): TourStep[] => [
+/** kind — яка вправа: вулиця світу 0, масив кампанії чи сувій «Абетки». */
+export const SIBYL_TOUR = (kind: 'street' | 'array' | 'abc' = 'street', lang: 'ts' | 'js' | 'py' = 'ts'): TourStep[] => [...TOUR_BASE(lang)].map((s) => ({ ...s, ...TOUR_ALT[kind]?.(lang)[s.target] }));
+
+const print = (lang: string) => (lang === 'py' ? 'print' : 'console.log');
+/** Підміни текстів для інших вправ, за ціллю кроку. */
+const TOUR_ALT: Partial<Record<'street' | 'array' | 'abc', (lang: string) => Record<string, Partial<TourStep>>>> = {
+  array: () => ({
+    '.canvas-wrap': { text: L('Тут видно, як світ виконує слово: на які предмети дивиться код, що змінюється, де стоять Еней і Микита.', 'Here you see how the world carries out the word: which objects the code looks at, what changes, where Aeneas and Mykyta stand.') },
+  }),
+  abc: (lang) => ({
+    '.canvas-wrap': { title: L('Сувій', 'The scroll'), text: L(`Усе, що виведе ${print(lang)}, з'являється тут рядок за рядком. Перевіряю саме вивід: до літери й коми.`, `Everything ${print(lang)} prints appears here line by line. I check exactly the output: to the letter and comma.`) },
+    '.speech': { text: L('Тут говоримо ми з Енеєм: я підказую, коли щось не так, і пояснюю помилки з номером рядка.', 'This is where Aeneas and I talk: I tell you when something is off and explain errors with a line number.') },
+    '.panel': { text: L(`Тут вердикт кожного тесту, а в «Консолі» — усе, що вивів ${print(lang)}.`, `The verdict of every test is here, and “Console” shows everything ${print(lang)} printed.`) },
+    '.side': { text: L('Уроки цієї казки. Кожен відкривається, щойно пройдеш попередній.', 'The lessons of this tale. Each opens once you pass the previous one.') },
+    '.act': { text: L('Абетка, мапа світів, Книга хитрощів і налаштування. А тепер — до першого слова!', 'The ABC, the world map, the Book of Tricks and settings. And now — to the first word!') },
+  }),
+};
+
+const TOUR_BASE = (lang: string): TourStep[] => [
   { target: '.ed .center', title: L('Слово ладу', 'The word of order'), text: L('Ліворуч — слово ладу, твій код. Без AI-підказок: лише ти і мова. Скажеш криво — і світ піде криво.', 'On the left is the word of order — your code. No AI hints: just you and the language. Say it crooked and the world goes crooked.') },
   { target: '.btn.run', title: L('Запустити', 'Run'), text: L('«Запустити» (⌘↵) виконує слово на прикладі. Світ праворуч робить рівно те, що сказано, — не більше.', '“Run” (⌘↵) runs the word on an example. The world on the right does exactly what is said — nothing more.') },
   { target: '.canvas-wrap', title: L('Світ', 'The world'), text: L('Тут видно, як світ виконує кожне слово: куди йде Еней, на що дивиться код, що змінюється.', 'Here you see how the world carries out every word: where Aeneas goes, what the code looks at, what changes.') },
@@ -14,7 +32,7 @@ export const SIBYL_TOUR = (): TourStep[] => [
   { target: '.speed', title: L('Швидкість', 'Speed'), text: L('Швидкість анімації, а ⏭ — одразу до кінця.', 'Animation speed; ⏭ skips straight to the end.') },
   { target: '.speech', title: L('Голоси світу', 'Voices of the world'), text: L('Тут говорять: Микита підказує й жартує, Юнона глузує, а світ пояснює помилки з номером рядка.', 'This is where they talk: Mykyta helps and jokes, Juno mocks, and the world explains errors with a line number.') },
   { target: '.btn.judge', title: L('Суд богів', 'Judgement of the Gods'), text: L('«Суд богів» (⌘⇧↵) перевіряє слово на всіх тестах, зокрема прихованих і великих. Лише він дає зірки.', '“Judgement” (⌘⇧↵) checks the word on all tests, including hidden and big ones. Only it awards stars.') },
-  { target: '.panel', title: L('Вердикт і консоль', 'Verdict and console'), text: L('Тут вердикт кожного тесту, а в «Консолі» — усе, що виведе console.log.', 'The verdict of every test is here, and “Console” shows everything console.log prints.') },
+  { target: '.panel', title: L('Вердикт і консоль', 'Verdict and console'), text: L(`Тут вердикт кожного тесту, а в «Консолі» — усе, що виведе ${print(lang)}.`, `The verdict of every test is here, and “Console” shows everything ${print(lang)} prints.`) },
   { target: '.tabs [data-tab=hints]', title: L('Мої підказки', 'My hints'), text: L('Застрягнеш — клич мене: натяк, ідея, псевдокод. Кожна підказка забирає третю зірку.', 'Stuck? Call me: a nudge, an idea, pseudocode. Each hint costs the third star.') },
   { target: '.side', title: L('Вправи', 'Exercises'), text: L('Вправи світу. Кожна відкривається, щойно розв\'яжеш попередню; ★ — фінальна задача світу.', 'The exercises of this world. Each opens once you solve the previous one; ★ is the world’s final problem.') },
   { target: '.act', title: L('Мандрівка', 'The journey'), text: L('Мапа світів, Книга хитрощів, вишиванка Енея й налаштування. А тепер — на Суд богів!', 'The world map, the Book of Tricks, Aeneas’s shirt and settings. And now — to the Judgement of the Gods!') },

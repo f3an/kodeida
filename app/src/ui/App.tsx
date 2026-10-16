@@ -3,6 +3,7 @@ import { LevelScreen } from './LevelScreen.tsx';
 import { MapScreen } from './MapScreen.tsx';
 import { VoyageScreen } from './Voyage.tsx';
 import { AbetkaScreen } from './Abetka.tsx';
+import { ABC_INTRO, ABC_TO_TROY, ALGO_INTRO } from './story.ts';
 import type { Lang } from '../engine/types.ts';
 import { Menu, StartScreen, Onboarding, BookScreen, ShirtScreen, SettingsScreen, updateText, INTRO_SCENES, DEPARTURE_SCENES } from './screens.tsx';
 import { levelById, worlds, worldOf } from '../levels/index.ts';
@@ -13,10 +14,14 @@ import { setUiLang, L } from '../i18n.ts';
 import { wt } from '../levels/text.ts';
 
 export type Screen =
-  | { name: 'menu' } | { name: 'onboarding' } | { name: 'departure' } | { name: 'voyage'; from: number } | { name: 'map' } | { name: 'level'; id: string }
+  | { name: 'menu' } | { name: 'onboarding'; story?: Story } | { name: 'departure' } | { name: 'voyage'; from: number } | { name: 'map' } | { name: 'level'; id: string }
   | { name: 'book' } | { name: 'shirt' } | { name: 'settings' } | { name: 'abetka'; lang?: Lang } | { name: 'start' };
 
 /** Смуга, за яку тягнуть вікно на екранах без панелі заголовка (меню, заставки). */
+/** Вступи для різних шляхів. */
+type Story = 'intro' | 'abc' | 'troy' | 'algo';
+const STORY_SCENES: Record<Story, number[]> = { intro: INTRO_SCENES, abc: ABC_INTRO, troy: ABC_TO_TROY, algo: ALGO_INTRO };
+
 const DragStrip = () => (bridge ? <div className="drag-strip" aria-hidden="true" /> : null);
 
 export function App() {
@@ -44,12 +49,12 @@ export function App() {
   const level = screen.name === 'level' ? levelById(screen.id) : undefined;
   if (screen.name === 'level' && !level) setScreen({ name: 'map' });
 
-  // вибір рівня: з нуля → Абетка; трохи → світ 0; задачі → світ 1 (світ 0 відкритий для повторення, тур пропускаємо)
+  // вибір рівня: з нуля → Абетка; трохи → світ 0; задачі → світ 1 (світ 0 відкритий для повторення)
   const choose = (path: Path) => {
-    const next: Progress = { ...progress, path, ...(path === 'algo' ? { skipBasics: true, toured: true } : {}) };
+    const next: Progress = { ...progress, path, ...(path === 'algo' ? { skipBasics: true } : {}) };
     setProgress(() => next);
-    if (path === 'abc') return go({ name: 'abetka' });
-    if (!progress.onboarded) return go({ name: 'onboarding' });
+    if (path === 'abc') return go(progress.prologue || progress.onboarded ? { name: 'abetka' } : { name: 'onboarding', story: 'abc' });
+    if (!progress.onboarded) return go({ name: 'onboarding', story: path === 'algo' ? 'algo' : 'intro' });
     // вступ уже бачили — одразу до першої нерозв'язаної вправи свого світу
     const w = worlds[path === 'algo' ? 1 : 0];
     go({ name: 'level', id: (w.levels.find((l) => levelOpen(next, l) && !solved(next, l)) ?? w.levels[0]).id });
@@ -57,8 +62,15 @@ export function App() {
   if (screen.name === 'menu') return <><DragStrip /><Menu progress={progress} go={go} choose={choose} updates={updates} ui={settings.ui} setUi={(ui) => setSettings((s) => ({ ...s, ui }))} /></>;
   if (screen.name === 'start') return <><DragStrip /><StartScreen go={go} choose={choose} /></>;
   if (screen.name === 'onboarding') {
-    const finish = () => { setProgress((p) => ({ ...p, onboarded: true })); go({ name: 'level', id: (progress.path === 'algo' ? worlds[1] : worlds[0]).levels[0].id }); };
-    return <><DragStrip /><Onboarding scenes={INTRO_SCENES} finishLabel={progress.path === 'algo' ? L('До моря Еола ▸', 'To the sea of Aeolus ▸') : L('Перший крок ▸', 'First step ▸')} onDone={finish} onSkip={finish} /></>;
+    // який вступ: «з нуля» до Трої ще не дійшов — його пролог веде в Абетку
+    const story: Story = screen.story ?? (progress.path === 'abc' && !progress.onboarded ? 'abc' : 'intro');
+    const finish = () => {
+      if (story === 'abc') { setProgress((p) => ({ ...p, prologue: true })); return go({ name: 'abetka' }); }
+      setProgress((p) => ({ ...p, onboarded: true, ...(story === 'algo' ? { departed: true } : {}) }));
+      go({ name: 'level', id: (story === 'algo' ? worlds[1] : worlds[0]).levels[0].id });
+    };
+    const label = { abc: L('До Абетки ▸', 'To the ABC ▸'), algo: L('До моря Еола ▸', 'To the sea of Aeolus ▸'), intro: L('Перший крок ▸', 'First step ▸'), troy: L('Перший крок ▸', 'First step ▸') }[story];
+    return <><DragStrip /><Onboarding key={story} scenes={STORY_SCENES[story]} finishLabel={label} onDone={finish} onSkip={finish} /></>;
   }
   if (screen.name === 'departure') {
     const sail = () => { setProgress((p) => ({ ...p, departed: true })); go({ name: 'map' }); };

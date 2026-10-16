@@ -21,6 +21,8 @@ export interface Progress {
   skipBasics?: boolean;
   /** Шлях, обраний на старті: з нуля (Абетка), трохи вмію (світ 0) чи одразу задачі (світ 1). */
   path?: Path;
+  /** «З нуля»: пролог «Ніч перед бурею» вже бачили. */
+  prologue?: boolean;
 }
 export type Path = 'abc' | 'basics' | 'algo';
 export interface Settings { lang: Lang; speed: number; /** Мова інтерфейсу. */ ui: UiLang }

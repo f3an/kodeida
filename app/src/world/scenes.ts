@@ -7,7 +7,8 @@
 import type { SceneSpec } from '../engine/level.ts';
 import type { StreetCell, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
-import { makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf } from './sprites.js';
+import { paintTroyNight } from '../ui/story.ts';
+import { makeSibyl, makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf } from './sprites.js';
 
 export const W = 600, H = 390;
 
@@ -27,6 +28,7 @@ interface Walker { x: number; tx: number; y: number; ty: number; face: 1 | -1 }
 
 const ENEI = makeEnei(1), ENEI_BLINK = makeEnei(1, { blink: true });
 const WOLF = makeWolf({ drool: 2 });
+const SIBYL = makeSibyl();
 const CREW = TROJANS.map((trojan, i) => i === 2 ? makeAnchises() : trojan);
 const foxes = new Map<string, [Sprite, Sprite]>();
 const foxOf = (c: string) => { if (!foxes.has(c)) foxes.set(c, [makeFox(c), makeFox(c, { cursorOff: true })]); return foxes.get(c)!; };
@@ -662,7 +664,7 @@ function paintCarthage(c: CanvasRenderingContext2D, posts: boolean) {
 
 /* ============================== сувій «Абетки» ============================== */
 
-/** «Абетка»: казковий ліс, сувій і Микита. Кожен рядок, який виводить програма, дописується на сувій. */
+/** «Абетка»: ніч у ще цілій Трої, Сивілла й сувій із казкою. Кожен рядок, який виводить програма, дописується на сувій. */
 export class ScrollScene extends SceneBase {
   private lines: string[] = [];
   private shownAt: number[] = [];
@@ -675,8 +677,8 @@ export class ScrollScene extends SceneBase {
     super(canvas, onState, fox);
     this.bun = chapter === 0;
     const c = this.bg.getContext('2d')!;
-    const sp = new Spr(200, 130); artOf(3).bg(sp, 0); sp.draw(c, 0, 0, 3);
-    c.fillStyle = 'rgba(12,18,14,.38)'; c.fillRect(0, 0, W, H);
+    const sp = new Spr(200, 130); paintTroyNight(sp, 0); sp.draw(c, 0, 0, 3);
+    c.fillStyle = 'rgba(8,10,20,.25)'; c.fillRect(0, 0, W, H);
   }
 
   load(events: WorldEvent[]) {
@@ -731,10 +733,9 @@ export class ScrollScene extends SceneBase {
       const span = W - 220, ph = (t * 40) % (span * 2), bx = 40 + (ph < span ? ph : span * 2 - ph), by = H - 36;
       this.drawBun(bx, by, ph < span ? 1 : -1, t);
     }
-    // Микита біля сувою
-    const [a, b] = foxOf(this.fox);
-    const spr = Math.floor(t) % 2 ? b : a;
-    drawFacing(c, spr, this.foxW.x - a.w, this.foxW.y - a.h * 2, -1);
+    // Сивілла біля сувою
+    const sy = SIBYL as Sprite;
+    sy.draw(c, Math.round(this.foxW.x - sy.w), Math.round(this.foxW.y - sy.h * 2 + Math.sin(t * 1.4) * 2), 2);
     if (this.events.length && this.k >= this.events.length && !this.playing) this.label(L('Вивід на сувої', 'Output on the scroll'), (x0 + x1) / 2, y1 + 16, true);
   }
 

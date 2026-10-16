@@ -52,7 +52,7 @@ export function starterOf(level: Level, lang: Lang): string {
 export function wt(world: World) {
   if (world.track) {
     const e = uiLang() === 'en' ? CHAPTERS_EN[`${world.track}.${world.n}`] : undefined;
-    return { name: e?.name ?? world.name, song: world.song.replace('Абетка', uiLang() === 'en' ? 'ABC' : 'Абетка'), topic: e?.topic ?? world.topic, host: e ? { who: 'Mykyta', line: e.host } : world.host, trick: world.trick };
+    return { name: e?.name ?? world.name, song: world.song.replace('Абетка', uiLang() === 'en' ? 'ABC' : 'Абетка'), topic: e?.topic ?? world.topic, host: e ? { who: 'Sibyl', line: e.host } : world.host, trick: world.trick };
   }
   const en = uiLang() === 'en' ? WORLDS_EN[world.n] : undefined;
   return {

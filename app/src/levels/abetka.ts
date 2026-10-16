@@ -107,8 +107,9 @@ function build(chapters: Chapter[]): Record<Lang, World[]> {
           id, world: n, track: lang, title: s.title[0], topic: s.topic[0], final: i === ch.lessons.length - 1,
           brief: brief[0], statement: st[0],
           tool: { name: tl.name(c)[0], text: tl.text(c)[0], code: tl.code(c) },
-          talk: talk?.map((t, k) => ({ who: k % 2 ? 'enei' : 'fox', text: t[0] })),
-          quip: quip && { who: 'fox', text: quip[0] },
+          // у «Абетці» вчить Сивілла, а вчиться Еней: Микита ще в лісі Франка й про Трою не знає
+          talk: talk?.map((t, k) => ({ who: k % 2 ? 'enei' : 'sibyl', text: t[0] })),
+          quip: quip && { who: 'sibyl', text: quip[0] },
           entry: s.entry, observe: s.params.map(() => null),
           starter: { ts: lang === 'ts' ? code : '', js: lang === 'js' ? code : '', py: lang === 'py' ? code : undefined },
           examples: tests.slice(0, 1), hidden: tests.slice(1),
@@ -120,7 +121,7 @@ function build(chapters: Chapter[]): Record<Lang, World[]> {
       });
       out[lang].push({
         n, track: lang, name: ch.name[0], song: `Абетка · ${c.name}`, topic: ch.topic[0], fox: ch.fox,
-        host: { who: 'Микита', line: ch.host[0] }, levels,
+        host: { who: 'Сивілла', line: ch.host[0] }, levels,
       });
       CHAPTERS_EN[`${lang}.${n}`] = { name: ch.name[1], topic: ch.topic[1], host: ch.host[1] };
     });

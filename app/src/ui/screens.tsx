@@ -12,6 +12,7 @@ import { L, siteT, uiLang, type UiLang } from '../i18n.ts';
 import { lt, wt } from '../levels/text.ts';
 import { OB_EN, BOOK_EN } from '../levels/en.ts';
 import { Speech, type Speaker } from './Speech.tsx';
+import { STORY } from './story.ts';
 
 type Go = (s: Screen) => void;
 const GINGER = '#e2702b';
@@ -117,6 +118,9 @@ export function StartScreen({ go, choose }: { go: Go; choose: (p: Path) => void 
 
 interface ObScene { kind: string; title: string; narr: string; lines: [string, string][]; act: string; bg: (sp: unknown, f: number) => void; fg?: (ctx: CanvasRenderingContext2D, f: number, s: number) => void }
 const SCENES = OB as ObScene[];
+/** Сцена за номером: 0–13 — зі сценарію сайту, 100+ — сюжетні сцени «Абетки» (story.ts). */
+const sceneAt = (i: number): ObScene => (i >= 100 ? { ...STORY[i], act: '' } as unknown as ObScene : SCENES[i]);
+const enAt = (i: number) => (i >= 100 ? STORY[i].en : OB_EN[i]);
 
 /** Заставки вступу (сцени 1–10). Сцени 11–12 — справжній редактор і тур Сивілли, 13 — вправи світу 0, 14 — «Відплиття». */
 export const INTRO_SCENES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -135,8 +139,8 @@ export function Onboarding({ scenes, finishLabel, onDone, onSkip }: { scenes: nu
   const [ln, setLn] = useState(0);
   const [seq, setSeq] = useState(0);
   const i = scenes[k];
-  const o = SCENES[i];
-  const en = uiLang() === 'en' ? OB_EN[i] : null;
+  const o = sceneAt(i);
+  const en = uiLang() === 'en' ? enAt(i) : null;
   const text = { title: en?.title ?? o.title, narr: en?.narr ?? o.narr, lines: en?.lines ?? o.lines };
   const lastScene = k === scenes.length - 1;
   const lastLine = ln >= o.lines.length - 1;
@@ -150,7 +154,7 @@ export function Onboarding({ scenes, finishLabel, onDone, onSkip }: { scenes: nu
   const back = () => {
     if (ln > 0) { setLn(ln - 1); setSeq((n) => n + 1); return; }
     if (k === 0) return;
-    const prev = SCENES[scenes[k - 1]];
+    const prev = sceneAt(scenes[k - 1]);
     setK(k - 1); setLn(Math.max(0, prev.lines.length - 1)); setSeq((n) => n + 1);
   };
   const jump = (n: number) => { setK(n); setLn(0); setSeq((x) => x + 1); };
@@ -190,7 +194,7 @@ export function Onboarding({ scenes, finishLabel, onDone, onSkip }: { scenes: nu
         {o.lines.length > 1 && <div className="ob-lines">{o.lines.map((_, n) => <i key={n} className={n === ln ? 'on' : n < ln ? 'done' : ''} />)}</div>}
         {scenes.length > 1 && (
           <div className="ob-dots" role="tablist" aria-label={L('Сцени', 'Scenes')}>
-            {scenes.map((si, n) => <button key={si} className={n === k ? 'on' : ''} aria-label={`${L('Сцена', 'Scene')} ${n + 1}: ${L(SCENES[si].title, OB_EN[si].title)}`} aria-selected={n === k} role="tab" onClick={() => jump(n)} />)}
+            {scenes.map((si, n) => <button key={si} className={n === k ? 'on' : ''} aria-label={`${L('Сцена', 'Scene')} ${n + 1}: ${L(sceneAt(si).title, enAt(si).title)}`} aria-selected={n === k} role="tab" onClick={() => jump(n)} />)}
           </div>
         )}
         <div className="ob-actions">

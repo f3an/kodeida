@@ -432,3 +432,8 @@ canvas { image-rendering: pixelated; }
 .menu-actions .btn.mode small { margin-left: auto; color: var(--fox-soft); font-size: 11px; }
 .menu-actions .btn.mode:hover { border-color: var(--fox); }
 .change-path { margin-top: -4px; color: var(--mute); font-size: 12px; text-decoration: underline; background: none; border: 0; cursor: pointer; }
+
+.abc-troy { display: flex; align-items: center; gap: 16px; justify-content: space-between; margin: 0 0 18px; padding: 12px 16px; border: 1px dashed var(--line); border-radius: 10px; }
+.abc-troy b { font: 700 16px var(--display); }
+.abc-troy p { margin: 2px 0 0; }
+.abc-troy.ready { border-style: solid; border-color: var(--fox); background: rgba(226, 112, 43, .07); }
