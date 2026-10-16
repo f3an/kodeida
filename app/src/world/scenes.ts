@@ -337,7 +337,11 @@ export class ArrayScene extends SceneBase {
     if (this.world === 1) { const e = makeEolOnce(); e.draw(c, 18, 26 + Math.round(Math.sin(t * 1.5) * 3), 2); }
     this.drawHeroes(now, this.enei, this.actor === 'wolf' ? null : this.foxW, this.actor === 'wolf');
 
-    if (this.result && this.k >= this.events.length) this.label(`${L('повернуто', 'returned')}: ${this.result}`, W / 2, 10, true);
+    if (this.result && this.k >= this.events.length) {
+      // довга відповідь не має налазити на кнопки швидкості й лічильник
+      const r = this.result.length > 34 ? this.result.slice(0, 33) + '…' : this.result;
+      this.label(`${L('повернуто', 'returned')}: ${r}`, W / 2 + 20, 10, true);
+    }
     this.crewLabel();
     if (this.world === 2 && !this.reduced) {
       c.fillStyle = 'rgba(246,228,184,.7)';
@@ -477,11 +481,14 @@ export class ArrayScene extends SceneBase {
         else if (word && (v === 'мішок' || v === 'sack')) { drawSack(c, x + 3, base); }
         else if (word && (v === 'попіл' || v === 'ash')) { c.fillStyle = '#4a4440'; c.fillRect(x - 9, base - 8, 24, 8); c.fillStyle = '#6a625c'; c.fillRect(x - 5, base - 13, 16, 5); c.fillStyle = '#f08a2a'; if (Math.floor(t * 3 + i) % 2) c.fillRect(x + 1, base - 15, 2, 2); }
         else {
-          c.fillStyle = '#b8a07a'; c.fillRect(x - 13, base - 26, 32, 26);
-          c.fillStyle = '#d4bf96'; c.fillRect(x - 13, base - 26, 32, 4);
-          c.fillStyle = '#8a7656'; c.fillRect(x - 13, base - 3, 32, 3);
-          c.font = '700 13px "Fira Code", monospace'; c.fillStyle = '#3e2c16';
-          const s = String(v); c.fillText(s, x + 3 - c.measureText(s).width / 2, base - 8);
+          // камінець завширшки як напис: назви кіл чи товарів не обрізаються
+          c.font = '700 13px "Fira Code", monospace';
+          const s = String(v), bw = Math.max(32, Math.ceil(c.measureText(s).width) + 10), bx = x + 3 - bw / 2;
+          c.fillStyle = '#b8a07a'; c.fillRect(bx, base - 26, bw, 26);
+          c.fillStyle = '#d4bf96'; c.fillRect(bx, base - 26, bw, 4);
+          c.fillStyle = '#8a7656'; c.fillRect(bx, base - 3, bw, 3);
+          c.fillStyle = '#3e2c16';
+          c.fillText(s, x + 3 - c.measureText(s).width / 2, base - 8);
         }
         if (hl) { c.fillStyle = hl; c.fillRect(x - 17, base - (word ? 70 : 30), 40, word ? 72 : 32); }
         index(base + 16);

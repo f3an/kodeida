@@ -120,4 +120,23 @@ while (fast && fast.next) {
     complexity: 'Час O(n), пам\'ять O(1).',
     problems: ['206. Reverse Linked List', '876. Middle of the Linked List', '21. Merge Two Sorted Lists', '141. Linked List Cycle', '19. Remove Nth Node From End of List'],
   },
+  {
+    world: 8,
+    title: 'Спіраль: рекурсія й backtracking',
+    motif: 'spiral',
+    when: ['Задача розкладається на таку саму, тільки меншу.', 'Треба всі варіанти: набори, порядки, комбінації.', 'Відповідь будується крок за кроком, і хибний крок треба скасувати.'],
+    idea: 'Рекурсивна функція — це базовий випадок і крок, що веде до нього. Що до виклику — по дорозі вниз, що після — на зворотному шляху. Backtracking обходить дерево рішень: зробив вибір, пішов глибше, повернувся й скасував. У відповідь клади копію шляху. Індекс start не дає порахувати той самий набір двічі.',
+    template: `const out = [], path = [];
+const go = (start) => {
+  if (/* шлях повний */) { out.push([...path]); return; }
+  for (let i = start; i < a.length; i++) {
+    path.push(a[i]);
+    go(i + 1);       // або go(i), якщо можна повторювати
+    path.pop();
+  }
+};
+go(0);`,
+    complexity: 'Підмножини O(2ⁿ · n), перестановки O(n! · n): стільки відповідей і є.',
+    problems: ['78. Subsets', '46. Permutations', '39. Combination Sum', '881. Boats to Save People', '17. Letter Combinations of a Phone Number'],
+  },
 ];

@@ -457,6 +457,46 @@ export const PY: Record<string, PyPart> = {
       text: { 1: ['Якщо ж валка по колу, швидкий наздожене повільного з іншого боку кола — і вони опиняться на тому самому возі: <code>slow is fast</code>.', 'But if the train is a circle, the fast one catches up with the slow one from the other side of the loop — and they end up on the same cart: <code>slow is fast</code>.'] },
     },
   },
+  'hell.descent': {
+    body: `    def go(i):\n${HERE.replace('    #', '        #')}        return []\n    return go(0)\n`,
+    solution: 'def descent(circles):\n    def go(i):\n        if i == len(circles):\n            return []\n        return [circles[i]] + go(i + 1) + [circles[i]]\n    return go(0)\n',
+    hint: 'def go(i):\n    if i == len(circles): return []\n    return [circles[i]] + go(i + 1) + [circles[i]]',
+    tool: { code: 'def count(n):\n    if n == 0:\n        return []                      # дно: базовий випадок\n    return [n] + count(n - 1) + [n]    # вниз — і назад\ncount(2)   # [2, 1, 1, 2]' },
+  },
+  'hell.boats': {
+    body: `    boats = 0\n${HERE}\n    return boats\n`,
+    solution: 'def num_rescue_boats(people, limit):\n    a = sorted(people)\n    i, j, boats = 0, len(a) - 1, 0\n    while i <= j:\n        if a[i] + a[j] <= limit:\n            i += 1\n        j -= 1\n        boats += 1\n    return boats\n',
+    wolf: 'def num_rescue_boats(people, limit):\n    used = [False] * len(people)\n    boats = 0\n    for k in range(len(people)):\n        h = -1\n        for i in range(len(people)):\n            if not used[i] and (h < 0 or people[i] > people[h]):\n                h = i\n        if h < 0:\n            break\n        used[h] = True\n        best = -1\n        for i in range(len(people)):\n            if not used[i] and people[h] + people[i] <= limit and (best < 0 or people[i] > people[best]):\n                best = i\n        if best >= 0:\n            used[best] = True\n        boats += 1\n    return boats\n',
+    hint: 'a = sorted(people)\ni, j = 0, len(a) - 1\nwhile i <= j:\n    if a[i] + a[j] <= limit: i += 1\n    j -= 1; boats += 1',
+    tool: { code: '# [1, 2, 2, 3], limit = 3\n# 3 + 1 > 3 → 3 сама        (рейс 1)\n# 2 + 1 ≤ 3 → 2 і 1 разом   (рейс 2)\n# 2 сама                    (рейс 3)' },
+  },
+  'hell.subsets': {
+    body: `    out = []\n    path = []\n    def go(i):\n${HERE.replace('    #', '        #')}        pass\n    go(0)\n    return out\n`,
+    solution: 'def subsets(nums):\n    out = []\n    path = []\n    def go(i):\n        if i == len(nums):\n            out.append(path[:])\n            return\n        go(i + 1)\n        path.append(nums[i])\n        go(i + 1)\n        path.pop()\n    go(0)\n    return out\n',
+    hint: 'def go(i):\n    if i == len(nums): out.append(path[:]); return\n    go(i + 1)\n    path.append(nums[i]); go(i + 1); path.pop()',
+    tool: {
+      code: '# nums = [1, 2]\n# go(0): без 1 → go(1): без 2 → []      з 2 → [2]\n#        з 1  → go(1): без 2 → [1]     з 2 → [1, 2]',
+      text: {
+        0: ['Тримай <code>path</code> — поточний набір. Функція <code>go(i)</code> вирішує долю грішника <code>i</code>: спершу без нього <code>go(i + 1)</code>, потім з ним — <code>path.append</code>, <code>go(i + 1)</code>, <code>path.pop()</code>.', 'Keep <code>path</code> — the current set. The function <code>go(i)</code> decides the fate of sinner <code>i</code>: first without them <code>go(i + 1)</code>, then with them — <code>path.append</code>, <code>go(i + 1)</code>, <code>path.pop()</code>.'],
+        1: ['Коли рішення ухвалено для всіх, поклади <b>копію</b> <code>path[:]</code> у відповідь: сам <code>path</code> ще змінюватиметься.', 'When a decision is made for everyone, put a <b>copy</b> <code>path[:]</code> into the answer: <code>path</code> itself will keep changing.'],
+      },
+    },
+  },
+  'hell.perms': {
+    body: `    out = []\n    path = []\n    used = [False] * len(nums)\n    def go():\n${HERE.replace('    #', '        #')}        pass\n    go()\n    return out\n`,
+    solution: 'def permute(nums):\n    out = []\n    path = []\n    used = [False] * len(nums)\n    def go():\n        if len(path) == len(nums):\n            out.append(path[:])\n            return\n        for i in range(len(nums)):\n            if used[i]:\n                continue\n            used[i] = True\n            path.append(nums[i])\n            go()\n            path.pop()\n            used[i] = False\n    go()\n    return out\n',
+    hint: 'for i in range(len(nums)):\n    if used[i]: continue\n    used[i] = True; path.append(nums[i])\n    go()\n    path.pop(); used[i] = False',
+    tool: {
+      code: '# nums = [1, 2, 3]\n# 1 → 2 → 3,  1 → 3 → 2\n# 2 → 1 → 3,  2 → 3 → 1\n# 3 → 1 → 2,  3 → 2 → 1   — 6 порядків',
+      text: { 1: ['Вибрав браму: познач <code>used[i] = True</code>, <code>path.append</code>, іди глибше. Повернувся: <code>path.pop()</code>, <code>used[i] = False</code>. Шлях повний — копію <code>path[:]</code> у відповідь.', 'Chose a gate: mark <code>used[i] = True</code>, <code>path.append</code>, go deeper. Came back: <code>path.pop()</code>, <code>used[i] = False</code>. The path is complete — a copy <code>path[:]</code> into the answer.'] },
+    },
+  },
+  'hell.coins': {
+    body: `    out = []\n    path = []\n    def go(start, left):\n${HERE.replace('    #', '        #')}        pass\n    go(0, target)\n    return out\n`,
+    solution: 'def combination_sum(candidates, target):\n    out = []\n    path = []\n    def go(start, left):\n        if left == 0:\n            out.append(path[:])\n            return\n        if left < 0:\n            return\n        for i in range(start, len(candidates)):\n            path.append(candidates[i])\n            go(i, left - candidates[i])\n            path.pop()\n    go(0, target)\n    return out\n',
+    hint: 'def go(start, left):\n    if left == 0: out.append(path[:]); return\n    if left < 0: return\n    for i in range(start, len(candidates)):\n        path.append(candidates[i]); go(i, left - candidates[i]); path.pop()',
+    tool: { code: '# candidates = [2, 3], target = 7\n# 2 + 2 + 3 = 7 ✓\n# 2 + 3 + … — 3 + 2 вже не беремо: лише вперед\n# відповідь: [[2, 2, 3]]' },
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None'], [/\bnull\b/g, 'None']];

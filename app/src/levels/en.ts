@@ -1263,6 +1263,135 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     lesson: 'Slow and fast pointers on a loop are bound to meet: a cycle is found in O(n) steps and without any memory of the road.',
     doc: ['A train in a circle', 'true if the list has a cycle.'],
   },
+  'hell.descent': {
+    title: 'Down and back', topic: 'recursion: the base case',
+    brief: '<b>Down and back.</b> Go down through every circle of hell to Anchises and come back the same way. Write down the road.',
+    statement: [
+      'The Sibyl leads Aeneas to his father. <code>circles</code> are the circles of hell from top to bottom. At the bottom is Anchises.',
+      'Return the road: the circles going down in order, then the same circles going back up. For <code>["Limbo", "Fire"]</code> — <code>["Limbo", "Fire", "Fire", "Limbo"]</code>.',
+      'Write it with <b>recursion</b>: a function that goes down one circle and calls itself for the rest. The way back comes by itself — as the calls return.',
+    ],
+    tool: {
+      name: 'recursion',
+      text: [
+        'A recursive function calls itself for a smaller problem. It must have a <b>base case</b> — when no more calls are needed (the bottom of hell). Without it the calls never end.',
+        'Whatever is written <b>before</b> the call happens on the way down; whatever is <b>after</b> — on the way back, when the deeper calls have returned.',
+      ],
+      code: 'function count(n) {\n  if (n === 0) return [];          // the bottom: base case\n  return [n, ...count(n - 1), n];  // down — and back\n}\ncount(2);  // [2, 1, 1, 2]',
+    },
+    talk: [
+      'Hell is like a well: every circle leads to the next, and at the bottom your father waits. We’ll go down one circle at a time.',
+      'And back? I don’t remember roads, I have paws.',
+      'The descent itself will remember. Every step down waits until the deeper one returns — and leads us up.',
+    ],
+    quip: 'Son! You reached the very bottom — and know the way back. That’s recursion: what matters is knowing where to stop.',
+    hints: ['What do you return when there are no circles left?', 'go(i): if i is the end, return []. Otherwise [circle i, …go(i + 1), circle i].', 'const go = (i) => (i === circles.length ? [] : [circles[i], ...go(i + 1), circles[i]]);'],
+    lesson: 'Recursion = a base case + a step that reduces the problem to a smaller one. Before the call — on the way down, after it — on the way back.',
+    doc: ['Down and back', 'Return the circles going down, then the same circles going back up.'],
+  },
+  'hell.boats': {
+    title: 'Charon’s boat', topic: 'greedy: the heaviest with the lightest',
+    brief: '<b>Charon’s boat.</b> The boat takes at most two souls and has a weight limit. What is the fewest number of trips?',
+    statement: [
+      'Charon ferries souls across the Styx. <code>people[i]</code> is the weight of soul <code>i</code>, <code>limit</code> is what the boat can carry. At most two at a time.',
+      'Return the fewest trips needed to ferry everyone. Every soul fits in the boat on its own.',
+      'Constraints: <code>n ≤ 10⁴</code>. The trick from Carthage: sort by weight and seat the heaviest with the lightest if they fit.',
+    ],
+    tool: {
+      name: 'sorting + two pointers',
+      text: [
+        'Sort <code>people</code>. The heaviest soul <code>people[j]</code> sails in any case; the only question is whether it takes the lightest <code>people[i]</code> along.',
+        'They fit together — both pointers move. Not — the heaviest sails alone. A trip is counted either way.',
+      ],
+      code: '// [1, 2, 2, 3], limit = 3\n// 3 + 1 > 3 → 3 alone          (trip 1)\n// 2 + 1 ≤ 3 → 2 and 1 together (trip 2)\n// 2 alone                      (trip 3)',
+    },
+    talk: [
+      'A boat for two, and the weight is limited. Who rows with whom is for you to decide. Only quicker, the queue to Hades isn’t getting shorter.',
+      'The heaviest always sails. Let’s seat the lightest with him if the boat holds. It’s the Carthage trick, just in hell.',
+    ],
+    quip: 'Not a single extra trip. Hm. And you still owe me the fare, Trojan.',
+    hints: ['Who sails in any case — the lightest or the heaviest?', 'Sort. i — the lightest, j — the heaviest. While i ≤ j: if people[i] + people[j] ≤ limit — i++; always j-- and boats++.', 'people.sort((a, b) => a - b); let i = 0, j = people.length - 1; while (i <= j) { if (people[i] + people[j] <= limit) i++; j--; boats++; }'],
+    lesson: 'A greedy step plus two pointers: the heaviest always sails and takes the lightest along if they fit.',
+    doc: ['Charon’s boat', 'people[i] is a weight, limit the boat’s capacity (up to two souls). Return the fewest trips.'],
+  },
+  'hell.subsets': {
+    title: 'Every set for the cauldron', topic: 'backtracking: take it or not',
+    brief: '<b>Every set for the cauldron.</b> List every possible set of sinners from the given ones — from the empty one to all of them together.',
+    statement: [
+      'A shard scattered the sinners into the wrong cauldrons, and the devils want to go through every possible set to seat them properly. <code>nums</code> are the sinners’ numbers, all different.',
+      'Return <b>all</b> subsets: the empty one, single ones, pairs… and all together. The order of the sets and inside them doesn’t matter.',
+      'For every sinner there are only two decisions: <b>take</b> or <b>don’t take</b>. Walk these decisions with recursion and come back to try the other.',
+    ],
+    tool: {
+      name: 'backtracking: choose — and come back',
+      text: [
+        'Keep <code>path</code> — the current set. The function <code>go(i)</code> decides the fate of sinner <code>i</code>: first without them <code>go(i + 1)</code>, then with them — <code>path.push</code>, <code>go(i + 1)</code>, <code>path.pop()</code>.',
+        'When a decision is made for everyone, put a <b>copy</b> <code>[...path]</code> into the answer: <code>path</code> itself will keep changing.',
+      ],
+      code: '// nums = [1, 2]\n// go(0): without 1 → go(1): without 2 → []    with 2 → [2]\n//        with 1    → go(1): without 2 → [1]   with 2 → [1, 2]',
+    },
+    talk: [
+      'Here the devils go through sets for the cauldrons. Every possible one. And they need help, because the Wolf is already stuck there.',
+      'I went down the corridor “take the first”… then “take the second”… and now I don’t know how to get back!',
+      'Because you don’t come back. Make a choice — walk it to the end, then undo it and try the other. That’s backtracking.',
+    ],
+    quip: 'So that’s how you get out of dead ends. Come back! And I always only went forward…',
+    hints: ['What decision has to be made for every sinner?', 'go(i): if i === n — put a copy of path. Otherwise go(i + 1) without nums[i]; then push(nums[i]), go(i + 1), pop().', 'const go = (i) => { if (i === nums.length) { out.push([...path]); return; } go(i + 1); path.push(nums[i]); go(i + 1); path.pop(); };'],
+    lesson: 'Backtracking is a tree of decisions: make a choice, go deeper, come back and undo it. Every leaf of the tree is one answer.',
+    doc: ['Every set for the cauldron', 'Return all subsets of nums (any order).'],
+  },
+  'hell.perms': {
+    title: 'The order of the gates', topic: 'backtracking: who has passed already',
+    brief: '<b>The order of the gates.</b> Several gates lead to Anchises, and they can be passed in any order. List every order.',
+    statement: [
+      'On the last circle there are gates numbered <code>nums</code> (all different). All must be passed, each once, in any order.',
+      'Return <b>all</b> possible orders. The order of the answers doesn’t matter, but inside each one it does.',
+      'Now the choice is different: not “take or not”, but “which gate next”. And you have to remember which ones are already passed.',
+    ],
+    tool: {
+      name: 'an “already passed” mark',
+      text: [
+        'Keep an array <code>used</code>: <code>used[i]</code> — whether gate <code>i</code> is already in the current path. At every step try all those not yet passed.',
+        'Chose a gate: mark <code>used[i] = true</code>, <code>path.push</code>, go deeper. Came back: <code>path.pop()</code>, <code>used[i] = false</code>. The path is complete — a copy into the answer.',
+      ],
+      code: '// nums = [1, 2, 3]\n// 1 → 2 → 3,  1 → 3 → 2\n// 2 → 1 → 3,  2 → 3 → 1\n// 3 → 1 → 2,  3 → 2 → 1   — 6 orders',
+    },
+    talk: [
+      'The gates can be passed in any order. Anchises wants to know every road by which his descendants may come to him.',
+      'At every step — any gate not yet passed. We mark it, go deeper, and on the way back we remove the mark.',
+    ],
+    quip: 'Six roads to me through three gates. And how many will my grandchildren have, with more gates?',
+    hints: ['What do you need to know so as not to pass the same gate twice?', 'go(): if path is full — a copy into out. Otherwise for every unused i: used[i] = true, push, go(), pop, used[i] = false.', 'for (let i = 0; i < nums.length; i++) { if (used[i]) continue; used[i] = true; path.push(nums[i]); go(); path.pop(); used[i] = false; }'],
+    lesson: 'In permutations the choice is “who’s next of those not used yet”: mark, go deeper, remove the mark on the way back.',
+    doc: ['The order of the gates', 'Return all permutations of nums (the order of answers doesn’t matter).'],
+  },
+  'hell.coins': {
+    title: 'Charon’s fare', topic: 'backtracking with repeats',
+    brief: '<b>Charon’s fare.</b> Charon takes a fare of exactly <code>target</code>. Find every way to make it from coins.',
+    statement: [
+      'To leave hell you must pay Charon exactly <code>target</code>. Coins come in several values: <code>candidates</code> (all different), and each can be taken any number of times.',
+      'Return all <b>different</b> sets of coins that add up to <code>target</code>. The sets <code>[2, 3]</code> and <code>[3, 2]</code> are the same set, so count it once. The order of answers doesn’t matter.',
+      'This is backtracking with two tricks: a coin may repeat (so stay on the same one), and to avoid counting a set twice, take coins only from the current one <b>onwards</b>.',
+    ],
+    tool: {
+      name: 'start: only forward, but with repeats',
+      text: [
+        '<code>go(start, left, path)</code>: try coins numbered from <code>start</code> onwards. Took coin <code>i</code> — call <code>go(i, left - c, …)</code>: the same coin is still available, the earlier ones no longer are.',
+        'Base cases: <code>left === 0</code> — a set is found (a copy into the answer); <code>left &lt; 0</code> — overshot, go back. If the coins are sorted, the search can stop as soon as a coin is bigger than <code>left</code>.',
+      ],
+      code: '// candidates = [2, 3], target = 7\n// 2 + 2 + 3 = 7 ✓\n// 2 + 3 + … — we no longer take 3 + 2: only forward\n// the answer: [[2, 2, 3]]',
+    },
+    talk: [
+      'The fare is exactly what I said. Not a penny more, not a penny less. And I want to know every way — for the books.',
+      'I’ll try every sequence of coins! [2, 3], [3, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2]… oh, isn’t that all the same?',
+      'It is the same, so take coins only forward. And a coin may repeat — so after it, stay on it.',
+      'Mykyta, come here. You hear the shards because you carry a piece of the Pysanka inside you. That’s why your colour keeps changing. Juno knows it.',
+    ],
+    quip: 'Paid. Off you go. And tell the Wolf: I don’t ferry on credit.',
+    hints: ['How do you keep [2, 3] and [3, 2] from both getting in?', 'go(start, left): left === 0 — a copy of path into out; left < 0 — back. For i from start: push, go(i, left − candidates[i]), pop.', 'const go = (start, left) => { if (left === 0) { out.push([...path]); return; } if (left < 0) return; for (let i = start; i < candidates.length; i++) { path.push(candidates[i]); go(i, left - candidates[i]); path.pop(); } };'],
+    lesson: 'start keeps the order: coins only forward — so no set repeats, and go(i, …) lets you take the same coin again.',
+    doc: ['Charon’s fare', 'Return all different sets from candidates (with repeats) that add up to target.'],
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1274,6 +1403,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
   7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
+  8: { host: { who: 'Charon', line: 'A boat for two, and the weight is limited. Who rows with whom is for you to decide.' }, trick: 'The spiral: recursion and backtracking' },
 };
 
 export const BOOK_EN: Record<number, { title: string; when: string[]; idea: string; complexity: string }> = {
@@ -1318,6 +1448,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['Data comes as nodes, each knowing only the next one.', 'You need to reverse, merge or cut a list without copying it.', 'You need the middle or a cycle in one pass and without extra memory.'],
     idea: 'Walk from the head through next until null. Before re-hooking a link, remember where it led (prev, node, next). A dummy head removes the special case at the start. Slow and fast pointers find the middle and a cycle: on a loop they are bound to meet.',
     complexity: 'Time O(n), memory O(1).',
+  },
+  8: {
+    title: 'The spiral: recursion and backtracking',
+    when: ['A problem breaks into the same problem, only smaller.', 'You need all variants: subsets, orders, combinations.', 'The answer is built step by step, and a wrong step must be undone.'],
+    idea: 'A recursive function needs a base case and a step towards it. What happens before the call is on the way down; after — on the way back. Backtracking walks a tree of decisions: make a choice, go deeper, come back and undo it. Put a copy of the path into the answer. A start index keeps the same set from being counted twice.',
+    complexity: 'Subsets O(2ⁿ · n), permutations O(n! · n): the answers themselves are that many.',
   },
 };
 

@@ -65,6 +65,8 @@ export function adviseError(level: Level, code: string, err: { message: string; 
     if (name === 'i') return fox(plain(`${at(err.line)}лічильник i живе тільки всередині свого циклу for. Поза { } його вже немає.`), plain(`${at(err.line)}the counter i only lives inside its for loop. Outside the { } it no longer exists.`));
     return fox(plain(`${at(err.line)}«${name}» ніхто не створював. Перевір написання (великі й малі літери різні) або створи змінну через let.`), plain(`${at(err.line)}nobody created “${name}”. Check the spelling (upper and lower case differ) or create the variable with let.`));
   }
+  if (/Maximum call stack size exceeded/.test(m))
+    return fox(plain(`${at(err.line)}рекурсія спускається без кінця: немає базового випадку або він ніколи не настає. Перевір, коли функція має зупинитися без нового виклику — і чи кожен виклик справді наближає до цього.`), plain(`${at(err.line)}the recursion goes down forever: there is no base case, or it is never reached. Check when the function should stop without a new call — and whether every call really gets closer to it.`));
   if (level.world === 7 && /of null \(reading '(next|val)'\)/.test(m))
     return fox(plain(`${at(err.line)}віз виявився порожнім (null), а в нього попросили .next чи .val. Перш ніж іти далі, перевір, що віз є: while (fast && fast.next).`), plain(`${at(err.line)}the cart turned out to be empty (null), and you asked it for .next or .val. Before going on, check the cart exists: while (fast && fast.next).`));
   if (/Cannot read propert(y|ies) of undefined/.test(m))
@@ -164,6 +166,16 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
     if (level.id === 'sicily.fight' && got === undefined) return fox('Коли бійців не лишилось, відповідь — 0, а не порожнеча: return heap.size() ? heap.dequeue() : 0.', 'When no fighters are left, the answer is 0, not nothing: return heap.size() ? heap.dequeue() : 0.');
     if (level.id === 'sicily.board' && /MaxPriorityQueue/.test(bare) && !/MinPriorityQueue/.test(bare)) return fox('Тут потрібна MinPriorityQueue: нагорі має бути найменший з k найкращих — він і є k-й найбільший.', 'You need a MinPriorityQueue here: the smallest of the k best must be on top — that is the k-th largest.');
   }
+  // світ 8: рекурсія й backtracking
+  if (level.world === 8 && Array.isArray(got)) {
+    const want = ex ? expectedOf(level, ex) : undefined;
+    const keys = got.map((x) => JSON.stringify(Array.isArray(x) ? [...x].sort((a, b) => a - b) : x));
+    if (got.length > 1 && got.every((x) => JSON.stringify(x) === JSON.stringify(got[0])) && /push\(\s*path\s*\)/.test(bare)) return fox('У відповіді всі набори однакові: ти кладеш туди той самий масив path, який потім змінюєш. Клади копію: out.push([...path]).', 'All the sets in the answer are the same: you put in the very array path that you keep changing. Put a copy: out.push([...path]).');
+    if (level.id === 'hell.descent' && Array.isArray(want) && got.length * 2 === want.length) return fox('Дорогу вниз записано, а назад — ні. Додай коло ще раз після рекурсивного виклику: це і є зворотний шлях.', 'The way down is written, but not the way back. Add the circle once more after the recursive call: that is the way back.');
+    if (level.id === 'hell.coins' && new Set(keys).size < keys.length) return fox('Той самий набір трапився кілька разів, як [2, 3] і [3, 2]. Бери монети лише вперед: цикл від start, а глибше — go(i, …).', 'The same set came up several times, like [2, 3] and [3, 2]. Take coins only forward: loop from start, and go deeper with go(i, …).');
+    if (level.id === 'hell.perms' && got.some((p) => Array.isArray(p) && new Set(p).size < p.length)) return fox('У порядку повторюється брама. Позначай пройдені: used[i] = true перед кроком глибше і false — після.', 'A gate repeats within an order. Mark the passed ones: used[i] = true before going deeper and false after.');
+  }
+  if (level.id === 'hell.boats' && typeof got === 'number' && !/sort/.test(bare)) return fox('Спершу впорядкуй душі за вагою: тоді найважча й найлегша стоять на кінцях, і два вказівники працюють.', 'First sort the souls by weight: then the heaviest and the lightest stand at the ends, and two pointers work.');
   // світ 7: валка
   if (level.world === 7) {
     const want = ex ? expectedOf(level, ex) : undefined;
