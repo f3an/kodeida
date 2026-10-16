@@ -16,6 +16,7 @@ import { L, fmt } from '../i18n.ts';
 import { lt, wt, starterOf } from '../levels/text.ts';
 import { TROJANS_EN } from '../levels/en.ts';
 import { feedbackUrl } from './feedback.ts';
+import { hasVoyage } from './Voyage.tsx';
 import { adviseError, adviseJudge, adviseRun, adviseSolved, adviseTimeout, adviseWolf } from './coach.ts';
 import type { CallResult } from '../engine/types.ts';
 
@@ -399,6 +400,11 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
         <Speech who={SPRITE[bubble.who]} name={WHO[bubble.who]} text={bubble.text()} tone={bubble.tone} fox={world.fox} seq={bubble.seq} enter={bubble.enter}
           action={justSolved && level.id === 'troy.sum' && !progress.departed
             ? <button className="btn next" onClick={() => go({ name: 'departure' })}>{L('Відплиття', 'Set sail')} ▸</button>
+            : justSolved && level.final && hasVoyage(level.world)
+            ? <span className="row-actions">
+                {level.id === 'carthage.dido' && <a className="btn" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Розкажи, як пройшло', 'Tell us how it went')}</a>}
+                <button className="btn next" onClick={() => go({ name: 'voyage', from: level.world })}>{L('У дорогу', 'Set off')} ▸</button>
+              </span>
             : justSolved && (canNext
             ? <button className="btn next" onClick={() => go({ name: 'level', id: next!.id })}>{L('Далі', 'Next')}: {lt(next!).title} ▸</button>
             : <span className="row-actions">

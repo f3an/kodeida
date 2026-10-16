@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LevelScreen } from './LevelScreen.tsx';
 import { MapScreen } from './MapScreen.tsx';
+import { VoyageScreen } from './Voyage.tsx';
 import { Menu, Onboarding, BookScreen, ShirtScreen, SettingsScreen, updateText, INTRO_SCENES, DEPARTURE_SCENES } from './screens.tsx';
 import { levelById, worlds } from '../levels/index.ts';
 import { useProgress, useSettings } from './progress.ts';
@@ -10,7 +11,7 @@ import { setUiLang, L } from '../i18n.ts';
 import { wt } from '../levels/text.ts';
 
 export type Screen =
-  | { name: 'menu' } | { name: 'onboarding' } | { name: 'departure' } | { name: 'map' } | { name: 'level'; id: string }
+  | { name: 'menu' } | { name: 'onboarding' } | { name: 'departure' } | { name: 'voyage'; from: number } | { name: 'map' } | { name: 'level'; id: string }
   | { name: 'book' } | { name: 'shirt' } | { name: 'settings' };
 
 /** Смуга, за яку тягнуть вікно на екранах без панелі заголовка (меню, заставки). */
@@ -40,6 +41,12 @@ export function App() {
   if (screen.name === 'departure') {
     const sail = () => { setProgress((p) => ({ ...p, departed: true })); go({ name: 'map' }); };
     return <><DragStrip /><Onboarding scenes={DEPARTURE_SCENES} finishLabel={L('До мапи світів ▸', 'To the world map ▸')} onDone={sail} /></>;
+  }
+
+  if (screen.name === 'voyage') {
+    // після заставки — перша вправа нового світу; позначаємо, що дорогу вже бачили
+    const arrive = () => { setProgress((p) => ({ ...p, voyages: [...new Set([...(p.voyages ?? []), screen.from])] })); go({ name: 'level', id: worlds[screen.from + 1].levels[0].id }); };
+    return <><DragStrip /><VoyageScreen from={screen.from} onDone={arrive} /></>;
   }
 
   const nav: [Screen['name'], string, string][] = [['level', '☰', L('Вправи', 'Exercises')], ['map', '◈', L('Мапа світів', 'World map')], ['book', '✦', L('Книга хитрощів', 'Book of Tricks')], ['shirt', '✚', L('Вишиванка', 'Embroidered shirt')], ['settings', '⚙', L('Налаштування', 'Settings')]];
