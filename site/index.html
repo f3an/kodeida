@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Кодеїда — open-source гра, де код рухає героя: прийоми задач рівня LeetCode у світах української літератури. Kodeida — a game where your code moves the hero.">
+<meta name="description" content="Кодеїда — open-source гра, де код рухає героя: прийоми задач рівня LeetCode у світах української літератури, а для новачків — Абетка: Python, JavaScript чи TypeScript з нуля. Kodeida — a game where your code moves the hero.">
 <meta property="og:title" content="Кодеїда · Kodeida">
 <meta property="og:description" content="Гра, де код рухає героя. Еней і Лис Микита вчать прийомів алгоритмів.">
 <meta property="og:type" content="website">
@@ -29,15 +29,15 @@
     <h1 id="heroTitle"><span class="brace" data-split>{</span><span data-split>Кодеїда</span></h1>
     <p class="sub reveal" style="--i:1">Гра, де твій код рухає героя. Разом з Енеєм і Лисом Микитою ти вивчаєш прийоми задач рівня LeetCode: два вказівники, хеш-мапи, графи, динамічне програмування. І бачиш, як працює кожен рядок.</p>
     <div class="cta reveal" style="--i:2"><a class="kb run" id="hero-dl" href="#download">Завантажити гру ↓</a><a class="kb" href="#trailer">▶ Дивитися трейлер</a><a class="kb" href="artbook.html">Артбук →</a><a class="kb" href="https://github.com/f3an/kodeida">★ GitHub</a></div>
-    <div class="meta reveal" style="--i:3"><span>Застосунок для Mac, Windows, Linux · офлайн</span><span>TypeScript · JavaScript · Python, далі C# · C++ · Go</span></div>
+    <div class="meta reveal" style="--i:3"><span>Застосунок для Mac, Windows, Linux · офлайн</span><span>TypeScript · JavaScript · Python, далі C# · C++ · Go</span><span>Новачкам — Абетка: мова з нуля</span></div>
     <div class="cloth hero reveal-scale" style="--i:3"><canvas id="hero" aria-label="Еней, Кришталева Писанка і Лис Микита"></canvas></div>
   </div></header>
 
   <section class="sheet sec" id="trailer" data-title="Трейлер"><div class="fit">
     <div class="sheet-head reveal">
       <div class="eyebrow">Трейлер</div>
-      <h2>Кодеїда за 40 секунд</h2>
-      <p class="muted">Від бенкету богів до справжньої задачі з LeetCode: як код рухає героя і чому Вовк програє хитрості.</p>
+      <h2>Кодеїда за 50 секунд</h2>
+      <p class="muted">Від бенкету богів до справжньої задачі з LeetCode і Абетки для новачків: як код рухає героя і чому Вовк програє хитрості.</p>
     </div>
     <div class="trailer reveal-scale"><video id="trailerVideo" controls playsinline preload="metadata" poster="media/trailer-uk.jpg" src="media/trailer-uk.mp4" data-uk="media/trailer-uk" data-en="media/trailer-en" aria-label="Трейлер Кодеїди"></video></div>
   </div></section>
@@ -53,6 +53,22 @@
       <article class="wcard"><canvas data-motif="waves"></canvas><h3>Бачиш, як працює код</h3><p>Кнопка «Крок» виконує рядок за рядком, а герої у світі показують, що відбувається з даними.</p></article>
       <article class="wcard"><canvas data-motif="halved"></canvas><h3>Вовк проти Микити</h3><p>Після кожного рішення видно, скільки кроків зробив би перебір. Складність O(n²) і O(n) стає наочною.</p></article>
       <article class="wcard"><canvas data-motif="tree"></canvas><h3>Українська класика</h3><p>Енеїда, Франко, Леся Українка й народні казки. Сюжет, гумор і персонажі, які хочеться проходити далі.</p></article>
+    </div>
+  </div></section>
+
+  <section class="sheet sec" id="paths" data-title="Три шляхи"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Для будь-якого рівня</div>
+      <h2>Три шляхи в гру</h2>
+      <p class="muted">На старті гра питає: «Чи вмієш ти програмувати?» Від відповіді залежить, звідки почнеш. Змінити можна будь-коли, прогрес не губиться.</p>
+    </div>
+    <div class="paths-grid reveal-scale">
+      <div class="paths-list">
+        <article class="wcard path-card"><canvas data-motif="periwinkle"></canvas><div><h3>🌱 Ні, з нуля → Абетка</h3><p>Перша мова з нуля: Python, JavaScript чи TypeScript. Кожен урок написано саме для обраної мови, а вивід програми з'являється на сувої. Сивілла вчить Енея на українських казках у ніч перед падінням Трої.</p></div></article>
+        <article class="wcard path-card"><canvas data-motif="frame"></canvas><div><h3>🧭 Трохи вмію → Світ 0</h3><p>Попелище Трої: одна нова ідея на вправу — команда, цикл, умова, лічильник — і перша задача з LeetCode.</p></div></article>
+        <article class="wcard path-card"><canvas data-motif="waves"></canvas><div><h3>⚔️ Так, хочу задач → Світ 1</h3><p>Одразу в море Еола й далі: два вказівники, хеш-мапи, стек, бінарний пошук. Світ 0 лишається відкритим для повторення.</p></div></article>
+      </div>
+      <figure class="paths-shot"><img src="media/abc-uk.jpg" data-uk="media/abc-uk.jpg" data-en="media/abc-en.jpg" data-alt-en="An ABC lesson: Python code prints three lines of the Bun’s song, and they appear on a scroll next to the Sibyl" width="1600" height="1000" loading="lazy" alt="Урок Абетки: код на Python виводить три рядки пісеньки Колобка, і вони з'являються на сувої біля Сивілли"><figcaption class="muted">Абетка, розділ 1 «Колобок»: програма виводить пісеньку, а сувій показує кожен рядок.</figcaption></figure>
     </div>
   </div></section>
 
@@ -271,9 +287,10 @@
       <p class="muted">Проєкт відкритий: код, сюжет і арт можна дивитися, обговорювати й покращувати разом.</p>
     </div>
     <ol class="road reveal-scale">
-      <li class="now"><b>MVP</b><span>Онбординг, Попелище Трої, Море Еола, Карфаген. TypeScript і JavaScript.</span><em>вийшла 0.1</em></li>
-      <li><b>Python</b><span>Виконання Python прямо в застосунку, без встановлення.</span><em>далі</em></li>
-      <li><b>16 світів</b><span>Уся кампанія від Трої до двобою з Турном, Книга хитрощів, вишиванка-прогрес.</span><em>далі</em></li>
+      <li><b>MVP</b><span>Онбординг, Попелище Трої, Море Еола, Карфаген. TypeScript і JavaScript.</span><em>вийшла 0.1</em></li>
+      <li><b>Python</b><span>Виконання Python прямо в застосунку, без встановлення, і Ліс Лиса Микити.</span><em>вийшла 0.2</em></li>
+      <li class="now"><b>Абетка й світи 4–8</b><span>Перша мова з нуля на казках, три шляхи на старті, Рукавичка, Конотоп, Сицилія, Чумацький шлях, Пекло.</span><em>вийшла 0.3</em></li>
+      <li><b>16 світів</b><span>Уся кампанія від Трої до двобою з Турном, усі розділи Абетки, Книга хитрощів, вишиванка-прогрес.</span><em>далі</em></li>
       <li><b>C#, C++, Go</b><span>Ще три мови для тих, хто готується до співбесід.</span><em>потім</em></li>
       <li><b>Нові кампанії</b><span>Алгоритми, структури даних, ООП — за останнім уламком Писанки.</span><em>потім</em></li>
     </ol>
@@ -349,12 +366,12 @@
     <div class="sheet-head reveal">
       <div class="eyebrow">Аркуш 7 · Карта екранів</div>
       <h2>Як гравець рухається застосунком</h2>
-      <p class="muted">Сім екранів і переходи між ними. Жовтий квадратик пробігає основний шлях: заставка, меню, мапа, рівень, суд богів і назад на мапу.</p>
+      <p class="muted">Сім екранів і переходи між ними. Жовтий квадратик пробігає основний шлях: заставка, меню, мапа, рівень, суд богів і назад на мапу. Новий гравець у меню обирає рівень: з нуля — Абетка, трохи — світ 0, хочу задач — світ 1.</p>
     </div>
     <div class="flow reveal-scale" id="flow">
       <svg class="flow-svg" id="flow-svg" aria-hidden="true"></svg>
       <div class="scr" id="s1" style="grid-area:a"><b>Заставка</b><canvas id="fl-splash"></canvas><small>онбординг, 14 сцен</small></div>
-      <div class="scr" id="s2" style="grid-area:b"><b>Головне меню</b><div class="mini-menu"><span class="lg">{Кодеїда</span><i class="on">Продовжити мандрівку</i><i>Книга хитрощів</i><i>Профіль</i><i>Налаштування</i></div></div>
+      <div class="scr" id="s2" style="grid-area:b"><b>Головне меню</b><div class="mini-menu"><span class="lg">{Кодеїда</span><i class="on">🌱 Ні, з нуля</i><i>🧭 Трохи вмію</i><i>⚔️ Хочу задач</i><i>Налаштування</i></div></div>
       <div class="scr" id="s3" style="grid-area:c"><b>Мапа світів</b><canvas id="fl-map"></canvas><small>16 світів, 6 пісень</small></div>
       <div class="scr" id="s4" style="grid-area:d"><b>Рівень</b><div class="mini-lvl"><i class="ed"><u></u><u></u><u class="w"></u><u></u><u class="w"></u></i><i class="wd"></i><i class="ts"></i></div><small>редактор · світ · тести</small></div>
       <div class="scr" id="s5" style="grid-area:e"><b>Суд богів</b><div class="mini-res"><span class="st">★★★</span><span>5 / 5 тестів · O(n)</span><span class="bad">Вовк: не встиг</span><i>Далі →</i></div></div>
@@ -388,7 +405,7 @@
     <div class="sheet-head reveal">
       <div class="eyebrow">Аркуш 11 · Онбординг</div>
       <h2>Зачин за чотирнадцять сцен</h2>
-      <p class="muted">Сцени 1–9 — заставка на півтори хвилини, яку можна пропустити. З десятої гравець пише код. Гортайте текст праворуч (смуга прокрутки збоку) або натискайте крапки.</p>
+      <p class="muted">Сцени 1–10 — заставка приблизно на дві хвилини, яку можна пропустити. З одинадцятої гравець пише код. Хто починає з нуля, бачить ще пролог «Абетка»: «Ніч перед бурею» після сцени 6 і «Заграву» перед сценою 7. Гортайте текст праворуч (смуга прокрутки збоку) або натискайте крапки.</p>
     </div>
     <div class="ob reveal-scale">
       <div class="ob-stage">
