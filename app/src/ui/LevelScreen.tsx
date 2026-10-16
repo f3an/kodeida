@@ -322,7 +322,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
         <div className="center">
           <div className={`pane${tab === 'code' ? '' : ' hidden'}`}>
             <Editor value={code[lang]} lang={lang} error={error}
-              onChange={(v) => setCode((c) => (c[lang] === v ? c : { ...c, [lang]: v }))}
+              onChange={(v) => { if (v === code[lang]) return; setCode((c) => ({ ...c, [lang]: v })); setError(null); }}
               onCursor={(line, col) => setCursor({ line, col })} onRun={run} />
           </div>
           {tab === 'statement' && (
