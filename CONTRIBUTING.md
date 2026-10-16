@@ -2,7 +2,7 @@
 
 By taking part you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Accessibility barriers are bugs — see [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
-Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist. The latest release (v0.2.0) has the onboarding and worlds 0–3 for macOS, Windows and Linux. The current source adds worlds 4–8, cutscenes between worlds, the three ways in (from scratch, a little, give me problems) and the ABC — a from-scratch track for Python, JavaScript and TypeScript (chapter 1 so far).
+Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist. The latest release (v0.3.0) for macOS, Windows and Linux has the onboarding, worlds 0–8 with cutscenes between them, the three ways in (from scratch, a little, give me problems) and the ABC — a from-scratch track for Python, JavaScript and TypeScript (chapter 1 so far).
 
 ## What helps most today
 
@@ -92,8 +92,8 @@ Releases are built by [`.github/workflows/release.yml`](.github/workflows/releas
 1. Bump `version` in `app/package.json` (the tag must match it).
 2. Commit, then tag and push the tag:
    ```bash
-   git tag v0.2.0
-   git push origin v0.2.0
+   git tag v0.3.0
+   git push origin v0.3.0
    ```
 3. The workflow builds macOS (`.dmg` + `.zip`, Apple Silicon and Intel), Windows (NSIS `.exe`) and Linux (`.AppImage`) and publishes the
    release with auto-generated notes. Running it manually from the Actions tab builds without publishing.
