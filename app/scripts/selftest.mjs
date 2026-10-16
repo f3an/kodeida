@@ -2,7 +2,7 @@
 // стартовий код компілюється, помилки вказують рядок.
 import assert from 'node:assert/strict';
 import { compile, runCall } from '../src/engine/sandbox-core.ts';
-import { planJudge, verdictOf } from '../src/engine/judge.ts';
+import { planJudge, verdictOf, equal } from '../src/engine/judge.ts';
 import { levels } from '../src/levels/index.ts';
 import { trackLevels } from '../src/levels/abetka.ts';
 import { loadPyodide } from 'pyodide';
@@ -55,6 +55,34 @@ test('forest.twosum: великий тест має єдину пару', () => 
   const odd = nums.filter((x) => x % 2 !== 0);
   assert.equal(odd.length, 1);
   assert.equal(nums.filter((x) => x === target - odd[0]).length, 1);
+});
+
+test('judge.equal: глибоке порівняння масивів, NaN, різна довжина', () => {
+  assert.ok(equal([1, [2, 3]], [1, [2, 3]]));
+  assert.ok(equal(NaN, NaN));
+  assert.ok(!equal([1, 2], [1, 2, 3]));
+  assert.ok(!equal([1, [2]], [1, [3]]));
+  assert.ok(!equal([], {}));
+});
+
+test('verdictOf: помилка важливіша за неправильну відповідь, перевищений бюджет великого тесту — вовк', () => {
+  const lvl = { examples: [], hidden: [], reference: (x) => x, big: { n: 5 } };
+  const tc = (v) => ({ args: [v] });
+  const plan = (kind, v) => ({ kind, tc: tc(v), expected: v });
+  const res = (value, extra = {}) => ({ value, logs: [], reads: 0, events: [], ...extra });
+  const mixed = verdictOf(lvl, [plan('example', 1), plan('hidden', 2)], { results: [res(0), res(2, { error: { message: 'boom' } })] });
+  assert.equal(mixed.verdict, 'error');
+  const wrong = verdictOf(lvl, [plan('example', 1)], { results: [res(0)] });
+  assert.equal(wrong.verdict, 'wrong');
+  const wolf = verdictOf(lvl, [plan('example', 1), plan('big', 2)], { results: [res(1), res(2, { overBudget: true })] });
+  assert.equal(wolf.verdict, 'wolf');
+  const wolfTimeout = verdictOf(lvl, [plan('example', 1), plan('big', 2)], { results: [res(1)], timedOutAt: 1 });
+  assert.equal(wolfTimeout.verdict, 'wolf');
+  const timeout = verdictOf(lvl, [plan('example', 1), plan('hidden', 2)], { results: [res(1)], timedOutAt: 1 });
+  assert.equal(timeout.verdict, 'timeout');
+  const skipped = verdictOf(lvl, [plan('example', 1)], { compileError: 'x', results: [] });
+  assert.equal(skipped.verdict, 'error');
+  assert.equal(skipped.cases[0].verdict, 'skipped');
 });
 
 test('помилка виконання вказує рядок і перекладена', () => {
