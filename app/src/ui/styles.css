@@ -110,12 +110,14 @@ code, pre { font-family: var(--mono); }
 .v.fox { color: var(--ok); } .v.wolf { color: var(--gold); } .v.wrong, .v.error, .v.timeout { color: var(--bad); }
 .tests { padding: 6px 14px; font: 12px/23px var(--mono); color: var(--mute); overflow: auto; }
 .tests p { margin: 4px 0; font-family: var(--body); }
-.tests .tr { display: grid; grid-template-columns: 18px 64px minmax(0, 1.3fr) minmax(0, 1fr); gap: 8px; white-space: nowrap; }
+.tests .tr { display: grid; grid-template-columns: 18px 64px minmax(0, 1fr) minmax(0, 1.6fr); gap: 8px; white-space: nowrap; align-items: start; }
 .tests .tr > span { overflow: hidden; text-overflow: ellipsis; }
 .tests .kind { color: var(--dim); }
 .tests .tr.ok { color: #cfe9d2; } .tests .tr.ok .ck { color: var(--ok); }
 .tests .tr.wrong .ck, .tests .tr.error .ck, .tests .tr.timeout .ck { color: var(--bad); }
 .tests .tr.wrong .res, .tests .tr.error .res { color: var(--bad); }
+/* пояснення помилки не обрізаємо: переносимо на кілька рядків */
+.tests .tr.wrong .res, .tests .tr.error .res, .tests .tr.timeout .res { white-space: normal; overflow-wrap: anywhere; line-height: 18px; padding: 2px 0; }
 .tests .tr.overBudget .res { color: var(--gold); }
 .tests .tr.skipped { opacity: .5; }
 .console div { color: var(--fg); white-space: pre-wrap; border-bottom: 1px solid #1a221d; }

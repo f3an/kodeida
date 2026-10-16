@@ -250,15 +250,17 @@ const kolobok: Chapter = {
     },
     {
       key: 'greet', title: ['Привіт кожному', 'Hello to everyone'], topic: ['параметр і склеювання рядків', 'a parameter and joining strings'],
-      brief: () => ['<b>Привіт кожному.</b> Колобок вітається з тим, кого зустрів. Виведи <code>Привіт, ім\'я!</code> для будь-якого імені.', '<b>Hello to everyone.</b> The Bun greets whoever he meets. Print <code>Привіт, name!</code> for any name.'],
+      brief: () => ['<b>Привіт кожному.</b> Колобок вітається з тим, кого зустрів. Ім\'я приходить у змінній <code>name</code> і щоразу інше — виведи <code>Привіт, </code> + <code>name</code> + <code>!</code>.', '<b>Hello to everyone.</b> The Bun greets whoever he meets. The name arrives in the variable <code>name</code> and is different each time — print <code>Привіт, </code> + <code>name</code> + <code>!</code>.'],
       statement: (c) => [[
-        'Колобок зустрічає по черзі Зайця, Вовка, Ведмедя й Лисицю — і кожного вітає.',
-        'Функція отримує <code>name</code> — ім\'я того, кого зустріли. Виведи <code>Привіт, </code>, потім ім\'я, потім <code>!</code>. Для <code>"Заєць"</code> — <code>Привіт, Заєць!</code>.',
-        'Ім\'я в тестах різне, тож вписати його в лапки не вийде: рядки треба <b>склеїти</b>.',
+        'Колобок зустрічає по черзі Зайця, Вовка, Ведмедя й Лисичку-сестричку — і кожного вітає.',
+        'Ім\'я того, кого зустріли, приходить у функцію в змінній <code>name</code>. Наперед воно невідоме: «Суд богів» викличе функцію чотири рази — з <code>"Заєць"</code>, <code>"Вовк"</code>, <code>"Ведмідь"</code> і <code>"Лисичка-сестричка"</code>.',
+        'Виведи <code>Привіт, </code>, потім значення <code>name</code>, потім <code>!</code>. Для <code>"Заєць"</code> вийде <code>Привіт, Заєць!</code>, для <code>"Вовк"</code> — <code>Привіт, Вовк!</code>.',
+        `Тому <code>${c.say('"Привіт, Заєць!"')}</code> не підійде: «Запустити» пройде, а суд — ні. Рядки треба <b>склеїти</b> зі змінною <code>name</code>.`,
       ], [
-        'The Bun meets the Hare, the Wolf, the Bear and the Fox in turn — and greets each one.',
-        'The function receives <code>name</code> — the name of whoever was met. Print <code>Привіт, </code>, then the name, then <code>!</code>. For <code>"Заєць"</code> — <code>Привіт, Заєць!</code>.',
-        'The name differs from test to test, so you can’t write it into the quotes: the strings have to be <b>joined</b>.',
+        'The Bun meets the Hare, the Wolf, the Bear and Sister Fox in turn — and greets each one.',
+        'The name of whoever was met arrives in the function in the variable <code>name</code>. You don’t know it in advance: “Judgement” calls the function four times — with <code>"Заєць"</code>, <code>"Вовк"</code>, <code>"Ведмідь"</code> and <code>"Лисичка-сестричка"</code>.',
+        'Print <code>Привіт, </code>, then the value of <code>name</code>, then <code>!</code>. For <code>"Заєць"</code> that’s <code>Привіт, Заєць!</code>, for <code>"Вовк"</code> — <code>Привіт, Вовк!</code>.',
+        `So <code>${c.say('"Привіт, Заєць!"')}</code> won’t do: “Run” passes, but Judgement doesn’t. The strings have to be <b>joined</b> with the variable <code>name</code>.`,
       ]],
       tool: {
         name: () => ['склеювання рядків', 'joining strings'],
@@ -277,8 +279,8 @@ const kolobok: Chapter = {
       tests: [['Заєць'], ['Вовк'], ['Ведмідь'], ['Лисичка-сестричка']],
       out: (_c, name: string) => [`Привіт, ${name}!`],
       hints: (c) => [
-        ['З яких трьох шматків складається привітання?', '"Привіт, " + name + "!" — пробіл після коми теж частина тексту.', c.say('"Привіт, " + name + "!"')],
-        ['Which three pieces make up the greeting?', '"Привіт, " + name + "!" — the space after the comma is part of the text too.', c.say('"Привіт, " + name + "!"')],
+        ['Ім\'я не завжди «Заєць» — воно лежить у змінній name. З яких трьох шматків складається привітання?', '"Привіт, " + name + "!" — пробіл після коми теж частина тексту.', c.say('"Привіт, " + name + "!"')],
+        ['The name isn’t always “Заєць” — it’s in the variable name. Which three pieces make up the greeting?', '"Привіт, " + name + "!" — the space after the comma is part of the text too.', c.say('"Привіт, " + name + "!"')],
       ],
       lesson: () => ['Змінна тримає значення, а + склеює рядки: так одна програма вітає будь-кого.', 'A variable holds a value, and + joins strings: that’s how one program greets anyone.'],
       quip: () => ['А Лисиці Колобок краще б не казав «привіт». Але програма ввічлива з усіма.', 'The Bun had better not say “hello” to the Fox. But the program is polite to everyone.'],
