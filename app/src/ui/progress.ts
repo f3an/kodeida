@@ -19,7 +19,10 @@ export interface Progress {
   voyages?: number[];
   /** «Знаю основи JS»: усі вправи світу 0 відкриті одразу. */
   skipBasics?: boolean;
+  /** Шлях, обраний на старті: з нуля (Абетка), трохи вмію (світ 0) чи одразу задачі (світ 1). */
+  path?: Path;
 }
+export type Path = 'abc' | 'basics' | 'algo';
 export interface Settings { lang: Lang; speed: number; /** Мова інтерфейсу. */ ui: UiLang }
 
 const EMPTY: Progress = { levels: {}, onboarded: false };
@@ -49,6 +52,8 @@ export const solved = (p: Progress, l: Level) => starsOf(p, l) >= 1;
 /** Світ відкрито, якщо розв'язано фінальну задачу попереднього. */
 export function worldOpen(p: Progress, w: World): boolean {
   if (w.n === 0) return true;
+  // «Так, хочу задач»: світ 1 відкрито одразу, світ 0 лишається для повторення
+  if (w.n === 1 && !w.track && p.path === 'algo') return true;
   const prev = (w.track ? tracks[w.track] : worlds)[w.n - 1];
   return !!prev && solved(p, prev.levels[prev.levels.length - 1]);
 }
@@ -68,7 +73,10 @@ export const shardOf = (p: Progress, w: World) => !!w.motif && starsOf(p, w.leve
 
 /** Куди вести гравця: остання відкрита, але не розв'язана вправа. */
 export function nextLevel(p: Progress): Level {
-  for (const w of worlds) for (const l of w.levels) if (levelOpen(p, l) && !solved(p, l)) return l;
+  for (const w of worlds) {
+    if (w.n === 0 && p.path === 'algo') continue;
+    for (const l of w.levels) if (levelOpen(p, l) && !solved(p, l)) return l;
+  }
   return worlds[worlds.length - 1].levels[worlds[worlds.length - 1].levels.length - 1];
 }
 

@@ -3,7 +3,7 @@ import { PixelCanvas } from './PixelCanvas.tsx';
 import { worlds } from '../levels/index.ts';
 import { BOOK } from '../levels/book.ts';
 import { Spr, SW, SH_, OB, SONGS, WORLD_SCENES, WORLD_INFO, MOTIFS, MOTIF_NAMES, drawMotif, drawEgg, makeEnei, makeFox, genericBg } from '../world/sprites.js';
-import { levelOpen, nextLevel, shardOf, solved, starsOf, worldOpen, type Progress, type Settings } from './progress.ts';
+import { levelOpen, nextLevel, shardOf, solved, starsOf, worldOpen, type Path, type Progress, type Settings } from './progress.ts';
 import { bridge, APP_VERSION, type UpdateState } from './bridge.ts';
 import type { Screen } from './App.tsx';
 import type { Lang } from '../engine/types.ts';
@@ -24,6 +24,8 @@ const HERO_FOX = [makeFox(GINGER), makeFox(GINGER, { cursorOff: true })];
 export function Menu({ progress, go, ui, setUi, updates }: { progress: Progress; go: Go; ui: UiLang; setUi: (l: UiLang) => void; updates: UpdateState | null }) {
   const [checking, setChecking] = useState(false);
   const started = Object.keys(progress.levels).length > 0 || progress.onboarded;
+  // обрав «з нуля» й ще не грав у кампанію — головна кнопка веде в Абетку
+  const abc = progress.path === 'abc' && !progress.onboarded;
   const next = nextLevel(progress);
   const drawHero = (ctx: CanvasRenderingContext2D, f: number) => {
     drawEgg(ctx, 34, 44, 292, 56, 4, false, true, 0, f % 2 ? 0.9 : 0.97);
@@ -41,10 +43,12 @@ export function Menu({ progress, go, ui, setUi, updates }: { progress: Progress;
         <h1><span className="brace">{'{'}</span>{L('Кодеїда', 'Kodeida')}</h1>
         <p className="tag">{L('Гра, де код рухає героя. Перехитри задачу.', 'A game where your code moves the hero. Outfox the problem.')}</p>
         <div className="menu-actions">
-          {started ? (
+          {abc ? (
+            <button className="btn big run" onClick={() => go({ name: 'abetka' })}>{L('Продовжити Абетку', 'Continue the ABC')}</button>
+          ) : started ? (
             <button className="btn big run" onClick={() => go({ name: 'level', id: next.id })}>{L('Продовжити', 'Continue')}: {lt(next).title}</button>
           ) : (
-            <button className="btn big run" onClick={() => go({ name: 'onboarding' })}>{L('Почати мандрівку', 'Start the journey')}</button>
+            <button className="btn big run" onClick={() => go({ name: progress.path ? 'onboarding' : 'start' })}>{L('Почати мандрівку', 'Start the journey')}</button>
           )}
           <button className="btn big" onClick={() => go({ name: 'map' })}>{L('Мапа світів', 'World map')}</button>
           <button className="btn big abc" onClick={() => go({ name: 'abetka' })} title={L('Для тих, хто тільки вчить мову програмування', 'For those just learning a programming language')}>{L('Абетка: мова з нуля', 'The ABC: a language from scratch')}</button>
@@ -54,6 +58,43 @@ export function Menu({ progress, go, ui, setUi, updates }: { progress: Progress;
         <a className="feedback-link" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Залишити відгук', 'Leave feedback')}</a>
         <UpdateLine updates={updates} checking={checking} onCheck={async () => { setChecking(true); await bridge?.updates.check(); setChecking(false); }} />
         <p className="muted small">{L('Версія', 'Version')} {APP_VERSION} · {L('офлайн, без AI-підказок', 'offline, no AI hints')} · <a href="https://github.com/f3an/kodeida" target="_blank" rel="noreferrer">github.com/f3an/kodeida</a></p>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== Вибір шляху ============================== */
+
+const PATHS: { id: Path; icon: string; title: [string, string]; text: [string, string]; to: [string, string] }[] = [
+  { id: 'abc', icon: '🌱', title: ['Ні, з нуля', 'No, from scratch'],
+    text: ['Коду ще не пишеш. Почнемо з Абетки: перші слова в Python, JavaScript чи TypeScript на сюжетах казок.', 'Never written code. Start with the ABC: first words in Python, JavaScript or TypeScript through fairy tales.'],
+    to: ['Абетка', 'The ABC'] },
+  { id: 'basics', icon: '🧭', title: ['Трохи вмію', 'A little'],
+    text: ['Знаєш, що таке змінна, але цикли й масиви ще плутаються. Еней пройде основи разом із тобою на попелищі Трої.', 'You know what a variable is, but loops and arrays still get mixed up. Aeneas goes over the basics with you in the ashes of Troy.'],
+    to: ['Світ 0 · Попелище Трої', 'World 0 · Ashes of Troy'] },
+  { id: 'algo', icon: '⚔️', title: ['Так, хочу задач', 'Yes, give me problems'],
+    text: ['Пишеш код упевнено й хочеш тренувати алгоритми, як на LeetCode. Одразу в море Еола; світ 0 лишиться відкритим.', 'You code confidently and want to train algorithms, LeetCode-style. Straight to the sea of Aeolus; world 0 stays open.'],
+    to: ['Світ 1 · Море Еола', 'World 1 · Sea of Aeolus'] },
+];
+
+export function StartScreen({ go, choose }: { go: Go; choose: (p: Path) => void }) {
+  const en = uiLang() === 'en' ? 1 : 0;
+  return (
+    <div className="menu">
+      <div className="menu-card start">
+        <h1>{L('Чи вмієш ти програмувати?', 'Can you code?')}</h1>
+        <p className="tag">{L('Обери, звідки почати. Змінити можна будь-коли: усі шляхи лишаються відкритими.', 'Pick where to begin. You can change it any time: every path stays open.')}</p>
+        <div className="paths">
+          {PATHS.map((p) => (
+            <button key={p.id} className="path" onClick={() => choose(p.id)}>
+              <span className="path-icon" aria-hidden="true">{p.icon}</span>
+              <b>{p.title[en]}</b>
+              <span>{p.text[en]}</span>
+              <small>→ {p.to[en]}</small>
+            </button>
+          ))}
+        </div>
+        <button className="btn" onClick={() => go({ name: 'menu' })}>{L('← Назад', '← Back')}</button>
       </div>
     </div>
   );

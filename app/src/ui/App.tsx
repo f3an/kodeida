@@ -4,7 +4,7 @@ import { MapScreen } from './MapScreen.tsx';
 import { VoyageScreen } from './Voyage.tsx';
 import { AbetkaScreen } from './Abetka.tsx';
 import type { Lang } from '../engine/types.ts';
-import { Menu, Onboarding, BookScreen, ShirtScreen, SettingsScreen, updateText, INTRO_SCENES, DEPARTURE_SCENES } from './screens.tsx';
+import { Menu, StartScreen, Onboarding, BookScreen, ShirtScreen, SettingsScreen, updateText, INTRO_SCENES, DEPARTURE_SCENES } from './screens.tsx';
 import { levelById, worlds, worldOf } from '../levels/index.ts';
 import { useProgress, useSettings } from './progress.ts';
 import { bridge, useUpdates } from './bridge.ts';
@@ -14,7 +14,7 @@ import { wt } from '../levels/text.ts';
 
 export type Screen =
   | { name: 'menu' } | { name: 'onboarding' } | { name: 'departure' } | { name: 'voyage'; from: number } | { name: 'map' } | { name: 'level'; id: string }
-  | { name: 'book' } | { name: 'shirt' } | { name: 'settings' } | { name: 'abetka'; lang?: Lang };
+  | { name: 'book' } | { name: 'shirt' } | { name: 'settings' } | { name: 'abetka'; lang?: Lang } | { name: 'start' };
 
 /** Смуга, за яку тягнуть вікно на екранах без панелі заголовка (меню, заставки). */
 const DragStrip = () => (bridge ? <div className="drag-strip" aria-hidden="true" /> : null);
@@ -45,9 +45,14 @@ export function App() {
   if (screen.name === 'level' && !level) setScreen({ name: 'map' });
 
   if (screen.name === 'menu') return <><DragStrip /><Menu progress={progress} go={go} updates={updates} ui={settings.ui} setUi={(ui) => setSettings((s) => ({ ...s, ui }))} /></>;
+  if (screen.name === 'start') return <><DragStrip /><StartScreen go={go} choose={(path) => {
+    // «Так, хочу задач»: світ 0 відкритий для повторення, тур інтерфейсу пропускаємо
+    setProgress((p) => ({ ...p, path, ...(path === 'algo' ? { skipBasics: true, toured: true } : {}) }));
+    go(path === 'abc' ? { name: 'abetka' } : { name: 'onboarding' });
+  }} /></>;
   if (screen.name === 'onboarding') {
-    const finish = () => { setProgress((p) => ({ ...p, onboarded: true })); go({ name: 'level', id: worlds[0].levels[0].id }); };
-    return <><DragStrip /><Onboarding scenes={INTRO_SCENES} finishLabel={L('Перший крок ▸', 'First step ▸')} onDone={finish} onSkip={finish} /></>;
+    const finish = () => { setProgress((p) => ({ ...p, onboarded: true })); go({ name: 'level', id: (progress.path === 'algo' ? worlds[1] : worlds[0]).levels[0].id }); };
+    return <><DragStrip /><Onboarding scenes={INTRO_SCENES} finishLabel={progress.path === 'algo' ? L('До моря Еола ▸', 'To the sea of Aeolus ▸') : L('Перший крок ▸', 'First step ▸')} onDone={finish} onSkip={finish} /></>;
   }
   if (screen.name === 'departure') {
     const sail = () => { setProgress((p) => ({ ...p, departed: true })); go({ name: 'map' }); };

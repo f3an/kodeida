@@ -415,3 +415,15 @@ canvas { image-rendering: pixelated; }
 .abc-ch .it small { color: var(--dim); font-family: var(--mono); font-size: 10.5px; padding-left: 18px; }
 .abc-ch.soon { border-top-color: var(--line); opacity: .6; }
 .abc-ch.locked { opacity: .75; }
+
+/* ---------- вибір шляху на старті ---------- */
+.menu-card.start { max-width: 980px; }
+.menu-card.start h1 { font-size: 34px; }
+.paths { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; width: 100%; margin: 8px 0 14px; }
+.path { display: flex; flex-direction: column; gap: 8px; text-align: left; padding: 18px 18px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--side); color: var(--fg); font: inherit; cursor: pointer; transition: border-color .15s, transform .15s; }
+.path:hover, .path:focus-visible { border-color: var(--fox); transform: translateY(-2px); }
+.path-icon { font-size: 28px; }
+.path b { font: 700 19px var(--display); }
+.path span { color: var(--mute); font-size: 13.5px; line-height: 1.5; flex: 1; }
+.path small { color: var(--fox-soft); font: 12px var(--mono); }
+@media (prefers-reduced-motion: reduce) { .path { transition: none; } .path:hover { transform: none; } }
