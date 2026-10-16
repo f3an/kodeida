@@ -6,7 +6,7 @@ import { planJudge, verdictOf, short, expectedOf, judgeCall, gotOf, clone } from
 import type { Level } from '../engine/level.ts';
 import type { JudgeReport, Lang } from '../engine/types.ts';
 import type { SceneState } from '../world/scenes.ts';
-import { worlds } from '../levels/index.ts';
+import { worlds, tracks, worldOf } from '../levels/index.ts';
 import { load, save } from './storage.ts';
 import { levelOpen, solved, starsOf, crewOf, CREW_MAX, TROJAN_NAMES, type Progress, type LevelProgress, type Settings } from './progress.ts';
 import { Tour, SIBYL_TOUR } from './Tour.tsx';
@@ -25,6 +25,7 @@ type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 
 interface Bubble { who: Who; text: () => string; tone: Tone; seq: number; enter: 'in' | 'nod' }
 /** Хто говорить за «господаря» світу: Микита на попелищі, Еол у морі, Дидона в Карфагені. */
 const HOST_SPRITE: Speaker[] = ['fox', 'eol', 'dido', 'lion', 'mitten', 'sotnyk', 'acestes', 'ox', 'charon'];
+const LANG_NAME: Record<Lang, string> = { ts: 'TypeScript', js: 'JavaScript', py: 'Python' };
 type Tab = 'code' | 'statement' | 'hints' | 'sheet';
 type Panel = 'tests' | 'console';
 
@@ -39,8 +40,11 @@ interface Props {
 }
 
 export function LevelScreen({ level, progress, setProgress, patchLevel, settings, setSettings, go }: Props) {
-  const world = worlds[level.world];
-  const lang = settings.lang;
+  const world = worldOf(level);
+  // «Абетка»: вправа написана для однієї мови, перемикача немає
+  const track = level.track;
+  const lang = track ?? settings.lang;
+  const chain = track ? tracks[track] : worlds;
   const T = lt(level, lang), WT = wt(world);
   const codeKey = (l: Lang) => `code.${level.id}.${l}`;
   const [code, setCode] = useState<Record<Lang, string>>(() => ({ ts: load(codeKey('ts'), starterOf(level, 'ts')), js: load(codeKey('js'), starterOf(level, 'js')), py: load(codeKey('py'), starterOf(level, 'py')) }));
@@ -63,7 +67,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     ? { who: 'sibyl', text: () => L('Скажи слово, і світ послухає. Слово вже написано — натисни «Запустити».', 'Say the word and the world will obey. The word is already written — press “Run”.'), tone: 'say', seq: 0, enter: 'in' }
     : talk.length ? talkLine(0)
     : { who: 'host', text: () => wt(world).host.line, tone: 'say', seq: 0, enter: 'in' };
-  const crew = level.world === 0 ? crewOf(progress) : 0;
+  const crew = level.world === 0 && !track ? crewOf(progress) : 0;
   const [bubble, setBubble] = useState<Bubble>(start);
   const [scene, setScene] = useState<SceneState | null>(null);
   const [actor, setActor] = useState<'heroes' | 'wolf'>('heroes');
@@ -81,7 +85,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     eol: L('Еол', 'Aeolus'), dido: L('Дидона', 'Dido'), wolf: L('Вовк Неситий', 'Greedy Wolf'), lion: L('Цар Лев', 'King Lion'), mitten: L('Мишка-шкряботушка', 'Mousie-Scratcher'), sotnyk: L('Сотник Забрьоха', 'Captain Zabrokha'), acestes: L('Ацест', 'Acestes'), ox: L('Віл Половий', 'Pale Ox'), charon: L('Харон', 'Charon'),
   };
   const SPRITE: Record<Who, Speaker> = {
-    host: HOST_SPRITE[world.n] ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei',
+    host: (track ? undefined : HOST_SPRITE[world.n]) ?? 'fox', fox: 'fox', juno: 'juno', sibyl: 'sibyl', system: 'enei',
     enei: 'enei', anchises: 'anchises', warrior: 'warrior', sailor: 'sailor', woman: 'woman', eol: 'eol', dido: 'dido', wolf: 'wolf', lion: 'lion', mitten: 'mitten', sotnyk: 'sotnyk', acestes: 'acestes', ox: 'ox', charon: 'charon',
   };
   // розмова на вході триває, доки гравець нічого не зробив; будь-яка репліка гри її зупиняє
@@ -121,7 +125,9 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
       return;
     }
     const ok = p.ok;
-    if (ok === true) say('host', () => (level.scene.type === 'street'
+    if (ok === true) say('host', () => (level.scene.type === 'scroll'
+      ? L('Вивід збігся до символу! Тепер на Суд богів (⌘⇧↵): там інші тести.', 'The output matches to the character! Now to the Judgement of the Gods (⌘⇧↵): it has other tests.')
+      : level.scene.type === 'street'
       ? L('Вийшло! Тепер на Суд богів (⌘⇧↵): там інші тести.', 'It worked! Now to the Judgement of the Gods (⌘⇧↵): it has other tests.')
       : L(`Повернуто ${short(p.got)} — правильно! Тепер на Суд богів (⌘⇧↵): там інші тести.`, `Returned ${short(p.got)} — correct! Now to the Judgement of the Gods (⌘⇧↵): it has other tests.`)));
     else {
@@ -161,7 +167,8 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     pendingRun.current = { ok: judgeCall(level, tc, expectedOf(level, tc), r), got, r };
     const shown = level.scene.type === 'array' && r.value !== undefined ? short(r.value, 40) : null;
     view.current?.show(tc, r.events, 'heroes', shown);
-    if (r.events.some((e) => e.t !== 'log')) { say('fox', () => L('Дивимося, куди поведе нас твоє слово…', 'Let’s see where your word takes us…')); view.current?.play(); }
+    if (level.scene.type === 'scroll' && r.events.length) { say('fox', () => L('Дивимося, що з\'явиться на сувої…', 'Let’s see what appears on the scroll…')); view.current?.play(); }
+    else if (level.scene.type !== 'scroll' && r.events.some((e) => e.t !== 'log')) { say('fox', () => L('Дивимося, куди поведе нас твоє слово…', 'Let’s see where your word takes us…')); view.current?.play(); }
     else finishRun();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [busy, code, lang, level]);
@@ -197,7 +204,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
       view.current?.flash('win');
       const firstFox = starsOf(progress, level) < 2;
       const shard = level.final && world.motif && firstFox;
-      const joinIdx = level.world === 0 ? world.levels.indexOf(level) - 1 : -1;
+      const joinIdx = level.world === 0 && !track ? world.levels.indexOf(level) - 1 : -1;
       const joins = joinIdx >= 0 && joinIdx < CREW_MAX && !solved(progress, level);
       const nudge = adviseSolved(level, code[lang]);
       say('fox', () => L(
@@ -248,7 +255,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   }, [judge]);
 
   const idx = world.levels.indexOf(level);
-  const next = world.levels[idx + 1] ?? worlds[level.world + 1]?.levels[0];
+  const next = world.levels[idx + 1] ?? chain[level.world + 1]?.levels[0];
   const canNext = !!next && levelOpen(progress, next);
   const passed = report ? report.cases.filter((c) => c.verdict === 'ok').length : 0;
   const hasWolf = !!(level.wolf && level.big);
@@ -260,7 +267,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
   return (
     <>
       <aside className="side">
-        <div className="h">{L('Світ', 'World')} {world.n} · {WT.name}</div>
+        <div className="h">{track ? `${L('Розділ', 'Chapter')} ${world.n + 1}` : `${L('Світ', 'World')} ${world.n}`} · {WT.name}</div>
         {world.levels.map((l, i) => {
           const open = levelOpen(progress, l), done = solved(progress, l);
           return (
@@ -271,7 +278,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
             </button>
           );
         })}
-        {world.n === 0 && !progress.skipBasics && !solved(progress, world.levels[world.levels.length - 1]) && (
+        {world.n === 0 && !track && !progress.skipBasics && !solved(progress, world.levels[world.levels.length - 1]) && (
           <button className="skip-basics" onClick={() => { const fin = world.levels[world.levels.length - 1]; setProgress((p) => ({ ...p, skipBasics: true })); go({ name: 'level', id: fin.id }); }}
             title={L('Відкрити всі вправи світу 0 і перейти до фінальної задачі', 'Open every world 0 exercise and go to the final problem')}>
             {L('Знаю основи JS — до «Припасів» ▸', 'I know JS basics — skip to “Supplies” ▸')}
@@ -290,14 +297,14 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
           <button role="tab" aria-selected={tab === 'statement'} className={tab === 'statement' ? 'on' : ''} onClick={() => setTab('statement')}>{L('Умова', 'Problem')}</button>
           <button role="tab" data-tab="hints" aria-selected={tab === 'hints'} className={tab === 'hints' ? 'on' : ''} onClick={() => setTab('hints')} title={L('Підказки Сивілли', 'Sibyl’s hints')}>{L('Підказки', 'Hints')}</button>
           <button role="tab" aria-selected={tab === 'sheet'} className={tab === 'sheet' ? 'on' : ''} onClick={() => setTab('sheet')}>{L('Шпаргалка', 'Cheat sheet')}</button>
-          <label className="lang">
+          {track ? <span className="lang track" title={L('Абетка: вправа цієї мови', 'ABC: an exercise in this language')}>{LANG_NAME[track]}</span> : <label className="lang">
             <span className="sr">{L('Мова коду', 'Code language')}</span>
             <select value={lang} onChange={(e) => { setSettings((s) => ({ ...s, lang: e.target.value as Lang })); setError(null); }}>
               <option value="ts">TypeScript</option>
               <option value="js">JavaScript</option>
               <option value="py">Python</option>
             </select>
-          </label>
+          </label>}
         </div>
         <div className="brief">
           <span dangerouslySetInnerHTML={{ __html: T.brief }} />
@@ -322,14 +329,20 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
                 </section>
               )}
               <h3>{L('Приклад', 'Example')}</h3>
-              {level.examples.map((e, i) => <pre key={i}>{level.entry}({e.label}){expectedOf(level, e) !== undefined ? ` → ${short(expectedOf(level, e))}` : ''}</pre>)}
+              {track ? level.examples.map((e, i) => (
+                <div key={i}>
+                  <pre>{level.entry}({e.args.map((a) => JSON.stringify(a)).join(', ')})</pre>
+                  <p className="muted">{L('має вивести:', 'should print:')}</p>
+                  <pre className="out">{(expectedOf(level, e) as string[]).join('\n')}</pre>
+                </div>
+              )) : level.examples.map((e, i) => <pre key={i}>{level.entry}({e.label}){expectedOf(level, e) !== undefined ? ` → ${short(expectedOf(level, e))}` : ''}</pre>)}
             </div>
           )}
           {tab === 'sheet' && (
             <div className="pane doc sheet">
               <h2>{L('Шпаргалка', 'Cheat sheet')}</h2>
-              <p className="muted">{L('Усе, що ти вже бачив у світі 0: коротко й з прикладом.', 'Everything you have met in world 0, briefly and with an example.')}</p>
-              {worlds[0].levels.filter((l, i) => l.tool && (level.world > 0 || i <= worlds[0].levels.indexOf(level))).map((l) => {
+              <p className="muted">{track ? L('Усе, що ти вже бачив в Абетці: коротко й з прикладом.', 'Everything you have met in the ABC, briefly and with an example.') : L('Усе, що ти вже бачив у світі 0: коротко й з прикладом.', 'Everything you have met in world 0, briefly and with an example.')}</p>
+              {(track ? chain.slice(0, level.world + 1).flatMap((w) => w.levels).filter((l) => l.tool && (l.world < level.world || world.levels.indexOf(l) <= idx)) : worlds[0].levels.filter((l, i) => l.tool && (level.world > 0 || i <= worlds[0].levels.indexOf(level)))).map((l) => {
                 const tool = lt(l, lang).tool!;
                 return (
                   <section key={l.id} className="tool-card">
@@ -375,7 +388,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
             </div>
           ) : (
             <div className="tests console">
-              {logs.length === 0 ? <p className="muted">{L('Тут з\'явиться все, що виведе console.log.', 'Everything console.log prints shows up here.')}</p> : logs.map((l, i) => <div key={i}>{l}</div>)}
+              {logs.length === 0 ? <p className="muted">{lang === 'py' ? L('Тут з\'явиться все, що виведе print.', 'Everything print prints shows up here.') : L('Тут з\'явиться все, що виведе console.log.', 'Everything console.log prints shows up here.')}</p> : logs.map((l, i) => <div key={i}>{l}</div>)}
             </div>
           )}
         </div>
@@ -383,7 +396,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
 
       <section className={`world-col w${world.n}`}>
         <div className="wh">
-          <span>{L('Світ', 'World')} {world.n} · <b>{scene && scene.total ? `${L('крок', 'step')} ${scene.step} / ${scene.total}` : actor === 'wolf' ? L('Вовк', 'Wolf') : L('приклад', 'example')}</b></span>
+          <span>{track ? `${L('Розділ', 'Chapter')} ${world.n + 1}` : `${L('Світ', 'World')} ${world.n}`} · <b>{scene && scene.total ? `${L('крок', 'step')} ${scene.step} / ${scene.total}` : actor === 'wolf' ? L('Вовк', 'Wolf') : L('приклад', 'example')}</b></span>
           <button className={`btn run${busy === 'run' ? ' busy' : ''}${tutorial && !ranOnce ? ' pulse' : ''}`} onClick={run} title={L('Запустити на прикладі (⌘↵)', 'Run on the example (⌘↵)')}>▶ {L('Запустити', 'Run')}</button>
           <button className={`btn judge${busy === 'judge' ? ' busy' : ''}`} onClick={judge} title={L('Усі тести (⌘⇧↵)', 'All tests (⌘⇧↵)')}>⚖ {L('Суд богів', 'Judgement')}</button>
           <button className="btn step" onClick={() => view.current?.step()} disabled={!scene?.total || scene.done} title={L('Один крок', 'One step')}>{L('Крок', 'Step')}</button>
@@ -400,7 +413,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
         <Speech who={SPRITE[bubble.who]} name={WHO[bubble.who]} text={bubble.text()} tone={bubble.tone} fox={world.fox} seq={bubble.seq} enter={bubble.enter}
           action={justSolved && level.id === 'troy.sum' && !progress.departed
             ? <button className="btn next" onClick={() => go({ name: 'departure' })}>{L('Відплиття', 'Set sail')} ▸</button>
-            : justSolved && level.final && hasVoyage(level.world)
+            : justSolved && level.final && !track && hasVoyage(level.world)
             ? <span className="row-actions">
                 {level.id === 'carthage.dido' && <a className="btn" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Розкажи, як пройшло', 'Tell us how it went')}</a>}
                 <button className="btn next" onClick={() => go({ name: 'voyage', from: level.world })}>{L('У дорогу', 'Set off')} ▸</button>
@@ -409,7 +422,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
             ? <button className="btn next" onClick={() => go({ name: 'level', id: next!.id })}>{L('Далі', 'Next')}: {lt(next!).title} ▸</button>
             : <span className="row-actions">
                 {level.id === 'carthage.dido' && <a className="btn" href={feedbackUrl(progress)} target="_blank" rel="noreferrer">💬 {L('Розкажи, як пройшло', 'Tell us how it went')}</a>}
-                <button className="btn next" onClick={() => go({ name: 'map' })}>{L('До мапи', 'To the map')} ▸</button>
+                <button className="btn next" onClick={() => go(track ? { name: 'abetka', lang: track } : { name: 'map' })}>{track ? L('До Абетки', 'To the ABC') : L('До мапи', 'To the map')} ▸</button>
               </span>)} />
         {hasWolf ? (
           <div className="cmp">
@@ -444,7 +457,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
 function StatusBar({ level, cursor, complexity, stars, lang }: { level: Level; cursor: { line: number; col: number }; complexity: string; stars: number; lang: Lang }) {
   return (
     <footer className="status">
-      <span>● {L('Світ', 'World')} {level.world} · {lt(level).title}</span>
+      <span>● {level.track ? `${L('Абетка', 'ABC')} · ${L('Розділ', 'Chapter')} ${level.world + 1}` : `${L('Світ', 'World')} ${level.world}`} · {lt(level).title}</span>
       <span>Ln {cursor.line}, Col {cursor.col}</span>
       <span>{L('Складність', 'Complexity')}: <b>{complexity}</b></span>
       <span aria-label={L(`${stars} з 3 зірок`, `${stars} of 3 stars`)}>{'★'.repeat(stars)}{'☆'.repeat(3 - stars)}</span>

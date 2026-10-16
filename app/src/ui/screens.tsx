@@ -47,6 +47,7 @@ export function Menu({ progress, go, ui, setUi, updates }: { progress: Progress;
             <button className="btn big run" onClick={() => go({ name: 'onboarding' })}>{L('Почати мандрівку', 'Start the journey')}</button>
           )}
           <button className="btn big" onClick={() => go({ name: 'map' })}>{L('Мапа світів', 'World map')}</button>
+          <button className="btn big abc" onClick={() => go({ name: 'abetka' })} title={L('Для тих, хто тільки вчить мову програмування', 'For those just learning a programming language')}>{L('Абетка: мова з нуля', 'The ABC: a language from scratch')}</button>
           {started && <button className="btn big" onClick={() => go({ name: 'onboarding' })}>{L('Переглянути вступ', 'Watch the intro')}</button>}
           <button className="btn big" onClick={() => go({ name: 'settings' })}>{L('Налаштування', 'Settings')}</button>
         </div>

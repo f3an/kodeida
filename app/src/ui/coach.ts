@@ -10,8 +10,8 @@ import { expectedOf } from '../engine/judge.ts';
 
 export interface Advice { who: 'fox' | 'sibyl' | 'host'; text: () => string }
 
-/** Поради написані під JS; Python-код (є `def`) вони не розуміють. */
-const isPy = (code: string) => /^\s*def\s/m.test(code);
+/** Python-код: у «Абетці» мову задає доріжка, у кампанії — впізнаємо за def. */
+const isPy = (level: Level, code: string) => (level.track ? level.track === 'py' : /^\s*def\s/m.test(code));
 
 const COMMANDS = ['move', 'take', 'jump', 'fireAhead', 'atEnd'];
 
@@ -42,7 +42,7 @@ const at = (line?: number) => (line ? L(`Рядок ${line}: `, `Line ${line}: `
 
 /** Помилка під час компіляції чи виконання. `raw` — те, що сказав рушій. */
 export function adviseError(level: Level, code: string, err: { message: string; line?: number }): Advice | null {
-  if (isPy(code)) return null;
+  if (isPy(level, code)) return null;
   const { bare } = clean(code);
   const m = err.message;
   // рушій уже переклав помилку й додав оригінал у дужках; для помилок JS порада пояснює сама,
@@ -67,7 +67,7 @@ export function adviseError(level: Level, code: string, err: { message: string; 
   }
   if (/Maximum call stack size exceeded/.test(m))
     return fox(plain(`${at(err.line)}рекурсія спускається без кінця: немає базового випадку або він ніколи не настає. Перевір, коли функція має зупинитися без нового виклику — і чи кожен виклик справді наближає до цього.`), plain(`${at(err.line)}the recursion goes down forever: there is no base case, or it is never reached. Check when the function should stop without a new call — and whether every call really gets closer to it.`));
-  if (level.world === 7 && /of null \(reading '(next|val)'\)/.test(m))
+  if ((!level.track && level.world === 7) && /of null \(reading '(next|val)'\)/.test(m))
     return fox(plain(`${at(err.line)}віз виявився порожнім (null), а в нього попросили .next чи .val. Перш ніж іти далі, перевір, що віз є: while (fast && fast.next).`), plain(`${at(err.line)}the cart turned out to be empty (null), and you asked it for .next or .val. Before going on, check the cart exists: while (fast && fast.next).`));
   if (/Cannot read propert(y|ies) of undefined/.test(m))
     return fox(plain(`${at(err.line)}ти береш щось у того, чого немає (undefined). Часто це вихід за межі масиву: останній елемент — [length - 1].`), plain(`${at(err.line)}you are taking something from a thing that doesn’t exist (undefined). Often that means going past the end of an array: the last element is [length - 1].`));
@@ -95,11 +95,11 @@ export function adviseError(level: Level, code: string, err: { message: string; 
 
 /** Код працював понад 2 секунди. */
 export function adviseTimeout(level: Level, code: string): Advice {
-  if (level.world === 7 && !isPy(code) && /while\s*\(\s*(node|cur|head)\s*\)/.test(clean(code).bare) && !/\b(node|cur|head)\s*=\s*\1\.next/.test(clean(code).bare))
+  if ((!level.track && level.world === 7) && !isPy(level, code) && /while\s*\(\s*(node|cur|head)\s*\)/.test(clean(code).bare) && !/\b(node|cur|head)\s*=\s*\1\.next/.test(clean(code).bare))
     return fox('Цикл стоїть на одному возі: не забудь перейти до наступного — node = node.next.', 'The loop stays on one cart: don’t forget to move to the next one — node = node.next.');
-  if (level.world === 5 && !isPy(code) && /\blo\s*=\s*mid\s*[;\n}]/.test(clean(code).bare + '\n'))
+  if ((!level.track && level.world === 5) && !isPy(level, code) && /\blo\s*=\s*mid\s*[;\n}]/.test(clean(code).bare + '\n'))
     return fox('lo = mid може ніколи не зрушити: коли hi = lo + 1, середина дорівнює lo, і цикл стоїть на місці. Пиши lo = mid + 1.', 'lo = mid may never move: when hi = lo + 1, the middle equals lo and the loop stands still. Write lo = mid + 1.');
-  if (isPy(code)) return fox('Цикл не закінчується. Перевір, чи змінюється щось, від чого залежить умова while (наприклад, чи є крок усередині).', 'The loop never ends. Check whether anything that the while condition depends on changes (for example, is there a step inside?).');
+  if (isPy(level, code)) return fox('Цикл не закінчується. Перевір, чи змінюється щось, від чого залежить умова while (наприклад, чи є крок усередині).', 'The loop never ends. Check whether anything that the while condition depends on changes (for example, is there a step inside?).');
   const { bare } = clean(code);
   const w = bare.match(/while\s*\(([^)]*\)?)\)\s*\{?([\s\S]*)/);
   if (w && /atEnd/.test(w[1]) && !/move|jump/.test(w[2]))
@@ -111,7 +111,13 @@ export function adviseTimeout(level: Level, code: string): Advice {
 
 /** Запуск на прикладі пройшов без помилки, але відповідь не та. `why` — пояснення судді. */
 export function adviseRun(level: Level, code: string, r: CallResult, why: string, tc?: TestCase): Advice | null {
-  if (isPy(code)) return null;
+  // «Абетка»: перевіряється вивід, тож найчастіша помилка новачка — повернути рядок замість вивести
+  if (level.scene.type === 'scroll') {
+    const say = level.track === 'py' ? 'print(…)' : 'console.log(…)';
+    if (!r.logs?.length && /\breturn\b\s*\S/.test(code)) return fox(`Рядок треба вивести, а не повернути: заміни return на ${say}.`, `The line has to be printed, not returned: replace return with ${say}.`);
+    return null;
+  }
+  if (isPy(level, code)) return null;
   const { code: c, bare } = clean(code);
   if (level.scene.type === 'street') {
     const acted = r.events.some((e) => e.t === 'act');
@@ -150,7 +156,7 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
   if (/"троянець"|'троянець'/.test(c) && lang === 'en') return fox('In the English game the street speaks English: look for "trojan", not "троянець".', 'In the English game the street speaks English: look for "trojan", not "троянець".');
   if (/"trojan"|'trojan'/.test(c) && lang !== 'en') return fox('В українській грі вулиця говорить українською: шукай "троянець", а не "trojan".', 'In the Ukrainian game the street speaks Ukrainian: look for "троянець", not "trojan".');
   // світ 5: поділ навпіл
-  if (level.world === 5) {
+  if ((!level.track && level.world === 5)) {
     const want = ex ? expectedOf(level, ex) : undefined;
     if (/\(\s*\w+\s*\+\s*\w+\s*\)\s*\/\s*2/.test(bare) && !/Math\.(floor|trunc)|>>|\|\s*0/.test(bare)) return fox('(lo + hi) / 2 буває дробовим: nums[2.5] — це undefined. Середина має бути цілою: Math.floor((lo + hi) / 2).', '(lo + hi) / 2 can be a fraction: nums[2.5] is undefined. The middle must be whole: Math.floor((lo + hi) / 2).');
     if (level.id === 'konotop.insert' && got === -1) return fox('Тут -1 не буває: якщо козака немає, поверни місце, куди йому стати. Після циклу це lo.', 'There is no -1 here: if the Cossack isn’t there, return the place where he should stand. After the loop that is lo.');
@@ -158,7 +164,7 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
     if (level.id === 'konotop.pies' && !/Math\.ceil/.test(bare) && typeof got === 'number' && typeof want === 'number' && got < want) return fox('Неповна миска теж забирає цілу годину. Години рахуй з округленням угору: Math.ceil(p / k).', 'A partly full bowl still takes a whole hour. Count the hours rounding up: Math.ceil(p / k).');
   }
   // світ 6: вікно й купа
-  if (level.world === 6) {
+  if ((!level.track && level.world === 6)) {
     const want = ex ? expectedOf(level, ex) : undefined;
     if (level.id === 'sicily.laps' && got === 0 && typeof want === 'number' && want < 0) return fox('Очки бувають від\'ємні, тож найкраще не може починатися з 0. Почни його із суми першого вікна.', 'Points can be negative, so the best can’t start at 0. Start it with the sum of the first window.');
     if (level.id === 'sicily.boat' && typeof got === 'number' && got < 0) return fox('Якщо заробити не вийде, не купуй зовсім: відповідь 0, а не збиток. Почни best з 0.', 'If no profit is possible, don’t buy at all: the answer is 0, not a loss. Start best at 0.');
@@ -167,7 +173,7 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
     if (level.id === 'sicily.board' && /MaxPriorityQueue/.test(bare) && !/MinPriorityQueue/.test(bare)) return fox('Тут потрібна MinPriorityQueue: нагорі має бути найменший з k найкращих — він і є k-й найбільший.', 'You need a MinPriorityQueue here: the smallest of the k best must be on top — that is the k-th largest.');
   }
   // світ 8: рекурсія й backtracking
-  if (level.world === 8 && Array.isArray(got)) {
+  if ((!level.track && level.world === 8) && Array.isArray(got)) {
     const want = ex ? expectedOf(level, ex) : undefined;
     const keys = got.map((x) => JSON.stringify(Array.isArray(x) ? [...x].sort((a, b) => a - b) : x));
     if (got.length > 1 && got.every((x) => JSON.stringify(x) === JSON.stringify(got[0])) && /push\(\s*path\s*\)/.test(bare)) return fox('У відповіді всі набори однакові: ти кладеш туди той самий масив path, який потім змінюєш. Клади копію: out.push([...path]).', 'All the sets in the answer are the same: you put in the very array path that you keep changing. Put a copy: out.push([...path]).');
@@ -177,7 +183,7 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
   }
   if (level.id === 'hell.boats' && typeof got === 'number' && !/sort/.test(bare)) return fox('Спершу впорядкуй душі за вагою: тоді найважча й найлегша стоять на кінцях, і два вказівники працюють.', 'First sort the souls by weight: then the heaviest and the lightest stand at the ends, and two pointers work.');
   // світ 7: валка
-  if (level.world === 7) {
+  if ((!level.track && level.world === 7)) {
     const want = ex ? expectedOf(level, ex) : undefined;
     const g = Array.isArray(got) ? got : got === null ? [] : got;
     if (Array.isArray(g) && Array.isArray(want)) {
@@ -232,7 +238,7 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
   if (level.id === 'forest.groups' && got !== undefined && !Array.isArray(got)) return fox('Поверни масив груп, а не саму скриню: [...fam.values()].', 'Return an array of groups, not the chest itself: [...fam.values()].');
   if (level.id === 'forest.topk' && Array.isArray(got) && got.some(Array.isArray)) return fox('Поверни самі номери товарів, без лічильників: .map((p) => p[0]).', 'Return just the goods numbers, without the counts: .map((p) => p[0]).');
   // світ 4: стек
-  if (level.world === 4 && /\.shift\s*\(/.test(bare)) return fox('shift() бере з початку масиву — це черга, а не стек. З рукавички першим виходить той, хто біля входу: pop() бере з кінця.', 'shift() takes from the start of the array — that’s a queue, not a stack. The one by the mitten’s entrance gets out first: pop() takes from the end.');
+  if ((!level.track && level.world === 4) && /\.shift\s*\(/.test(bare)) return fox('shift() бере з початку масиву — це черга, а не стек. З рукавички першим виходить той, хто біля входу: pop() бере з кінця.', 'shift() takes from the start of the array — that’s a queue, not a stack. The one by the mitten’s entrance gets out first: pop() takes from the end.');
   if (level.id === 'mitten.parens' && got === true && want === false && !/length\s*===?\s*0|!\s*stack\b|stack\.length\s*\)/.test(bare)) return fox('Наприкінці в стеку можуть лишитися незакриті дужки. Поверни true, лише якщо стек порожній: stack.length === 0.', 'Unclosed brackets may be left on the stack at the end. Return true only if the stack is empty: stack.length === 0.');
   if (level.id === 'mitten.rpn') {
     if (typeof got === 'string' || (got !== want && !/Number\(|parseInt|parseFloat|\+\s*t\b/.test(bare))) return fox('Вийшов рядок: "2" + "1" — це "21". Перетворюй числа з рядків: Number(t).', 'You got a string: "2" + "1" is "21". Turn the strings into numbers: Number(t).');
@@ -251,7 +257,7 @@ export function adviseRun(level: Level, code: string, r: CallResult, why: string
 
 /** Суд богів: приклад пройшов, а якийсь інший тест — ні. */
 export function adviseJudge(level: Level, code: string, rep: JudgeReport): Advice | null {
-  if (isPy(code)) return null;
+  if (isPy(level, code) || level.scene.type === 'scroll') return null;
   const { bare } = clean(code);
   const exampleOk = rep.cases.filter((c) => c.kind === 'example').every((c) => c.verdict === 'ok');
   const bad = rep.cases.find((c) => c.verdict === 'wrong');
@@ -269,7 +275,7 @@ export function adviseJudge(level: Level, code: string, rep: JudgeReport): Advic
 
 /** Розв'язано, але є що підказати на майбутнє: наприклад, 15 рядків замість циклу. */
 export function adviseSolved(level: Level, code: string): string | null {
-  if (isPy(code)) return null;
+  if (isPy(level, code)) return null;
   const { bare } = clean(code);
   const moves = (bare.match(/enei\.move\s*\(/g) ?? []).length;
   if ((level.id === 'troy.far' || level.id === 'troy.sacks') && !usesLoop(bare) && moves >= 5)
@@ -279,15 +285,15 @@ export function adviseSolved(level: Level, code: string): string | null {
 
 /** Відповіді правильні, але Вовк би так само: у циклі ховається ще один обхід масиву. */
 export function adviseWolf(level: Level, code: string): Advice | null {
-  if (isPy(code)) return null;
+  if (isPy(level, code)) return null;
   const { bare } = clean(code);
   if (level.id === 'sicily.laps' && /for\s*\([^)]*\)[\s\S]*for\s*\(/.test(bare))
     return fox('Відповіді правильні, але кожне вікно ти складаєш заново. Сусідні вікна відрізняються лише двома колами: sum += laps[i] - laps[i - k].', 'The answers are right, but you add up every window from scratch. Neighbouring windows differ by only two laps: sum += laps[i] - laps[i - k].');
   if (level.id === 'sicily.boat') return fox('Відповіді правильні, але пари днів перебирати не треба: пам\'ятай найдешевший день позаду й рахуй, скільки заробив би сьогодні.', 'The answers are right, but you don’t need to try pairs of days: remember the cheapest day behind you and count what you’d earn today.');
   if (level.id === 'sicily.board') return fox('Відповіді правильні, але ти щоразу сортуєш усю таблицю. Тримай лише k найкращих у MinPriorityQueue: відповідь — її верхівка.', 'The answers are right, but you sort the whole table every time. Keep only the k best in a MinPriorityQueue: the answer is its top.');
-  if (level.world === 5 && !/mid|\/\s*2|>>/.test(bare))
+  if ((!level.track && level.world === 5) && !/mid|\/\s*2|>>/.test(bare))
     return fox('Відповіді правильні, але ти перевіряєш усіх по черзі — так сотник кидає в став увесь Конотоп. Ряд упорядкований: дивись у середину й відкидай половину.', 'The answers are right, but you check everyone in turn — that’s how the captain throws all of Konotop into the pond. The row is ordered: look in the middle and drop half.');
-  if (level.world === 3 && /\.(includes|indexOf|lastIndexOf|filter|some|find|findIndex|count)\s*\(/.test(bare) && usesLoop(bare))
+  if ((!level.track && level.world === 3) && /\.(includes|indexOf|lastIndexOf|filter|some|find|findIndex|count)\s*\(/.test(bare) && usesLoop(bare))
     return fox('Відповіді правильні, але includes, indexOf чи filter щоразу обходять увесь масив — це той самий Вовк, тільки тихіший. Запам\'ятовуй у Set чи Map.', 'The answers are right, but includes, indexOf or filter walk the whole array every time — it’s the same Wolf, just quieter. Remember things in a Set or a Map.');
   return null;
 }

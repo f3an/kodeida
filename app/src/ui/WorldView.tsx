@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { ArrayScene, StreetScene, W, H, type Actor, type SceneState } from '../world/scenes.ts';
+import { ArrayScene, ScrollScene, StreetScene, W, H, type Actor, type SceneState } from '../world/scenes.ts';
 import type { Level } from '../engine/level.ts';
 import type { ActorArg, ListArg, TestCase, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
@@ -18,17 +18,19 @@ interface Props { level: Level; fox: string; speed: number; crew?: number; onSta
 
 const DESCR = (): Record<string, string> => ({
   street: L('Вулиця згарища: Еней виконує команди, Микита чекає в кінці', 'A street of ashes: Aeneas follows the commands, Mykyta waits at the end'),
+  scroll: L('Казковий ліс і сувій: усе, що виводить програма, з\'являється на сувої рядок за рядком', 'A fairy-tale forest and a scroll: everything the program prints appears on it line by line'),
   array: L('Ряд предметів світу: код дивиться на них по черзі, Еней і Микита стають біля тих, що щойно прочитано', 'A row of objects: the code looks at them one by one, Aeneas and Mykyta stand by the ones just read'),
 });
 
 export const WorldView = forwardRef<WorldHandle, Props>(function WorldView({ level, fox, speed, crew = 0, onState }, ref) {
   const canvas = useRef<HTMLCanvasElement>(null);
-  const scene = useRef<ArrayScene | StreetScene | null>(null);
+  const scene = useRef<ArrayScene | StreetScene | ScrollScene | null>(null);
   const observed = level.observe.findIndex((x) => !!x);
 
   const show = (tc: TestCase, events: WorldEvent[], actor: Actor = 'heroes', result: string | null = null) => {
     const s = scene.current;
-    if (s instanceof StreetScene) s.load((tc.args[0] as ActorArg).setup.cells, events);
+    if (s instanceof ScrollScene) s.load(events);
+    else if (s instanceof StreetScene) s.load((tc.args[0] as ActorArg).setup.cells, events);
     else if (s instanceof ArrayScene) {
       const arg = tc.args[observed] as unknown[] | string | ListArg;
       // зв'язний список: значення возів і зачіпки (останній — на pos, якщо валка замкнена)
@@ -43,6 +45,7 @@ export const WorldView = forwardRef<WorldHandle, Props>(function WorldView({ lev
     const spec = level.scene;
     const s = spec.type === 'street'
       ? new StreetScene(canvas.current!, onState, fox)
+      : spec.type === 'scroll' ? new ScrollScene(canvas.current!, onState, fox, level.world)
       : new ArrayScene(canvas.current!, onState, fox, level.world, spec.skin, spec.mode);
     scene.current = s;
     show(level.examples[0], []);

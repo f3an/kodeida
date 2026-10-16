@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { LevelScreen } from './LevelScreen.tsx';
 import { MapScreen } from './MapScreen.tsx';
 import { VoyageScreen } from './Voyage.tsx';
+import { AbetkaScreen } from './Abetka.tsx';
+import type { Lang } from '../engine/types.ts';
 import { Menu, Onboarding, BookScreen, ShirtScreen, SettingsScreen, updateText, INTRO_SCENES, DEPARTURE_SCENES } from './screens.tsx';
-import { levelById, worlds } from '../levels/index.ts';
+import { levelById, worlds, worldOf } from '../levels/index.ts';
 import { useProgress, useSettings } from './progress.ts';
 import { bridge, useUpdates } from './bridge.ts';
 import { load, save } from './storage.ts';
@@ -12,7 +14,7 @@ import { wt } from '../levels/text.ts';
 
 export type Screen =
   | { name: 'menu' } | { name: 'onboarding' } | { name: 'departure' } | { name: 'voyage'; from: number } | { name: 'map' } | { name: 'level'; id: string }
-  | { name: 'book' } | { name: 'shirt' } | { name: 'settings' };
+  | { name: 'book' } | { name: 'shirt' } | { name: 'settings' } | { name: 'abetka'; lang?: Lang };
 
 /** Смуга, за яку тягнуть вікно на екранах без панелі заголовка (меню, заставки). */
 const DragStrip = () => (bridge ? <div className="drag-strip" aria-hidden="true" /> : null);
@@ -29,6 +31,15 @@ export function App() {
   // платформа для стилів вікна: місце під «світлофор» macOS і кнопки Windows
   useEffect(() => { document.body.dataset.platform = bridge?.platform ?? 'web'; }, []);
   const go = (s: Screen) => setScreen(s);
+  // «Абетка» пам'ятає обрану мову
+  const [abcLang, setAbcLang] = useState<Lang>(() => load<Lang>('abetka.lang', 'py'));
+  useEffect(() => save('abetka.lang', abcLang), [abcLang]);
+  useEffect(() => {
+    if (screen.name === 'abetka' && screen.lang) setAbcLang(screen.lang);
+    // відкрив вправу «Абетки» — повернешся до її мови
+    const l = screen.name === 'level' ? levelById(screen.id) : undefined;
+    if (l?.track) setAbcLang(l.track);
+  }, [screen]);
 
   const level = screen.name === 'level' ? levelById(screen.id) : undefined;
   if (screen.name === 'level' && !level) setScreen({ name: 'map' });
@@ -49,7 +60,7 @@ export function App() {
     return <><DragStrip /><VoyageScreen from={screen.from} onDone={arrive} /></>;
   }
 
-  const nav: [Screen['name'], string, string][] = [['level', '☰', L('Вправи', 'Exercises')], ['map', '◈', L('Мапа світів', 'World map')], ['book', '✦', L('Книга хитрощів', 'Book of Tricks')], ['shirt', '✚', L('Вишиванка', 'Embroidered shirt')], ['settings', '⚙', L('Налаштування', 'Settings')]];
+  const nav: [Screen['name'], string, string][] = [['level', '☰', L('Вправи', 'Exercises')], ['map', '◈', L('Мапа світів', 'World map')], ['abetka', L('А', 'A'), L('Абетка: мова з нуля', 'The ABC: a language from scratch')], ['book', '✦', L('Книга хитрощів', 'Book of Tricks')], ['shirt', '✚', L('Вишиванка', 'Embroidered shirt')], ['settings', '⚙', L('Налаштування', 'Settings')]];
   const lastLevel = level?.id ?? progress.last ?? worlds[0].levels[0].id;
   const showUpdate = updates && (updates.stage === 'available' || updates.stage === 'downloading' || updates.stage === 'downloaded');
 
@@ -57,7 +68,7 @@ export function App() {
     <div className="app">
       <header className="titlebar">
         <button className="logo" onClick={() => go({ name: 'menu' })}><b>{'{'}</b> {L('Кодеїда', 'Kodeida')}</button>
-        <span className="crumbs">{level ? `${wt(worlds[level.world]).song} · ${L('Світ', 'World')} ${level.world} · ${wt(worlds[level.world]).name}` : ''}</span>
+        <span className="crumbs">{level ? (level.track ? `${wt(worldOf(level)).song} · ${L('Розділ', 'Chapter')} ${level.world + 1} · ${wt(worldOf(level)).name}` : `${wt(worlds[level.world]).song} · ${L('Світ', 'World')} ${level.world} · ${wt(worlds[level.world]).name}`) : ''}</span>
         {showUpdate && (
           <span className="update-pill">
             {updateText(updates!)}
@@ -77,6 +88,7 @@ export function App() {
           <LevelScreen key={level.id} level={level} progress={progress} setProgress={setProgress} patchLevel={patchLevel} settings={settings} setSettings={setSettings}
             go={(s) => { if (s.name === 'level') setProgress((p) => ({ ...p, last: s.id })); go(s); }} />
         )}
+        {screen.name === 'abetka' && <AbetkaScreen lang={screen.lang ?? abcLang} progress={progress} go={go} />}
         {screen.name === 'map' && <MapScreen progress={progress} go={go} />}
         {screen.name === 'book' && <BookScreen progress={progress} />}
         {screen.name === 'shirt' && <ShirtScreen progress={progress} />}

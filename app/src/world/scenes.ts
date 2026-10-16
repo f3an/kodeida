@@ -659,3 +659,101 @@ function paintCarthage(c: CanvasRenderingContext2D, posts: boolean) {
     for (let s = 0; s <= 16; s++) { const x = Math.round(49 + (dx * s) / 16), y = Math.round(102 + (dy * s) / 16 + (s * s) / 60); put(x, y, '#3f7a3a'); put(x, y + 1, '#2f5f2c'); }
   });
 }
+
+/* ============================== сувій «Абетки» ============================== */
+
+/** «Абетка»: казковий ліс, сувій і Микита. Кожен рядок, який виводить програма, дописується на сувій. */
+export class ScrollScene extends SceneBase {
+  private lines: string[] = [];
+  private shownAt: number[] = [];
+  private foxW: Walker = { x: W - 52, tx: W - 52, y: 300, ty: 300, face: -1 };
+  private dummy: Walker = { x: 0, tx: 0, y: 0, ty: 0, face: 1 };
+  /** Колобок котиться низом сцени (розділ 1). */
+  private bun: boolean;
+
+  constructor(canvas: HTMLCanvasElement, onState: (s: SceneState) => void, fox: string, chapter: number) {
+    super(canvas, onState, fox);
+    this.bun = chapter === 0;
+    const c = this.bg.getContext('2d')!;
+    const sp = new Spr(200, 130); artOf(3).bg(sp, 0); sp.draw(c, 0, 0, 3);
+    c.fillStyle = 'rgba(12,18,14,.38)'; c.fillRect(0, 0, W, H);
+  }
+
+  load(events: WorldEvent[]) {
+    this.events = events.filter((e) => e.t === 'log');
+    this.reset();
+  }
+
+  reset() { this.lines = []; this.shownAt = []; this.k = 0; this.playing = false; this.emit(); }
+
+  protected stepMs() { return 650 / this.speed; }
+  protected apply(e: WorldEvent, silent: boolean) {
+    if (e.t !== 'log') return;
+    this.lines.push(e.text);
+    this.shownAt.push(silent ? 0 : performance.now());
+  }
+  protected walkers() { return [this.foxW, this.dummy]; }
+  protected badge() { return { label: L('рядків', 'lines'), value: String(this.lines.length) }; }
+
+  protected draw(now: number) {
+    const c = this.ctx, t = this.reduced ? 0 : now / 1000;
+    // сувій: пергамент між двома валиками
+    const x0 = 36, x1 = W - 118, y0 = 60, rows = 8, lh = 25, y1 = y0 + 30 + rows * lh;
+    c.fillStyle = '#1f1b16'; c.fillRect(x0 - 2, y0 - 2, x1 - x0 + 4, y1 - y0 + 4);
+    c.fillStyle = '#efe2c0'; c.fillRect(x0, y0, x1 - x0, y1 - y0);
+    c.fillStyle = '#e2d1a6'; for (let y = y0 + 6; y < y1; y += 8) c.fillRect(x0 + ((y * 7) % 23), y, 3, 2);
+    for (const y of [y0 - 8, y1 - 2]) {
+      c.fillStyle = '#5b3a20'; c.fillRect(x0 - 14, y, x1 - x0 + 28, 10);
+      c.fillStyle = '#8a5a30'; c.fillRect(x0 - 14, y, x1 - x0 + 28, 3);
+      c.fillStyle = '#b3202a'; c.fillRect(x0 - 20, y - 1, 8, 12); c.fillRect(x1 + 12, y - 1, 8, 12);
+    }
+    c.font = '15px "Fira Code", monospace';
+    const first = Math.max(0, this.lines.length - rows);
+    if (!this.lines.length) {
+      c.fillStyle = '#9c8a64';
+      c.fillText(L('Сувій чекає: тут з\'явиться', 'The scroll waits: what the program'), x0 + 16, y0 + 34);
+      c.fillText(L('те, що виведе програма.', 'prints appears here.'), x0 + 16, y0 + 34 + lh);
+    }
+    for (let i = first; i < this.lines.length; i++) {
+      const y = y0 + 34 + (i - first) * lh, at = this.shownAt[i];
+      const p = at ? Math.min(1, (now - at) / 300) : 1;
+      let text = this.lines[i];
+      const max = 38;
+      if (text.length > max) text = text.slice(0, max - 1) + '…';
+      // рядок «пишеться» зліва направо
+      const shown = this.reduced ? text : text.slice(0, Math.ceil(text.length * p));
+      c.fillStyle = '#8a6438'; c.fillText(`${i + 1}`.padStart(2, ' '), x0 + 10, y);
+      c.fillStyle = i === this.lines.length - 1 && this.playing ? '#7a1f1f' : '#2b2118';
+      c.fillText(shown, x0 + 44, y);
+    }
+    // Колобок котиться туди й назад
+    if (this.bun) {
+      const span = W - 220, ph = (t * 40) % (span * 2), bx = 40 + (ph < span ? ph : span * 2 - ph), by = H - 36;
+      this.drawBun(bx, by, ph < span ? 1 : -1, t);
+    }
+    // Микита біля сувою
+    const [a, b] = foxOf(this.fox);
+    const spr = Math.floor(t) % 2 ? b : a;
+    drawFacing(c, spr, this.foxW.x - a.w, this.foxW.y - a.h * 2, -1);
+    if (this.events.length && this.k >= this.events.length && !this.playing) this.label(L('Вивід на сувої', 'Output on the scroll'), (x0 + x1) / 2, y1 + 16, true);
+  }
+
+  private drawBun(x: number, y: number, dir: number, t: number) {
+    const c = this.ctx, r = 16;
+    for (let dy = -r; dy <= r; dy += 2) for (let dx = -r; dx <= r; dx += 2) {
+      const d = dx * dx + dy * dy;
+      if (d > r * r) continue;
+      c.fillStyle = d > (r - 3) * (r - 3) ? '#a8641f' : dy < -4 && dx < 0 ? '#f6c25a' : '#e8a23a';
+      c.fillRect(Math.round(x + dx), Math.round(y + dy), 2, 2);
+    }
+    // обличчя дивиться туди, куди котиться
+    const fx = Math.round(x + dir * 5), blink = Math.floor(t * 3) % 9 === 0;
+    c.fillStyle = '#2b1a0e';
+    if (!blink) { c.fillRect(fx - 5, y - 5, 3, 3); c.fillRect(fx + 3, y - 5, 3, 3); } else { c.fillRect(fx - 5, y - 4, 3, 1); c.fillRect(fx + 3, y - 4, 3, 1); }
+    c.fillStyle = '#b3202a'; c.fillRect(fx - 3, y + 4, 7, 2);
+    // ноти пісеньки
+    c.fillStyle = 'rgba(255,250,230,.85)';
+    const ny = Math.round(y - 28 - ((t * 16) % 14));
+    c.fillRect(x + dir * 14, ny, 2, 8); c.fillRect(x + dir * 14 - 3, ny + 7, 4, 3);
+  }
+}

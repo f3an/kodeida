@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { compile, runCall } from '../src/engine/sandbox-core.ts';
 import { planJudge, verdictOf } from '../src/engine/judge.ts';
 import { levels } from '../src/levels/index.ts';
+import { trackLevels } from '../src/levels/abetka.ts';
 import { loadPyodide } from 'pyodide';
 import { createPyEngine, pyEntry } from '../src/engine/py-core.ts';
 import { PY, pyText } from '../src/levels/python.ts';
@@ -151,5 +152,36 @@ test('Python: Еней обпікся', () => {
   const r = py.runCall({ args: [{ $actor: 'enei', setup: { cells: ['empty', 'fire', 'well'] } }], observe: [null], record: true }, 100, false);
   assert.equal(r.error.line, 2);
 });
+
+// ---- «Абетка»: вправи однієї мови, перевіряється вивід ----
+for (const level of trackLevels) {
+  const lang = level.track;
+  const run = (code) => (lang === 'py' ? judgePy(level, code) : judge(level, code, lang));
+  test(`${level.id}: унікальний id`, () => { assert.ok(!ids.has(level.id)); ids.add(level.id); });
+  test(`${level.id}: рішення проходить`, () => { const r = run(level.solution); assert.equal(r.verdict, 'fox', why(r)); });
+  test(`${level.id}: стартовий код компілюється й не проходить`, () => {
+    const code = starterOf(level, lang);
+    assert.ok(code.length > 0);
+    assert.equal(starterOf(level, lang === 'py' ? 'js' : 'py'), '');
+    const r = run(code);
+    assert.notEqual(r.verdict, 'error', why(r));
+    assert.notEqual(r.verdict, 'fox');
+  });
+  test(`${level.id}: зайвий рядок виводу — помилка`, () => {
+    const extra = lang === 'py' ? level.solution.replace(/\n$/, '\n    print("ой")\n') : level.solution.replace(/\n}\n$/, '\n  console.log("ой");\n}\n');
+    assert.notEqual(extra, level.solution);
+    assert.equal(run(extra).verdict, 'wrong');
+  });
+  if (lang === 'py') test(`${level.id}: тексти без JS-залишків`, () => {
+    const T = lt(level, 'py');
+    const all = [T.brief, ...T.statement, ...T.hints, ...(T.tool ? [...T.tool.text, T.tool.code] : [])].join('\n').replace(/<[^>]+>/g, '');
+    assert.doesNotMatch(all, /console\.log|;\s*$|\bconst\b|\blet\b/m, all);
+  });
+  else test(`${level.id}: тексти без Python-залишків`, () => {
+    const T = lt(level, lang);
+    const all = [T.brief, ...T.statement, ...T.hints, ...(T.tool ? [...T.tool.text, T.tool.code] : [])].join('\n');
+    assert.doesNotMatch(all, /\bprint\(|\bdef\b/, all);
+  });
+}
 
 console.log(`\n${n} перевірок пройдено`);

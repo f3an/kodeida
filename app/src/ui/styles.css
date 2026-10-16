@@ -392,3 +392,26 @@ canvas { image-rendering: pixelated; }
 .feedback-link { color: var(--fox-soft); font: 13px var(--mono); text-decoration: none; }
 .feedback-link:hover { text-decoration: underline; }
 .speech-action .btn:not(.next) { color: #1f1b16; border-color: #c9bfa6; text-decoration: none; }
+
+/* ---------- Абетка ---------- */
+.tabs .lang.track { font: 12px var(--mono); color: var(--fox-soft); padding: 0 12px; }
+.doc pre.out { color: var(--ok); }
+.menu-actions .btn.abc { border-color: var(--fox-soft); }
+.abc-langs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 6px 0 16px; }
+.abc-langs button { text-align: left; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--side); color: var(--fg); cursor: pointer; display: flex; flex-direction: column; gap: 4px; font: inherit; }
+.abc-langs button b { font: 600 15px var(--mono); }
+.abc-langs button small { color: var(--mute); font-size: 12px; line-height: 1.4; }
+.abc-langs button.on { border-color: var(--fox); box-shadow: inset 0 0 0 1px var(--fox); background: #1a231e; }
+.abc-go { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.abc-chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; align-items: start; }
+.abc-ch { border: 1px solid var(--line); border-top: 3px solid var(--fox, #e2702b); border-radius: 10px; padding: 12px 14px; background: var(--side); }
+.abc-ch h2 { margin: 2px 0 2px; font-size: 18px; }
+.abc-ch p { margin: 0 0 8px; }
+.abc-ch ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.abc-ch .it { width: 100%; display: flex; flex-direction: column; gap: 1px; text-align: left; padding: 5px 8px; border-radius: 6px; color: #c9c2b0; background: transparent; border: 0; font: inherit; font-size: 13px; cursor: pointer; }
+.abc-ch .it:hover:not(:disabled) { background: #1f2a23; }
+.abc-ch .it:disabled { cursor: default; color: #6f7a72; }
+.abc-ch .it.done { color: var(--ok); }
+.abc-ch .it small { color: var(--dim); font-family: var(--mono); font-size: 10.5px; padding-left: 18px; }
+.abc-ch.soon { border-top-color: var(--line); opacity: .6; }
+.abc-ch.locked { opacity: .75; }

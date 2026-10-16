@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Level, World } from '../engine/level.ts';
 import type { Lang } from '../engine/types.ts';
-import { worlds } from '../levels/index.ts';
+import { worlds, tracks, worldOf } from '../levels/index.ts';
 import { load, save } from './storage.ts';
 import { detectLang, type UiLang } from '../i18n.ts';
 
@@ -49,15 +49,15 @@ export const solved = (p: Progress, l: Level) => starsOf(p, l) >= 1;
 /** Світ відкрито, якщо розв'язано фінальну задачу попереднього. */
 export function worldOpen(p: Progress, w: World): boolean {
   if (w.n === 0) return true;
-  const prev = worlds[w.n - 1];
+  const prev = (w.track ? tracks[w.track] : worlds)[w.n - 1];
   return !!prev && solved(p, prev.levels[prev.levels.length - 1]);
 }
 
 /** Вправу відкрито, якщо відкрито світ і розв'язано попередню вправу. */
 export function levelOpen(p: Progress, l: Level): boolean {
-  const w = worlds[l.world];
+  const w = worldOf(l);
   if (!worldOpen(p, w)) return false;
-  if (w.n === 0 && p.skipBasics) return true;
+  if (w.n === 0 && !w.track && p.skipBasics) return true;
   const i = w.levels.indexOf(l);
   // пройдене лишається відкритим, навіть якщо перед ним з'явилася нова вправа
   return i === 0 || solved(p, l) || solved(p, w.levels[i - 1]);

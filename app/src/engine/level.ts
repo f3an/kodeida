@@ -1,8 +1,9 @@
-import type { CallResult, TestCase } from './types.ts';
+import type { CallResult, Lang, TestCase } from './types.ts';
 
 /** Як світ показує рівень. */
 export type SceneSpec =
   | { type: 'street' }                                                     // світ 0: команди Енея
+  | { type: 'scroll' }                                                     // «Абетка»: вивід програми на сувої
   | { type: 'array'; skin: 'sack' | 'ship' | 'sail' | 'post' | 'letter' | 'stone'; mode: 'scan' | 'pointers' | 'area' };
 
 export interface Level {
@@ -27,7 +28,10 @@ export interface Level {
   entry: string;
   /** Назви аргументів-масивів і рядків, за якими стежить світ (null — не стежити). */
   observe: (string | null)[];
-  starter: { ts: string; js: string };
+  /** Стартовий код; py — лише для вправ «Абетки» з track: 'py' (кампанія бере Python із levels/python.ts). */
+  starter: { ts: string; js: string; py?: string };
+  /** «Абетка»: вправа однієї мови. Тоді solution написано цією мовою, а перемикач мови прихований. */
+  track?: Lang;
   examples: TestCase[];
   hidden: TestCase[];
   big?: { n: number; make: (n: number) => unknown[]; readBudget: (n: number) => number };
@@ -68,6 +72,8 @@ export interface World {
   topic: string;
   /** Колір Микити в цьому світі. */
   fox: string;
+  /** «Абетка»: розділ доріжки цієї мови (інакше — світ кампанії). */
+  track?: Lang;
   /** Хто зустрічає героїв і що каже на початку. */
   host: { who: string; line: string };
   /** Візерунок на вишиванці й запис у Книзі хитрощів після фінальної задачі. */

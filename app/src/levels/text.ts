@@ -4,6 +4,7 @@ import type { Lang } from '../engine/types.ts';
 import { uiLang, siteT } from '../i18n.ts';
 import { LEVELS_EN, WORLDS_EN } from './en.ts';
 import { PY, pyStarter, pyText, pyTool } from './python.ts';
+import { EN_STARTER, CHAPTERS_EN } from './abetka.ts';
 
 export function lt(level: Level, lang: Lang = 'ts') {
   const en = uiLang() === 'en' ? LEVELS_EN[level.id] : undefined;
@@ -33,6 +34,8 @@ export function lt(level: Level, lang: Lang = 'ts') {
 
 /** Стартовий код: для англійської — коментар-умова англійською, решта коду та сама. */
 export function starterOf(level: Level, lang: Lang): string {
+  // «Абетка»: вправа є лише своєю мовою
+  if (level.track) return lang !== level.track ? '' : uiLang() === 'en' ? EN_STARTER[level.id] : (level.starter[lang] ?? '');
   if (lang === 'py') {
     const en = uiLang() === 'en' ? LEVELS_EN[level.id] : undefined;
     return pyStarter(level, en?.doc, en ? '# Your code here' : undefined);
@@ -47,6 +50,10 @@ export function starterOf(level: Level, lang: Lang): string {
 }
 
 export function wt(world: World) {
+  if (world.track) {
+    const e = uiLang() === 'en' ? CHAPTERS_EN[`${world.track}.${world.n}`] : undefined;
+    return { name: e?.name ?? world.name, song: world.song.replace('Абетка', uiLang() === 'en' ? 'ABC' : 'Абетка'), topic: e?.topic ?? world.topic, host: e ? { who: 'Mykyta', line: e.host } : world.host, trick: world.trick };
+  }
   const en = uiLang() === 'en' ? WORLDS_EN[world.n] : undefined;
   return {
     name: siteT(world.name),
