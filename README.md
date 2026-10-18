@@ -153,6 +153,20 @@ cd site
 python3 -m http.server 8000   # http://localhost:8000 and /artbook.html
 ```
 
+The trailer, the release video and the Reels are built with [Remotion](https://www.remotion.dev) in `video/`. They use the game's own sprites, and a script synthesises the music:
+
+```bash
+cd video
+npm install
+npm run sfx                            # sound effects → public/
+npm run music                          # the trailer's and the release video's music
+npm run record                         # game footage at 2× (needs npm run dev in app/)
+npm run dev                            # Remotion Studio: preview and edit
+npx remotion render Trailer-uk out/kodeida-trailer-uk.mp4
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md#trailer-and-videos) for the site encode and the Reels cover.
+
 <details>
 <summary><b>What's in this repository</b></summary>
 
@@ -167,7 +181,8 @@ app/                  the game: Electron + React + TypeScript + Monaco
   src/ui/             screens: menu, onboarding, level, map, ABC, book, shirt, settings; story.ts — ABC cutscenes
 site/                 the website, deployed to GitHub Pages
   index.html          landing page (UA / EN)
-  artbook.html        artbook (UA / EN): animations, screens, UI kit, onboarding, identity
+  artbook.html        artbook (UA / EN): animations, screens, UI kit, onboarding, identity, motion
+  media/              the trailer (UA / EN) and its posters
   app.js              pixel-art renderer, scenes, journey map, i18n; the game imports it
   style.css           shared styles, light and dark themes
 docs/
@@ -178,6 +193,10 @@ docs/
   STORY.md            the full campaign: 6 songs, 16 worlds, problems per world
   ONBOARDING.md       scene-by-scene script of the intro
   media/              the logo and the GIFs in this README
+video/                the trailer, the release video and the Reels (Remotion)
+  src/timeline.mjs    the trailer laid out in bars, shared by the picture and the music
+  src/scenes/         trailer scenes; src/launch/ — the release video and the Reels
+  scripts/            music.mjs (synthesised soundtrack), record.mjs (game footage)
 ```
 
 </details>

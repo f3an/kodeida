@@ -20,9 +20,9 @@
   <header class="sheet sec ab-intro" id="ab-top" data-title="Артбук"><div class="fit">
     <div class="eyebrow reveal">Артбук · концепт v0.3</div>
     <h1 class="ab-h1">Як влаштована <span class="brace">{</span>Кодеїда</h1>
-    <p class="sub reveal" style="--i:1">Усе, що не потрапило на головну: анімації героїв, вишиванка-прогрес, Кришталева Писанка, карта екранів, UI-кіт, онбординг на 14 сцен, айдентика, іконка і голос гри.</p>
+    <p class="sub reveal" style="--i:1">Усе, що не потрапило на головну: анімації героїв, вишиванка-прогрес, Кришталева Писанка, карта екранів, UI-кіт, онбординг на 14 сцен, айдентика, іконка, голос гри, трейлер і музика.</p>
     <div class="cta reveal" style="--i:2"><a class="kb run" href="./">← На головну</a><a class="kb" href="#anim">Почати з анімацій ↓</a></div>
-    <ol class="ab-toc reveal" style="--i:3"><li><a href="#anim">Анімації</a></li><li><a href="#shirt">Прогрес</a></li><li><a href="#pysanka">Писанка</a></li><li><a href="#flow-sec">Карта екранів</a></li><li><a href="#kit">UI-кіт</a></li><li><a href="#onboarding">Онбординг</a></li><li><a href="#identity">Айдентика</a></li><li><a href="#icon-sec">Іконка</a></li><li><a href="#voice">Голос</a></li></ol>
+    <ol class="ab-toc reveal" style="--i:3"><li><a href="#anim">Анімації</a></li><li><a href="#shirt">Прогрес</a></li><li><a href="#pysanka">Писанка</a></li><li><a href="#flow-sec">Карта екранів</a></li><li><a href="#kit">UI-кіт</a></li><li><a href="#onboarding">Онбординг</a></li><li><a href="#identity">Айдентика</a></li><li><a href="#icon-sec">Іконка</a></li><li><a href="#voice">Голос</a></li><li><a href="#motion">Рух і звук</a></li></ol>
   </div></header>
 
   <section class="sheet sec" id="anim" data-title="Анімації"><div class="fit">
@@ -64,7 +64,7 @@
     <div class="sheet-head reveal">
       <div class="eyebrow">Аркуш 4 · Карта екранів</div>
       <h2>Як гравець рухається застосунком</h2>
-      <p class="muted">Сім екранів і переходи між ними. Жовтий квадратик пробігає основний шлях: заставка, меню, мапа, рівень, суд богів і назад на мапу. Новий гравець у меню обирає рівень: з нуля — Абетка, трохи — світ 0, хочу задач — світ 1.</p>
+      <p class="muted">Вісім екранів і переходи між ними. Жовтий квадратик пробігає основний шлях: заставка, меню, мапа, рівень, суд богів і назад на мапу. Новий гравець у меню обирає рівень: з нуля — Абетка, трохи — світ 0, хочу задач — світ 1.</p>
     </div>
     <div class="flow reveal-scale" id="flow">
       <svg class="flow-svg" id="flow-svg" aria-hidden="true"></svg>
@@ -73,7 +73,8 @@
       <div class="scr" id="s3" style="grid-area:c"><b>Мапа світів</b><canvas id="fl-map"></canvas><small>16 світів, 6 пісень</small></div>
       <div class="scr" id="s4" style="grid-area:d"><b>Рівень</b><div class="mini-lvl"><i class="ed"><u></u><u></u><u class="w"></u><u></u><u class="w"></u></i><i class="wd"></i><i class="ts"></i></div><small>редактор · світ · тести</small></div>
       <div class="scr" id="s5" style="grid-area:e"><b>Суд богів</b><div class="mini-res"><span class="st">★★★</span><span>5 / 5 тестів · O(n)</span><span class="bad">Вовк: не встиг</span><i>Далі →</i></div></div>
-      <div class="scr" id="s6" style="grid-area:f"><b>Профіль</b><div class="mini-prof"><canvas id="fl-profile"></canvas><span>Хитрун<br><small>2 / 13 візерунків</small></span></div></div>
+      <div class="scr" id="s6" style="grid-area:f"><b>Вишиванка</b><div class="mini-prof"><canvas id="fl-profile"></canvas><span>Хитрун<br><small>2 / 13 візерунків</small></span></div></div>
+      <div class="scr" id="s8" style="grid-area:h"><b>Абетка</b><div class="mini-abc"><span class="on">Python</span><span>JavaScript</span><span>TypeScript</span><i>Я Колобок, Колобок!</i></div><small>з нуля, на казках</small></div>
       <div class="scr" id="s7" style="grid-area:g"><b>Налаштування</b><div class="mini-set"><span>Мова коду <em>TS ▾</em></span><span>Звук <em class="tg on"></em></span><span>Менше руху <em class="tg"></em></span><span>Мова UI <em>UA</em></span></div></div>
     </div>
   </div></section>
@@ -159,7 +160,30 @@
       <div class="line reveal"><span class="who">Підказка · Сивілла</span><q>А що, як іти з обох кінців одночасно?</q></div>
       <div class="line reveal"><span class="who">Новий візерунок · система</span><q>На вишиванці Енея з'явилися «два зустрічні ромби».</q></div>
     </div>
-    
+
+  </div></section>
+
+  <section class="sheet sec" id="motion" data-title="Рух і звук"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 10 · Рух і звук</div>
+      <h2>Трейлер, ролики й музика</h2>
+      <p class="muted">Ролики збирає код, як і спрайти. Героїв і світи малює той самий рушій, що й гру, а музику синтезує скрипт. Кожна склейка падає точно в долю.</p>
+    </div>
+    <div class="mo">
+    <div class="mo-left">
+    <div class="trailer reveal-scale"><video id="trailerVideo" controls playsinline preload="metadata" poster="media/trailer-uk.jpg" src="media/trailer-uk.mp4" data-uk="media/trailer-uk" data-en="media/trailer-en" aria-label="Трейлер Кодеїди"></video></div>
+    </div>
+    <div class="motion">
+      <div class="line reveal"><span class="who">Ритм</span><p>150 ударів на хвилину: такт — 1,6 с, або 48 кадрів. Сцени тривають ціле число тактів, тож склейки збігаються з ударами.</p></div>
+      <div class="line reveal"><span class="who">Музика з коду</span><p>Чіптюн у ре гармонічному мінорі: Dm – B♭ – C – A. Квадратна хвиля з вібрато, бас октавами, арпеджіо, шум замість тарілок.</p></div>
+      <div class="line reveal"><span class="who">Герої з гри</span><p>Спрайти, світи й частинки малює той самий site/app.js. Ролик не розійдеться з грою.</p></div>
+      <div class="line reveal"><span class="who">Переходи</span><p>Білий спалах на дропі, косий мазок кольору наступної сцени на склейці, легка тряска на ударі.</p></div>
+      <div class="line reveal"><span class="who">Запис гри</span><p>Кадри гри пише скрипт зі справжньої гри у 2560×1600: задача Дидони, мапа, Абетка, інтро.</p></div>
+      <div class="line reveal"><span class="who">Reels 9:16</span><p>Головне — у центральних 3:4, низ і права смуга вільні під інтерфейс. Перший кадр і є обкладинкою.</p></div>
+    </div>
+    </div>
+    <div class="tl reveal" aria-label="Розкладка трейлера по тактах"><span class="tl-cold" style="--n:2"><b>Холодний старт</b><small>2 т.</small></span><span class="tl-drop" style="--n:2"><b>Логотип</b><small>2 т.</small></span><span class="tl-calm" style="--n:3"><b>Сюжет</b><small>3 т.</small></span><span class="tl-full" style="--n:4"><b>Герої</b><small>4 т.</small></span><span class="tl-full" style="--n:4"><b>Геймплей</b><small>4 т.</small></span><span class="tl-break" style="--n:2"><b>Вовк і Микита</b><small>2 т.</small></span><span class="tl-drop" style="--n:4"><b>16 світів</b><small>4 т.</small></span><span class="tl-full" style="--n:2"><b>Мапа</b><small>2 т.</small></span><span class="tl-calm" style="--n:3"><b>Абетка</b><small>3 т.</small></span><span class="tl-cold" style="--n:2"><b>Три шляхи</b><small>2 т.</small></span><span class="tl-drop" style="--n:2"><b>Можливості</b><small>2 т.</small></span><span class="tl-full" style="--n:2"><b>Фінал</b><small>2 т.</small></span><span class="tl-drop" style="--n:2"><b>Кінець</b><small>2 т.</small></span></div>
+    <p class="muted tl-note">34 такти по 1,6 с. Світле — тихі секції, яскраве — дропи з повним бітом.</p>
     <footer>Кодеїда — open-source гра про алгоритми. Персонажі намальовані з нуля за текстами в суспільному надбанні: Котляревський, Франко, Леся Українка, Коцюбинський, Квітка-Основ'яненко, народні казки.</footer>
   </div></section>
 

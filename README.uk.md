@@ -153,6 +153,20 @@ cd site
 python3 -m http.server 8000   # http://localhost:8000 і /artbook.html
 ```
 
+Трейлер, ролик до релізу й Reels збираються в `video/` на [Remotion](https://www.remotion.dev). Вони використовують спрайти самої гри, а музику синтезує скрипт:
+
+```bash
+cd video
+npm install
+npm run sfx                            # звукові ефекти → public/
+npm run music                          # музика трейлера й ролика до релізу
+npm run record                         # кадри гри у 2× (потрібен npm run dev в app/)
+npm run dev                            # Remotion Studio: перегляд і правки
+npx remotion render Trailer-uk out/kodeida-trailer-uk.mp4
+```
+
+Як стиснути трейлер для сайту й зробити обкладинку Reels — у [CONTRIBUTING.md](CONTRIBUTING.md#trailer-and-videos).
+
 <details>
 <summary><b>Що в репозиторії</b></summary>
 
@@ -167,7 +181,8 @@ app/                  гра: Electron + React + TypeScript + Monaco
   src/ui/             екрани: меню, вступ, рівень, мапа, Абетка, книга, сорочка, налаштування; story.ts — заставки Абетки
 site/                 сайт, деплоїться на GitHub Pages
   index.html          лендінг (UA / EN)
-  artbook.html        артбук (UA / EN): анімації, екрани, UI-кіт, вступ, айдентика
+  artbook.html        артбук (UA / EN): анімації, екрани, UI-кіт, вступ, айдентика, рух і звук
+  media/              трейлер (UA / EN) і його постери
   app.js              піксельний рендерер, сцени, мапа мандрівки, переклад; гра імпортує його
   style.css           спільні стилі, світла й темна теми
 docs/
@@ -178,6 +193,10 @@ docs/
   STORY.md            уся кампанія: 6 пісень, 16 світів, задачі для кожного світу
   ONBOARDING.md       сценарій вступу сцена за сценою
   media/              лого й GIF-ки з цього README
+video/                трейлер, ролик до релізу й Reels (Remotion)
+  src/timeline.mjs    розкладка трейлера по тактах, спільна для картинки й музики
+  src/scenes/         сцени трейлера; src/launch/ — ролик до релізу й Reels
+  scripts/            music.mjs (синтезований саундтрек), record.mjs (кадри гри)
 ```
 
 </details>

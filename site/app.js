@@ -261,7 +261,7 @@ const DICT={
 // три шляхи й Абетка
 "Сім екранів і переходи між ними. Жовтий квадратик пробігає основний шлях: заставка, меню, мапа, рівень, суд богів і назад на мапу. Новий гравець у меню обирає рівень: з нуля — Абетка, трохи — світ 0, хочу задач — світ 1.":"Seven screens and the transitions between them. The yellow square runs the main path: splash, menu, map, level, judgement and back to the map. A new player picks a level in the menu: from scratch — the ABC, a little — world 0, give me problems — world 1.","Сцени 1–10 — заставка приблизно на дві хвилини, яку можна пропустити. З одинадцятої гравець пише код. Хто починає з нуля, бачить ще пролог «Абетка»: «Ніч перед бурею» після сцени 6 і «Заграву» перед сценою 7. Гортайте текст праворуч (смуга прокрутки збоку) або натискайте крапки.":"Scenes 1–10 are a skippable cutscene of about two minutes. From the eleventh the player writes code. Those starting from scratch also see the ABC prologue: “The night before the storm” after scene 6 and “The glow” before scene 7. Scroll the text on the right (scrollbar on the side) or press the dots.","🌱 Ні, з нуля":"🌱 No, from scratch","🧭 Трохи вмію":"🧭 A little","⚔️ Хочу задач":"⚔️ Give me problems",
 "Три шляхи":"Three ways","Для будь-якого рівня":"For any level","Три шляхи в гру":"Three ways into the game","На старті гра питає: «Чи вмієш ти програмувати?» Від відповіді залежить, звідки почнеш. Змінити можна будь-коли, прогрес не губиться.":"At the start the game asks: “Can you code?” Your answer decides where you begin. You can change it any time without losing progress.","🌱 Ні, з нуля → Абетка":"🌱 No, from scratch → The ABC","Перша мова з нуля: Python, JavaScript чи TypeScript. Кожен урок написано саме для обраної мови, а вивід програми з'являється на сувої. Сивілла вчить Енея на українських казках у ніч перед падінням Трої.":"A first language from scratch: Python, JavaScript or TypeScript. Every lesson is written for the language you pick, and the program’s output appears on a scroll. The Sibyl teaches Aeneas on Ukrainian fairy tales the night before Troy falls.","🧭 Трохи вмію → Світ 0":"🧭 A little → World 0","Попелище Трої: одна нова ідея на вправу — команда, цикл, умова, лічильник — і перша задача з LeetCode.":"Ashes of Troy: one new idea per exercise — a command, a loop, a condition, a counter — and the first LeetCode problem.","⚔️ Так, хочу задач → Світ 1":"⚔️ Yes, give me problems → World 1","Одразу в море Еола й далі: два вказівники, хеш-мапи, стек, бінарний пошук. Світ 0 лишається відкритим для повторення.":"Straight to the sea of Aeolus and on: two pointers, hash maps, a stack, binary search. World 0 stays open for review.","Абетка, розділ 1 «Колобок»: програма виводить пісеньку, а сувій показує кожен рядок.":"The ABC, chapter 1 “The Bun”: the program prints the song, and the scroll shows every line.","Виконання Python прямо в застосунку, без встановлення, і Ліс Лиса Микити.":"Python runs right in the app, nothing to install, plus Mykyta’s Forest.","вийшла 0.2":"out in 0.2","вийшла 0.3":"out in 0.3","Абетка й світи 4–8":"The ABC and worlds 4–8","Перша мова з нуля на казках, три шляхи на старті, Рукавичка, Конотоп, Сицилія, Чумацький шлях, Пекло.":"A first language from scratch on fairy tales, three ways in, the Mitten, Konotop, Sicily, the Chumak Way, Hell.","наступний реліз":"next release","Уся кампанія від Трої до двобою з Турном, усі розділи Абетки, Книга хитрощів, вишиванка-прогрес.":"The whole campaign from Troy to the duel with Turnus, every ABC chapter, the Book of Tricks, the embroidered-shirt progress.","Новачкам — Абетка: мова з нуля":"New to code? The ABC: a language from scratch",
-"Чому Кодеїда":"Why Kodeida","▶ Дивитися трейлер":"▶ Watch the trailer","Трейлер":"Trailer","Кодеїда за 50 секунд":"Kodeida in 50 seconds","Від бенкету богів до справжньої задачі з LeetCode і Абетки для новачків: як код рухає героя і чому Вовк програє хитрості.":"From the gods’ feast to a real LeetCode problem and the ABC for beginners: how code moves the hero and why the Wolf loses to a trick.","Трейлер Кодеїди":"Kodeida trailer","LeetCode без зубріння":"LeetCode without cramming",
+"Чому Кодеїда":"Why Kodeida","▶ Дивитися трейлер":"▶ Watch the trailer","Трейлер":"Trailer","Кодеїда за хвилину":"Kodeida in a minute","Від бенкету богів до справжньої задачі з LeetCode і Абетки для новачків: як код рухає героя і чому Вовк програє хитрості.":"From the gods’ feast to a real LeetCode problem and the ABC for beginners: how code moves the hero and why the Wolf loses to a trick.","Трейлер Кодеїди":"Kodeida trailer","LeetCode без зубріння":"LeetCode without cramming",
 "Більшість застосунків дають задачі. Кодеїда вчить бачити в задачі прийом і розуміти, чому він працює.":"Most apps hand you problems. Kodeida teaches you to spot the technique inside a problem and understand why it works.",
 "Хитрощі, а не відповіді":"Tricks, not answers",
 "Кожен світ — один прийом: два вказівники, ковзне вікно, хеш-мапа, графи, DP. Підвідні вправи ведуть до справжньої задачі.":"Each world is one technique: two pointers, sliding window, hash map, graphs, DP. Warm-up exercises lead to a real problem.",
@@ -349,6 +349,41 @@ const DICT={
 "Цариця Карфагена з волячою шкурою.":"Queen of Carthage with an ox hide.","Задача Дидони = Container With Most Water.":"Dido's problem = Container With Most War."
 };
 DICT["Задача Дидони = Container With Most Water."]="Dido's problem = Container With Most Water.";
+DICT["Вісім екранів і переходи між ними. Жовтий квадратик пробігає основний шлях: заставка, меню, мапа, рівень, суд богів і назад на мапу. Новий гравець у меню обирає рівень: з нуля — Абетка, трохи — світ 0, хочу задач — світ 1."]="Eight screens and the transitions between them. The yellow square runs the main path: splash, menu, map, level, judgement and back to the map. A new player picks a level in the menu: from scratch — the ABC, a little — world 0, give me problems — world 1.";
+DICT["з нуля"]="from scratch";
+DICT["урок"]="lesson";
+DICT["з нуля, на казках"]="from scratch, on fairy tales";
+DICT["Я Колобок, Колобок!"]="I am the Bun, the Bun!";
+DICT["Усе, що не потрапило на головну: анімації героїв, вишиванка-прогрес, Кришталева Писанка, карта екранів, UI-кіт, онбординг на 14 сцен, айдентика, іконка, голос гри, трейлер і музика."]="Everything that didn't fit on the main page: hero animations, the embroidered-shirt progress, the Crystal Pysanka, the screen map, the UI kit, the 14-scene onboarding, identity, the icon, the game's voice, the trailer and the music.";
+DICT["Рух і звук"]="Motion and sound";
+DICT["Аркуш 10 · Рух і звук"]="Sheet 10 · Motion and sound";
+DICT["Трейлер, ролики й музика"]="Trailer, videos and music";
+DICT["Ролики збирає код, як і спрайти. Героїв і світи малює той самий рушій, що й гру, а музику синтезує скрипт. Кожна склейка падає точно в долю."]="The videos are built by code, like the sprites. The heroes and worlds are drawn by the same engine as the game, and a script synthesises the music. Every cut lands exactly on the beat.";
+DICT["Розкладка трейлера по тактах"]="The trailer laid out in bars";
+DICT["34 такти по 1,6 с. Світле — тихі секції, яскраве — дропи з повним бітом."]="34 bars of 1.6 s. Pale is the quiet sections, bright is the drops with the full beat.";
+DICT["Холодний старт"]="Cold open";
+DICT["Логотип"]="Logo";
+DICT["Сюжет"]="Story";
+DICT["Геймплей"]="Gameplay";
+DICT["Вовк і Микита"]="Wolf and Mykyta";
+DICT["Абетка"]="The ABC";
+DICT["Можливості"]="Features";
+DICT["Кінець"]="End";
+DICT["2 т."]="2 bars";
+DICT["3 т."]="3 bars";
+DICT["4 т."]="4 bars";
+DICT["Ритм"]="Rhythm";
+DICT["150 ударів на хвилину: такт — 1,6 с, або 48 кадрів. Сцени тривають ціле число тактів, тож склейки збігаються з ударами."]="150 beats per minute: a bar is 1.6 s, or 48 frames. Scenes last a whole number of bars, so the cuts land on the hits.";
+DICT["Музика з коду"]="Music from code";
+DICT["Чіптюн у ре гармонічному мінорі: Dm – B♭ – C – A. Квадратна хвиля з вібрато, бас октавами, арпеджіо, шум замість тарілок."]="Chiptune in D harmonic minor: Dm – B♭ – C – A. A square wave with vibrato, octave bass, arpeggios, noise for the cymbals.";
+DICT["Герої з гри"]="Heroes from the game";
+DICT["Спрайти, світи й частинки малює той самий site/app.js. Ролик не розійдеться з грою."]="The sprites, worlds and particles are drawn by the same site/app.js. The video can't drift away from the game.";
+DICT["Переходи"]="Transitions";
+DICT["Білий спалах на дропі, косий мазок кольору наступної сцени на склейці, легка тряска на ударі."]="A white flash on the drop, a slanted stroke in the next scene's colour on each cut, a light shake on the hit.";
+DICT["Запис гри"]="Game footage";
+DICT["Кадри гри пише скрипт зі справжньої гри у 2560×1600: задача Дидони, мапа, Абетка, інтро."]="A script records the real game at 2560×1600: Dido's problem, the map, the ABC, the intro.";
+DICT["Reels 9:16"]="Reels 9:16";
+DICT["Головне — у центральних 3:4, низ і права смуга вільні під інтерфейс. Перший кадр і є обкладинкою."]="What matters sits in the central 3:4; the bottom and the right strip stay free for the app's buttons. The first frame is the cover.";
 Object.assign(DICT,{
 "Правитель звіриного ярмарку. Удома звірі не олюднені.":"Ruler of the animal fair. At home animals aren't humanised.","Повертає Микиті звання канцлера на мить.":"Makes Mykyta chancellor again, for a moment.",
 "Мишка, жабка і зайчик у рукавичці.":"A mouse, a frog and a hare in a mitten.","Хто заліз останнім, вилазить першим: Stack.":"Last in, first out: Stack.","Рукавичка":"The Mitten",
@@ -2180,7 +2215,7 @@ function buildFrames(sh,st){
   const mm=document.getElementById('fl-map');if(mm){const ctx=setup(mm,240,110,true);const sp=new Spr(240,110);for(let y=0;y<110;y++)for(let x=0;x<240;x++)sp.set(x,y,(x+y)%2?'#1d3f66':'#21466f');sp.draw(ctx,0,0,1);mapBase().draw(ctx,0,0,1);NODES.forEach(([x,y],i)=>{ctx.fillStyle=worldCol(i);ctx.fillRect(x-2,y-2,5,5);});}
   const pr=document.getElementById('fl-profile');if(pr){const ctx=setup(pr,92,144,true);makeEnei(1).draw(ctx,0,0,2);}
   const svg=document.getElementById('flow-svg');
-  const LINKS=[['s1','s2','старт'],['s2','s3','грати'],['s3','s4','світ'],['s4','s5','Запустити'],['s5','s3','далі'],['s2','s6','Профіль'],['s5','s6','новий візерунок'],['s2','s7','Налаштування']];
+  const LINKS=[['s1','s2','старт'],['s2','s3','грати'],['s3','s4','світ'],['s4','s5','Запустити'],['s5','s3','далі'],['s2','s6','Вишиванка'],['s5','s6','новий візерунок'],['s2','s7','Налаштування'],['s2','s8','з нуля'],['s8','s4','урок']];
   function anchor(el,side){const b=box.getBoundingClientRect(),r=el.getBoundingClientRect(),k=b.width/box.offsetWidth||1;const x=(r.left-b.left)/k,y=(r.top-b.top)/k,w=r.width/k,h=r.height/k;
     return {l:[x,y+h/2],r:[x+w,y+h/2],t:[x+w/2,y],b:[x+w/2,y+h]}[side];}
   function layout(f=0){

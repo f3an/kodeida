@@ -25,6 +25,7 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
   - Run `npm run selftest` and `npm run typecheck` before sending changes. A new level needs a fox `solution` (and a `wolf` for levels with a big test); the self-test checks both.
 - `site/` — the website (no build step). `app.js` holds the pixel-art renderer, all scenes and the i18n dictionary; `style.css` holds the light and dark themes.
 - `docs/` — design documents: `NOTES.md` (idea, decisions, plan), `MVP.md`, `BRAND.md`, `LORE.md`, `STORY.md`, `ONBOARDING.md`. `docs/media/` holds the logo and the README GIFs (see below).
+- `video/` — the trailer, the release video and the Reels in Remotion; see [Trailer and videos](#trailer-and-videos).
 
 ## Writing an exercise
 
@@ -68,7 +69,29 @@ Every push to `main` that touches `site/` redeploys GitHub Pages.
 
 ## README media
 
-The GIFs in `docs/media/` are recorded from the running game (`npm run dev`), in both languages: `intro-*.gif` (the opening cutscenes), `play-*.gif` (Dido's problem: Run, then Judgement), `map-*.gif` (the world map), plus `hero.gif` from the website cover. When the screens change noticeably, re-record them at a 1280×800 window and keep each GIF under about 4 MB (8–12 fps, 720–960 px wide). `icon.png` is `app/build/icon.png` scaled to 256 px.
+The GIFs in `docs/media/` are recorded from the running game (`npm run dev`), in both languages: `intro-*.gif` (the opening cutscenes), `play-*.gif` (Dido's problem: Run, then Judgement), `map-*.gif` (the world map), `abc-*.gif` (the menu, the ABC prologue and the Bun's song), plus `hero.gif` from the website cover. When the screens change noticeably, re-record them at a 1280×800 window and keep each GIF under about 4 MB (8–12 fps, 720–960 px wide). `icon.png` is `app/build/icon.png` scaled to 256 px.
+
+## Trailer and videos
+
+The trailer (`site/media/trailer-*.mp4`), the release video and the vertical Reels live in `video/`, a [Remotion](https://www.remotion.dev) project. Characters, worlds and particles come straight from the game's sprite code, so the videos never drift away from the art.
+
+- **Timing.** Everything runs at 150 BPM: a bar is 48 frames at 30 fps. `src/timeline.mjs` (trailer) and `src/launch-timeline.mjs` (release video) lay the sections out in whole bars; scenes and music both read them, so cuts land on the beat. Change a section's length there, not in the scene.
+- **Music.** `node scripts/music.mjs` synthesises the trailer's soundtrack into `public/music.wav`, `node scripts/music.mjs launch` the release video's. It is deterministic and original, so there is nothing to license. `npm run sfx` downloads the sound effects from remotion.media; neither the music nor the effects are committed.
+- **Game footage.** `node scripts/record.mjs all` records Dido's problem, the world map, the ABC and the intro from the running game (`cd app && npm run dev`) at 2560×1600 into `public/rec-*.mp4`, in both languages. Re-record when those screens change. The recordings are not committed.
+- **Text** lives in `src/lib/copy.ts` (trailer) and `src/launch/copy.ts` (release video). Update the list of what's new for each release.
+- **Reels** (1080×1920): keep text away from the top 250 px, the bottom 400 px and the right edge, where the app puts its buttons; keep the key content inside the central 3:4, which Instagram shows in the profile grid. The first frame is the cover; `npx remotion still Reels-cover-uk out/cover.png` renders it on its own.
+
+Render and encode the trailer for the site:
+
+```bash
+cd video
+npx remotion render Trailer-uk out/kodeida-trailer-uk.mp4 --crf=18
+ffmpeg -i out/kodeida-trailer-uk.mp4 -c:v libx264 -preset slow -crf 28 -tune animation \
+  -c:a aac -b:a 160k -movflags +faststart ../site/media/trailer-uk.mp4
+ffmpeg -ss 5.6 -i out/kodeida-trailer-uk.mp4 -frames:v 1 -q:v 3 ../site/media/trailer-uk.jpg
+```
+
+Do the same for `en`. At CRF 28 a trailer is about 11 MB and still sharp; keep it under about 15 MB.
 
 ## Content rules
 
