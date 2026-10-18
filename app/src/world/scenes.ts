@@ -8,7 +8,7 @@ import type { SceneSpec } from '../engine/level.ts';
 import type { StreetCell, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
 import { paintTroyNight } from '../ui/story.ts';
-import { makeSibyl, makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf, fxLayer, pixelGlow, makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk } from './sprites.js';
+import { makeSibyl, makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf, fxLayer, pixelGlow, walkCycle, breathCycle, makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk } from './sprites.js';
 
 export const W = 600, H = 390;
 
@@ -174,6 +174,12 @@ abstract class SceneBase {
       c.fillStyle = '#ffffff'; c.fillRect(bx + 8, by + 4, 4, 10); c.fillRect(bx + 8, by + 17, 4, 4);
     }
     const bob = (w: Walker) => (Math.abs(w.tx - w.x) > 1 ? (Math.floor(t * 4) % 2) * 2 : 0);
+    /* хода: 4 кадри (≈8 за секунду), поки йде; у спокої — повільний вдих */
+    const pose = (w: Walker, spr: Sprite, hip: number, mid: number): [Sprite, number] => {
+      if (this.reduced) return [spr, 0];
+      if (Math.abs(w.tx - w.x) > 1) { const [s, dy] = (walkCycle(spr, hip, mid) as [Sprite, number][])[Math.floor(t * 8) % 4]; return [s, dy * 2]; }
+      return [(breathCycle(spr, hip) as Sprite[])[Math.floor(t / 1.1) % 2], 0];
+    };
     if (wolf) { drawFacing(c, WOLF, enei.x - WOLF.w, enei.y - WOLF.h * 2 - bob(enei), enei.face); return; }
     // ватага йде слідом за Енеєм
     for (let k = this.crew - 1; k >= 0; k--) {
@@ -182,8 +188,9 @@ abstract class SceneBase {
       tj.draw(c, Math.round(x - tj.w * 2), Math.round(enei.y - tj.h * 2 + Math.sin(t * 1.6 + k * 1.3)), 2);
     }
     const blink = Math.floor(t * 10) % 37 === 0;
-    drawFacing(c, blink ? ENEI_BLINK : ENEI, enei.x - ENEI.w, enei.y - ENEI.h * 2 - bob(enei), 1);
-    if (fox) { const [a, b] = foxOf(this.fox); drawFacing(c, Math.floor(t) % 2 ? b : a, fox.x - a.w, fox.y - a.h * 2 - bob(fox), 1); }
+    const [es, edy] = pose(enei, blink ? ENEI_BLINK : ENEI, 50, 23);
+    drawFacing(c, es, enei.x - ENEI.w, enei.y - ENEI.h * 2 + edy, 1);
+    if (fox) { const [a, b] = foxOf(this.fox); const [fs, fdy] = pose(fox, Math.floor(t) % 2 ? b : a, 44, 18); drawFacing(c, fs, fox.x - a.w, fox.y - a.h * 2 + fdy, 1); }
   }
 
   protected crewLabel() {
