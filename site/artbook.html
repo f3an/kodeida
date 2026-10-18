@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=0.4.3">
+<link rel="stylesheet" href="style.css?v=0.4.4">
 </head>
 <body data-page="artbook">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -22,7 +22,7 @@
     <h1 class="ab-h1">Як влаштована <span class="brace">{</span>Кодеїда</h1>
     <p class="sub reveal" style="--i:1">Усе, що не потрапило на головну: анімації героїв, вишиванка-прогрес, Кришталева Писанка, карта екранів, UI-кіт, онбординг на 14 сцен, айдентика, іконка, голос гри, трейлер і музика.</p>
     <div class="cta reveal" style="--i:2"><a class="kb run" href="./">← На головну</a><a class="kb" href="#anim">Почати з анімацій ↓</a></div>
-    <ol class="ab-toc reveal" style="--i:3"><li><a href="#anim">Анімації</a></li><li><a href="#shirt">Прогрес</a></li><li><a href="#pysanka">Писанка</a></li><li><a href="#flow-sec">Карта екранів</a></li><li><a href="#kit">UI-кіт</a></li><li><a href="#onboarding">Онбординг</a></li><li><a href="#identity">Айдентика</a></li><li><a href="#icon-sec">Іконка</a></li><li><a href="#voice">Голос</a></li><li><a href="#motion">Рух і звук</a></li></ol>
+    <ol class="ab-toc reveal" style="--i:3"><li><a href="#anim">Анімації</a></li><li><a href="#shirt">Прогрес</a></li><li><a href="#pysanka">Писанка</a></li><li><a href="#flow-sec">Карта екранів</a></li><li><a href="#kit">UI-кіт</a></li><li><a href="#onboarding">Онбординг</a></li><li><a href="#identity">Айдентика</a></li><li><a href="#icon-sec">Іконка</a></li><li><a href="#voice">Голос</a></li><li><a href="#motion">Рух і звук</a></li><li><a href="#evolution">Еволюція</a></li></ol>
   </div></header>
 
   <section class="sheet sec" id="anim" data-title="Анімації"><div class="fit">
@@ -184,6 +184,31 @@
     </div>
     <div class="tl reveal" aria-label="Розкладка трейлера по тактах"><span class="tl-cold" style="--n:2"><b>Старт</b><small>2 т.</small></span><span class="tl-drop" style="--n:2"><b>Логотип</b><small>2 т.</small></span><span class="tl-calm" style="--n:3"><b>Сюжет</b><small>3 т.</small></span><span class="tl-full" style="--n:4"><b>Герої</b><small>4 т.</small></span><span class="tl-full" style="--n:4"><b>Геймплей</b><small>4 т.</small></span><span class="tl-break" style="--n:2"><b>Вовк</b><small>2 т.</small></span><span class="tl-drop" style="--n:4"><b>16 світів</b><small>4 т.</small></span><span class="tl-full" style="--n:2"><b>Мапа</b><small>2 т.</small></span><span class="tl-calm" style="--n:3"><b>Абетка</b><small>3 т.</small></span><span class="tl-cold" style="--n:2"><b>Шляхи</b><small>2 т.</small></span><span class="tl-drop" style="--n:2"><b>Фішки</b><small>2 т.</small></span><span class="tl-full" style="--n:2"><b>Фінал</b><small>2 т.</small></span><span class="tl-drop" style="--n:2"><b>Кінець</b><small>2 т.</small></span></div>
     <p class="muted tl-note">34 такти по 1,6 с. Світле — тихі секції, яскраве — дропи з повним бітом.</p>
+  </div></section>
+
+  <section class="sheet sec" id="evolution" data-title="Еволюція"><div class="fit">
+    <div class="sheet-head reveal">
+      <div class="eyebrow">Аркуш 11 · Як розвивався арт</div>
+      <h2>Від першого спрайта до світла й руху</h2>
+      <p class="muted">Арт малюється кодом, тож кожне покращення одразу проходить крізь усіх героїв і всі світи. Потягни повзунок, щоб порівняти, як було і як стало.</p>
+    </div>
+    <div class="evo">
+      <figure class="ba reveal-scale" style="--p:50%"><img src="media/art/worlds-before.png" data-uk="media/art/worlds-before.png" data-en="media/art/worlds-before.png" data-alt-en="Four worlds before: banded skies, no light" width="800" height="520" alt="Чотири світи до: небо смугами, без світла"><img class="ba-after" src="media/art/worlds-after.png" data-uk="media/art/worlds-after.png" data-en="media/art/worlds-after.png" data-alt-en="The same worlds after: smooth skies, the glow of the moon, the sun and the golden tree, stars" width="800" height="520" alt="Ті самі світи після: плавне небо, сяйво місяця, сонця й золотого дерева, зірки"><input type="range" min="0" max="100" value="50" aria-label="До і після"><span class="ba-tag ba-l">До</span><span class="ba-tag ba-r">Після</span></figure>
+      <div class="evo-side">
+        <div class="evo-stages reveal">
+          <figure><canvas id="evo-raw" aria-label="Сирий спрайт Енея"></canvas><figcaption>Сирий спрайт</figcaption></figure>
+          <figure><img src="media/art/enei-before.png" data-uk="media/art/enei-before.png" data-en="media/art/enei-before.png" data-alt-en="Aeneas in HD before" width="320" height="320" alt="Еней у HD до змін"><figcaption>HD · до</figcaption></figure>
+          <figure><img src="media/art/enei-after.png" data-uk="media/art/enei-after.png" data-en="media/art/enei-after.png" data-alt-en="Aeneas in HD after" width="320" height="320" alt="Еней у HD після змін"><figcaption>HD · після</figcaption></figure>
+        </div>
+        <div class="evo-steps">
+          <div class="line reveal"><span class="who">Зсув відтінку</span><p>Світло тепліє до кремового, тінь холоднішає до фіолетового, а не просто біліє чи чорніє.</p></div>
+          <div class="line reveal"><span class="who">Вибірковий контур</span><p>Зі світлого боку контур м'якший, з тіньового — глибокий.</p></div>
+          <div class="line reveal"><span class="who">Свічення</span><p>Піксельні кільця з кроком 2 px, без розмиття: сонця, місяць, вогнища, кузня.</p></div>
+          <div class="line reveal"><span class="who">Небо й рух</span><p>Дизеринг Байєра замість смуг, мерехтливі зірки, хода на 4 кадри.</p></div>
+        </div>
+      </div>
+      <figure class="ba ba-wide reveal-scale" style="--p:50%"><img src="media/art/abc-before.png" data-uk="media/art/abc-before.png" data-en="media/art/abc-before.png" data-alt-en="The ABC heroes, first version" width="1408" height="160" alt="Герої Абетки в першій версії"><img class="ba-after" src="media/art/abc-after.png" data-uk="media/art/abc-after.png" data-en="media/art/abc-after.png" data-alt-en="The ABC heroes after: three-tone light from one side and more detail" width="1408" height="160" alt="Герої Абетки після: світло з одного боку в три тони й більше деталей"><input type="range" min="0" max="100" value="50" aria-label="До і після"><span class="ba-tag ba-l">До</span><span class="ba-tag ba-r">Після</span></figure>
+    </div>
     <footer>Кодеїда — open-source гра про алгоритми. Персонажі намальовані з нуля за текстами в суспільному надбанні: Котляревський, Франко, Леся Українка, Коцюбинський, Квітка-Основ'яненко, народні казки.</footer>
   </div></section>
 
@@ -432,6 +457,6 @@
   <!-- VOICE -->
 
 </div>
-<script src="app.js?v=0.4.3"></script>
+<script src="app.js?v=0.4.4"></script>
 </body>
 </html>

@@ -349,6 +349,25 @@ const DICT={
 "Цариця Карфагена з волячою шкурою.":"Queen of Carthage with an ox hide.","Задача Дидони = Container With Most Water.":"Dido's problem = Container With Most War."
 };
 DICT["Задача Дидони = Container With Most Water."]="Dido's problem = Container With Most Water.";
+DICT["Еволюція"]="Evolution";
+DICT["Аркуш 11 · Як розвивався арт"]="Sheet 11 · How the art evolved";
+DICT["Від першого спрайта до світла й руху"]="From the first sprite to light and motion";
+DICT["Арт малюється кодом, тож кожне покращення одразу проходить крізь усіх героїв і всі світи. Потягни повзунок, щоб порівняти, як було і як стало."]="The art is drawn by code, so every improvement runs through all the heroes and worlds at once. Drag the slider to compare before and after.";
+DICT["До"]="Before";
+DICT["Після"]="After";
+DICT["До і після"]="Before and after";
+DICT["Сирий спрайт"]="Raw sprite";
+DICT["HD · до"]="HD · before";
+DICT["HD · після"]="HD · after";
+DICT["Сирий спрайт Енея"]="Aeneas’s raw sprite";
+DICT["Зсув відтінку"]="Hue shift";
+DICT["Світло тепліє до кремового, тінь холоднішає до фіолетового, а не просто біліє чи чорніє."]="Light warms towards cream and shadow cools towards violet, instead of just going white or black.";
+DICT["Вибірковий контур"]="Selective outline";
+DICT["Зі світлого боку контур м'якший, з тіньового — глибокий."]="The outline is softer on the lit side and deep on the shadow side.";
+DICT["Свічення"]="Glow";
+DICT["Піксельні кільця з кроком 2 px, без розмиття: сонця, місяць, вогнища, кузня."]="Pixel rings in 2 px steps, no blur: suns, the moon, campfires, the forge.";
+DICT["Небо й рух"]="Sky and motion";
+DICT["Дизеринг Байєра замість смуг, мерехтливі зірки, хода на 4 кадри."]="Bayer dithering instead of bands, twinkling stars, a 4-frame walk.";
 DICT["Фішки"]="Features";
 DICT["Колобок"]="The Bun";
 DICT["Дід і ріпка"]="Grandpa and the turnip";
@@ -2454,6 +2473,14 @@ function buildFrames(sh,st){
       draw(0);scene(c,{interval:st.ms,draw});
     });
   });
+})();
+
+/* ================= ЕВОЛЮЦІЯ АРТУ ================= */
+(function(){
+  // сирий спрайт: непарний масштаб (3) малює базові пікселі без HD-обробки
+  // масштаб 1 і браузерне збільшення піксель у піксель — видно кожну клітинку
+  const raw=document.getElementById('evo-raw');if(raw){const e=makeEnei(2),N=80;raw.width=N;raw.height=N;const ctx=raw.getContext('2d');ctx.fillStyle='#efe6d2';ctx.fillRect(0,0,N,N);e.draw(ctx,Math.round((N-e.w)/2),N-3-e.h,1);}
+  document.querySelectorAll('.ba input').forEach(i=>i.addEventListener('input',()=>i.parentElement.style.setProperty('--p',i.value+'%')));
 })();
 
 /* ================= КАРТА ЕКРАНІВ ================= */

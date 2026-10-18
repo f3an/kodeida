@@ -785,3 +785,23 @@ html.snap .wrap{padding-block:0}
 .motion .line{padding:11px 13px;gap:4px;align-content:start}
 .motion p{margin:0;font-size:.86rem;line-height:1.4}
 @media (max-width:900px){.mo{grid-template-columns:1fr}.motion{grid-template-columns:1fr}.tl{flex-wrap:wrap}.tl span{flex-basis:30%}}
+
+/* Аркуш 11 · Еволюція арту: повзунок «до / після» */
+.evo{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
+.ba{position:relative;margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#0b100d;--p:50%}
+.ba img{display:block;width:100%;height:auto;image-rendering:pixelated}
+.ba .ba-after{position:absolute;inset:0;clip-path:inset(0 0 0 var(--p))}
+.ba::after{content:"";position:absolute;top:0;bottom:0;left:var(--p);width:3px;margin-left:-1px;background:#f2d27a;box-shadow:0 0 0 1px #1f1b16;pointer-events:none}
+.ba input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
+.ba-tag{position:absolute;top:10px;padding:3px 9px;border-radius:999px;font:600 .7rem var(--mono);background:rgba(20,27,23,.82);color:#f2d27a;pointer-events:none}
+.ba-l{left:10px}.ba-r{right:10px}
+.ba-wide{grid-column:1/-1}
+.evo-side{display:grid;gap:14px}
+.evo-stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.evo-stages figure{margin:0;background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:6px;justify-items:center}
+.evo-stages canvas,.evo-stages img{width:100%;height:auto;image-rendering:pixelated;background:#efe6d2;border-radius:8px}
+.evo-stages figcaption{font:.68rem var(--mono);color:var(--muted)}
+.evo-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.evo-steps .line{padding:10px 12px;gap:4px;align-content:start}
+.evo-steps p{margin:0;font-size:.84rem;line-height:1.4}
+@media (max-width:900px){.evo{grid-template-columns:1fr}.evo-steps{grid-template-columns:1fr}}
