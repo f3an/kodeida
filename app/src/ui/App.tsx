@@ -85,7 +85,7 @@ export function App() {
 
   const nav: [Screen['name'], string, string][] = [['level', '☰', L('Вправи', 'Exercises')], ['map', '◈', L('Мапа світів', 'World map')], ['abetka', L('А', 'A'), L('Абетка: мова з нуля', 'The ABC: a language from scratch')], ['book', '✦', L('Книга хитрощів', 'Book of Tricks')], ['shirt', '✚', L('Вишиванка', 'Embroidered shirt')], ['settings', '⚙', L('Налаштування', 'Settings')]];
   const lastLevel = level?.id ?? progress.last ?? worlds[0].levels[0].id;
-  const showUpdate = updates && (updates.stage === 'available' || updates.stage === 'downloading' || updates.stage === 'downloaded');
+  const showUpdate = updates && ['available', 'downloading', 'preparing', 'downloaded', 'installing'].includes(updates.stage);
 
   return (
     <div className="app">

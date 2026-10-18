@@ -1,7 +1,10 @@
 // Автооновлення з GitHub Releases (electron-updater), як у Mova-Flow:
 // перевірка під час запуску й кожні 6 годин; завантаження автоматичне або за кнопкою;
-// встановлення — після перезапуску, який обирає гравець.
-const { app, ipcMain, Notification, dialog } = require('electron');
+// встановлення — після перезапуску, який обирає гравець, або під час наступного виходу з гри.
+// На macOS завантажене оновлення ще має забрати й перевірити системний Squirrel. Робимо це одразу у фоні
+// (autoInstallOnAppQuit), а «готово» показуємо лише тоді, коли Squirrel закінчив: інакше «Перезапустити»
+// хвилину нічого не робить, поки той розпаковує 130 МБ.
+const { app, ipcMain, Notification, dialog, autoUpdater: nativeUpdater } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -37,7 +40,14 @@ function notify(kind, version) {
   n.show();
 }
 
-const busy = () => state.stage === 'downloading' || state.stage === 'downloaded';
+const busy = () => ['downloading', 'preparing', 'downloaded', 'installing'].includes(state.stage);
+
+/** Перезапустити й оновити — один раз: повторні натискання, поки гра закривається, нічого не роблять. */
+function install() {
+  if (!autoUpdater || state.stage !== 'downloaded') return;
+  setState({ stage: 'installing' });
+  autoUpdater.quitAndInstall();
+}
 
 function download() {
   if (!autoUpdater || busy()) return;
@@ -63,11 +73,15 @@ async function checkInteractive() {
     await show({ type: 'info', message: M(`Завантажую версію ${state.version}: ${state.percent}%`, `Downloading version ${state.version}: ${state.percent}%`) });
     return;
   }
+  if (state.stage === 'preparing' || state.stage === 'installing') {
+    await show({ type: 'info', message: M(`Готую версію ${state.version} до встановлення…`, `Preparing version ${state.version} for install…`), detail: M('Це займе до хвилини. Коли буде готово, з\'явиться кнопка «Перезапустити».', 'This takes up to a minute. A “Restart” button appears when it’s ready.') });
+    return;
+  }
   if (state.stage !== 'downloaded') await check();
   if (state.stage === 'downloaded') {
     const r = await show({ type: 'info', buttons: [M('Перезапустити й оновити', 'Restart and update'), M('Пізніше', 'Later')], defaultId: 0, cancelId: 1,
       message: M(`Версія ${state.version} готова`, `Version ${state.version} is ready`), detail: M('Перезапусти Кодеїду, щоб оновитися. Прогрес і код збережуться.', 'Restart Kodeida to update. Your progress and code are kept.') });
-    if (r.response === 0) autoUpdater.quitAndInstall();
+    if (r.response === 0) install();
   } else if (state.stage === 'available') {
     const r = await show({ type: 'info', buttons: [M('Завантажити', 'Download'), M('Пізніше', 'Later')], defaultId: 0, cancelId: 1,
       message: M(`Доступна версія ${state.version}`, `Version ${state.version} is available`), detail: M(`У тебе ${app.getVersion()}.`, `You have ${app.getVersion()}.`) });
@@ -85,7 +99,7 @@ function init(windowGetter) {
 
   ipcMain.handle('update:get', () => state);
   ipcMain.handle('update:download', () => { if (state.stage === 'available' || (state.stage === 'error' && state.version)) download(); });
-  ipcMain.handle('update:install', () => { if (state.stage === 'downloaded') autoUpdater.quitAndInstall(); });
+  ipcMain.handle('update:install', () => install());
   ipcMain.handle('update:set-auto', (_e, on) => {
     writeConfig({ ...readConfig(), autoUpdate: !!on });
     setState({ auto: !!on });
@@ -104,13 +118,19 @@ function init(windowGetter) {
   ({ autoUpdater } = require('electron-updater'));
   state.supported = true;
   autoUpdater.autoDownload = false;
-  autoUpdater.autoInstallOnAppQuit = false;
+  autoUpdater.autoInstallOnAppQuit = true;
 
   autoUpdater.on('checking-for-update', () => { if (!busy()) setState({ stage: 'checking' }); });
   autoUpdater.on('update-not-available', () => { if (!busy()) setState({ stage: 'not-available' }); });
-  autoUpdater.on('error', (err) => { if (state.stage !== 'downloaded') setState({ stage: 'error', error: err.message }); });
+  autoUpdater.on('error', (err) => { if (state.stage !== 'downloaded' && state.stage !== 'installing') setState({ stage: 'error', error: err.message }); });
   autoUpdater.on('download-progress', (p) => setState({ stage: 'downloading', percent: Math.round(p.percent) }));
-  autoUpdater.on('update-downloaded', (info) => { setState({ stage: 'downloaded', version: info.version, percent: 100 }); notify('downloaded', info.version); });
+  const ready = (version) => { setState({ stage: 'downloaded', version, percent: 100 }); notify('downloaded', version); };
+  autoUpdater.on('update-downloaded', (info) => {
+    if (process.platform !== 'darwin') return ready(info.version);
+    // macOS: файл є, але Squirrel ще забирає його собі; «Перезапустити» покажемо, коли він закінчить
+    setState({ stage: 'preparing', version: info.version, percent: 100 });
+    nativeUpdater.once('update-downloaded', () => ready(info.version));
+  });
   autoUpdater.on('update-available', (info) => {
     if (busy()) return;
     setState({ stage: 'available', version: info.version, error: null });

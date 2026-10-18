@@ -331,7 +331,7 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go, pr
               </label>
               <p>{updateText(updates)}</p>
               <div className="row-actions">
-                <button className="btn" disabled={checking || updates.stage === 'downloading'} onClick={async () => { setChecking(true); await bridge!.updates.check(); setChecking(false); }}>{L('Перевірити зараз', 'Check now')}</button>
+                <button className="btn" disabled={checking || ['downloading', 'preparing', 'installing'].includes(updates.stage)} onClick={async () => { setChecking(true); await bridge!.updates.check(); setChecking(false); }}>{L('Перевірити зараз', 'Check now')}</button>
                 {updates.stage === 'available' && <button className="btn run" onClick={() => bridge!.updates.download()}>{L('Завантажити', 'Download')} {updates.version}</button>}
                 {updates.stage === 'downloaded' && <button className="btn run" onClick={() => bridge!.updates.install()}>{L('Перезапустити й оновити', 'Restart and update')}</button>}
               </div>
@@ -363,12 +363,12 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go, pr
 function UpdateLine({ updates, checking, onCheck }: { updates: UpdateState | null; checking: boolean; onCheck: () => void }) {
   if (!bridge) return null;
   if (!updates?.supported) return <p className="muted small">{L('Оновлення працюють у встановленому застосунку.', 'Updates work in the installed app.')}</p>;
-  const busy = checking || updates.stage === 'checking' || updates.stage === 'downloading';
+  const busy = checking || ['checking', 'downloading', 'preparing', 'installing'].includes(updates.stage);
   return (
     <div className="update-line" aria-live="polite">
       {updates.stage === 'available' ? <button className="btn run" onClick={() => bridge!.updates.download()}>{L('Завантажити', 'Download')} {updates.version}</button>
         : updates.stage === 'downloaded' ? <button className="btn run" onClick={() => bridge!.updates.install()}>{L('Перезапустити й оновити', 'Restart and update')}</button>
-        : <button className="btn" disabled={busy} onClick={onCheck}>{busy && updates.stage !== 'downloading' ? L('Перевіряю…', 'Checking…') : L('Перевірити оновлення', 'Check for updates')}</button>}
+        : <button className="btn" disabled={busy} onClick={onCheck}>{updates.stage === 'checking' || checking ? L('Перевіряю…', 'Checking…') : L('Перевірити оновлення', 'Check for updates')}</button>}
       <span className="muted small">{updateText(updates)}</span>
     </div>
   );
@@ -380,7 +380,9 @@ export function updateText(u: UpdateState): string {
     case 'not-available': return L('У тебе найновіша версія.', 'You have the latest version.');
     case 'available': return L(`Доступна версія ${u.version}.`, `Version ${u.version} is available.`);
     case 'downloading': return L(`Завантажую ${u.version}: ${u.percent}%`, `Downloading ${u.version}: ${u.percent}%`);
+    case 'preparing': return L(`Версію ${u.version} завантажено, готую до встановлення…`, `Version ${u.version} is downloaded, preparing to install…`);
     case 'downloaded': return L(`Версія ${u.version} готова — перезапусти, щоб оновитися.`, `Version ${u.version} is ready — restart to update.`);
+    case 'installing': return L(`Перезапускаю й оновлюю до ${u.version}…`, `Restarting to update to ${u.version}…`);
     case 'error': return L(`Не вдалося перевірити оновлення: ${u.error}`, `Could not check for updates: ${u.error}`);
     default: return '';
   }

@@ -1,7 +1,7 @@
 /* Міст до головного процесу Electron (electron/preload.cjs). У браузері (npm run dev) його немає. */
 import { useEffect, useState } from 'react';
 
-export type UpdateStage = 'idle' | 'checking' | 'not-available' | 'available' | 'downloading' | 'downloaded' | 'error';
+export type UpdateStage = 'idle' | 'checking' | 'not-available' | 'available' | 'downloading' | 'preparing' | 'downloaded' | 'installing' | 'error';
 export interface UpdateState { stage: UpdateStage; version: string | null; error: string | null; percent: number; auto: boolean; supported: boolean }
 
 interface Bridge {
