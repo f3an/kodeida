@@ -108,7 +108,7 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 **Pre-alpha, ready for the first playtest.**
 
 - **Playable (v0.3.0):** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–8. That is 54 exercises, from the first `enei.move()` to *Combination Sum* in hell, with tests, hints, stars and the Wolf comparison. Cutscenes between worlds.
-- **The ABC:** all eight chapters, 4 lessons each in Python, JavaScript and TypeScript: *The Bun* (output), *The Turnip* (variables and numbers), *Kotyhoroshko* (strings), *The Goat Dereza* (conditions), *The Straw Bull* (loops), *Lord Kotsky* (lists), *Sister Fox* (dictionaries and objects), *Ivasyk-Telesyk* (functions). Chapter 1 shipped in v0.3.0; chapters 2–8 are in `main` and ship in the next release.
+- **The ABC:** all eight chapters, 4 lessons each in Python, JavaScript and TypeScript: *The Bun* (output), *The Turnip* (variables and numbers), *Kotyhoroshko* (strings), *The Goat Dereza* (conditions), *The Straw Bull* (loops), *Lord Kotsky* (lists), *Sister Fox* (dictionaries and objects), *Ivasyk-Telesyk* (functions). Chapters 2–8 arrived in v0.4.0.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
 - **Shipped:** installers for macOS, Windows and Linux on every release tag, auto-update from GitHub Releases.
 
