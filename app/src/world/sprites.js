@@ -351,6 +351,12 @@ const DICT={
 "Цариця Карфагена з волячою шкурою.":"Queen of Carthage with an ox hide.","Задача Дидони = Container With Most Water.":"Dido's problem = Container With Most War."
 };
 DICT["Задача Дидони = Container With Most Water."]="Dido's problem = Container With Most Water.";
+DICT["Уся Абетка"]="The whole ABC";
+DICT["Вісім казок від виводу до функцій, а умови всіх задач переписано так, щоб їх зрозумів і п'ятнадцятирічний."]="Eight fairy tales from output to functions, and every problem rewritten so a fifteen-year-old can follow it.";
+DICT["вийшла 0.4"]="out in 0.4";
+DICT["Уся кампанія від Трої до двобою з Турном, Книга хитрощів, вишиванка-прогрес."]="The whole campaign from Troy to the duel with Turnus, the Book of Tricks, the embroidered-shirt progress.";
+DICT["Перша мова з нуля: Python, JavaScript чи TypeScript. Вісім розділів-казок, від першого виводу до власних функцій, і кожен урок написано саме для обраної мови. Сивілла вчить Енея в ніч перед падінням Трої."]="A first language from scratch: Python, JavaScript or TypeScript. Eight fairy-tale chapters, from the first output to your own functions, and every lesson is written for the language you pick. The Sibyl teaches Aeneas the night before Troy falls.";
+DICT["Артбук · концепт v0.4"]="Artbook · concept v0.4";
 DICT["Вісім екранів і переходи між ними. Жовтий квадратик пробігає основний шлях: заставка, меню, мапа, рівень, суд богів і назад на мапу. Новий гравець у меню обирає рівень: з нуля — Абетка, трохи — світ 0, хочу задач — світ 1."]="Eight screens and the transitions between them. The yellow square runs the main path: splash, menu, map, level, judgement and back to the map. A new player picks a level in the menu: from scratch — the ABC, a little — world 0, give me problems — world 1.";
 DICT["з нуля"]="from scratch";
 DICT["урок"]="lesson";
