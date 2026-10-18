@@ -8,7 +8,7 @@ import type { SceneSpec } from '../engine/level.ts';
 import type { StreetCell, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
 import { paintTroyNight } from '../ui/story.ts';
-import { makeSibyl, makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf, makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk } from './sprites.js';
+import { makeSibyl, makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf, fxLayer, pixelGlow, makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk } from './sprites.js';
 
 export const W = 600, H = 390;
 
@@ -47,6 +47,8 @@ abstract class SceneBase {
   protected reduced = reducedMotion();
   /** Збори ватаги (світ 0): скільки троянців іде за Енеєм. */
   protected crew = 0;
+  /** Світ, чиї частинки й світло живуть поверх фону (як на мапі світів); -1 — без них. */
+  protected ambient = -1;
   /** Реакція на вердикт: помилка — червоний спалах і тремтіння, перемога — стрибок та іскри. */
   private fx: { kind: 'fail' | 'win'; at: number } | null = null;
   private acc = 0;
@@ -108,10 +110,21 @@ abstract class SceneBase {
     }
     this.ctx.clearRect(0, 0, W, H);
     this.ctx.drawImage(this.bg, 0, 0);
+    this.ambientLayer(now, 'back');
     this.draw(now);
+    this.ambientLayer(now, 'front');
     this.drawFx(now);
     this.raf = requestAnimationFrame(this.tick);
   };
+
+  /** Частинки й світло світу. Ефекти описано для полотна 400×260, тож масштабуємо до сцени. */
+  private ambientLayer(now: number, which: 'back' | 'front') {
+    if (this.ambient < 0) return;
+    const c = this.ctx;
+    c.save(); c.scale(W / 400, H / 260);
+    fxLayer(c, this.ambient, this.reduced ? 0 : now / 1000, which, true);
+    c.restore();
+  }
 
   /** Фаза ефекту 0..1 (або -1, якщо ефекту немає). */
   private fxPhase(now: number, kind: 'fail' | 'win', dur: number) {
@@ -223,6 +236,7 @@ export class ArrayScene extends SceneBase {
   constructor(canvas: HTMLCanvasElement, onState: (s: SceneState) => void, fox: string, private world: number, private skin: Skin, private mode: Mode) {
     super(canvas, onState, fox);
     paintBackground(this.bg.getContext('2d')!, world, skin);
+    this.ambient = world;
     // Микита стоїть праворуч від останнього предмета — лишаємо йому місце
     if (mode !== 'scan') this.x1 = W - 80;
     if (world === 1) { this.base = 300; this.path = 386; }
@@ -523,6 +537,7 @@ export class StreetScene extends SceneBase {
   constructor(canvas: HTMLCanvasElement, onState: (s: SceneState) => void, fox: string) {
     super(canvas, onState, fox);
     paintBackground(this.bg.getContext('2d')!, 0, 'street');
+    this.ambient = 0;
   }
 
   load(cells: StreetCell[], events: WorldEvent[]) {
@@ -745,6 +760,8 @@ export class ScrollScene extends SceneBase {
       const bob = Math.round(Math.sin(t * 2) * 1.5);
       hr.draw(c, 64, Math.round(H - 8 - hr.h - bob - hop), 1);
     }
+    // місяць над Троєю світиться і повільно «дихає»
+    pixelGlow(c, 547, 121, 66, '230,232,205', 0.2 * (0.88 + 0.12 * Math.sin(t * 0.7)));
     // Сивілла біля сувою
     const sy = SIBYL as Sprite;
     sy.draw(c, Math.round(this.foxW.x - sy.w), Math.round(this.foxW.y - sy.h * 2 + Math.sin(t * 1.4) * 2), 2);

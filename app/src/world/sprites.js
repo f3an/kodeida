@@ -507,7 +507,10 @@ function toRgb(c){
   let h=c.replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');
   const n=parseInt(h,16);return [(n>>16)&255,(n>>8)&255,n&255];
 }
-function shade(c,a){const [r,g,b]=toRgb(c);const t=a<0?0:255,p=Math.abs(a);const f=v=>Math.round((t-v)*p+v);return `rgb(${f(r)},${f(g)},${f(b)})`;}
+/* Затінення зі зсувом відтінку: світло тепліє (до кремового), тінь холоднішає (до глибокого фіолетового),
+   а не просто біліє чи чорніє — так кольори лишаються живими, а не «брудними». */
+const HUE_LIGHT=[255,243,212],HUE_DARK=[22,17,38];
+function shade(c,a){const [r,g,b]=toRgb(c);const t=a<0?HUE_DARK:HUE_LIGHT,p=Math.abs(a);const f=(v,k)=>Math.round((t[k]-v)*p+v);return `rgb(${f(r,0)},${f(g,1)},${f(b,2)})`;}
 function luminance(c){const [r,g,b]=toRgb(c).map(v=>v/255);return .2126*r+.7152*g+.0722*b;}
 function hash(x,y){const s=Math.sin(x*12.9898+y*78.233)*43758.5453;return s-Math.floor(s);}
 
@@ -535,10 +538,11 @@ class Spr{
     const out=[];
     for(let y=0;y<this.h;y++)for(let x=0;x<this.w;x++){
       if(this.get(x,y))continue;
-      const n=[[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>this.get(x+a,y+b)).find(Boolean);
-      if(n)out.push([x,y,n]);
+      // вибірковий контур: сусід праворуч чи знизу — це освітлений лівий/верхній край, контур м'якший
+      const k=[[1,0],[0,1],[-1,0],[0,-1]].findIndex(([a,b])=>this.get(x+a,y+b));
+      if(k>=0)out.push([x,y,this.get(x+[1,0,-1,0][k],y+[0,1,0,-1][k]),k<2]);
     }
-    out.forEach(([x,y,n])=>this.set(x,y,shade(n,-amt)));
+    out.forEach(([x,y,n,lit])=>this.set(x,y,shade(n,lit?-amt*0.72:-Math.min(0.9,amt*1.2))));
     this.ol=new Set(out.map(([x,y])=>y*this.w+x));
     return this;
   }
@@ -1043,7 +1047,7 @@ function makeHD(b){
     const i=y*W+x,c=src[i];if(!c)continue;
     const L=empty(x-2,y-2)||empty(x-1,y-2),D=empty(x+2,y+2)||empty(x+1,y+2);
     let out=c;
-    if(L&&!D)out=shade(c,0.16);else if(D&&!L)out=shade(c,-0.18);
+    if(L&&!D)out=shade(c,0.2);else if(D&&!L)out=shade(c,-0.22);
     else if(hash(x,y)<0.04&&src[i-1]===c&&src[i+1]===c&&src[i-W]===c&&src[i+W]===c)out=shade(c,-0.07);
     h.p[i]=out;
   }
@@ -1057,8 +1061,10 @@ function makeHD(b){
   // зовнішній контур 1 HD-піксель
   const fin=h.p.slice();
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(fin[y*W+x])continue;
-    const n=[[1,0],[-1,0],[0,1],[0,-1]].map(([a,c])=>{const X=x+a,Y=y+c;return X<0||Y<0||X>=W||Y>=H?null:fin[Y*W+X];}).find(Boolean);
-    if(n)h.p[y*W+x]=shade(n,-0.72);}
+    const at=(a,c)=>{const X=x+a,Y=y+c;return X<0||Y<0||X>=W||Y>=H?null:fin[Y*W+X];};
+    // вибірковий контур: з освітленого боку (зліва й згори від фігури) — м'якший, з тіньового — глибокий
+    const lit=at(1,0)||at(0,1),dark=at(-1,0)||at(0,-1);
+    if(lit&&!dark)h.p[y*W+x]=shade(lit,-0.5);else if(dark||lit)h.p[y*W+x]=shade(dark||lit,-0.8);}
   return h;
 }
 function hdDetails(b,h){
@@ -1369,8 +1375,16 @@ Object.entries(EXTRAS).forEach(([n,fn])=>{const ws=WORLD_SCENES[n];if(!ws)return
 
 /* частинки малюються поверх тла (back) і поверх героїв (front); усе залежить лише від часу t */
 const FXP=(ctx,x,y,c,z=2)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x/2)*2,Math.round(y/2)*2,z,z);};
+/* Свічення: концентричні піксельні кола з кроком 2 px, додаються адитивно. Ореол без розмиття — пасує до піксель-арту. col — 'r,g,b' */
+function pixelGlow(ctx,x,y,r,col,a){const op=ctx.globalCompositeOperation;ctx.globalCompositeOperation='lighter';
+  const cx=Math.round(x/2)*2,cy=Math.round(y/2)*2;
+  for(let k=r;k>=4;k-=4){const t=k/r;ctx.fillStyle=`rgba(${col},${(a*(1-t)*0.45).toFixed(3)})`;
+    for(let dy=-k;dy<k;dy+=2){const hw=Math.round(Math.sqrt(k*k-dy*dy)/2)*2;if(hw>0)ctx.fillRect(cx-hw,cy+dy,hw*2,2);}}
+  ctx.globalCompositeOperation=op;}
 const FXW=400,FXH=260;
 const FXK={
+  // джерела світла: o.pts — точки [x,y], o.r — радіус, o.col — 'r,g,b', o.flicker — мерехтіння вогню, o.pulse — повільне дихання
+  glow(ctx,t,o={}){(o.pts||[o.at||[200,130]]).forEach(([x,y],i)=>{const f=o.flicker?0.82+0.12*Math.sin(t*o.flicker+i*1.7)+0.06*Math.sin(t*o.flicker*2.9+i):o.pulse?0.85+0.15*Math.sin(t*o.pulse+i):1;pixelGlow(ctx,x,y,o.r||40,o.col||'255,190,90',(o.a||0.3)*f);});},
   embers(ctx,t,o={}){const n=o.n||20,[x0,x1]=o.x||[0,FXW],yb=o.y||FXH;for(let i=0;i<n;i++){const v=18+30*hash(i,1),ph=((t*v+hash(i,2)*yb)%yb),y=yb-ph,x=x0+hash(i,3)*(x1-x0)+Math.sin(t*2+i)*6;ctx.globalAlpha=Math.max(0,1-ph/yb);FXP(ctx,x,y,['#f7d26a','#f08a2a','#d9431e'][(i+Math.floor(t*8))%3]);}ctx.globalAlpha=1;},
   ash(ctx,t,o={}){for(let i=0;i<(o.n||14);i++){const v=8+10*hash(i,4),y=(t*v+hash(i,5)*FXH)%FXH,x=(hash(i,6)*FXW+Math.sin(t*0.8+i)*14+t*6)%FXW;ctx.globalAlpha=.7;FXP(ctx,x,y,'#cfc6bd');}ctx.globalAlpha=1;},
   snow(ctx,t,o={}){for(let i=0;i<(o.n||50);i++){const near=hash(i,7)<0.25,v=near?34:14+10*hash(i,8),y=(t*v+hash(i,9)*FXH)%FXH,x=(hash(i,10)*FXW+Math.sin(t*(near?1.4:0.8)+i)*(near?12:6))%FXW;ctx.globalAlpha=near?1:.75;FXP(ctx,x,y,'#ffffff',near?4:2);}ctx.globalAlpha=1;},
@@ -1399,25 +1413,26 @@ const FXK={
   windowglow(ctx,t,o={}){const [x,y]=o.at||[0,0];ctx.globalAlpha=.18+.05*Math.sin(t*2);ctx.fillStyle='#ffd27a';ctx.fillRect(x-8,y-8,30,26);ctx.globalAlpha=1;},
 };
 const WORLD_FX={
-  0:{grade:'rgba(255,110,40,.07)',back:[['smoke',{x:[20,140],y:200,col:'#2a2420',n:7}]],front:[['embers',{n:26}],['ash',{n:16}]],vig:.35},
-  1:{grade:'rgba(10,25,50,.14)',back:[['lightning']],front:[['rain',{n:70}],['spray',{n:16,y:150}]],vig:.45},
-  2:{back:[['rays',{x:330,col:'255,240,190'}],['birds',{n:3,y:30}]],front:[['dust',{n:18,col:'#f6e4b8'}]],vig:.18},
+  0:{grade:'rgba(255,110,40,.07)',back:[['glow',{pts:[[150,236],[60,244]],r:70,col:'255,110,40',a:.32,flicker:6,card:true}],['smoke',{x:[20,140],y:200,col:'#2a2420',n:7}]],front:[['embers',{n:26}],['ash',{n:16}]],vig:.35},
+  1:{grade:'rgba(10,25,50,.14)',back:[['glow',{at:[232,166],r:26,col:'255,210,120',a:.4,flicker:9,card:true}],['lightning']],front:[['rain',{n:70}],['spray',{n:16,y:150}]],vig:.45},
+  2:{back:[['glow',{at:[340,40],r:80,col:'255,232,160',a:.26,pulse:.8,card:true}],['rays',{x:330,col:'255,240,190'}],['birds',{n:3,y:30}]],front:[['dust',{n:18,col:'#f6e4b8'}]],vig:.18},
   3:{back:[['bunting']],front:[['leaves',{n:12}]],vig:.2},
   4:{back:[],front:[['snow',{n:60}]],vig:.25},
-  5:{back:[['moonhalo',{at:[300,52]}],['shooting']],front:[['fireflies',{n:14,y0:120,y1:240}]],vig:.5},
-  6:{back:[['rays',{x:90,col:'255,244,205'}],['birds',{n:4,y:24}],['glitter',{y:124,y2:162}]],front:[['dust',{n:10,col:'#fff3cf'}]],vig:.18},
-  7:{back:[['shooting'],['campfire',{at:[180,206]}]],front:[['embers',{n:10,x:[168,196],y:206}],['fireflies',{n:6,y0:150,y1:240}]],vig:.5},
-  8:{back:[['lavaglow']],front:[['embers',{n:40}],['smoke',{x:[60,200],y:190,col:'#1a0e0c',n:6}]],vig:.55},
-  9:{back:[['rays',{x:200,col:'255,236,170'}]],front:[['motes',{n:30}]],vig:.18},
+  5:{back:[['glow',{at:[300,52],r:96,col:'215,222,235',a:.14,pulse:.6}],['moonhalo',{at:[300,52]}],['shooting']],front:[['fireflies',{n:14,y0:120,y1:240}]],vig:.5},
+  6:{back:[['glow',{at:[80,40],r:80,col:'255,236,170',a:.26,pulse:.8}],['rays',{x:90,col:'255,244,205'}],['birds',{n:4,y:24}],['glitter',{y:124,y2:162}]],front:[['dust',{n:10,col:'#fff3cf'}]],vig:.18},
+  7:{back:[['glow',{at:[180,204],r:60,col:'255,150,60',a:.45,flicker:8}],['shooting'],['campfire',{at:[180,206]}]],front:[['embers',{n:10,x:[168,196],y:206}],['fireflies',{n:6,y0:150,y1:240}]],vig:.5},
+  8:{back:[['glow',{pts:[[88,178],[192,172]],r:34,col:'255,120,40',a:.4,flicker:7}],['lavaglow']],front:[['embers',{n:40}],['smoke',{x:[60,200],y:190,col:'#1a0e0c',n:6}]],vig:.55},
+  9:{back:[['glow',{at:[200,110],r:100,col:'255,226,140',a:.3,pulse:.5}],['rays',{x:200,col:'255,236,170'}]],front:[['motes',{n:30}]],vig:.18},
   10:{back:[['ripples',{y:208}]],front:[['fireflies',{n:10,day:true,y0:80,y1:220}],['petals',{n:14}]],vig:.22},
-  11:{back:[['mist',{y:118,a:.35}],['birds',{n:3,y:40}]],front:[['leaves',{n:8,col:['#3f7a56','#d9a521','#5f9a4a']}],['mist',{y:206,a:.18}]],vig:.22},
+  11:{back:[['glow',{at:[325,60],r:70,col:'255,240,190',a:.24,pulse:.7}],['mist',{y:118,a:.35}],['birds',{n:3,y:40}]],front:[['leaves',{n:8,col:['#3f7a56','#d9a521','#5f9a4a']}],['mist',{y:206,a:.18}]],vig:.22},
   12:{back:[['dragon']],front:[['dust',{n:24,col:'#e2cc96'}]],vig:.25},
-  13:{back:[],front:[['embers',{n:24,y:220}],['fireflies',{n:5,y0:150,y1:240}]],vig:.55},
-  14:{back:[['forgeglow']],front:[['sparks',{n:40,at:[160,150]}],['smoke',{x:[146,176],y:90,col:'#1a1210',n:5}]],vig:.5},
-  15:{back:[['rays',{x:210,col:'255,180,120'}]],front:[['dust',{n:26,col:'#ecb890'}],['embers',{n:12}]],vig:.4},
+  13:{back:[['glow',{pts:[[100,196],[250,192]],r:30,col:'255,150,60',a:.45,flicker:8}]],front:[['embers',{n:24,y:220}],['fireflies',{n:5,y0:150,y1:240}]],vig:.55},
+  14:{back:[['glow',{at:[160,160],r:90,col:'255,140,50',a:.4,flicker:5}],['forgeglow']],front:[['sparks',{n:40,at:[160,150]}],['smoke',{x:[146,176],y:90,col:'#1a1210',n:5}]],vig:.5},
+  15:{back:[['glow',{at:[220,166],r:110,col:'255,170,90',a:.35,pulse:.6}],['rays',{x:210,col:'255,180,120'}]],front:[['dust',{n:26,col:'#ecb890'}],['embers',{n:12}]],vig:.4},
 };
-function fxLayer(ctx,n,t,which){const cfg=WORLD_FX[n];if(!cfg)return;(cfg[which]||[]).forEach(([k,o])=>FXK[k]&&FXK[k](ctx,t,o||{}));
-  if(which==='front'){if(cfg.grade){ctx.fillStyle=cfg.grade;ctx.fillRect(0,0,FXW,FXH);}
+/* bare: без тонування й віньєтки — для рівнів гри, де поверх фону лежать стовпи, масиви й підписи */
+function fxLayer(ctx,n,t,which,bare){const cfg=WORLD_FX[n];if(!cfg)return;(cfg[which]||[]).forEach(([k,o])=>{if(bare&&o&&o.card)return;FXK[k]&&FXK[k](ctx,t,o||{});});
+  if(which==='front'&&!bare){if(cfg.grade){ctx.fillStyle=cfg.grade;ctx.fillRect(0,0,FXW,FXH);}
     if(cfg.vig){for(let k=0;k<4;k++){const a=cfg.vig*(1-k/4)*0.45;ctx.fillStyle=`rgba(10,8,14,${a.toFixed(3)})`;const d=k*6;ctx.fillRect(d,d,FXW-d*2,6);ctx.fillRect(d,FXH-d-6,FXW-d*2,6);ctx.fillRect(d,d+6,6,FXH-d*2-12);ctx.fillRect(FXW-d-6,d+6,6,FXH-d*2-12);}}}}
 
 /* загальна сцена для світів без окремої ілюстрації */
@@ -1920,4 +1935,4 @@ const OB=[
 
 ];
 
-export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, makeAnchises, makeLion, makeMitten, makeSotnyk, makeAcestes, makeOx, makeCharon, makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk, artOf, drawSack, drawEgg, eggCells, EGG_PAL, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };
+export { Spr, px, shade, hash, rect, poly, ell, line, path, BK, RD, GD, WH, RAINBOW, makeEnei, makeGod, makeFox, makeFoxWild, makeWolf, makeWolfWild, makeJuno, makeEol, makeDido, makeSibyl, makeTrojan, TROJANS, makeAnchises, makeLion, makeMitten, makeSotnyk, makeAcestes, makeOx, makeCharon, makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk, artOf, drawSack, drawEgg, eggCells, EGG_PAL, MOTIFS, MOTIF_NAMES, drawMotif, SONGS, ALL_WORLDS, SW, SH_, WORLD_SCENES, WORLD_FX, WORLD_INFO, fxLayer, pixelGlow, genericBg, EXTRAS, sky, sea, ruins, OB, DICT, NODES, ISLES, MW, MH, MS, paintJourney, paintWorldArt, routePoint, worldCol, foxFor };
