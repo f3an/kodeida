@@ -275,7 +275,7 @@ const DICT={
 "Редактор без AI, справжні тести і світ, що виконує твій код крок за кроком. Наприкінці — порівняння з рішенням Вовка, щоб було видно, навіщо хитрість.":"An editor without AI, real tests and a world that runs your code step by step. At the end you compare with the Wolf's solution, so you see why the trick matters.",
 "16 світів":"16 worlds","Мандрівка світами української літератури":"A journey through Ukrainian literature",
 "Від попелища Трої до кузні Вулкана: Енеїда, Франко, Леся Українка, Коцюбинський, народні казки. Кожен світ — один прийом і його мешканці.":"From the ashes of Troy to Vulcan's forge: the Aeneid, Franko, Lesya Ukrainka, Kotsiubynsky, folk tales. Each world is one technique and its inhabitants.",
-"Герої":"Heroes","Еней, Лис Микита і ще 17 персонажів":"Aeneas, Mykyta the Fox and 17 more characters",
+"Герої":"Heroes","Еней, Лис Микита і ще 25 персонажів":"Aeneas, Mykyta the Fox and 25 more characters",
 "Гравець керує Енеєм, Микита підказує і жартує, а Вовк Неситий розв'язує все перебором і програє. Звірі поза своїм світом олюднені чарами Писанки.":"You control Aeneas, Mykyta gives hints and jokes, and the Greedy Wolf brute-forces everything and loses. Outside their own world, animals are humanised by the Pysanka's magic.",
 "Книга хитрощів":"Book of Tricks","Вчимо прийомів, а не відповідей":"We teach techniques, not answers",
 "Кожен пройдений світ відкриває сторінку: коли брати прийом, шаблон коду, складність і живий приклад.":"Every world you finish unlocks a page: when to use the technique, a code template, complexity and a live example.",
@@ -349,6 +349,48 @@ const DICT={
 "Цариця Карфагена з волячою шкурою.":"Queen of Carthage with an ox hide.","Задача Дидони = Container With Most Water.":"Dido's problem = Container With Most War."
 };
 DICT["Задача Дидони = Container With Most Water."]="Dido's problem = Container With Most Water.";
+DICT["Фішки"]="Features";
+DICT["Колобок"]="The Bun";
+DICT["Дід і ріпка"]="Grandpa and the turnip";
+DICT["Котигорошко"]="Kotyhoroshko";
+DICT["Коза-дереза"]="The Goat Dereza";
+DICT["Солом'яний бичок"]="The Straw Bull";
+DICT["Пан Коцький"]="Lord Kotsky";
+DICT["Лисичка-сестричка"]="Sister Fox";
+DICT["Івасик-Телесик"]="Ivasyk-Telesyk";
+DICT["Котиться лісом і співає. Вчить програму говорити."]="Rolls through the forest singing. Teaches the program to talk.";
+DICT["Тягнуть-потягнуть, і кожен помічник додає сили."]="They pull and pull, and every helper adds strength.";
+DICT["Богатир із горошини з булавою на плечі."]="A hero grown from a pea, with a mace on his shoulder.";
+DICT["«Пів боку луплена» і лякає всіх, крім рака."]="“Half her side flayed”, she scares everyone except the crayfish.";
+DICT["Засмолений бік, до якого день за днем прилипають звірі."]="A tarred side that animals get stuck to day after day.";
+DICT["Кіт, що назвався паном, і звірі в черзі на гостину."]="A cat who called himself a lord, and animals queuing to visit.";
+DICT["Хитра господиня з качалкою. Усе в коморі записано."]="A sly housekeeper with a rolling pin. Everything in the pantry is written down.";
+DICT["Рибалить на золотому човнику й пливе лише на мамин голос."]="Fishes from a golden boat and swims only to his mother’s voice.";
+DICT["Вивід: print і console.log."]="Output: print and console.log.";
+DICT["Змінні й числа: power += 3."]="Variables and numbers: power += 3.";
+DICT["Рядки: довжина, великі літери, шаблон."]="Strings: length, capitals, templates.";
+DICT["Умови: if, else, і / або."]="Conditions: if, else, and / or.";
+DICT["Цикли: for і while."]="Loops: for and while.";
+DICT["Списки: append, довжина, цикл по гостях."]="Lists: append, length, a loop over the guests.";
+DICT["Словники й об'єкти: назва → кількість."]="Dictionaries and objects: name → amount.";
+DICT["Функції: return, параметри, своя функція."]="Functions: return, parameters, your own function.";
+DICT["Співає"]="Singing";
+DICT["Тягне"]="Pulling";
+DICT["З булавою"]="With a mace";
+DICT["Лякає"]="Scaring";
+DICT["Пасеться"]="Grazing";
+DICT["З качалкою"]="With a rolling pin";
+DICT["У човнику"]="In the boat";
+DICT["Народна казка · Абетка 1"]="Folk tale · ABC 1";
+DICT["Народна казка · Абетка 2"]="Folk tale · ABC 2";
+DICT["Народна казка · Абетка 3"]="Folk tale · ABC 3";
+DICT["Народна казка · Абетка 4"]="Folk tale · ABC 4";
+DICT["Народна казка · Абетка 5"]="Folk tale · ABC 5";
+DICT["Народна казка · Абетка 6"]="Folk tale · ABC 6";
+DICT["Народна казка · Абетка 7"]="Folk tale · ABC 7";
+DICT["Народна казка · Абетка 8"]="Folk tale · ABC 8";
+DICT["Старт"]="Intro";
+DICT["Шляхи"]="Ways";
 DICT["Уся Абетка"]="The whole ABC";
 DICT["Вісім казок від виводу до функцій, а умови всіх задач переписано так, щоб їх зрозумів і п'ятнадцятирічний."]="Eight fairy tales from output to functions, and every problem rewritten so a fifteen-year-old can follow it.";
 DICT["вийшла 0.4"]="out in 0.4";
@@ -1488,6 +1530,124 @@ function makeSibyl(){
   s.fill(ell(12,38,2,2),SK);s.fill(ell(28,38,2,2),SKs);
   return s.outline(0.6);
 }
+/* ---------- герої Абетки: вісім казок ---------- */
+function makeKolobok(){
+  const s=new Spr(34,34),B='#e9a948',Bh='#f6cd73',Bs='#c27a2a';
+  s.fill(ell(17,18,14,13),(x,y)=>(x+y<24?Bh:(x+y>40?Bs:B)));
+  [[10,12],[22,9],[26,19],[8,22],[19,28]].forEach(([x,y])=>{s.set(x,y,Bs);s.set(x+1,y,Bs);});
+  s.fill(rect(11,15,2,3),BK);s.fill(rect(21,15,2,3),BK);s.set(11,15,WH);s.set(21,15,WH);
+  s.fill(ell(9,21,2,1.3),'#e8806a');s.fill(ell(25,21,2,1.3),'#e8806a');
+  s.fill(path([[13,22],[17,25],[21,22]],1),'#7a3a18');
+  return s.outline(0.6);
+}
+function makeRipka(){
+  const s=new Spr(64,66),TP='#a14a8f',TPs='#7a2f6c',TW='#f2ede0',TWs='#d6cdb9',LF='#4f9d4a',LFs='#2f6a33';
+  s.fill(poly([[15,32],[8,12],[19,24]]),LF);s.fill(poly([[17,32],[18,6],[22,26]]),LFs);s.fill(poly([[20,32],[29,11],[24,28]]),LF);
+  s.fill(ell(18,46,14,14),(x,y)=>(y<41?(x>24?TPs:TP):(x>24?TWs:TW)));
+  s.fill(line(18,59,17,65),TWs);
+  const SH='#f4efe3',SHs='#d3c9b6',SK='#eab48a',SKs='#c98a62',PN='#6b5a46',PNs='#4e4132',BE='#ece9e2';
+  s.fill(rect(42,52,5,11),PN);s.fill(rect(49,52,5,11),PNs);s.fill(rect(41,62,7,3),'#3a2416');s.fill(rect(48,62,7,3),'#2a1a10');
+  s.fill(poly([[40,30],[56,30],[57,54],[39,54]]),(x)=>(x>52?SHs:SH));s.fill(rect(39,44,18,2),RD);
+  for(let y=32;y<43;y+=2)s.set(48,y,y%4?RD:GD);
+  s.fill(ell(48,21,6,7),(x)=>(x>50?SKs:SK));
+  s.fill(ell(48,14,8,2.5),'#5b3a20');s.fill(ell(48,12,5,3),'#6b4420');
+  s.fill(poly([[42,23],[54,23],[50,35],[46,35]]),BE);s.fill(line(44,22,52,22),BE);
+  s.set(46,20,BK);s.set(50,20,BK);
+  s.fill(line(41,32,25,24,2.4),SH);s.fill(ell(24,24,2,2),SK);
+  s.fill(line(43,37,26,28,2.4),SHs);s.fill(ell(25,28,2,2),SKs);
+  return s.outline(0.6);
+}
+function makeKotyhoroshko(){
+  const s=new Spr(44,72),SK='#eab48a',SKs='#c98a62',SH='#f4efe3',SHs='#d3c9b6',PN='#3f7a3a',PNs='#2f5a28',HR='#e2b64a',HRs='#b58a2a',IR='#7d838c',IRs='#565b63';
+  s.fill(rect(15,46,6,17),PN);s.fill(rect(23,46,6,17),PNs);s.fill(rect(14,62,8,4),'#5b3a20');s.fill(rect(22,62,8,4),'#3a2416');
+  s.fill(poly([[13,24],[31,24],[32,48],[12,48]]),(x)=>(x>27?SHs:SH));
+  for(let y=26;y<44;y+=2)s.set(22,y,y%4?RD:GD);
+  s.fill(rect(12,44,20,3),'#5fa04a');s.set(13,45,'#2f5a28');s.set(30,45,'#2f5a28');
+  s.fill(rect(19,20,6,4),SK);
+  s.fill(ell(22,14,7,8),(x)=>(x>24?SKs:SK));
+  s.fill(ell(22,8,8,4.5),HR);s.fill(rect(14,8,3,6),HR);s.fill(rect(27,8,3,6),HRs);
+  s.set(19,15,BK);s.set(25,15,BK);s.fill(line(20,19,24,19),SKs);
+  s.fill(line(13,26,9,40,2.4),SH);s.fill(ell(9,41,2,2),SK);
+  s.fill(line(31,26,36,18,2.4),SHs);
+  s.fill(line(36,19,38,4,1.6),'#6b4420');
+  s.fill(ell(38,5,4.5,4.5),(x)=>(x>39?IRs:IR));[[38,0],[33,5],[43,5],[38,10]].forEach(([x,y])=>s.set(x,y,IRs));
+  s.fill(ell(36,18,2,2),SK);
+  return s.outline(0.6);
+}
+function makeGoat(){
+  const s=new Spr(58,52),G='#e7e2d8',Gs='#c4bdb0',RAW='#e8a2a0',RAWs='#c97a78',HN='#8a7a5a',HNs='#5e523c';
+  [[20,34],[25,35],[40,35],[45,34]].forEach(([x,y],i)=>s.fill(rect(x,y,3,13),(xx,yy)=>(yy>44?'#3a2a20':(i%2?Gs:G))));
+  s.fill(ell(33,28,17,9),(x,y)=>(y>31?Gs:G));
+  s.fill(ell(37,27,6,4),RAW);s.fill(ell(38,28,3,2),RAWs);
+  s.fill(line(49,23,53,18,1.6),G);
+  s.fill(poly([[14,22],[21,19],[24,30],[17,32]]),G);
+  s.fill(ell(12,17,6,5),G);s.fill(ell(7,20,3,2.4),Gs);s.set(5,20,BK);
+  s.fill(poly([[8,22],[12,22],[9,31]]),Gs);
+  s.fill(path([[12,12],[16,5],[21,7]],1.8),HN);s.fill(path([[10,12],[12,4],[16,3]],1.8),HNs);
+  s.fill(poly([[15,15],[21,14],[17,18]]),Gs);
+  s.set(11,16,'#d9a521');s.set(12,16,BK);s.fill(line(9,14,13,15),BK);
+  return s.outline(0.6);
+}
+function makeStrawBull(){
+  const s=new Spr(62,46),ST='#e3c46a',STs='#bf9a3e',TAR='#2a211c',TARh='#4a3b33',HN='#a87a12';
+  [[16,30],[22,31],[40,31],[46,30]].forEach(([x,y],i)=>s.fill(rect(x,y,4,13),(xx,yy)=>((xx+yy)%4===0?STs:(i%2?STs:ST))));
+  s.fill(ell(32,25,18,10),(x,y)=>((x+y*2)%5===0?STs:(y>30?STs:ST)));
+  s.fill(ell(34,24,8,5.5),(x,y)=>((x*3+y)%7===0?TARh:TAR));
+  s.fill(line(50,21,56,29,1.6),STs);s.fill(ell(56,31,2,2.2),ST);
+  [[24,15,22,11],[30,14,30,10],[38,15,40,11]].forEach(([a,b,c,d])=>s.fill(line(a,b,c,d),ST));
+  s.fill(ell(12,23,7,6),(x,y)=>((x+y)%5===0?STs:ST));s.fill(ell(7,26,3.5,3),STs);s.set(5,26,TAR);
+  s.fill(path([[9,18],[5,13],[4,9]],1.6),HN);s.fill(path([[15,18],[19,13],[20,9]],1.6),HN);
+  s.set(10,21,BK);s.set(14,21,BK);
+  return s.outline(0.6);
+}
+function makeKotsky(){
+  const s=new Spr(42,66),F='#7c818c',Fs='#5d626b',ZH='#6b3fa0',ZHs='#4e2c78',WS='#e6e6e6',EY='#e9c46a';
+  s.fill(path([[30,56],[37,50],[36,40],[39,33]],2.2),Fs);
+  s.fill(rect(13,58,7,6),RD);s.fill(rect(22,58,7,6),'#7e1219');
+  s.fill(poly([[11,26],[31,26],[33,60],[9,60]]),(x)=>(x>26?ZHs:ZH));
+  s.fill(line(21,27,21,59),GD);s.fill(rect(10,42,22,3),GD);
+  s.fill(line(11,28,8,43,2.6),ZH);s.fill(ell(8,44,2,2),F);
+  s.fill(path([[31,28],[35,35],[31,41]],2.6),ZHs);
+  s.fill(ell(21,17,8,7),(x)=>(x>24?Fs:F));
+  s.fill(poly([[13,13],[15,4],[19,10]]),F);s.fill(poly([[23,10],[27,4],[29,13]]),Fs);s.set(15,8,'#e7a3ad');s.set(27,8,'#e7a3ad');
+  s.fill(rect(16,15,2,2),EY);s.fill(rect(24,15,2,2),EY);s.set(17,16,BK);s.set(25,16,BK);
+  s.set(21,19,'#e58a9a');s.fill(line(19,21,23,21),Fs);
+  s.fill(line(10,18,16,19),WS);s.fill(line(10,21,16,20),WS);s.fill(line(26,19,32,18),WS);s.fill(line(26,20,32,21),WS);
+  return s.outline(0.6);
+}
+function makeVixen(){
+  const s=new Spr(42,64),F='#e88a3c',Fs='#c06a26',DR='#2f6db5',DRs='#203a72',SC='#c0392b',SCs='#8f2a20',PIN='#c9a466';
+  s.fill(path([[29,52],[36,46],[37,36]],3.2),F);s.fill(ell(37,34,2.6,2.6),WH);
+  s.fill(poly([[12,26],[28,26],[32,60],[8,60]]),(x)=>(x>24?DRs:DR));
+  s.fill(poly([[15,33],[25,33],[27,58],[13,58]]),WH);s.set(18,40,RD);s.set(22,46,RD);s.set(19,52,GD);s.set(23,38,GD);
+  s.fill(ell(14,61,3,2),Fs);s.fill(ell(26,61,3,2),Fs);
+  s.fill(line(12,28,9,41,2.4),DR);s.fill(ell(9,42,2,2),F);
+  s.fill(line(28,28,31,37,2.4),DRs);
+  s.fill(line(25,42,39,35,2),PIN);s.fill(line(23,43,25,42,1.2),'#8b6b3e');s.fill(line(39,35,41,34,1.2),'#8b6b3e');
+  s.fill(ell(31,38,2,2),F);
+  s.fill(poly([[13,15],[14,5],[19,12]]),F);s.fill(poly([[21,12],[26,5],[27,15]]),Fs);s.set(15,9,'#2a1a10');s.set(25,9,'#2a1a10');
+  s.fill(ell(20,18,7,6.5),(x)=>(x>23?Fs:F));
+  s.fill(poly([[14,19],[26,19],[20,26]]),WH);s.set(20,25,BK);
+  s.fill(rect(16,17,2,2),BK);s.fill(rect(23,17,2,2),BK);s.set(16,17,WH);s.set(23,17,WH);
+  s.fill(poly([[14,13],[17,9],[23,9],[26,13]]),SC);s.set(18,11,WH);s.set(22,11,WH);s.set(20,10,GD);
+  s.fill(poly([[25,12],[30,14],[27,16]]),SCs);s.fill(poly([[26,12],[31,10],[29,15]]),SC);
+  return s.outline(0.6);
+}
+function makeIvasyk(){
+  const s=new Spr(60,52),BT='#d9a521',BTs='#a87a12',WA='#3f7fd0',WAs='#2f62a8',SH='#f4efe3',SHs='#d3c9b6',SK='#eab48a',SKs='#c98a62',HR='#e2b64a',HRs='#b58a2a';
+  s.fill(rect(0,44,60,8),(x,y)=>(y===44&&(x+3)%9<3?'#9cc8ee':(y>47?WAs:WA)));
+  s.fill(poly([[23,18],[35,18],[36,35],[22,35]]),(x)=>(x>32?SHs:SH));
+  for(let x=25;x<34;x+=2)s.set(x,19,x%4===1?RD:GD);
+  s.fill(ell(29,11,6,7),(x)=>(x>31?SKs:SK));
+  s.fill(ell(29,6,7,4),HR);s.fill(rect(22,6,3,5),HR);s.fill(rect(33,6,3,5),HRs);
+  s.set(27,11,BK);s.set(31,11,BK);s.fill(line(27,15,31,15),SKs);
+  s.fill(line(40,15,51,45,1.4),'#6b4420');s.fill(ell(51,45,2.5,4),'#8b6b3e');
+  s.fill(line(34,22,41,22,2.2),SH);s.fill(ell(42,22,2,2),SK);
+  s.fill(line(24,24,43,28,2.2),SHs);s.fill(ell(44,28,2,2),SKs);
+  s.fill(poly([[5,34],[55,34],[48,46],[12,46]]),(x,y)=>(y>40?BTs:BT));s.fill(line(5,34,55,34),BTs);
+  for(let x=14;x<48;x+=6)s.set(x,39,'#f2d27a');
+  return s.outline(0.6);
+}
 const GLYPHS={'{':["..xx",".x..",".x..","x...",".x..",".x..","..xx"],'}':["xx..","..x.","..x.","...x","..x.","..x.","xx.."],'(':["..x",".x.","x..","x..","x..",".x.","..x"],')':["x..",".x.","..x","..x","..x",".x.","x.."]};
 function glyph(sp,g,x,y,c){GLYPHS[g].forEach((r,j)=>{for(let i=0;i<r.length;i++)if(r[i]==='x')sp.fill(rect(x+i*2,y+j*2,2,2),c);});}
 const OLYMPUS_GODS=Object.fromEntries(['zeus','apollo','bacchus','neptune','venus'].map(k=>[k,[makeGod(k),makeGod(k,{raise:true})]]));
@@ -1773,7 +1933,17 @@ CHARS.push(
   {id:'kozh',cat:'npc',name:'Кирило Кожум\'яка',src:'Легенда · Світ 12',role:'Заорав Змія і проклав Змієві вали.',bullets:['Інтервали: зшити вали, що перекриваються.'],vars:[{n:'Зі шкурою',m:()=>makeKozhumyaka()}]},
   {id:'vulcan',cat:'npc',name:'Вулкан',src:'Енеїда · Світ 14',role:'Коваль богів, кує Енеєві зброю.',bullets:['Динамічне програмування: не кувати двічі.'],vars:[{n:'Біля ковадла',m:()=>makeVulcan()}]},
 );
-const CATS={all:'Усі',heroes:'Герої',villains:'Антагоністи',npc:'Мешканці світів'};
+CHARS.push(
+  {id:'kolobok',cat:'abc',name:'Колобок',src:'Народна казка · Абетка 1',role:'Котиться лісом і співає. Вчить програму говорити.',bullets:['Вивід: print і console.log.'],vars:[{n:'Співає',m:()=>makeKolobok()}]},
+  {id:'ripka',cat:'abc',name:'Дід і ріпка',src:'Народна казка · Абетка 2',role:'Тягнуть-потягнуть, і кожен помічник додає сили.',bullets:['Змінні й числа: power += 3.'],vars:[{n:'Тягне',m:()=>makeRipka()}]},
+  {id:'horoshko',cat:'abc',name:'Котигорошко',src:'Народна казка · Абетка 3',role:'Богатир із горошини з булавою на плечі.',bullets:['Рядки: довжина, великі літери, шаблон.'],vars:[{n:'З булавою',m:()=>makeKotyhoroshko()}]},
+  {id:'koza',cat:'abc',name:'Коза-дереза',src:'Народна казка · Абетка 4',role:'«Пів боку луплена» і лякає всіх, крім рака.',bullets:['Умови: if, else, і / або.'],vars:[{n:'Лякає',m:()=>makeGoat()}]},
+  {id:'bychok',cat:'abc',name:'Солом\'яний бичок',src:'Народна казка · Абетка 5',role:'Засмолений бік, до якого день за днем прилипають звірі.',bullets:['Цикли: for і while.'],vars:[{n:'Пасеться',m:()=>makeStrawBull()}]},
+  {id:'kotsky',cat:'abc',name:'Пан Коцький',src:'Народна казка · Абетка 6',role:'Кіт, що назвався паном, і звірі в черзі на гостину.',bullets:['Списки: append, довжина, цикл по гостях.'],vars:[{n:'У жупані',m:()=>makeKotsky()}]},
+  {id:'vixen',cat:'abc',name:'Лисичка-сестричка',src:'Народна казка · Абетка 7',role:'Хитра господиня з качалкою. Усе в коморі записано.',bullets:['Словники й об\'єкти: назва → кількість.'],vars:[{n:'З качалкою',m:()=>makeVixen()}]},
+  {id:'ivasyk',cat:'abc',name:'Івасик-Телесик',src:'Народна казка · Абетка 8',role:'Рибалить на золотому човнику й пливе лише на мамин голос.',bullets:['Функції: return, параметри, своя функція.'],vars:[{n:'У човнику',m:()=>makeIvasyk()}]},
+);
+const CATS={all:'Усі',heroes:'Герої',villains:'Антагоністи',npc:'Мешканці світів',abc:'Абетка'};
 (function(){
   const list=document.getElementById('ch-list'),tabs=document.getElementById('ch-tabs'),stage=document.getElementById('ch-stage'),
         nameEl=document.getElementById('ch-name'),srcEl=document.getElementById('ch-src'),roleEl=document.getElementById('ch-role'),

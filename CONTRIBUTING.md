@@ -65,6 +65,7 @@ Every push to `main` that touches `site/` redeploys GitHub Pages.
 - **Worlds** live in `WORLD_SCENES` (background and local character) and `WORLD_FX` (particles, light, vignette).
 - **Text** is written in Ukrainian in the markup and scripts. English comes from the `DICT` table and the `RULES` patterns in `app.js` (both pages); when you add or change visible text, add its English entry there. Text drawn on a canvas goes through `ST('…')`, so the site and the game translate it the same way.
 - **Shared with the game:** everything between the `colour helpers` marker and the cutscenes (`OB`) is copied into the app by `npm run sync-sprites`; keep it free of DOM access.
+- **Cache:** both pages load `style.css?v=…` and `app.js?v=…`. Bump that version in `index.html` and `artbook.html` whenever you change either file, or returning visitors get the new HTML with the old script and styles.
 - Respect `prefers-reduced-motion`: every animation must have a finished resting frame.
 - Each section must fit one screen on desktop; check at 1440×860 and at a short window around 930×470.
 

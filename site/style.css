@@ -774,7 +774,7 @@ html.snap .wrap{padding-block:0}
 /* Аркуш 10 · Рух і звук */
 .tl{display:flex;gap:3px;margin-top:14px;border-radius:12px;overflow:hidden}
 .tl span{flex:var(--n) 1 0;min-width:0;padding:7px 7px;display:grid;gap:2px;align-content:start;color:#1f1b16}
-.tl b{font:600 .64rem/1.25 var(--mono)}
+.tl b{font:600 .66rem/1.25 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tl small{font:.66rem var(--mono);opacity:.7}
 .tl-cold{background:#c9d6cc}.tl-calm{background:#efe6d2}.tl-break{background:#b9b0c9}
 .tl-full{background:#f0a868}.tl-drop{background:#e2702b}
@@ -782,6 +782,6 @@ html.snap .wrap{padding-block:0}
 .mo{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;align-items:start}
 .mo .trailer video{width:100%}
 .motion{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.motion .line{padding:11px 13px;gap:4px}
+.motion .line{padding:11px 13px;gap:4px;align-content:start}
 .motion p{margin:0;font-size:.86rem;line-height:1.4}
 @media (max-width:900px){.mo{grid-template-columns:1fr}.motion{grid-template-columns:1fr}.tl{flex-wrap:wrap}.tl span{flex-basis:30%}}
