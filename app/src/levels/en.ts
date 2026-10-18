@@ -17,11 +17,11 @@ export interface LevelEn {
 export const LEVELS_EN: Record<string, LevelEn> = {
   'troy.step': {
     title: 'First step', topic: 'a command',
-    brief: '<b>First step.</b> Mykyta is right next to you. Say the word and Aeneas takes a step.',
+    brief: '<b>First step.</b> Mykyta is right next to you. Press “Run” and Aeneas takes a step.',
     statement: [
-      'Aeneas stands among the ashes, and one step away is Mykyta, who has just fallen from the sky.',
-      'The code is already written: <code>enei.move()</code> is one step forward. Press “Run” (or ⌘↵).',
-      'This is what the word of order — the code — looks like: the world does exactly what is written, nothing more.',
+      'Aeneas stands among the ashes of Troy. One step away is Mykyta the Fox, who has just fallen from the sky.',
+      'The code is already written: <code>enei.move()</code> means “Aeneas, take a step forward”. Press “Run” (or ⌘↵) and watch what happens.',
+      'This is the <b>word of order</b>, that is, code. The world does exactly what is written, nothing more.',
     ],
     tool: {
       name: 'a command',
@@ -45,8 +45,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>To the well.</b> The well is four steps away. Lead Aeneas to it.',
     statement: [
       'The Trojans need water. The well is four cells away from Aeneas.',
-      'One <code>enei.move()</code> is one step. Write as many steps as you need.',
-      'If Aeneas walks past the well, the road ends and he stumbles.',
+      'One <code>enei.move()</code> command is one step. Write it as many times as there are steps to the well, each on a new line.',
+      'Count carefully: if Aeneas walks past the well, the road ends and he stumbles.',
     ],
     tool: {
       name: 'several commands',
@@ -67,11 +67,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'troy.far': {
     title: 'The far well', topic: 'the for loop',
-    brief: '<b>The far well.</b> This well is 15 steps away. You could write 15 lines… or one clever word.',
+    brief: '<b>The far well.</b> This well is 15 steps away. You could write 15 lines… or one clever one.',
     statement: [
       'The near well has dried up. The next one is at the very end of the street, 15 cells away.',
       'You could write <code>enei.move()</code> fifteen times, and it would work. But what if the well were a hundred steps away? A thousand?',
-      'When the same thing has to be repeated many times, programmers write a <b>loop</b>. Look at the new tool below.',
+      'When the same thing has to be repeated many times, you write a <b>loop</b>: one command that says “repeat this 15 times”. The new tool below shows what it looks like.',
     ],
     tool: {
       name: 'the for loop',
@@ -96,9 +96,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Sacks by the gate', topic: 'several commands in a loop',
     brief: '<b>Sacks by the gate.</b> Each of the five cells ahead has a sack. Collect all five.',
     statement: [
-      'Sacks of grain lie by the gate — one on each of the five cells ahead of Aeneas.',
-      'A new command: <code>enei.take()</code> picks up the sack where Aeneas stands. To take a sack, he has to walk to it first.',
-      'Every sack needs two actions: a step and a pick-up. A loop can repeat not just one command but a whole group.',
+      'Sacks of grain lie by the gate: one on each of the five cells ahead of Aeneas.',
+      'A new command: <code>enei.take()</code> picks up the sack where Aeneas is standing right now. So he has to walk to a sack first, and only then take it.',
+      'Each sack needs two actions: a step and a pick-up. A loop can repeat not just one command but a whole group: put both inside it.',
     ],
     tool: {
       name: 'the loop body',
@@ -122,8 +122,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>Grain along the street.</b> Now the streets differ: 3 sacks here, 12 there. <code>n</code> tells you how many.',
     statement: [
       'The Trojans found more streets with sacks. On each one the sacks lie in a row, one per cell, but their number differs.',
-      'Your code will run on four streets: with <b>3, 5, 8 and 12</b> sacks. If you put the number 3 into the loop, Aeneas will stop too early on the others.',
-      'That’s why the function receives <code>n</code> — the number of sacks on the current street. Use it instead of a fixed number.',
+      'Your code will run on four streets: with <b>3, 5, 8 and 12</b> sacks. If you put the number 3 into the loop, Aeneas stops too early on the longer streets.',
+      'That’s why the function receives <code>n</code> — how many sacks are on this street. It’s a <b>parameter</b>: a value that comes from outside and changes each time. Use <code>n</code> instead of a fixed number.',
     ],
     tool: {
       name: 'a parameter',
@@ -144,11 +144,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'troy.walk': {
     title: 'The well out there', topic: 'the while loop',
-    brief: '<b>The well out there.</b> The well is at the end of the street, but how many steps away — nobody knows.',
+    brief: '<b>The well out there.</b> The well is at the end of the street, but how many steps away, nobody knows.',
     statement: [
       'Night, smoke, you can’t see a thing. The well is surely at the end of the street, but the streets have different lengths, and this time nobody gives you <code>n</code>.',
-      'But Aeneas can check whether he has arrived: <code>enei.atEnd()</code> returns <code>true</code> if Aeneas is at the end of the street and <code>false</code> if not.',
-      'When you don’t know how many times to repeat, but you know <b>until when</b>, you need a <code>while</code> loop.',
+      'But Aeneas can check whether he has arrived: <code>enei.atEnd()</code> answers <code>true</code> (“yes”) if he is at the end of the street, and <code>false</code> (“no”) if not yet.',
+      'When you don’t know how many times to repeat, but you know <b>until when</b>, you use a <code>while</code> loop: “while not at the end yet — step”.',
     ],
     tool: {
       name: 'the while loop and !',
@@ -169,11 +169,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'troy.fire': {
     title: 'Around the fire', topic: 'the if / else condition',
-    brief: '<b>Around the fire.</b> Reach the well at the end of the street. Where it burns ahead — jump over.',
+    brief: '<b>Around the fire.</b> Reach the well at the end of the street. Where it’s burning ahead, jump over.',
     statement: [
       'The rubble is still smouldering. Reach the well at the end of the street without getting burnt.',
-      '<code>enei.fireAhead()</code> tells whether the next cell is on fire (<code>true</code> or <code>false</code>). <code>enei.jump()</code> jumps over one cell.',
-      'The fire is somewhere else in every test, so before each step you have to <b>decide</b> what to do: step or jump. Walking to the end you already know.',
+      'Two new commands. <code>enei.fireAhead()</code> answers whether the next cell is on fire: <code>true</code> or <code>false</code>. <code>enei.jump()</code> jumps over one cell.',
+      'The fire is somewhere else in every test. So before each step, <b>decide</b>: if it’s burning ahead, jump, otherwise step. That’s an <code>if</code> inside the loop that takes you to the end of the street.',
     ],
     tool: {
       name: 'the if / else condition',
@@ -194,11 +194,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'troy.last': {
     title: 'At the end of the street', topic: 'arrays and indexes',
-    brief: '<b>At the end of the street.</b> Now the street is a list. Return what lies on the last cell.',
+    brief: '<b>At the end of the street.</b> Now the street is written down as an array. Return what lies on the last cell.',
     statement: [
-      'Mykyta wrote the street down: what lies on each cell, in order. In programming such a list is called an <b>array</b>: <code>street</code>.',
-      'Return what lies on the <b>last</b> cell. The streets in the tests have different lengths, so you’ll have to work out the number of the last cell.',
-      'To give the answer back, write <code>return</code> and the value.',
+      'Mykyta wrote the street down: what lies on each cell, in order. A list of values under one name is called an <b>array</b>, and here it’s called <code>street</code>.',
+      'Cells are numbered from zero: <code>street[0]</code> is the first, <code>street[1]</code> the second. <code>street.length</code> gives the number of cells, so the last one is number <code>street.length - 1</code>.',
+      'You have to <b>return</b> the answer: write <code>return</code> and the value. For example, for the street <code>["ash", "sack", "trojan", "well"]</code> return <code>"well"</code>.',
     ],
     tool: {
       name: 'array, index, length, return',
@@ -221,11 +221,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'troy.count': {
     title: 'Count the Trojans', topic: 'a counter variable',
-    brief: '<b>Count the Trojans.</b> How many survivors stand in the street?',
+    brief: '<b>Count the Trojans.</b> How many surviving Trojans are standing in the street?',
     statement: [
-      'Aeneas gathers his crew. The array <code>street</code> is the street: Trojans, sacks and ashes.',
-      'Return how many <code>"trojan"</code> it contains. To do that you have to walk the whole street and count.',
-      'To walk the array, use a <code>for</code> loop from <code>0</code> to <code>street.length</code>; to count, use a variable that remembers how many you have found.',
+      'Aeneas gathers his crew. The array <code>street</code> is the street, with Trojans, sacks and ashes all mixed up.',
+      'Return how many times <code>"trojan"</code> appears in the array. For example, <code>["sack", "trojan", "ash", "trojan"]</code> has two.',
+      'Walk the whole street with a <code>for</code> loop from <code>0</code> to <code>street.length</code>. The variable <code>count</code> remembers how many you’ve found: meet a Trojan — add 1 to it.',
     ],
     tool: {
       name: 'a counter and ===',
@@ -248,9 +248,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'All the grain', topic: 'a sum',
     brief: '<b>All the grain.</b> The sacks differ. How much grain is there in all of them together?',
     statement: [
-      'Before sailing, Anchises wants to know how much grain is in the supplies. <code>nums[i]</code> is the grain in sack <code>i</code>.',
-      'Return the sum of all numbers in the array.',
-      'It’s almost the same as counting Trojans, except you add the contents of the sack instead of 1.',
+      'Before sailing, Anchises wants to know how much grain is in the supplies. The array <code>nums</code> is the sacks: <code>nums[i]</code> is the grain in sack number <code>i</code>.',
+      'Return the sum of all the numbers in the array. For <code>[3, 1, 4, 2]</code> that’s 3 + 1 + 4 + 2 = <code>10</code>.',
+      'It’s almost like counting Trojans, except you add to <code>total</code> not 1 but what’s in the sack: <code>nums[i]</code>.',
     ],
     tool: {
       name: 'accumulating a sum, +=',
@@ -271,11 +271,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'troy.sum': {
     title: 'Supplies', topic: 'running total',
-    brief: '<b>Supplies.</b> Sacks stand in a row. For each one, count the grain in it and in all the sacks before it.',
+    brief: '<b>Supplies.</b> The sacks are loaded one at a time. After each, write down how much grain is on the ship.',
     statement: [
-      'The Trojans load supplies onto the ship and after every sack write down how much is loaded so far. <code>nums[i]</code> is the grain in sack <code>i</code>.',
-      'Return an array where position <code>i</code> holds <code>nums[0] + … + nums[i]</code>. For example, for <code>[1, 2, 3, 4]</code> it is <code>[1, 3, 6, 10]</code>.',
-      'Constraints: <code>1 ≤ n ≤ 10⁴</code>. The world counts how often the code looks at the sacks: recounting everything for each sack would make the Wolf proud.',
+      'The Trojans load sacks onto the ship and after each one write down how much grain is loaded so far. <code>nums[i]</code> is the grain in sack <code>i</code>.',
+      'Return a new array of the same length: at position <code>i</code>, the sum of all the sacks from the first up to and including the <code>i</code>-th. For <code>[1, 2, 3, 4]</code> that’s <code>[1, 3, 6, 10]</code>: 1, then 1 + 2, then 1 + 2 + 3, then everything.',
+      'There can be up to 10,000 sacks. The world counts how often the code looks at the sacks. Recounting everything from the start for each sack adds up to a lot. Notice how to reuse the previous sum, and one pass is enough.',
     ],
     tool: {
       name: 'push',
@@ -297,8 +297,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The biggest ship', topic: 'maximum of an array',
     brief: '<b>The biggest ship.</b> Find the ship with the most oars.',
     statement: [
-      'Aeolus’s storm scattered the fleet. From the mast Mykyta sees the column: <code>ships[i]</code> is how many oars ship <code>i</code> has.',
-      'Return the largest number in the array. No <code>Math.max(...ships)</code> — walk the column yourself and remember the best ship.',
+      'Aeolus’s storm scattered the fleet. From the mast Mykyta sees the column of ships: <code>ships[i]</code> is how many oars ship number <code>i</code> has.',
+      'Return the largest number in the array. For <code>[12, 30, 8, 22]</code> it’s <code>30</code>.',
+      'Don’t use the ready-made <code>Math.max(...ships)</code>: walk the column yourself. The variable <code>best</code> remembers the biggest ship seen so far; meet a bigger one — remember it instead.',
     ],
     hints: ['What do you need to remember while walking the column?', 'best = the first ship; for each next one: if it is bigger, it becomes the new best.', 'for (let i = 1; i < ships.length; i++) if (ships[i] > best) best = ships[i];'],
     lesson: 'One pass and one “best so far” variable — that is how you find a maximum.',
@@ -322,8 +323,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>Swap on the flanks.</b> Swap the first and the last ship of the column.',
     statement: [
       'The wind rearranged the ships: the flagship sails last, and the smallest boat sails first.',
-      'Swap <code>ships[0]</code> and the last ship <b>in place</b> — in the same array, returning nothing.',
-      'Columns have different lengths, so work out the number of the last one with <code>length</code>.',
+      'Swap <code>ships[0]</code> and the last ship. Do it <b>in place</b>: change the array <code>ships</code> itself instead of making a new one, and return nothing. <code>[2, 7, 5, 9]</code> becomes <code>[9, 7, 5, 2]</code>.',
+      'Columns have different lengths, so work out the last ship’s number: <code>ships.length - 1</code>. And so you don’t lose a value during the swap, first save one of them in a temporary variable.',
     ],
     hints: ['What happens to the first ship if you write the last one into its place straight away?', 'Put the first ship aside in a variable, then move them.', 'const t = ships[0]; ships[0] = ships[ships.length - 1]; ships[ships.length - 1] = t;'],
     lesson: 'To swap two values, put one aside first: a temporary variable is like a third cup.',
@@ -347,8 +348,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>Column reversed.</b> Reverse the column of ships in place, without a new array.',
     statement: [
       'Aeolus turned the wind, and the column must sail in reverse order.',
-      'Change the array <code>ships</code> <b>in place</b>: the first ship becomes the last, the second the second to last… Return nothing.',
-      'The <code>reverse()</code> method is forbidden here. Swap ships in pairs.',
+      'Change the array <code>ships</code> <b>in place</b>: the first ship becomes the last, the second the second to last and so on. <code>[1, 2, 3, 4, 5]</code> becomes <code>[5, 4, 3, 2, 1]</code>. Return nothing.',
+      'The ready-made <code>reverse()</code> is forbidden here. Swap ships in pairs: the first with the last, the second with the second to last… up to the middle.',
     ],
     hints: ['Who has to swap places with whom?', 'The first with the last, the second with the second to last… until they meet in the middle.', 'let i = 0, j = n − 1; while (i < j) { swap ships[i] and ships[j]; i++; j--; }'],
     lesson: 'Two ends moving towards each other and a swap — the array is reversed without a single copy.',
@@ -369,11 +370,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'sea.zeroes': {
     title: 'Wrecks to the back', topic: 'two indices',
-    brief: '<b>Wrecks to the back.</b> Move the wrecked ships (<code>0</code>) to the end of the column, keeping the order of the others.',
+    brief: '<b>Wrecks to the back.</b> Move the wrecked ships (<code>0</code>) to the end of the column, keeping the intact ones in the same order.',
     statement: [
-      'After the storm some ships are wrecked — in the array they are <code>0</code>.',
-      'Move all zeros to the end <b>in place</b>, and keep the intact ships in the same order.',
-      'Constraints: <code>n ≤ 10⁴</code>. If you shift the whole tail after every zero, the storm will end first.',
+      'After the storm some ships are wrecked. In the array <code>nums</code> a wrecked ship is <code>0</code>.',
+      'Move all the zeros to the end <b>in place</b>, and keep the intact ships in the order they were. <code>[0, 1, 0, 3, 12]</code> becomes <code>[1, 3, 12, 0, 0]</code>.',
+      'There can be up to 10,000 ships. Shifting the whole tail after every zero is very slow. It’s smarter to keep track of where the next intact ship goes.',
     ],
     hints: ['What if you write intact ships straight to their place?', 'Keep an index k — where the next intact ship goes. At the end fill the tail with zeros.', 'k = 0; for each x ≠ 0: nums[k++] = x; while k < n: nums[k++] = 0.'],
     lesson: 'A slow “where to write” index and a fast “what to read” one — the array is sorted out in one pass.',
@@ -397,8 +398,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>Line up by size.</b> Order the ships from smallest to largest by swapping neighbours.',
     statement: [
       'Aeneas lines up the fleet: smaller ships in front, bigger ones behind.',
-      'Sort <code>ships</code> in ascending order <b>in place</b>. Aeolus took the <code>sort()</code> method away — write the sorting yourself.',
-      'The simplest is bubble sort: walk the column and swap neighbours when the left one is bigger; repeat while there are swaps.',
+      'Sort <code>ships</code> in ascending order <b>in place</b>. <code>[5, 2, 9, 1, 6]</code> becomes <code>[1, 2, 5, 6, 9]</code>. Aeolus took the ready-made <code>sort()</code> away, so you’ll write the sorting yourself.',
+      'The simplest way is <b>bubble sort</b>: walk the column and swap two neighbours if the left is bigger than the right. After one pass the biggest ends up at the end. Repeat the passes while there’s something to swap.',
     ],
     hints: ['If two neighbours are in the wrong order — what do you do?', 'A pass that swaps wrong neighbours pushes the biggest ship to the end. Repeat n times.', 'for (i < n) for (j < n−1−i) if (ships[j] > ships[j+1]) swap.'],
     lesson: 'Bubble sort is simple, but compares every ship with every other — O(n²). The final problem needs a trick.',
@@ -422,9 +423,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Three sails', topic: 'three pointers in one pass',
     brief: '<b>Three sails.</b> Arrange the ships by sail colour: red (<code>0</code>), white (<code>1</code>), blue (<code>2</code>).',
     statement: [
-      'For Aeolus to calm down, the fleet must sail in order: red sails first, then white, then blue.',
-      'The array <code>nums</code> holds only <code>0</code>, <code>1</code> and <code>2</code>. Sort it <b>in place</b>. <code>sort()</code> is forbidden.',
-      'Constraints: <code>n ≤ 10⁴</code>. The Wolf on Aeolus’s cloud bubble-sorts — comparing every ship with every other. Try one pass.',
+      'For Aeolus to calm down, the fleet must sail in order: all the red sails first, then white, then blue.',
+      'The array <code>nums</code> holds only <code>0</code> (red), <code>1</code> (white) and <code>2</code> (blue). Sort it <b>in place</b>: <code>[2, 0, 2, 1, 1, 0]</code> must become <code>[0, 0, 1, 1, 2, 2]</code>. <code>sort()</code> is forbidden.',
+      'There can be up to 10,000 ships. The Wolf on Aeolus’s cloud bubble-sorts, comparing every ship with every other. But there are only three colours. Try to put everything in place in one pass.',
     ],
     hints: ['There are only three colours. Do you need to compare ships with each other?', 'Three borders: low — where the next red goes, high — where the next blue goes, mid — the ship under inspection.', 'low = mid = 0, high = n−1; while mid ≤ high: 0 → swap with low, low++, mid++; 1 → mid++; 2 → swap with high, high--.'],
     lesson: 'When there are few values, borders between groups matter more than comparisons: three pointers, one pass.',
@@ -446,11 +447,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'carthage.meet': {
     title: 'Meet in the middle', topic: 'two pointers towards each other',
-    brief: '<b>Meet in the middle.</b> Aeneas starts from the left end of the wall, Mykyta from the right. Add up the pairs until they meet.',
+    brief: '<b>Meet in the middle.</b> Aeneas starts from the left end of the wall, Mykyta from the right. Add up pairs of stones until they meet.',
     statement: [
-      'Dido measures the wall. Aeneas stands on the left edge, Mykyta on the right, and at every step they add up the two stones they stand on.',
-      'Return the array of sums: <code>[walls[0] + walls[n−1], walls[1] + walls[n−2], …]</code>. If one stone is left in the middle, add it as is.',
-      'This is where the pair walking <b>from both ends towards each other</b> appears — the main trick of Carthage.',
+      'Dido measures the wall. Aeneas stands on the left edge, Mykyta on the right. At every step they add up the two stones they stand on and take a step towards each other.',
+      'Return the array of these sums. For <code>[3, 1, 4, 1, 5, 9]</code>: 3 + 9 = 12, 1 + 5 = 6, 4 + 1 = 5, so the answer is <code>[12, 6, 5]</code>. If one stone is left in the middle (odd length), add it as is.',
+      'This is the first appearance of two <b>pointers</b> walking from both ends towards each other: <code>left</code> starts at 0, <code>right</code> at the last index. It’s the main trick of Carthage.',
     ],
     hints: ['Where are Aeneas and Mykyta after each step?', 'left moves right, right moves left, while left < right. At the end check whether a stone is left in the middle.', 'while (left < right) sums.push(walls[left++] + walls[right--]); if (left === right) sums.push(walls[left]);'],
     lesson: 'Two pointers from opposite ends walk the array together just once.',
@@ -476,7 +477,7 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     statement: [
       'At the gates of Carthage guests show their seals. A true seal is one whose name reads the same from both ends, like <code>"level"</code> or <code>"radar"</code>.',
       'Return <code>true</code> if the word <code>word</code> is the same from both ends, and <code>false</code> if not. Only lower-case letters here, no spaces or punctuation.',
-      'Compare characters from both ends towards each other. You won’t need <code>reverse()</code>.',
+      'Compare letters from both ends towards each other: the first with the last, the second with the second to last. A mismatched pair — <code>false</code> straight away. Reached the middle with no mismatch — <code>true</code>.',
     ],
     hints: ['Which letter should the first one be compared with?', 'Compare word[left] and word[right] until they meet. A mismatch — false straight away.', 'while (left < right) { if (word[left] !== word[right]) return false; left++; right--; } return true;'],
     lesson: 'A mirror is checked from both ends: one mismatch and the answer is known.',
@@ -497,11 +498,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'carthage.palindrome': {
     title: 'The inscription over the gate', topic: 'two pointers on a string',
-    brief: '<b>The inscription over the gate.</b> Does the inscription read the same both ways, ignoring case, spaces and punctuation?',
+    brief: '<b>The inscription over the gate.</b> Does the inscription read the same both ways, ignoring capitals, spaces and punctuation?',
     statement: [
       'An inscription is carved over the gates of Carthage. They say the true one reads the same left to right and right to left.',
-      'Return <code>true</code> if the string <code>s</code> is a palindrome, considering only letters and digits and ignoring case.',
-      'Helpers: <code>/[a-z0-9]/i.test(ch)</code> — is it a Latin letter or a digit; <code>ch.toLowerCase()</code>.',
+      'Return <code>true</code> if the string <code>s</code> is a <b>palindrome</b>. Consider only letters and digits, and treat capital and small letters as the same. <code>"A man, a plan, a canal: Panama"</code> is a palindrome: without spaces and punctuation it’s amanaplanacanalpanama.',
+      'As with the seal, walk from both ends towards each other, but skip spaces and punctuation. The tool below shows how to check whether a character is a letter and how to make it small.',
     ],
     hints: ['What if you compare characters from both ends?', 'left and right towards each other; skip characters that are not letters or digits; compare in lower case.', 'while (l < r) { skip the rest; if s[l] ≠ s[r] → false; l++; r--; } return true;'],
     lesson: 'Two pointers work on strings too: compare the ends and move to the middle.',
@@ -524,9 +525,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Two merchants', topic: 'two pointers on a sorted array',
     brief: '<b>Two merchants.</b> Merchants stand in a row by price. Find two whose goods together cost exactly <code>target</code>.',
     statement: [
-      'At the Carthage market merchants stand in ascending price order: <code>numbers</code> is sorted.',
-      'Find two different merchants whose prices add up to <code>target</code> and return their numbers <b>starting from one</b>: <code>[i + 1, j + 1]</code>, where <code>i &lt; j</code>. There is always exactly one answer.',
-      'Constraints: <code>n ≤ 10⁴</code>. The Wolf asks every pair of merchants — the market will close first.',
+      'At the Carthage market merchants stand in ascending price order: in the array <code>numbers</code> each price is no less than the one before.',
+      'Find two different merchants whose prices add up to <code>target</code>, and return their numbers counting <b>from one</b>. For <code>[2, 7, 11, 15]</code> and <code>target = 9</code>: 2 + 7 = 9, that’s merchants 1 and 2, so return <code>[1, 2]</code>. There is always exactly one answer.',
+      'There can be up to 10,000 merchants. The Wolf tries every pair, and the market closes first. A hint: start with the cheapest and the most expensive. If the sum is too big, the expensive one is out; too small — the cheap one is.',
     ],
     hints: ['The row is sorted. What happens to the sum if the left merchant moves right?', 'Start with the cheapest and the most expensive. Sum too small — left moves right; too big — right moves left.', 'l = 0, r = n − 1; while l < r: s = a[l] + a[r]; s === t → [l+1, r+1]; s < t → l++; else r--.'],
     lesson: 'In a sorted row every comparison rules out a whole merchant: two pointers instead of all pairs.',
@@ -548,10 +549,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'carthage.dups': {
     title: 'Measures without repeats', topic: 'slow and fast pointers',
-    brief: '<b>Measures without repeats.</b> On a sorted tape of measures remove the repeats in place and return how many are left.',
+    brief: '<b>Measures without repeats.</b> On an ordered tape of measures remove the repeats in place and return how many different ones are left.',
     statement: [
-      'The shard tangled the measures: on the tape <code>nums</code> (sorted) some repeat.',
-      'Keep each measure once <b>in place</b>: the first <code>k</code> elements must be the unique measures in the same order. Return <code>k</code>. Whatever is after <code>k</code> does not matter.',
+      'The shard tangled the measures: some repeat on the tape <code>nums</code>. The tape is ordered, so equal measures stand next to each other.',
+      'Keep each measure once <b>in place</b>: the first <code>k</code> elements of the array must be the different measures in the same order. Return <code>k</code>. What’s left after them doesn’t matter.',
+      'For <code>[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]</code> return <code>5</code>, and the array must start with <code>[0, 1, 2, 3, 4]</code>. You need two pointers: one reads the tape, the other shows where to write the next new measure.',
     ],
     hints: ['Repeats stand next to each other. Where should the next new measure go?', 'k is the length of the clean part. The fast pointer i looks for a measure different from nums[k−1].', 'k = 1; for (i = 1..n−1) if (nums[i] !== nums[k−1]) nums[k++] = nums[i]; return k.'],
     lesson: 'The slow pointer keeps the clean part, the fast one looks for something new — and no tail shifting.',
@@ -572,12 +574,13 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'carthage.dido': {
     title: 'Dido’s problem', topic: 'two pointers',
-    brief: '<b>Dido’s problem.</b> Posts stand in a row, the height of each in the array <code>height</code>. Fence the plot with two posts that holds the most water.',
+    brief: '<b>Dido’s problem.</b> Posts of different heights stand along the shore. Pick two so that the most water fits between them.',
     statement: [
-      'Dido may take as much land as she can fence with an ox hide. A shard of the Pysanka tangled the measures, and the walls don’t meet. The posts are already standing — pick two.',
-      'Given an array <code>height</code> of length <code>n</code>. Post <code>i</code> has height <code>height[i]</code>. Two posts together with the ground form a plot: water in it rises to the lower post.',
-      'Return the largest amount of water: <code>(j − i) · min(height[i], height[j])</code>.',
-      'Constraints: <code>2 ≤ n ≤ 10⁵</code>, <code>0 ≤ height[i] ≤ 10⁴</code>. The world counts how often the code looks at the posts: the Wolf tries every pair while the hide dries out.',
+      'Dido may take as much land as she can fence with an ox hide. The posts are already in a row; she just has to pick two.',
+      'The heights of the posts are in the array <code>height</code>: <code>height[0]</code> is the first post, <code>height[1]</code> the second.',
+      'Water collects between two posts. It can’t rise above the <b>lower</b> post, or it spills over. So the amount of water is <b>distance between the posts × height of the lower one</b>.',
+      'Example: <code>[1, 8, 6, 2, 5, 4, 8, 3, 7]</code>. The second post (8) and the last (7): 7 steps apart, the lower is 7 high, water 7 × 7 = <code>49</code>. You can’t do better, so return <code>49</code>.',
+      'There can be up to 100,000 posts. The Wolf tries every pair: for 10,000 posts that’s almost 50 million. Find a smarter way.',
     ],
     hints: [
       'What if you walk from both ends at once?',
@@ -602,11 +605,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'forest.dup': {
     title: 'Two of a kind', topic: 'Set: have I seen it',
-    brief: '<b>Two of a kind.</b> Are two identical goods for sale at the fair?',
+    brief: '<b>Two of a kind.</b> Is any item being sold twice at the fair?',
     statement: [
-      'Everything got mixed up at the animals’ fair: they say someone is selling the same thing twice. <code>nums[i]</code> is the number of the goods at stall <code>i</code>.',
-      'Return <code>true</code> if some number appears at least twice, and <code>false</code> if they are all different.',
-      'Constraints: <code>n ≤ 10⁴</code>. For every item the Wolf walks the whole fair again. You just <b>remember</b> what you have already seen.',
+      'Everything got mixed up at the animals’ fair: they say someone is selling the same thing twice. <code>nums[i]</code> is the item number at stall <code>i</code>.',
+      'Return <code>true</code> if some number appears at least twice, and <code>false</code> if they’re all different. For <code>[1, 2, 3, 1]</code> — <code>true</code>, because 1 appears twice.',
+      'There can be up to 10,000 stalls. For every item the Wolf walks the whole fair again. You just <b>remember</b> what you’ve seen: a <code>Set</code> lets you quickly check whether a number is already there.',
     ],
     tool: {
       name: 'Set',
@@ -628,11 +631,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'forest.most': {
     title: 'The best seller', topic: 'Map: a counter',
-    brief: '<b>The best seller.</b> Which goods sell most often at the fair?',
+    brief: '<b>The best seller.</b> Which item was sold the most times at the fair?',
     statement: [
-      'King Lion wants to know what the fair has most of. <code>goods</code> is the list of the morning’s sales, one entry per sale.',
-      'Return the goods that appear most often. In the tests there is always exactly one such item.',
-      'For every item you need to remember not just “have I seen it” but <b>how many times</b>. That calls for a <code>Map</code>.',
+      'King Lion wants to know what the fair has most of. <code>goods</code> is the list of the morning’s sales: one entry is one sale.',
+      'Return the item that appears most often. For <code>["cheese", "honey", "honey", "mushrooms", "honey"]</code> it’s <code>"honey"</code>: it sold three times. In the tests there is always exactly one such item.',
+      'Here you need to remember not just “have I seen it” but <b>how many times</b>. That’s what a <code>Map</code> is for: it stores “item → count” pairs.',
     ],
     tool: {
       name: 'Map: key and value',
@@ -655,9 +658,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The same things', topic: 'Map: counting up and down',
     brief: '<b>The same things.</b> Are two carts loaded with the same things, just in a different order?',
     statement: [
-      'Two carts came to the fair. Every thing is marked with a letter: <code>s</code> is the load of the first cart, <code>t</code> of the second.',
-      'Return <code>true</code> if the carts hold the same things in the same amounts (order doesn’t matter), otherwise <code>false</code>. The letters are lower-case Latin, as on LeetCode.',
-      'You can count up for the first cart and down for the second. If everything comes to zero, the carts are the same.',
+      'Two carts came to the fair. Every thing is marked with a letter: the string <code>s</code> is the first cart’s load, <code>t</code> the second’s.',
+      'Return <code>true</code> if the carts hold the same things in the same amounts (order doesn’t matter), otherwise <code>false</code>. <code>"anagram"</code> and <code>"nagaram"</code> — yes, <code>"rat"</code> and <code>"car"</code> — no. The letters are lower-case Latin, as on LeetCode.',
+      'Count every letter: add 1 for the first cart, subtract 1 for the second. If all the counters are zero at the end, the carts are the same.',
     ],
     tool: {
       name: 'a counter going up and down',
@@ -678,11 +681,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'forest.twosum': {
     title: 'Two animals', topic: 'Map: value → index',
-    brief: '<b>Two animals.</b> Find two animals whose goods together cost exactly <code>target</code>. The row is not sorted.',
+    brief: '<b>Two animals.</b> Find two animals whose goods together cost exactly <code>target</code>. This time the row isn’t ordered.',
     statement: [
-      'The animals stand along the road any old how: <code>nums[i]</code> is the price of animal <code>i</code>’s goods. You can’t sort the row — the animals would be offended.',
-      'Return the numbers of two different animals <code>[i, j]</code> (from zero, in any order) whose prices add up to <code>target</code>. There is always exactly one answer.',
-      'Constraints: <code>n ≤ 10⁴</code>. Carthage’s two pointers won’t help here: the row isn’t sorted. But you can remember who has already stood where.',
+      'The animals stand along the road any old how: <code>nums[i]</code> is the price of animal <code>i</code>’s goods. You can’t rearrange them, they’d be offended.',
+      'Return the numbers of two different animals <code>[i, j]</code>, counting from zero, in any order, whose prices add up to <code>target</code>. For <code>[2, 7, 11, 15]</code> and <code>target = 9</code> — <code>[0, 1]</code>. There is always exactly one answer.',
+      'There can be up to 10,000 animals. Carthage’s two pointers won’t help: the row isn’t ordered. But you can remember who has stood where. For each animal ask: have we seen the one whose price makes up the rest of <code>target</code>?',
     ],
     tool: {
       name: 'Map: what I need → where I saw it',
@@ -704,11 +707,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'forest.groups': {
     title: 'Animal families', topic: 'Map: a signature key',
-    brief: '<b>Animal families.</b> Sort the words into groups: one group holds words made of the same letters.',
+    brief: '<b>Animal families.</b> Sort the words into groups: each group holds words made of the same letters.',
     statement: [
       'At the fair the animals sign up by families, but the scribe mixed up the letters in the names. Words made of the same letters are one family.',
-      'Return an array of groups: each group is an array of words with the same set of letters. The order of the groups and of the words inside them doesn’t matter.',
-      'You need a <b>signature</b> that is the same for the whole family. For example, the word’s letters in alphabetical order: <code>"eat"</code> and <code>"tea"</code> both give <code>"aet"</code>.',
+      'Return an array of groups, where each group is an array of words with the same set of letters. For <code>["eat", "tea", "tan", "ate", "nat", "bat"]</code> that’s three groups: <code>["eat", "tea", "ate"]</code>, <code>["tan", "nat"]</code> and <code>["bat"]</code>. Order doesn’t matter.',
+      'You need a <b>signature</b> that’s the same for the whole family. For example, the word’s letters in alphabetical order: <code>"eat"</code> and <code>"tea"</code> both give <code>"aet"</code>. The signature becomes a key in a <code>Map</code>.',
     ],
     tool: {
       name: 'a signature key',
@@ -729,11 +732,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'forest.topk': {
     title: 'Best-selling goods', topic: 'Map and sorting the totals',
-    brief: '<b>Best-selling goods.</b> Find the <code>k</code> goods that sell most often, so King Lion can restore trade.',
+    brief: '<b>Best-selling goods.</b> Find the <code>k</code> items that sell most often, so King Lion can restore trade.',
     statement: [
-      'The day’s sales at the fair are written down: <code>nums[i]</code> is the number of the sold goods. King Lion wants to know the <code>k</code> best sellers.',
-      'Return <code>k</code> different numbers that appear most often, in any order. In the tests the answer is always unambiguous.',
-      'Constraints: <code>n ≤ 10⁴</code>. For every item the Wolf recounts the whole fair from scratch. One pass and the chest are enough for you.',
+      'All the day’s sales at the fair are written down: <code>nums[i]</code> is the number of the sold item. King Lion wants to know the <code>k</code> best sellers.',
+      'Return <code>k</code> different numbers that appear most often, in any order. For <code>[1, 1, 1, 2, 2, 3]</code> and <code>k = 2</code> — <code>[1, 2]</code>: 1 sold three times, 2 twice. In the tests the answer is always unambiguous.',
+      'There can be up to 10,000 sales. For every item the Wolf recounts the whole fair from scratch. One pass is enough to count everything in a <code>Map</code>, then pick the <code>k</code> biggest.',
     ],
     tool: {
       name: 'sort the totals, not the fair',
@@ -757,9 +760,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Who gets out first', topic: 'a stack: push and pop',
     brief: '<b>Who gets out first.</b> Animals crawl into the mitten and out of it. Write down the order in which they came out.',
     statement: [
-      'It’s cramped in the mitten: only the one by the entrance can get out, that is, the one who got in <b>last</b>.',
-      'The array <code>ops</code> is what happened: an animal’s name means “got in”, and <code>"-"</code> means “someone got out”. Return the names in the order the animals came out.',
-      'In the tests nobody tries to get out of an empty mitten.',
+      'It’s cramped in the mitten: only the one by the entrance can get out, that is, the one who got in <b>last</b>. That’s how a <b>stack</b> works, like a pile of plates: you always take the top one.',
+      'The array <code>ops</code> is what happened in turn: an animal’s name means “got in”, and <code>"-"</code> means “someone got out”. Return the names in the order the animals came out.',
+      'For <code>["Mouse", "Frog", "-", "Bunny", "-", "-"]</code> that’s <code>["Frog", "Bunny", "Mouse"]</code>. In the tests nobody gets out of an empty mitten.',
     ],
     tool: {
       name: 'a stack: push and pop',
@@ -784,8 +787,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>Did everyone get out properly.</b> Every bracket that opens must close with its own kind, and in the right order.',
     statement: [
       'The animals wrote their moves down as brackets: an opening bracket — got in, a closing one — got out. Different animals, different brackets: <code>()</code>, <code>[]</code>, <code>{}</code>.',
-      'Return <code>true</code> if everyone who got in came out, and in the right order: a closing bracket must match the <b>last</b> one still open. Otherwise <code>false</code>.',
-      'For example, <code>"([])"</code> — yes, but <code>"([)]"</code> — no: the square one closed before its turn.',
+      'Return <code>true</code> if everyone who got in came out, and in the right order: a closing bracket must be the same kind as the <b>last</b> one still open. Otherwise <code>false</code>.',
+      'For example, <code>"([])"</code> — yes, but <code>"([)]"</code> — no: the round one closed while the square one inside was still open. Keep the open brackets in a stack.',
     ],
     tool: {
       name: 'the top of the stack',
@@ -808,9 +811,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The smallest in the mitten', topic: 'a stack of minimums',
     brief: '<b>The smallest in the mitten.</b> Animals get in and out, and the Bear keeps asking who is the smallest right now.',
     statement: [
-      'The animals are of different heights. <code>ops</code> is a log: a number — an animal of that height got in, <code>"-"</code> — the top one got out, <code>"?"</code> — the question “what is the smallest height inside now?”.',
-      'Return the answers to all questions in order. Nobody asks about an empty mitten or gets out of one.',
-      'Going through the whole mitten for every question is slow. It’s craftier to remember the smallest for <b>every level</b> of the stack: when the top one leaves, the smallest among the rest is already known.',
+      'The animals are of different heights. <code>ops</code> is a log: a number means “an animal of that height got in”, <code>"-"</code> — “the top one got out”, and <code>"?"</code> — the question “what is the smallest height inside now?”.',
+      'Return the answers to all the questions in order. For <code>["5", "3", "?", "7", "?", "-", "-", "?"]</code> that’s <code>[3, 3, 5]</code>. Nobody asks about an empty mitten or gets out of one.',
+      'Going through the whole mitten for every question is slow. It’s craftier to remember, along with each animal, what the smallest was at that moment. When the top one leaves, the smallest among the rest is already written down under it.',
     ],
     tool: {
       name: 'a second stack — for minimums',
@@ -833,9 +836,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Mr Cat’s sum', topic: 'a stack for calculations',
     brief: '<b>Mr Cat’s sum.</b> The cat dictates the expression backwards: numbers first, then the operation. Work it out.',
     statement: [
-      'Mr Cat dictates the sum in reverse Polish notation: <code>["2", "1", "+", "3", "*"]</code> means <code>(2 + 1) * 3</code>. Two numbers first, then the operation on them.',
-      'Return the result. Operations: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>. Division is integer, dropping the fraction towards zero: <code>Math.trunc(a / b)</code>.',
-      'When an operation arrives, it takes the two <b>latest</b> numbers. Sounds like a stack.',
+      'Mr Cat dictates the sum in reverse Polish notation: <code>["2", "1", "+", "3", "*"]</code> means <code>(2 + 1) * 3 = 9</code>. Two numbers first, then the operation on them, and no brackets needed.',
+      'Return the result. Operations: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>. Division is whole-number: drop the fraction towards zero, so 7 / 2 = 3, and −7 / 2 = −3. The tool shows how to write that.',
+      'When an operation arrives, it takes the two <b>latest</b> numbers and puts the result in their place. Sounds like a stack: numbers go on, an operation takes the top two off.',
     ],
     tool: {
       name: 'a stack as scrap paper',
@@ -858,9 +861,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'When it gets warmer', topic: 'a monotonic stack',
     brief: '<b>When it gets warmer.</b> For every day, find out how long to wait for a warmer one, so the animals can leave the mitten.',
     statement: [
-      'Winter. The animals sit in the mitten waiting for warmth. <code>temperatures[i]</code> is the temperature of day <code>i</code>.',
-      'Return an array where position <code>i</code> holds how many days later it will be <b>warmer</b> than on day <code>i</code>. If it never gets warmer — <code>0</code>.',
-      'Constraints: <code>n ≤ 10⁴</code>. For every day the Wolf looks ahead until he finds a warm one — and winters can be long.',
+      'Winter. The animals sit in the mitten waiting for warmth. <code>temperatures[i]</code> is the temperature on day <code>i</code>.',
+      'Return an array where position <code>i</code> holds how many days later it will be <b>warmer</b> than on day <code>i</code>. If it never gets warmer — <code>0</code>. For <code>[73, 74, 75, 71, 69, 72, 76, 73]</code> that’s <code>[1, 1, 4, 2, 1, 1, 0, 0]</code>.',
+      'There can be up to 10,000 days. For every day the Wolf looks ahead until he finds a warm one, and winters can be long. It’s craftier to keep the days still waiting for warmth in a stack: as soon as a warm day comes, it “answers” all the colder days on top of the stack.',
     ],
     tool: {
       name: 'a monotonic stack',
@@ -884,9 +887,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The captain’s house', topic: 'splitting in half',
     brief: '<b>The captain’s house.</b> The house numbers are written in ascending order. Find the house numbered <code>target</code> without visiting them all.',
     statement: [
-      'Konotop is in a drought, and Captain Zabrokha hunts for the culprits by checking everyone in turn. Let’s start small: the register <code>nums</code> holds house numbers <b>in ascending order</b>, without repeats.',
-      'Return the place of the house numbered <code>target</code> in the register, or <code>-1</code> if there is none.',
-      'Constraints: <code>n ≤ 10⁴</code>, and the world allows only a few dozen looks. One look in the middle, and half the register is already gone.',
+      'Konotop is in a drought, and Captain Zabrokha hunts for culprits by checking everyone in turn. Let’s start small: the register <code>nums</code> holds house numbers <b>in ascending order</b>, without repeats.',
+      'Return the position of <code>target</code> in the register, counting from zero, or <code>-1</code> if it isn’t there. For <code>[-1, 0, 3, 5, 9, 12]</code> and <code>9</code> it’s <code>4</code>.',
+      'There can be up to 10,000 houses, and the world allows only a few dozen looks. Look in the middle: if the number there is less than <code>target</code>, the left half isn’t needed, and vice versa. Each time half drops away. This is <b>binary search</b>.',
     ],
     tool: {
       name: 'splitting in half',
@@ -911,8 +914,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>A place in the rank.</b> The Cossacks stand by height. Where should a newcomer stand so the rank stays even?',
     statement: [
       'The captain lines the Cossacks up by height: <code>nums</code> are the heights in ascending order, without repeats.',
-      'Return the place of the Cossack of height <code>target</code> if he is already in the rank, and if not — the place where he should stand so the order doesn’t break.',
-      'It’s the same splitting in half, only there is always an answer: wherever the search stopped, that’s the place.',
+      'If a Cossack of height <code>target</code> is already in the rank, return his position. If not, the position where he should stand so the order doesn’t break. For <code>[1, 3, 5, 6]</code>: <code>5</code> → <code>2</code>, and <code>2</code> → <code>1</code> (between 1 and 3).',
+      'It’s the same binary search, except there’s always an answer: wherever the search stopped, that’s the place.',
     ],
     tool: {
       name: 'the boundary where the search stopped',
@@ -935,9 +938,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The first bad barrel', topic: 'the first “yes”',
     brief: '<b>The first bad barrel.</b> The barrels in the cellar stand in a row: good ones first, then spoiled ones. Find the first spoiled one.',
     statement: [
-      'A witch put a hex on the captain’s cellar: from some barrel on, the cabbage turned sour, and every barrel after it is spoiled too. <code>barrels[i]</code> is <code>true</code> if barrel <code>i</code> is spoiled.',
-      'Return the number of the first spoiled barrel. There is always at least one.',
-      'The row looks like <code>[false, false, …, true, true]</code>. The boundary between “no” and “yes” is found by the same splitting in half.',
+      'A witch put a hex on the captain’s cellar: from some barrel on, the cabbage turned sour, and every barrel after it is spoiled too. <code>barrels[i]</code> is <code>true</code> if barrel <code>i</code> is spoiled, and <code>false</code> if it’s good.',
+      'Return the number of the first spoiled barrel, counting from zero. For <code>[false, false, false, true, true]</code> — <code>3</code>. There is always at least one spoiled barrel.',
+      'The row always looks like “no, no, …, yes, yes”. The same binary search finds the boundary between “no” and “yes”: look in the middle and you know which half the boundary is in.',
     ],
     tool: {
       name: 'finding the “no → yes” boundary',
@@ -960,9 +963,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The shifted register', topic: 'halving a shifted row',
     brief: '<b>The shifted register.</b> The witch twisted the register: the ordered row was shifted round. Find house <code>target</code>.',
     statement: [
-      'The register is ordered again, but the witch cut off a piece and moved it to the front: <code>[4, 5, 6, 7, 0, 1, 2]</code>.',
-      'Return the place of <code>target</code> or <code>-1</code>. The numbers don’t repeat.',
-      'Even though the row is shifted, after splitting in half <b>one of the halves is always in order</b>. Check whether <code>target</code> is in it, and drop the other.',
+      'The register is ordered again, but the witch cut off a piece and moved it to the front: <code>[0, 1, 2, 4, 5, 6, 7]</code> became <code>[4, 5, 6, 7, 0, 1, 2]</code>.',
+      'Return the position of <code>target</code>, or <code>-1</code> if it isn’t there. The numbers don’t repeat. For this row and <code>0</code> the answer is <code>4</code>.',
+      'Even though the row is shifted, when you split it in half <b>one of the halves is always in order</b>. Check whether <code>target</code> falls inside it, and drop the half where it certainly isn’t.',
     ],
     tool: {
       name: 'which half is straight',
@@ -984,11 +987,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'konotop.pies': {
     title: 'The Wolf and the pies', topic: 'halving the answer',
-    brief: '<b>The Wolf and the pies.</b> What is the slowest speed at which the Wolf can eat all the pies before the captain returns?',
+    brief: '<b>The Wolf and the pies.</b> What’s the slowest speed at which the Wolf can eat all the pies before the captain returns?',
     statement: [
-      'While the captain chases witches, the Wolf has got into his pantry. <code>piles[i]</code> is how many pies are in bowl <code>i</code>, and the captain returns in <code>h</code> hours.',
-      'In an hour the Wolf eats at most <code>k</code> pies from one bowl (if the bowl has fewer, he finishes it and rests until the hour is up). Return the smallest <code>k</code> with which he manages everything in <code>h</code> hours.',
-      'Constraints: <code>n ≤ 10⁴</code>. Trying <code>k</code> = 1, 2, 3… takes long. But “he manages with <code>k</code>” is again “first no, then yes”. Search <b>the answer itself</b> in halves.',
+      'While the captain chases witches, the Wolf has got into his pantry. <code>piles[i]</code> is how many pies are in bowl <code>i</code>. The captain returns in <code>h</code> hours.',
+      'In an hour the Wolf eats at most <code>k</code> pies, and only from one bowl. If the bowl has fewer, he finishes it and rests for the rest of the hour. Return the smallest <code>k</code> with which he manages everything in <code>h</code> hours. For <code>[3, 6, 7, 11]</code> and <code>h = 8</code> — <code>4</code>.',
+      'Trying <code>k</code> = 1, 2, 3… takes long. But notice: at a low speed the Wolf doesn’t make it, at a high speed he does. Again “first no, then yes”, so binary search can look for <b>the answer itself</b>.',
     ],
     tool: {
       name: 'halving the answer',
@@ -1014,8 +1017,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>The best k laps.</b> Find the biggest sum of points over <code>k</code> laps of the race in a row.',
     statement: [
       'At Acestes’s games the chariots race lap after lap. <code>laps[i]</code> is the points scored on lap <code>i</code>. The scoreboard is broken, and the best stretch has to be found.',
-      'Return the biggest sum of points over <code>k</code> laps <b>in a row</b>. Always <code>1 ≤ k ≤ n</code>.',
-      'Constraints: <code>n ≤ 10⁴</code>, and <code>k</code> can be a thousand. For every stretch the Wolf adds up all <code>k</code> laps from scratch. But neighbouring stretches differ by only two laps.',
+      'Return the biggest sum of points over <code>k</code> laps <b>in a row</b>. For <code>[3, 1, 4, 1, 5, 9, 2, 6]</code> and <code>k = 3</code>: the best is 5 + 9 + 2 = <code>16</code>.',
+      'There can be up to 10,000 laps, and <code>k</code> can be a thousand. For every stretch the Wolf adds up all <code>k</code> laps from scratch. But neighbouring stretches differ by only two laps: one joins on the right, one leaves on the left. This is a <b>sliding window</b>.',
     ],
     tool: {
       name: 'a sliding window',
@@ -1039,8 +1042,8 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     brief: '<b>A boat for sale.</b> Boat prices change every day. When to buy and when to sell to earn the most?',
     statement: [
       'Mykyta decided to make money at the boat races. <code>prices[i]</code> is the price of a boat on day <code>i</code>.',
-      'You can buy once and sell once, <b>after</b> buying. Return the biggest profit; if no profit is possible — <code>0</code>.',
-      'Constraints: <code>n ≤ 10⁴</code>. The Wolf tries every pair of days. But it’s enough to remember the cheapest day that has already passed.',
+      'You can buy once and sell once, <b>after</b> buying. Return the biggest profit, that is, the selling price minus the buying price. For <code>[7, 1, 5, 3, 6, 4]</code>: buy at 1, sell at 6, profit <code>5</code>. If prices only fall, return <code>0</code>.',
+      'There can be up to 10,000 days. The Wolf tries every pair of days. It’s enough to go through the days in turn and remember the cheapest day so far.',
     ],
     tool: {
       name: 'the best so far',
@@ -1064,9 +1067,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'A song without repeats', topic: 'a window of changing size',
     brief: '<b>A song without repeats.</b> Find the longest stretch of a song where no note repeats.',
     statement: [
-      'The singers compete in improvisation. The song is written as letter-notes: <code>s</code>. The judges look for the longest stretch <b>in a row</b> where all notes are different.',
-      'Return the length of that stretch.',
-      'The window here is elastic: add a note on the right, and if it is already in the window, throw notes out on the left until the repeat is gone.',
+      'The singers compete in improvisation. The song is written as letter-notes in the string <code>s</code>. The judges look for the longest stretch <b>in a row</b> where all the notes are different.',
+      'Return the length of that stretch. For <code>"abcabcbb"</code> it’s <code>3</code> (for example, <code>"abc"</code>), for <code>"bbbbb"</code> — <code>1</code>.',
+      'Here the window stretches: add the next note on the right, and if it’s already in the window, drop notes on the left until the repeat is gone. A <code>Set</code> is handy for what’s in the window.',
     ],
     tool: {
       name: 'a window that stretches and shrinks',
@@ -1087,11 +1090,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'sicily.fight': {
     title: 'The fist fight', topic: 'a heap: the biggest first',
-    brief: '<b>The fist fight.</b> Each time the two strongest fight. Who is left at the end, and how strong?',
+    brief: '<b>The fist fight.</b> Each time the two strongest fight. Who’s left at the end, and how strong?',
     statement: [
       'A fist fight at Acestes’s games. <code>stones[i]</code> is the strength of fighter <code>i</code>. Each time <b>the two strongest</b> enter the arena.',
-      'If their strengths are equal, both drop out. If not, the weaker drops out and the stronger stays with strength reduced by the opponent’s. Return the strength of the last fighter, or <code>0</code> if nobody is left.',
-      'Finding the two strongest from scratch every time is slow. That’s what a <b>heap</b> is for: it always keeps the biggest ready.',
+      'If their strengths are equal, both drop out. If not, the weaker drops out and the stronger stays, but with strength reduced by the opponent’s: 8 against 7 leaves 1. Return the strength of the last fighter, or <code>0</code> if nobody is left. For <code>[2, 7, 4, 1, 8, 1]</code> — <code>1</code>.',
+      'Finding the two strongest from scratch every time is slow. That’s what a <b>heap</b> (a priority queue) is for: it always keeps the biggest ready. The tool shows how to use it.',
     ],
     tool: {
       name: 'a heap (a priority queue)',
@@ -1115,9 +1118,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The live scoreboard', topic: 'a heap of size k',
     brief: '<b>The live scoreboard.</b> After every new result the board shows the <code>k</code>-th best. Bring Acestes’s scoreboard back to life.',
     statement: [
-      'The winners’ board: <code>nums</code> are the results already there, <code>adds</code> are new ones arriving one at a time. After each new result the board must show the <code>k</code>-th largest result among all so far.',
-      'Return an array of these numbers — one after every new result. Whenever the board shows a number, there are always at least <code>k</code> results.',
-      'Constraints: <code>n ≤ 10⁴</code>. After every result the Wolf re-sorts the whole table. You only need to keep the <code>k</code> best — in a heap with the smallest of them on top.',
+      'The winners’ board. <code>nums</code> are the results already there, <code>adds</code> are new ones arriving one at a time. After each new result the board must show the <code>k</code>-th largest result among all so far.',
+      'Return an array of these numbers, one after every new result. For <code>k = 3</code>, <code>nums = [4, 5, 8, 2]</code> and the first new <code>3</code>: the results are 8, 5, 4, 3, 2, and the third largest is <code>4</code>. There are always at least <code>k</code> results on the board.',
+      'There can be up to 10,000 results. After each one the Wolf re-sorts the whole table. You only need the <code>k</code> best in a heap with the smallest of them on top: that one is the answer.',
     ],
     tool: {
       name: 'a heap of the k best',
@@ -1141,9 +1144,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'How much salt in the train', topic: 'walking a list',
     brief: '<b>How much salt in the train.</b> The carts are hooked to one another. Walk the train from the first cart to the last and count the salt.',
     statement: [
-      'The chumaks carry salt from Crimea. A train is carts, each hooked to the next: <code>node.val</code> is how many sacks of salt the cart has, <code>node.next</code> is the next cart, or <code>null</code> if it is the last.',
-      'You are given only the first cart — <code>head</code>. Return how much salt the whole train carries. If there is no train (<code>head</code> is <code>null</code>), return <code>0</code>.',
-      'There are no numbers here as in an array: you reach the fifth cart only by going through the four before it.',
+      'The chumaks carry salt from Crimea. A train is carts, each hooked to the next. Such a chain is called a <b>linked list</b>. Each cart has <code>node.val</code> — how many sacks of salt it carries — and <code>node.next</code> — the next cart, or <code>null</code> if this one is last.',
+      'You’re given only the first cart — <code>head</code>. Return how much salt the whole train carries. For the train 5 → 3 → 8 that’s <code>16</code>. If there’s no train (<code>head</code> is <code>null</code>), return <code>0</code>.',
+      'There are no indices here as in an array: you reach the fifth cart only by going through the four before it. So walk like this: “while there’s a cart — add its salt and move to <code>next</code>”.',
     ],
     tool: {
       name: 'a linked list',
@@ -1166,9 +1169,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Back to Crimea', topic: 're-hooking the links',
     brief: '<b>Back to Crimea.</b> Reverse the train: now every cart must be hooked to the one that was behind it.',
     statement: [
-      'The chumaks forgot their kobza in Crimea and have to go back. The train must be reversed: the last cart becomes the first.',
-      'Re-hook the <code>next</code> of every cart to the previous one and return the new head — the former last cart. Don’t create new carts.',
-      'There is one danger: as soon as you re-hook <code>next</code>, you lose the way forward. So remember who is ahead first.',
+      'The chumaks forgot their kobza in Crimea and have to go back. The train must be reversed: the last cart becomes the first. 1 → 2 → 3 → 4 → 5 must become 5 → 4 → 3 → 2 → 1.',
+      'Re-hook the <code>next</code> of every cart to the previous one and return the new head, that is, the former last cart. Don’t create new carts, just re-hook.',
+      'There’s one danger: as soon as you re-hook <code>next</code>, you lose the way forward. So first save who’s ahead in a variable, then re-hook.',
     ],
     tool: {
       name: 'three pointers: prev, node, next',
@@ -1191,9 +1194,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The middle cart', topic: 'slow and fast',
     brief: '<b>The middle cart.</b> Find the cart in the middle of the train without counting its length first.',
     statement: [
-      'The ataman rides on the middle cart — from there he sees both the head and the tail. But nobody knows how many carts there are.',
-      'Return the middle cart (the rest of the train from it is your answer). If the number of carts is even there are two middle ones — return the <b>second</b>.',
-      'You could count the carts first and then walk half. Or do it in one pass: the ox walks one cart at a time, the fox two.',
+      'The ataman rides on the middle cart: from there he sees both the head and the tail of the train. But nobody knows how many carts there are.',
+      'Return the middle cart. For 1 → 2 → 3 → 4 → 5 it’s cart <code>3</code>. If the number of carts is even, there are two middle ones: return the <b>second</b>, for 1 → 2 → 3 → 4 → 5 → 6 that’s <code>4</code>.',
+      'You could count the carts first and then walk half. Or do it in one pass: the ox walks one cart at a time, the fox two. When the fox reaches the end, the ox is right in the middle.',
     ],
     tool: {
       name: 'slow and fast',
@@ -1216,9 +1219,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Two trains into one', topic: 'a dummy head',
     brief: '<b>Two trains into one.</b> Merge two trains ordered by weight into one, also ordered.',
     statement: [
-      'Two trains met at the crossing. In each the carts go from lighter to heavier: <code>list1</code> and <code>list2</code>.',
-      'Re-hook the carts into one train, also from lighter to heavier, and return its head. Don’t create new carts — just re-hook.',
-      'It’s handy to start with a <b>dummy</b> cart: it holds the head’s place, and at the end you just unhook it.',
+      'Two trains met at the crossing, <code>list1</code> and <code>list2</code>. In each, the carts go from lighter to heavier.',
+      'Re-hook the carts into one train, also from lighter to heavier, and return its head. 1 → 2 → 4 and 1 → 3 → 4 give 1 → 1 → 2 → 3 → 4 → 4. Don’t create new carts, just re-hook.',
+      'Each time compare the front carts of both trains and hook on the lighter. It’s handy to start with a <b>dummy</b> cart: it holds the head’s place, and at the end you just unhook it.',
     ],
     tool: {
       name: 'a dummy head',
@@ -1239,11 +1242,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'chumak.cycle': {
     title: 'A train in a circle', topic: 'the ox and the fox: will they meet',
-    brief: '<b>A train in a circle.</b> Prove the train is going in a circle: its tail is hooked to one of the carts ahead.',
+    brief: '<b>A train in a circle.</b> Prove the train is going round in a circle: its tail is hooked to one of the carts ahead.',
     statement: [
       'A shard mixed up the links: the last cart seems to be hooked to someone in the middle, and the train has been circling the steppe for the third night.',
-      'Return <code>true</code> if, following <code>next</code>, you can come back to a cart you’ve already visited, and <code>false</code> if the train ends (<code>null</code>).',
-      'Constraints: <code>n ≤ 10⁴</code>. For every cart the Wolf checks whether he has seen it before by walking everything from the start. It’s craftier to send the ox and the fox on the road.',
+      'Return <code>true</code> if, following <code>next</code>, you can come back to a cart you’ve already visited (that is, there’s a circle). Return <code>false</code> if the train ends and you reach <code>null</code>.',
+      'There can be up to 10,000 carts. For every cart the Wolf checks whether he’s seen it before by walking everything from the start. It’s craftier to send the ox and the fox on the road: the fox walks twice as fast. If there’s a circle, sooner or later the fox catches the ox from behind.',
     ],
     tool: {
       name: 'the ox and the fox (Floyd’s algorithm)',
@@ -1267,9 +1270,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Down and back', topic: 'recursion: the base case',
     brief: '<b>Down and back.</b> Go down through every circle of hell to Anchises and come back the same way. Write down the road.',
     statement: [
-      'The Sibyl leads Aeneas to his father. <code>circles</code> are the circles of hell from top to bottom. At the bottom is Anchises.',
-      'Return the road: the circles going down in order, then the same circles going back up. For <code>["Limbo", "Fire"]</code> — <code>["Limbo", "Fire", "Fire", "Limbo"]</code>.',
-      'Write it with <b>recursion</b>: a function that goes down one circle and calls itself for the rest. The way back comes by itself — as the calls return.',
+      'The Sibyl leads Aeneas to his father. <code>circles</code> are the circles of hell from top to bottom, and Anchises waits at the very bottom.',
+      'Return the road: the circles going down in order, then the same circles going back up. For <code>["Limbo", "Fire"]</code> that’s <code>["Limbo", "Fire", "Fire", "Limbo"]</code>.',
+      'Write it with <b>recursion</b>: that’s when a function calls itself. The function goes down one circle and calls itself for the rest. The way back appears by itself as the calls return one after another.',
     ],
     tool: {
       name: 'recursion',
@@ -1291,11 +1294,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'hell.boats': {
     title: 'Charon’s boat', topic: 'greedy: the heaviest with the lightest',
-    brief: '<b>Charon’s boat.</b> The boat takes at most two souls and has a weight limit. What is the fewest number of trips?',
+    brief: '<b>Charon’s boat.</b> The boat takes at most two souls and has a weight limit. What’s the fewest number of trips?',
     statement: [
-      'Charon ferries souls across the Styx. <code>people[i]</code> is the weight of soul <code>i</code>, <code>limit</code> is what the boat can carry. At most two at a time.',
-      'Return the fewest trips needed to ferry everyone. Every soul fits in the boat on its own.',
-      'Constraints: <code>n ≤ 10⁴</code>. The trick from Carthage: sort by weight and seat the heaviest with the lightest if they fit.',
+      'Charon ferries souls across the river Styx. <code>people[i]</code> is the weight of soul <code>i</code>, <code>limit</code> is what the boat can carry. At most two at a time.',
+      'Return the fewest trips needed to ferry everyone. Every soul fits on its own for sure. For <code>[3, 2, 2, 1]</code> and <code>limit = 3</code> — <code>3</code> trips: (1 and 2), (2), (3).',
+      'There can be up to 10,000 souls. Remember the trick from Carthage: order the souls by weight and seat the heaviest with the lightest if they fit. If they don’t, the heaviest goes alone.',
     ],
     tool: {
       name: 'sorting + two pointers',
@@ -1316,11 +1319,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'hell.subsets': {
     title: 'Every set for the cauldron', topic: 'backtracking: take it or not',
-    brief: '<b>Every set for the cauldron.</b> List every possible set of sinners from the given ones — from the empty one to all of them together.',
+    brief: '<b>Every set for the cauldron.</b> Go through every possible set of sinners — from the empty one to all of them together.',
     statement: [
       'A shard scattered the sinners into the wrong cauldrons, and the devils want to go through every possible set to seat them properly. <code>nums</code> are the sinners’ numbers, all different.',
-      'Return <b>all</b> subsets: the empty one, single ones, pairs… and all together. The order of the sets and inside them doesn’t matter.',
-      'For every sinner there are only two decisions: <b>take</b> or <b>don’t take</b>. Walk these decisions with recursion and come back to try the other.',
+      'Return <b>all</b> the sets (subsets): the empty one, single ones, pairs… and all together. For <code>[1, 2, 3]</code> there are eight: <code>[]</code>, <code>[1]</code>, <code>[2]</code>, <code>[3]</code>, <code>[1, 2]</code>, <code>[1, 3]</code>, <code>[2, 3]</code>, <code>[1, 2, 3]</code>. Order doesn’t matter.',
+      'For every sinner there are only two decisions: <b>take</b> or <b>don’t take</b>. Walk these decisions with recursion: try “take”, come back, and try “don’t take”. Searching like this, going back to try the other way, is called <b>backtracking</b>.',
     ],
     tool: {
       name: 'backtracking: choose — and come back',
@@ -1344,9 +1347,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'The order of the gates', topic: 'backtracking: who has passed already',
     brief: '<b>The order of the gates.</b> Several gates lead to Anchises, and they can be passed in any order. List every order.',
     statement: [
-      'On the last circle there are gates numbered <code>nums</code> (all different). All must be passed, each once, in any order.',
-      'Return <b>all</b> possible orders. The order of the answers doesn’t matter, but inside each one it does.',
-      'Now the choice is different: not “take or not”, but “which gate next”. And you have to remember which ones are already passed.',
+      'On the last circle stand gates numbered <code>nums</code>, all different. Each must be passed, once, in any order.',
+      'Return <b>all</b> the possible orders. For <code>[1, 2, 3]</code> there are six: <code>[1, 2, 3]</code>, <code>[1, 3, 2]</code>, <code>[2, 1, 3]</code>, <code>[2, 3, 1]</code>, <code>[3, 1, 2]</code>, <code>[3, 2, 1]</code>. The order of the answers doesn’t matter.',
+      'Now the choice is different: not “take or not”, but “which gate next”. And you have to remember which gates are already passed so you don’t pass one twice.',
     ],
     tool: {
       name: 'an “already passed” mark',
@@ -1369,9 +1372,9 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     title: 'Charon’s fare', topic: 'backtracking with repeats',
     brief: '<b>Charon’s fare.</b> Charon takes a fare of exactly <code>target</code>. Find every way to make it from coins.',
     statement: [
-      'To leave hell you must pay Charon exactly <code>target</code>. Coins come in several values: <code>candidates</code> (all different), and each can be taken any number of times.',
-      'Return all <b>different</b> sets of coins that add up to <code>target</code>. The sets <code>[2, 3]</code> and <code>[3, 2]</code> are the same set, so count it once. The order of answers doesn’t matter.',
-      'This is backtracking with two tricks: a coin may repeat (so stay on the same one), and to avoid counting a set twice, take coins only from the current one <b>onwards</b>.',
+      'To leave hell you must pay Charon exactly <code>target</code>. Coins come in several values, <code>candidates</code> (all different), and each can be used any number of times.',
+      'Return all the <b>different</b> sets of coins that add up to <code>target</code>. For coins <code>[2, 3, 6, 7]</code> and <code>target = 7</code> — <code>[[2, 2, 3], [7]]</code>. The sets <code>[2, 3]</code> and <code>[3, 2]</code> count as one, so count such a set once.',
+      'It’s backtracking again, with two tricks. A coin can repeat, so after choosing one, stay on the same coin. And so you don’t build the same set twice in a different order, take coins only from the current one <b>onwards</b>, never backwards.',
     ],
     tool: {
       name: 'start: only forward, but with repeats',
