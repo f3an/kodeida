@@ -22,8 +22,8 @@ jobs:
       - name: Pages reference shared files
         run: |
           for f in site/index.html site/artbook.html; do
-            grep -q 'src="app.js"' "$f" || { echo "$f does not load app.js"; exit 1; }
-            grep -q 'href="style.css"' "$f" || { echo "$f does not load style.css"; exit 1; }
+            grep -Eq 'src="app\.js(\?v=[^"]*)?"' "$f" || { echo "$f does not load app.js"; exit 1; }
+            grep -Eq 'href="style\.css(\?v=[^"]*)?"' "$f" || { echo "$f does not load style.css"; exit 1; }
           done
 
   app:
