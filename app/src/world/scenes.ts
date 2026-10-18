@@ -8,7 +8,7 @@ import type { SceneSpec } from '../engine/level.ts';
 import type { StreetCell, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
 import { paintTroyNight } from '../ui/story.ts';
-import { makeSibyl, makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf } from './sprites.js';
+import { makeSibyl, makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf, makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk } from './sprites.js';
 
 export const W = 600, H = 390;
 
@@ -29,6 +29,8 @@ interface Walker { x: number; tx: number; y: number; ty: number; face: 1 | -1 }
 const ENEI = makeEnei(1), ENEI_BLINK = makeEnei(1, { blink: true });
 const WOLF = makeWolf({ drool: 2 });
 const SIBYL = makeSibyl();
+/** Герої казок «Абетки», по одному на розділ (розділ 1 — Колобок, він котиться окремо). */
+const TALE_HEROES: (() => Sprite)[] = [makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk];
 const CREW = TROJANS.map((trojan, i) => i === 2 ? makeAnchises() : trojan);
 const foxes = new Map<string, [Sprite, Sprite]>();
 const foxOf = (c: string) => { if (!foxes.has(c)) foxes.set(c, [makeFox(c), makeFox(c, { cursorOff: true })]); return foxes.get(c)!; };
@@ -672,10 +674,13 @@ export class ScrollScene extends SceneBase {
   private dummy: Walker = { x: 0, tx: 0, y: 0, ty: 0, face: 1 };
   /** Колобок котиться низом сцени (розділ 1). */
   private bun: boolean;
+  /** Герой казки інших розділів: стоїть унизу ліворуч і підстрибує на кожен новий рядок. */
+  private hero: Sprite | null;
 
   constructor(canvas: HTMLCanvasElement, onState: (s: SceneState) => void, fox: string, chapter: number) {
     super(canvas, onState, fox);
     this.bun = chapter === 0;
+    this.hero = chapter > 0 && TALE_HEROES[chapter - 1] ? TALE_HEROES[chapter - 1]() : null;
     const c = this.bg.getContext('2d')!;
     const sp = new Spr(200, 130); paintTroyNight(sp, 0); sp.draw(c, 0, 0, 3);
     c.fillStyle = 'rgba(8,10,20,.25)'; c.fillRect(0, 0, W, H);
@@ -732,6 +737,13 @@ export class ScrollScene extends SceneBase {
     if (this.bun) {
       const span = W - 220, ph = (t * 40) % (span * 2), bx = 40 + (ph < span ? ph : span * 2 - ph), by = H - 36;
       this.drawBun(bx, by, ph < span ? 1 : -1, t);
+    }
+    // герой казки: погойдується, а коли з'являється рядок — підстрибує
+    if (this.hero) {
+      const hr = this.hero, last = this.shownAt[this.shownAt.length - 1] ?? 0, since = now - last;
+      const hop = last && since < 360 && !this.reduced ? Math.sin((since / 360) * Math.PI) * 10 : 0;
+      const bob = Math.round(Math.sin(t * 2) * 1.5);
+      hr.draw(c, 64, Math.round(H - 8 - hr.h - bob - hop), 1);
     }
     // Сивілла біля сувою
     const sy = SIBYL as Sprite;
