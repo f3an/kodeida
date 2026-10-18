@@ -108,7 +108,7 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 **Pre-alpha, ready for the first playtest.**
 
 - **Playable (v0.3.0):** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–8. That is 54 exercises, from the first `enei.move()` to *Combination Sum* in hell, with tests, hints, stars and the Wolf comparison. Cutscenes between worlds.
-- **The ABC (v0.3.0):** chapter 1, *The Bun* (output: the first words), 4 lessons in each of Python, JavaScript and TypeScript. Chapters 2–8 are planned: variables, strings, conditions, loops, lists, dictionaries and objects, functions.
+- **The ABC:** all eight chapters, 4 lessons each in Python, JavaScript and TypeScript: *The Bun* (output), *The Turnip* (variables and numbers), *Kotyhoroshko* (strings), *The Goat Dereza* (conditions), *The Straw Bull* (loops), *Lord Kotsky* (lists), *Sister Fox* (dictionaries and objects), *Ivasyk-Telesyk* (functions). Chapter 1 shipped in v0.3.0; chapters 2–8 are in `main` and ship in the next release.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
 - **Shipped:** installers for macOS, Windows and Linux on every release tag, auto-update from GitHub Releases.
 
@@ -209,7 +209,7 @@ Every push to `main` that touches `site/` redeploys GitHub Pages. To publish a r
 2. ✅ **MVP:** onboarding and worlds 0–3 (Ashes of Troy, Sea of Aeolus, Dido's Carthage, Mykyta's Forest), TypeScript, JavaScript and Python, Ukrainian and English, installers, releases and auto-update.
 3. **First playtest** with 10–20 people. ← *we are here*
 4. ✅ **Python** in the app (Pyodide), then **all 16 worlds**, the Book of Tricks and the embroidered-shirt progress.
-5. **The ABC** for complete beginners: ✅ the track, the three ways in and chapter 1; next, chapters 2–8.
+5. ✅ **The ABC** for complete beginners: the track, the three ways in and all eight chapters.
 6. **C#, C++, Go**, then new campaigns: algorithms, data structures, OOP.
 
 ## Contributing

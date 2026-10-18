@@ -2,12 +2,12 @@
 
 By taking part you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Accessibility barriers are bugs — see [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
-Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist. The latest release (v0.3.1) for macOS, Windows and Linux has the onboarding, worlds 0–8 with cutscenes between them, the three ways in (from scratch, a little, give me problems) and the ABC — a from-scratch track for Python, JavaScript and TypeScript (chapter 1 so far).
+Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website exist. The latest release (v0.3.1) for macOS, Windows and Linux has the onboarding, worlds 0–8 with cutscenes between them, the three ways in (from scratch, a little, give me problems) and the ABC — a from-scratch track for Python, JavaScript and TypeScript. The release has chapter 1; all eight chapters are in `main`.
 
 ## What helps most today
 
 - **World ideas** — a work of Ukrainian literature in the public domain plus one algorithmic technique it can teach. Use the *World idea* issue template.
-- **ABC lessons** — chapters 2–8 of the ABC (variables, strings, conditions, loops, lists, dictionaries, functions), each built on a Ukrainian folk tale. See *Writing an ABC lesson* below.
+- **ABC lessons** — the eight chapters are written; extra practice lessons, or new chapters (sets, classes), each built on a Ukrainian folk tale, are welcome. See *Writing an ABC lesson* below.
 - **Story and dialogue** — lines for Mykyta, the Sibyl, Juno or the locals, in the tone of the brand book: Kotliarevsky's burlesque and Franko's irony, never mocking the player.
 - **Pixel art** — new characters, variants, scene details. Everything is drawn in code, see below.
 - **Translations** — the game, the landing page and the artbook are Ukrainian and English; proofreading the English is very welcome.
@@ -44,6 +44,7 @@ The ABC (`app/src/levels/abetka.ts`) is for adults who have never written code. 
 - **A chapter is a folk tale** (`Chapter`: `key`, `name`, `topic`, `host` — the Sibyl's opening line — and `lessons`). Chapters not written yet are listed in `PLANNED` and shown as *soon*.
 - **A lesson checks what the program prints.** `out(c, ...args)` returns the expected lines; the judge compares them with the program's output line by line (`print` and `console.log` differ, e.g. `True` / `true`, so `out` gets the language context `c`). Write `tests` as argument lists.
 - **Texts take the language context** `c` (`c.name`, `c.say('…')`, `c.py`, `c.ts`) and return `[Ukrainian, English]` pairs; English goes into `LEVELS_EN` automatically.
+- **Per-language code** goes through `pick(c, python, javascript, typescript?)`; `full(c, entry, params, ret, body, pre?)` builds a whole solution, and `EMPTY` is the usual starter body. A `pre` helper sits above the main function (the Ivasyk-Telesyk chapter: the player finishes a helper the main function calls). Every `{{here}}` becomes “your code here”.
 - **Voices.** The ABC happens the night before Troy falls: the Sibyl teaches and Aeneas learns (`talk` alternates Sibyl → Aeneas). Mykyta has not arrived yet — do not use him here.
 - **One new idea per lesson**, as in world 0, and no syntax the player has not met yet.
 - `npm run selftest` checks every lesson in all three languages: the solution passes, the starter code compiles and does not pass, an extra printed line fails, and the texts contain no other language's syntax.
