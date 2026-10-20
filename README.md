@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/media/hero.gif" width="640" alt="Pixel-art Aeneas with his curly-brace forelock, the Crystal Pysanka and Mykyta the Fox">
+  <img src="docs/media/hero.png" width="640" alt="Pixel-art Aeneas, the Crystal Pysanka and Mykyta the Fox">
 </p>
 
 <p align="center">
@@ -109,6 +109,7 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 
 - **Playable (v0.4.0):** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–8. That is 54 exercises, from the first `enei.move()` to *Combination Sum* in hell, with tests, hints, stars and the Wolf comparison. Cutscenes between worlds. Every problem is written so a 15-year-old can follow it: new terms explained, a worked example, no 10⁴-style constraints.
 - **The ABC:** all eight chapters, 4 lessons each in Python, JavaScript and TypeScript: *The Bun* (output), *The Turnip* (variables and numbers), *Kotyhoroshko* (strings), *The Goat Dereza* (conditions), *The Straw Bull* (loops), *Lord Kotsky* (lists), *Sister Fox* (dictionaries and objects), *Ivasyk-Telesyk* (functions). Chapters 2–8 arrived in v0.4.0.
+- **New look (v0.5.0):** every hero, world and opening cutscene redrawn as pixel art: 33 living backgrounds with glow, water, smoke and snow, animated cutscenes (the gods' feast, Aeolus's winds, the Pysanka shattering), a backdrop for each ABC tale where the characters step on stage as your program prints, and Aeneas in a zhupan in cold worlds.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
 - **Shipped:** installers for macOS, Windows and Linux on every release tag, auto-update from GitHub Releases.
 
@@ -127,7 +128,7 @@ We are looking for 10–20 people, mostly students and juniors who are afraid of
 - **The world watches what you read.** Arrays and strings are wrapped in a `Proxy` that records every read and write. The recorded events are what the scene animates, and their count is what we compare with the Wolf.
 - **A sandbox with a timeout.** Code runs in a Web Worker. An infinite loop ends the run, not the game.
 - **Judgement.** Examples, hidden tests and one big test (for example, 10,000 elements) decide the verdict: fox, wolf (correct but too slow), wrong answer, timeout or an error on line N.
-- **Pixel art from code.** There are no image files. Every character and scene is drawn from shapes in [`site/app.js`](site/app.js), upscaled with Scale2x and shaded. The website and the game share the same code.
+- **Pixel art.** Heroes, backgrounds and animations are PNG sprites in [`app/src/assets/art`](app/src/assets/art), drawn ×2 on a low-resolution grid with no smoothing. They were made with the [PixelLab](https://www.pixellab.ai) generator and then edited by hand (faces, heads pasted between frames, cleaned artefacts). Glow, water, smoke and snow on top are drawn in code ([`bgfx.ts`](app/src/world/bgfx.ts)). The first version of the art, drawn entirely from shapes in [`site/app.js`](site/app.js), still renders the map, the UI and anything that has no new sprite yet.
 
 ## Development
 
@@ -153,14 +154,15 @@ cd site
 python3 -m http.server 8000   # http://localhost:8000 and /artbook.html
 ```
 
-The trailer, the release video and the Reels are built with [Remotion](https://www.remotion.dev) in `video/`. They use the game's own sprites, and a script synthesises the music:
+The trailer, the release video and the Reels are built with [Remotion](https://www.remotion.dev) in `video/`. They use the game's own art (`npm run art` copies it into `public/art`), and a script synthesises the music:
 
 ```bash
 cd video
 npm install
 npm run sfx                            # sound effects → public/
 npm run music                          # the trailer's and the release video's music
-npm run record                         # game footage at 2× (needs npm run dev in app/)
+npm run art                            # the game's art and the site renders → public/art
+npm run record                         # game footage at 2× (needs the game running, see CONTRIBUTING)
 npm run dev                            # Remotion Studio: preview and edit
 npx remotion render Trailer-uk out/kodeida-trailer-uk.mp4
 ```
@@ -177,12 +179,14 @@ app/                  the game: Electron + React + TypeScript + Monaco
   scripts/            selftest (engine and every level), sync-sprites (site → game)
   src/engine/         sandbox Worker, runner, judge, no UI
   src/levels/         worlds 0–8 as data, the ABC (abetka.ts), English texts, Book of Tricks
-  src/world/          sprites.js (generated from site/app.js) and the in-level scenes
-  src/ui/             screens: menu, onboarding, level, map, ABC, book, shirt, settings; story.ts — ABC cutscenes
+  src/assets/art/     PNG sprites, animations and backgrounds (the new pixel art)
+  src/world/          art.ts (loads the art), scenes.ts (levels), cutscenes.ts, bgfx.ts (living backgrounds), sprites.js (generated from site/app.js)
+  src/ui/             screens: menu, onboarding, level, map, ABC, book, shirt, settings; story.ts — ABC cutscenes; DevScreen.tsx — dev panel (any level or cutscene, dev builds only)
 site/                 the website, deployed to GitHub Pages
   index.html          landing page (UA / EN)
   artbook.html        artbook (UA / EN): animations, screens, UI kit, onboarding, identity, motion
-  media/              the trailer (UA / EN) and its posters
+  media/              the trailer (UA / EN), its posters; media/art/new — renders of the new art for the landing and the artbook
+  newart.js           puts the new art on the landing and the artbook (app.js stays shared with the game)
   app.js              pixel-art renderer, scenes, journey map, i18n; the game imports it
   style.css           shared styles, light and dark themes
 docs/
@@ -225,4 +229,4 @@ Security issues: report them privately, see [SECURITY.md](SECURITY.md). Accessib
 Characters and settings are based on public-domain texts: Ivan Kotliarevsky (*Eneida*), Ivan Franko (*Mykyta the Fox*, *The Painted Fox*), Lesya Ukrainka (*The Forest Song*), Mykhailo Kotsiubynsky (*Shadows of Forgotten Ancestors*), Hryhorii Kvitka-Osnovianenko (*The Konotop Witch*) and Ukrainian folk tales. All designs are original; nothing is copied from film or cartoon adaptations.
 
 - **Code** (`app/`, `site/`, workflows): [Apache License 2.0](LICENSE).
-- **Content** (story, lore, brand and design documents in `docs/`, the images in `docs/media/`): [CC BY-SA 4.0](LICENSE-CONTENT.md).
+- **Content** (story, lore, brand and design documents in `docs/`, the pixel art in `app/src/assets/art` and `site/media/`, the images in `docs/media/`): [CC BY-SA 4.0](LICENSE-CONTENT.md). The art was made with the help of [PixelLab](https://www.pixellab.ai); see the license file for details.

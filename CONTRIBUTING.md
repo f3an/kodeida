@@ -18,7 +18,10 @@ Kodeida is at the **pre-alpha** stage: the story, worlds, characters and website
 
 - `app/` — the game (Electron + React + TypeScript + Monaco).
   - `src/engine` runs player code in a Worker and judges it; `src/levels` holds the worlds as data (`troy.ts`, `sea.ts`, `carthage.ts`, `forest.ts`, `mitten.ts`, `konotop.ts`, `sicily.ts`, `chumak.ts`, `hell.ts`), their English texts (`en.ts`), the Book of Tricks, the cutscenes between worlds (`voyages.ts`) and the ABC (`abetka.ts`).
-  - `src/world/sprites.js` is **generated** from `site/app.js` by `npm run sync-sprites` — change sprites, cutscenes and the journey map on the site, then sync. `src/world/scenes.ts` draws the in-level scenes.
+  - **Pixel art** lives in `src/assets/art/` as PNGs: heroes and their animations (`enei/`, `fox/`, `crew/`), dialogue portraits (`portraits/<speaker>/0.png` calm and `1.png` talking), world backgrounds (`bg/world-NN.png`, 200×136, the bottom 130 rows are shown), cutscene sprites (`cut/`), world inhabitants (`npc/wN.png`) and ABC characters (`tales/`). `src/world/art.ts` loads them before the first frame and crops each animation to one shared box so feet don't jump; Mykyta's fur is recoloured per world in code (`furTint`). If a file is missing the old sprite from `sprites.js` is drawn instead.
+  - Draw art ×2 (backgrounds ×3 in levels), nearest-neighbour only: no smoothing, no fractional scales, keep the outline. Idle poses are static; only walks, jumps and story events animate. Faces need 2×2 eyes with a highlight.
+  - `src/world/cutscenes.ts` draws the opening with the new art (`paintCutscene`), `bgfx.ts` adds the living effects for each background, `scenes.ts` draws the levels. In a dev build the 🛠 button opens a panel with every level, cutscene and voyage, a gallery of all 16 worlds and of the living backgrounds.
+  - `src/world/sprites.js` is **generated** from `site/app.js` by `npm run sync-sprites` — change the old sprites, the cutscenes and the journey map on the site, then sync.
   - `src/ui` holds the screens; interface text goes through `L('укр', 'eng')` from `src/i18n.ts`. `story.ts` holds the ABC cutscenes (scene numbers 100+, played by the same `Onboarding` component as the intro) and the scene lists for each way in; `Tour.tsx` is the Sibyl's interface tour.
   - Python: `src/levels/python.ts` holds, for every level, the starter body, the solution, the Wolf and the third hint (texts are converted from the JS wording by `pyText`); the engine is `src/engine/py-*.ts` on top of Pyodide, which `npm run dev`/`build` copy into `public/pyodide/` (`scripts/sync-pyodide.mjs`). A new level needs an entry there, or the selftest fails.
   - `electron/` is the main process: window, `app://` protocol with CSP, menu, auto-update (`updater.cjs`).
@@ -61,17 +64,18 @@ Every push to `main` that touches `site/` redeploys GitHub Pages.
 
 ## Working on the site
 
-- **Characters** are functions like `makeEnei()` or `makeFox()` in `site/app.js` that draw a small sprite from shapes (`ell`, `rect`, `poly`, `line`). When drawn at an even scale they are upscaled automatically (Scale2x, light and shade, cel lines). Hand-tuned details live in `hdDetails()`.
+- **New art on the site** comes from `site/newart.js`: it hides the canvases that `app.js` draws (cover, world card, hero gallery, onboarding, the how-it-works and boss scenes) and shows renders from `media/art/new`, taken from the game. The artbook's sheets 12.1–12.10 are generated together with their pictures and English captions (`newart-dict.js`). Keep `app.js` drawing the old art: it is the source of the game's `sprites.js`.
+- **Old characters** are functions like `makeEnei()` or `makeFox()` in `site/app.js` that draw a small sprite from shapes (`ell`, `rect`, `poly`, `line`). When drawn at an even scale they are upscaled automatically (Scale2x, light and shade, cel lines). Hand-tuned details live in `hdDetails()`.
 - **Worlds** live in `WORLD_SCENES` (background and local character) and `WORLD_FX` (particles, light, vignette).
 - **Text** is written in Ukrainian in the markup and scripts. English comes from the `DICT` table and the `RULES` patterns in `app.js` (both pages); when you add or change visible text, add its English entry there. Text drawn on a canvas goes through `ST('…')`, so the site and the game translate it the same way.
 - **Shared with the game:** everything between the `colour helpers` marker and the cutscenes (`OB`) is copied into the app by `npm run sync-sprites`; keep it free of DOM access.
-- **Cache:** both pages load `style.css?v=…` and `app.js?v=…`. Bump that version in `index.html` and `artbook.html` whenever you change either file, or returning visitors get the new HTML with the old script and styles.
+- **Cache:** both pages load `style.css?v=…`, `app.js?v=…` and `newart.js?v=…`. Bump that version in `index.html` and `artbook.html` whenever you change one of them, or returning visitors get the new HTML with the old script and styles.
 - Respect `prefers-reduced-motion`: every animation must have a finished resting frame.
 - Each section must fit one screen on desktop; check at 1440×860 and at a short window around 930×470.
 
 ## README media
 
-The GIFs in `docs/media/` are recorded from the running game (`npm run dev`), in both languages: `intro-*.gif` (the opening cutscenes), `play-*.gif` (Dido's problem: Run, then Judgement), `map-*.gif` (the world map), `abc-*.gif` (the menu, the ABC prologue and the Bun's song), plus `hero.gif` from the website cover. When the screens change noticeably, re-record them at a 1280×800 window and keep each GIF under about 4 MB (8–12 fps, 720–960 px wide). `icon.png` is `app/build/icon.png` scaled to 256 px.
+The GIFs in `docs/media/` are made from the game footage that `video/scripts/record.mjs all` records, in both languages: `intro-*.gif` (the opening cutscenes), `play-*.gif` (Dido's problem: Run, then Judgement), `map-*.gif` (the world map), `abc-*.gif` (the ABC and the Bun's song), plus `hero.png`, the website cover (`site/media/art/new/hero.png` on the cream background). Convert with ffmpeg at 12 fps and 680–860 px wide with a 128-colour palette (`palettegen` + `paletteuse`), and keep each GIF under about 4 MB. `icon.png` is `app/build/icon.png` scaled to 256 px.
 
 ## Trailer and videos
 
