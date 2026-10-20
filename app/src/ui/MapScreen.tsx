@@ -13,6 +13,7 @@ import {
   NODES, ISLES, MW, MH, MS, SW, SH_, SONGS, ALL_WORLDS, WORLD_SCENES, WORLD_INFO,
   paintJourney, paintWorldArt, routePoint, worldCol, foxFor,
 } from '../world/sprites.js';
+import { paintWorldNew } from '../world/cutscenes.ts';
 
 interface SongW { n: number; name: string; topic: string; task: string; fox: string; foxName: string; mvp?: boolean }
 interface Song { n: string; title: string; worlds: SongW[] }
@@ -37,6 +38,7 @@ export function MapScreen({ progress, go }: { progress: Progress; go: (s: Screen
   const ship = useRef({ from: here, at: 0 });
   const [pop, setPop] = useState(0);
   const foxFrom = useRef<unknown>(null);
+  const foxFromFur = useRef<string | null>(null);
   const artAt = useRef(0);
 
   const choose = (n: number) => {
@@ -44,6 +46,7 @@ export function MapScreen({ progress, go }: { progress: Progress; go: (s: Screen
     if (to === sel) return;
     ship.current = { from: sel, at: performance.now() };
     foxFrom.current = foxFor(ALL[sel]);
+    foxFromFur.current = ALL[sel].fox;
     artAt.current = performance.now();
     setSel(to);
     setPop((p) => p + 1);
@@ -64,7 +67,7 @@ export function MapScreen({ progress, go }: { progress: Progress; go: (s: Screen
   };
   const drawArt = (ctx: CanvasRenderingContext2D, f: number) => {
     const p = reducedMotion() ? 1 : Math.min(1, (performance.now() - artAt.current) / 700);
-    paintWorldArt(ctx, sel, Math.floor(f * 70 / 170), foxFrom.current, p);
+    if (!paintWorldNew(ctx, sel, foxFromFur.current, p)) paintWorldArt(ctx, sel, Math.floor(f * 70 / 170), foxFrom.current, p);
   };
 
   // пунктир від мітки до картки

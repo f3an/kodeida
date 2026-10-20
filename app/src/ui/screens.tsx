@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PixelCanvas } from './PixelCanvas.tsx';
 import { worlds } from '../levels/index.ts';
 import { BOOK } from '../levels/book.ts';
 import { Spr, SW, SH_, OB, SONGS, WORLD_SCENES, WORLD_INFO, MOTIFS, MOTIF_NAMES, drawMotif, drawEgg, makeEnei, makeFox, genericBg } from '../world/sprites.js';
+import { frontStill, shirtStill } from '../world/art.ts';
+import { paintCutscene } from '../world/cutscenes.ts';
 import { levelOpen, nextLevel, shardOf, solved, starsOf, worldOpen, type Path, type Progress, type Settings } from './progress.ts';
 import { bridge, APP_VERSION, type UpdateState } from './bridge.ts';
 import type { Screen } from './App.tsx';
@@ -31,8 +33,12 @@ export function Menu({ progress, go, choose, ui, setUi, updates }: { progress: P
   const next = nextLevel(progress);
   const drawHero = (ctx: CanvasRenderingContext2D, f: number) => {
     drawEgg(ctx, 34, 44, 292, 56, 4, false, true, 0, f % 2 ? 0.9 : 0.97);
-    (f % 7 === 6 ? HERO_ENEI_BLINK : HERO_ENEI).draw(ctx, 48, 20, 4);
-    HERO_FOX[f % 2].draw(ctx, 520, 68, 4);
+    // новий арт: обоє стоять анфас і дивляться на гравця; ступні на рядку 308, як у старих спрайтів
+    const enei = frontStill('enei'), fox = frontStill('fox');
+    if (enei) enei.draw(ctx, 140 - enei.w * 2, 308 - enei.h * 4, 4);
+    else (f % 7 === 6 ? HERO_ENEI_BLINK : HERO_ENEI).draw(ctx, 48, 20, 4);
+    if (fox) fox.draw(ctx, 604 - fox.w * 2, 308 - fox.h * 4, 4);
+    else HERO_FOX[f % 2].draw(ctx, 520, 68, 4);
   };
   return (
     <div className="menu">
@@ -119,8 +125,8 @@ export function StartScreen({ go, choose }: { go: Go; choose: (p: Path) => void 
 interface ObScene { kind: string; title: string; narr: string; lines: [string, string][]; act: string; bg: (sp: unknown, f: number) => void; fg?: (ctx: CanvasRenderingContext2D, f: number, s: number) => void }
 const SCENES = OB as ObScene[];
 /** Сцена за номером: 0–13 — зі сценарію сайту, 100+ — сюжетні сцени «Абетки» (story.ts). */
-const sceneAt = (i: number): ObScene => (i >= 100 ? { ...STORY[i], act: '' } as unknown as ObScene : SCENES[i]);
-const enAt = (i: number) => (i >= 100 ? STORY[i].en : OB_EN[i]);
+export const sceneAt = (i: number): ObScene => (i >= 100 ? { ...STORY[i], act: '' } as unknown as ObScene : SCENES[i]);
+export const enAt = (i: number) => (i >= 100 ? STORY[i].en : OB_EN[i]);
 
 /** Заставки вступу (сцени 1–10). Сцени 11–12 — справжній редактор і тур Сивілли, 13 — вправи світу 0, 14 — «Відплиття». */
 export const INTRO_SCENES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -169,11 +175,13 @@ export function Onboarding({ scenes, finishLabel, onDone, onSkip }: { scenes: nu
     return () => window.removeEventListener('keydown', onKey);
   });
 
+  // новий арт малюється щокадру з неперервним часом (у тактах по 260 мс), тож анімації плавні
+  const t0 = useRef(performance.now());
+  useEffect(() => { t0.current = performance.now(); }, [i]);
   const draw = (ctx: CanvasRenderingContext2D, f: number) => {
-    const sp = new Spr(SW, SH_);
-    o.bg(sp, f);
-    sp.draw(ctx, 0, 0, 2);
-    o.fg?.(ctx, f, 2);
+    // новий арт сцени, якщо є; інакше — стара сцена з sprites.js (у своєму темпі, цілими тактами)
+    const oldBg = () => { const sp = new Spr(SW, SH_); o.bg(sp, f); sp.draw(ctx, 0, 0, 2); };
+    if (!paintCutscene(ctx, i, (performance.now() - t0.current) / 260, speaker, oldBg)) { oldBg(); o.fg?.(ctx, f, 2); }
   };
   const line = text.lines[ln];
   const speaker = o.lines[ln] ? OB_SPEAKER[o.lines[ln][0]] ?? 'enei' : null;
@@ -182,7 +190,7 @@ export function Onboarding({ scenes, finishLabel, onDone, onSkip }: { scenes: nu
   return (
     <div className="onboarding">
       <div className="ob-stage" onClick={next}>
-        <PixelCanvas key={i} width={SW * 2} height={SH_ * 2} draw={draw} interval={260} className="ob-canvas" label={`${text.title}. ${text.narr}`} />
+        <PixelCanvas key={i} width={SW * 2} height={SH_ * 2} draw={draw} interval={260} smooth className="ob-canvas" label={`${text.title}. ${text.narr}`} />
       </div>
       <div className="ob-text">
         <div className="eyebrow">{scenes.length > 1 ? `${L('Сцена', 'Scene')} ${k + 1} ${L('з', 'of')} ${scenes.length} · ` : ''}{L('заставка', 'cutscene')}</div>
@@ -260,7 +268,8 @@ const MOTIF_EN: Record<string, string> = {
 
 export function ShirtScreen({ progress }: { progress: Progress }) {
   const got = new Set(worlds.filter((w) => shardOf(progress, w)).map((w) => w.motif!));
-  const enei = makeEnei(got.size === 0 ? 0 : got.size < 6 ? 1 : 2);
+  const level = got.size === 0 ? 0 : got.size < 6 ? 1 : 2;
+  const enei = makeEnei(level), art = shirtStill(level);
   const starsTotal = worlds.flatMap((w) => w.levels).reduce((a, l) => a + starsOf(progress, l), 0);
   const starsMax = worlds.flatMap((w) => w.levels).length * 3;
   return (
@@ -270,7 +279,7 @@ export function ShirtScreen({ progress }: { progress: Progress }) {
         <p className="muted">{L('Кожен уламок додає візерунок. Повністю вишита сорочка — візуальне резюме навичок.', 'Every shard adds a pattern. A fully embroidered shirt is a visual résumé of your skills.')}</p>
       </header>
       <div className="shirt-page">
-        <PixelCanvas width={46 * 4} height={72 * 4} draw={(ctx) => enei.draw(ctx, 0, 0, 4)} className="shirt-enei" label={L('Еней у вишиванці', 'Aeneas in his embroidered shirt')} />
+        <PixelCanvas width={46 * 4} height={76 * 4} draw={(ctx) => (art ? art.draw(ctx, (46 * 4 - art.w * 4) / 2, 76 * 4 - art.h * 4, 4) : enei.draw(ctx, 0, 0, 4))} className="shirt-enei" label={L('Еней у вишиванці', 'Aeneas in his embroidered shirt')} />
         <div>
           <div className="motifs">
             {MOTIF_ORDER.map((m) => (

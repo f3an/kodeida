@@ -75,11 +75,11 @@ The GIFs in `docs/media/` are recorded from the running game (`npm run dev`), in
 
 ## Trailer and videos
 
-The trailer (`site/media/trailer-*.mp4`), the release video and the vertical Reels live in `video/`, a [Remotion](https://www.remotion.dev) project. Characters, worlds and particles come straight from the game's sprite code, so the videos never drift away from the art.
+The trailer (`site/media/trailer-*.mp4`), the release video and the vertical Reels live in `video/`, a [Remotion](https://www.remotion.dev) project. Characters and worlds come straight from the game's art: `npm run art` copies the PNGs from `app/src/assets/art` and the site renders from `site/media/art/new` into `public/art`, so the videos never drift away from the game.
 
 - **Timing.** Everything runs at 150 BPM: a bar is 48 frames at 30 fps. `src/timeline.mjs` (trailer) and `src/launch-timeline.mjs` (release video) lay the sections out in whole bars; scenes and music both read them, so cuts land on the beat. Change a section's length there, not in the scene.
 - **Music.** `node scripts/music.mjs` synthesises the trailer's soundtrack into `public/music.wav`, `node scripts/music.mjs launch` the release video's. It is deterministic and original, so there is nothing to license. `npm run sfx` downloads the sound effects from remotion.media; neither the music nor the effects are committed.
-- **Game footage.** `node scripts/record.mjs all` records Dido's problem, the world map, the ABC and the intro from the running game (`cd app && npm run dev`) at 2560×1600 into `public/rec-*.mp4`, in both languages. Re-record when those screens change. The recordings are not committed.
+- **Game footage.** `node scripts/record.mjs all` records Dido's problem, the world map, the ABC and the intro from the running game at 2560×1600 into `public/rec-*.mp4`, in both languages. Record from a build so the dev panel is not in the shot: `cd app && npx vite build && npx vite preview --port 5174`, then `KODEIDA_URL=http://localhost:5174/ node scripts/record.mjs all`. `node scripts/record.mjs site uk` (and `en`) retakes the ABC screenshot for the landing page. Re-record when those screens change. The recordings are not committed.
 - **Text** lives in `src/lib/copy.ts` (trailer) and `src/launch/copy.ts` (release video). Update the list of what's new for each release.
 - **Reels** (1080×1920): keep text away from the top 250 px, the bottom 400 px and the right edge, where the app puts its buttons; keep the key content inside the central 3:4, which Instagram shows in the profile grid. The first frame is the cover; `npx remotion still Reels-cover-uk out/cover.png` renders it on its own.
 

@@ -1,11 +1,12 @@
 // Записує чисті кадри гри у 2× для трейлера (замість GIF 860×538).
-// Потрібен запущений dev-сервер гри: cd app && npx vite --port 5173
+// Потрібен запущений сервер гри: cd app && npx vite --port 5173, або збірка без dev-панелі:
+// npx vite build && npx vite preview --port 5174, тоді KODEIDA_URL=http://localhost:5174/
 // Запуск: node scripts/record.mjs [play|map|abc|intro|shot] [uk|en]
 import { chromium } from 'playwright-core';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-const URL = 'http://localhost:5173/';
+const URL = process.env.KODEIDA_URL || 'http://localhost:5173/';
 const W = 1280;
 const H = 800;
 
@@ -93,6 +94,20 @@ if (what === 'shot') {
     await browser.close();
   }
   console.log('shots ok');
+}
+
+if (what === 'site') {
+  // знімок Абетки для лендінгу: Python виводить куплет Колобка, рядки на сувої біля Сивілли (1600×1000)
+  const verse = 'def verse():\n    print("Я Колобок, Колобок!")\n    print("Я по засіку метений,")\n    print("Я від баби втік!")\n';
+  const { browser, page } = await open({ screen: { name: 'level', id: 'abc.py.kolobok.verse' }, progress: { ...base, path: 'abc', levels: ALL_SOLVED(['abc.py.kolobok.song']) }, 'code.abc.py.kolobok.verse.py': verse }, ui);
+  await page.waitForTimeout(2500);
+  await page.getByRole('button', { name: ui === 'uk' ? /Запустити/ : /Run/ }).first().click();
+  await page.waitForTimeout(4500);
+  mkdirSync('out/shots', { recursive: true });
+  await page.screenshot({ path: `out/shots/abc-${ui}.png` });
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', `out/shots/abc-${ui}.png`, '-vf', 'scale=1600:1000:flags=lanczos', '-q:v', '3', `../site/media/abc-${ui}.jpg`]);
+  await browser.close();
+  console.log(`site/media/abc-${ui}.jpg`);
 }
 
 const carthageOpen = ids(['troy', 'sea', 'carthage']).filter((id) => id !== 'carthage.dido');

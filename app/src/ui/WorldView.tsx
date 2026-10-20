@@ -3,6 +3,7 @@ import { ArrayScene, ScrollScene, StreetScene, W, H, type Actor, type SceneState
 import type { Level } from '../engine/level.ts';
 import type { ActorArg, ListArg, TestCase, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
+import { worldOf } from '../levels/index.ts';
 
 export interface WorldHandle {
   /** Показати приклад: вхід тесту, лог подій і (для масивів) що повернув код. */
@@ -45,7 +46,7 @@ export const WorldView = forwardRef<WorldHandle, Props>(function WorldView({ lev
     const spec = level.scene;
     const s = spec.type === 'street'
       ? new StreetScene(canvas.current!, onState, fox)
-      : spec.type === 'scroll' ? new ScrollScene(canvas.current!, onState, fox, level.world)
+      : spec.type === 'scroll' ? new ScrollScene(canvas.current!, onState, fox, level.world, worldOf(level).levels.indexOf(level))
       : new ArrayScene(canvas.current!, onState, fox, level.world, spec.skin, spec.mode);
     scene.current = s;
     show(level.examples[0], []);

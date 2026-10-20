@@ -4,7 +4,7 @@ import { AbsoluteFill, Interactive, staticFile, interpolate, useCurrentFrame, us
 import { BAR, BEAT } from '../timeline.mjs';
 import { beatPulse, clamp, IN, OUT, pop, ramp, shake } from '../lib/anim';
 import { COPY, type Lang } from '../lib/copy';
-import { S, Sprite } from '../lib/PixelCanvas';
+import { art, Sprite } from '../lib/PixelCanvas';
 import { C, CODE, HEAD, MONO } from '../lib/theme';
 import { Bg, Burst, Logo, Words } from '../lib/ui';
 
@@ -112,12 +112,12 @@ const LogoInner: React.FC<Props> = ({ lang }) => {
           </div>
         </AbsoluteFill>
         <Sprite
-          spr={S.makeEnei(2, { pose: 'sabre' })}
+          spr={art('enei/static-SE')}
           scale={5}
           style={{ position: 'absolute', left: 70, bottom: 40, translate: `${(1 - e) * -500}px ${-pulse * 10}px` }}
         />
         <Sprite
-          spr={S.FOX_GINGER ?? S.makeFox(C.fox)}
+          spr={art('fox/static-SW')}
           scale={5}
           style={{ position: 'absolute', right: 80, bottom: 60, translate: `${(1 - f) * 500}px ${-pulse * 10}px`, scale: '-1 1' }}
         />

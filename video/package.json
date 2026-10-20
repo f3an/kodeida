@@ -34,7 +34,8 @@
     "lint": "eslint src && tsc",
     "sfx": "cd public && for s in whoosh whip mouse-click switch ding page-turn; do curl -sSfLO https://remotion.media/$s.wav; done",
     "music": "node scripts/music.mjs && node scripts/music.mjs launch",
-    "record": "node scripts/record.mjs all"
+    "record": "node scripts/record.mjs all",
+    "art": "node scripts/art.mjs"
   },
   "allowScripts": {
     "esbuild": false

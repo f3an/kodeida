@@ -326,7 +326,7 @@ const DICT={
 "Котляревський, «Енеїда»":"Kotliarevsky, «Aeneid»","Франко, «Фарбований лис»":"Franko, «The Painted Fox»","Франко, «Лис Микита»":"Franko, «Mykyta the Fox»",
 "Енеїда · Світ 1":"Aeneid · World 1","Енеїда · Світ 2":"Aeneid · World 2","Франко · Світ 3":"Franko · World 3","Народна казка · Світ 4":"Folk tale · World 4","Квітка-Основ'яненко · Світ 5":"Kvitka-Osnovianenko · World 5","Енеїда · Світ 6":"Aeneid · World 6","Чумацькі пісні · Світ 7":"Chumak songs · World 7","Енеїда · Світ 8":"Aeneid · World 8","Енеїда · Світи 8–9":"Aeneid · Worlds 8–9","Леся Українка · Світ 10":"Lesya Ukrainka · World 10","Коцюбинський · Світ 11":"Kotsiubynsky · World 11","Легенда · Світ 12":"Legend · World 12","Енеїда · Світ 14":"Aeneid · World 14","Енеїда · онбординг":"Aeneid · onboarding",
 "Головний герой. Гравець завжди керує ним кодом.":"The main hero. The player always controls him with code.",
-"Оселедець закручений у дужку {. Головна впізнавана риса і основа логотипа.":"His Cossack forelock curls into a { brace — his signature look and the base of the logo.",
+"Козацький оселедець і вуса. Голова Енея — основа логотипа.":"A Cossack forelock and moustache. Aeneas’s head is the base of the logo.",
 "Вишиванка росте з гравцем: кожен уламок додає візерунок.":"His embroidered shirt grows with the player: every shard adds a pattern.",
 "Статний, руки в боки, шабля при боці.":"Broad-shouldered, hands on hips, sabre at his side.",
 "Основний":"Default","На старті":"At the start","Чиста сорочка, світ 0.":"Plain shirt, world 0.","У жупані":"In a zhupan","Холодні світи і мандри.":"Cold worlds and travel.","До бою":"Ready to fight","Фінальні задачі, двобій з Турном.":"Final problems, the duel with Turnus.","На бенкеті":"At the feast","Після кожного уламка.":"After every shard.",
@@ -545,6 +545,11 @@ const IS_ARTBOOK=document.body&&document.body.dataset.page==='artbook';
 try{LANG=localStorage.getItem('kd-lang')||((navigator.language||'').toLowerCase().startsWith('uk')?'uk':'en');}catch(e){LANG=(navigator.language||'').toLowerCase().startsWith('uk')?'uk':'en';}
 const T=s=>LANG==='en'?tr(s):s;
 globalThis.__kodeidaT=T;
+// для newart.js: додати підписи нового арту в словник і перекласти аркуші після завантаження
+globalThis.__kodeidaDict=DICT;
+/** Картинка нового арту з media/art/new (рендери з гри); ready() — уже завантажена. */
+function newArt(p){const i=new Image();i.src=`media/art/new/${p}.png`;return i;}
+const ready=i=>i&&i.complete&&i.naturalWidth>0;
 const UA=new WeakMap();
 function trNode(n){const v=n.nodeValue;if(n.__tr!==undefined&&v===n.__tr)return;UA.set(n,v);const m=v.match(/^(\s*)([\s\S]*?)(\s*)$/);const out=LANG==='en'?m[1]+tr(m[2])+m[3]:v;n.__tr=out;if(out!==v)n.nodeValue=out;}
 function retranslate(root){
@@ -553,6 +558,7 @@ function retranslate(root){
   root.querySelectorAll('[aria-label]').forEach(el=>{if(el.closest('.stash'))return;if(el.__ariaUA===undefined)el.__ariaUA=el.getAttribute('aria-label');el.setAttribute('aria-label',LANG==='en'?tr(el.__ariaUA):el.__ariaUA);});
   root.querySelectorAll('[title]').forEach(el=>{if(el.closest('.stash'))return;if(el.__titleUA===undefined)el.__titleUA=el.getAttribute('title');el.setAttribute('title',LANG==='en'?tr(el.__titleUA):el.__titleUA);});
 }
+globalThis.__kodeidaRetranslate=retranslate;
 const mo=new MutationObserver(ms=>{for(const m of ms){
   if(m.type==='characterData'){const n=m.target;if(n.parentElement&&!n.parentElement.closest('script,style,.stash'))trNode(n);}
   else m.addedNodes.forEach(a=>{if(a.nodeType===3){if(a.parentElement&&!a.parentElement.closest('.stash'))trNode(a);}else if(a.nodeType===1&&!a.closest('.stash'))retranslateLight(a);});}});
@@ -2001,7 +2007,7 @@ drawHero();scene(heroC,{interval:420,draw:drawHero});
 const WORLD_COLORS=ALL_WORLDS.map(w=>({n:w.n,name:w.foxName,col:w.fox}));
 const CHARS=[
   {id:'enei',cat:'heroes',name:'Еней',src:'Котляревський, «Енеїда»',role:'Головний герой. Гравець завжди керує ним кодом.',
-   bullets:['Оселедець закручений у дужку {. Головна впізнавана риса і основа логотипа.','Вишиванка росте з гравцем: кожен уламок додає візерунок.','Статний, руки в боки, шабля при боці.'],
+   bullets:['Козацький оселедець і вуса. Голова Енея — основа логотипа.','Вишиванка росте з гравцем: кожен уламок додає візерунок.','Статний, руки в боки, шабля при боці.'],
    vars:[{n:'Основний',m:()=>makeEnei(2),blink:()=>makeEnei(2,{blink:true})},{n:'На старті',note:'Чиста сорочка, світ 0.',m:()=>makeEnei(0)},{n:'У жупані',note:'Холодні світи і мандри.',m:()=>makeEnei(2,{coat:true})},{n:'До бою',note:'Фінальні задачі, двобій з Турном.',m:()=>makeEnei(2,{pose:'sabre'})},{n:'На бенкеті',note:'Після кожного уламка.',m:()=>makeEnei(2,{pose:'mug'})}]},
   {id:'fox',cat:'heroes',name:'Лис Микита',src:'Франко, «Фарбований лис»',role:'Маскот і помічник. Підказує, жартує, носить Книгу хитрощів.',
    bullets:['Поза своїм лісом олюднений чарами Писанки.','Кожен перехід між світами перефарбовує його. Оберіть колір нижче.','Білий кінчик хвоста блимає, як курсор.'],colors:true,
@@ -2183,7 +2189,8 @@ document.getElementById('j-prev').addEventListener('click',()=>jumpTo(active-1))
 document.getElementById('j-next').addEventListener('click',()=>jumpTo(active+1));
 let mapFrame=0,artFrameN=0;
 fillCard();drawMap(0);drawArt(0);
-scene(mapC,{interval:300,draw:f=>{mapFrame=f;drawMap(f);}});
+// як у грі: перемальовуємо щокадру, щоб кораблик плив плавно; хвилі й мітки — у своєму темпі (такт 300 мс)
+scene(mapC,{loop:1e6,rest:0,draw:t=>{const f=Math.floor(t*1000/300);mapFrame=f;drawMap(f);}});
 scene(jArt,{interval:70,draw:f=>{artFrameN=f;drawArt(Math.floor(f*70/170));}});
 
 /* ================= ІНТЕРФЕЙС: повний застосунок, анімація задачі ================= */
@@ -2218,18 +2225,23 @@ scene(jArt,{interval:70,draw:f=>{artFrameN=f;drawArt(Math.floor(f*70/170));}});
   const posts=[1,8,6,2,5,4,8,3,7],steps=[];{let L=0,R=8;while(L<R){steps.push([L,R]);if(posts[L]<posts[R])L++;else R--;}}
   const wc=$('world'),wolfC=$('wolf');
   const FOXP=makeFox('#9b3a87'),WOLFS=[makeWolf({drool:1}),makeWolf({drool:3})],DIDO=makeDido();
-  const X=i=>14+i*24;
+  // новий арт (як у грі): фон Карфагена й герої; поки картинки вантажаться — старі спрайти
+  const NA={bg:newArt('bg/carthage'),enei:newArt('chars/enei-se'),fox:newArt('chars/fox-sw-02'),wolf:newArt('chars/wolf'),dido:newArt('chars/dido')};
+  // як у грі: фон ×1,5 до спрайтів ×1 (у грі фон ×3, герої ×2), Дидона ліворуч, стовпи на піску
+  const NEW=()=>ready(NA.bg)&&ready(NA.enei)&&ready(NA.fox);
+  const X=i=>NEW()?84+i*25:14+i*24;
   function drawWorld(L,R,eL,eR,wh,f){
-    const W=220,H=150,ctx=setup(wc,W,H,true),sp=new Spr(W,H);
+    const nw=NEW(),W=nw?300:220,H=nw?195:150,ctx=setup(wc,W,H,true),sp=new Spr(W,H);
     for(let y=0;y<H;y++)for(let x=0;x<W;x++){sp.set(x,y,y<46?((y>28&&(x+y)%2)?'#9fd0ee':(y<28?'#6fb6e3':'#bfe0f2')):(y<52?((x+f)%14===0?'#9fd0ee':'#2f7fb8'):((x*7+y*3)%11===0?'#d4b073':'#e3c58e')));}
-    sp.draw(ctx,0,0,1);
-    for(let x=120;x<W;x++){const top=(x%10<6)?30:33;ctx.fillStyle=x>190?'#c9a466':'#d9b77a';ctx.fillRect(x,top,1,46-top);}
-    const g=136,U=10;
+    if(nw)ctx.drawImage(NA.bg,0,0,400,260,0,0,W,H);
+    else{sp.draw(ctx,0,0,1);for(let x=120;x<W;x++){const top=(x%10<6)?30:33;ctx.fillStyle=x>190?'#c9a466':'#d9b77a';ctx.fillRect(x,top,1,46-top);}}
+    const g=nw?186:136,U=nw?12:10;
+    if(nw&&ready(NA.dido))ctx.drawImage(NA.dido,4,g+2-NA.dido.height);
     if(wh>0){const x0=X(L)+5,x1=X(R);for(let x=x0;x<x1;x++)for(let y=Math.round(g-wh*U);y<g;y++)px(ctx,x,y,1,((x+y+f)%5===0)?'#7fc0e6':((x+y)%2?'#4b93c4':'#5aa0cf'));}
     posts.forEach((p,i)=>{const x=X(i),on=i===L||i===R;ctx.fillStyle=on?'#9a5e2c':'#6e4220';ctx.fillRect(x,g-p*U,5,p*U);ctx.fillStyle='#4e2e16';ctx.fillRect(x+4,g-p*U,1,p*U);ctx.fillStyle=on?'#f2d27a':GD;ctx.fillRect(x-1,g-p*U-2,7,2);});
     ctx.fillStyle='#b88a52';ctx.fillRect(0,g,W,3);ctx.fillStyle='#9c7040';ctx.fillRect(0,g+3,W,H-g-3);
-    ENEI_SCENE.draw(ctx,Math.round(eL-23),g-70+2,1);
-    FOXP.draw(ctx,Math.min(W-42,Math.round(eR-20)),g-58+2,1);
+    if(ready(NA.enei))ctx.drawImage(NA.enei,Math.round(eL-NA.enei.width/2),g+2-NA.enei.height);else ENEI_SCENE.draw(ctx,Math.round(eL-23),g-70+2,1);
+    if(ready(NA.fox))ctx.drawImage(NA.fox,Math.min(W-NA.fox.width,Math.round(eR-NA.fox.width/2)),g+2-NA.fox.height);else FOXP.draw(ctx,Math.min(W-42,Math.round(eR-20)),g-58+2,1);
     [[eL,'#2f55a0'],[eR,'#9b3a87']].forEach(([x,c])=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x)-3,3,7,3);ctx.fillRect(Math.round(x)-1,6,3,3);});
   }
   const cursor=$('cursor'),run=$('run');
@@ -2259,7 +2271,7 @@ scene(jArt,{interval:70,draw:f=>{artFrameN=f;drawArt(Math.floor(f*70/170));}});
     let pi=0,pj=1,c=0;outer:for(let i=0;i<9;i++)for(let j=i+1;j<9;j++){if(c++===pairs){pi=i;pj=j;break outer;}}
     $('wtry').textContent=t<1.5?'чекає':(wp<1?`пробує (${pi}, ${pj})…`:'n = 100 000: не встиг');
     $('wtry').classList.toggle('bad',wp>=1||t>11.4);
-    const ctxW=setup(wolfC,48,66,true);WOLFS[Math.floor(t*3)%2].draw(ctxW,0,0,1);
+    const ctxW=setup(wolfC,48,66,true);if(ready(NA.wolf)){const k=Math.min(48/NA.wolf.width,66/NA.wolf.height);ctxW.drawImage(NA.wolf,Math.round((48-NA.wolf.width*k)/2),Math.round(66-NA.wolf.height*k),NA.wolf.width*k,NA.wolf.height*k);}else WOLFS[Math.floor(t*3)%2].draw(ctxW,0,0,1);
     $('ebar').style.width=(100*clamp(prog(t,1.5,9.5)*8/36)).toFixed(1)+'%';$('ecount').textContent=(t<1.5?0:Math.min(8,kk+1))+' кроків';
     // 9.6–11.5 тести по одному
     trs.forEach((r,i)=>{const p=prog(t,9.7+i*0.35,9.9+i*0.35);r.classList.toggle('ok',p>=1);r.querySelector('.ck').textContent=p>=1?'✓':'·';r.style.transform=`translateX(${lerp(-8,0,easeOut(p))}px)`;});
@@ -2561,17 +2573,20 @@ function buildFrames(sh,st){
 (function(){
   const c=document.getElementById('boss');if(!c)return;
   const E=makeEnei(2,{pose:'sabre'}),T=makeTurn(),J=makeJuno();
+  // новий арт: захід сонця над Лаціумом (фон світу 15), Еней із шаблею, Турн і привид Юнони
+  const NA={bg:newArt('bg/world-15'),enei:newArt('chars/enei-sabre'),turn:newArt('chars/turn-final'),juno:newArt('chars/juno')};
   const hpT=document.getElementById('hp-turn'),hpE=document.getElementById('hp-enei'),tm=document.getElementById('boss-timer'),tasks=[...document.querySelectorAll('.bt')],banner=document.getElementById('boss-banner'),hit=document.getElementById('boss-hit');
   const HITS=[3,6,9,11.2];
   const draw=t=>{
     const W=400,H=220,ctx=setup(c,W,H,true),sp=new Spr(200,110);
     sky(sp,['#2a1430','#7a2e3a','#e0794a'],0,74);for(let y=74;y<110;y++)for(let x=0;x<200;x++)sp.set(x,y,(x+y)%6===0?'#5a3a22':'#6b4a2a');
-    sp.fill(ell(100,74,18,18).filter(([x,y])=>y<74),'#ffcf7a');sp.draw(ctx,0,0,2);
-    ctx.globalAlpha=0.32;J.draw(ctx,250,-58+Math.round(Math.sin(t)*3),2);ctx.globalAlpha=1;
+    sp.fill(ell(100,74,18,18).filter(([x,y])=>y<74),'#ffcf7a');
+    if(ready(NA.bg))ctx.drawImage(NA.bg,0,20,400,240,0,0,W,H);else sp.draw(ctx,0,0,2);
+    ctx.globalAlpha=0.32;if(ready(NA.juno))ctx.drawImage(NA.juno,250,-40+Math.round(Math.sin(t)*3),NA.juno.width*2,NA.juno.height*2);else J.draw(ctx,250,-58+Math.round(Math.sin(t)*3),2);ctx.globalAlpha=1;
     const k=HITS.filter(h=>t>=h).length,last=HITS.filter(h=>t>=h).pop(),since=last!==undefined?t-last:9;
     const shake=since<0.3?Math.round(Math.sin(since*80)*3):0,lunge=since<0.35?Math.sin(since/0.35*Math.PI)*60:0;
-    E.draw(ctx,40+lunge,220-148,2);
-    if(k<4||since<0.6){ctx.globalAlpha=k>=4?1-since/0.6:1;T.draw(ctx,270+shake,220-152,2);ctx.globalAlpha=1;}
+    if(ready(NA.enei))ctx.drawImage(NA.enei,40+lunge,H-6-NA.enei.height*2,NA.enei.width*2,NA.enei.height*2);else E.draw(ctx,40+lunge,220-148,2);
+    if(k<4||since<0.6){ctx.globalAlpha=k>=4?1-since/0.6:1;if(ready(NA.turn))ctx.drawImage(NA.turn,280+shake,H-6-NA.turn.height*2,NA.turn.width*2,NA.turn.height*2);else T.draw(ctx,270+shake,220-152,2);ctx.globalAlpha=1;}
     if(since<0.25){ctx.fillStyle='rgba(255,240,200,.55)';ctx.fillRect(0,0,W,H);}
     hpT.style.width=(100-25*k)+'%';hpE.style.width=(100-6*Math.floor(t/2.5))+'%';
     const left=Math.max(0,30*60-Math.floor(t*95));tm.textContent=`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;

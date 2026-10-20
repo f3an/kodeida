@@ -328,7 +328,7 @@ const DICT={
 "Котляревський, «Енеїда»":"Kotliarevsky, «Aeneid»","Франко, «Фарбований лис»":"Franko, «The Painted Fox»","Франко, «Лис Микита»":"Franko, «Mykyta the Fox»",
 "Енеїда · Світ 1":"Aeneid · World 1","Енеїда · Світ 2":"Aeneid · World 2","Франко · Світ 3":"Franko · World 3","Народна казка · Світ 4":"Folk tale · World 4","Квітка-Основ'яненко · Світ 5":"Kvitka-Osnovianenko · World 5","Енеїда · Світ 6":"Aeneid · World 6","Чумацькі пісні · Світ 7":"Chumak songs · World 7","Енеїда · Світ 8":"Aeneid · World 8","Енеїда · Світи 8–9":"Aeneid · Worlds 8–9","Леся Українка · Світ 10":"Lesya Ukrainka · World 10","Коцюбинський · Світ 11":"Kotsiubynsky · World 11","Легенда · Світ 12":"Legend · World 12","Енеїда · Світ 14":"Aeneid · World 14","Енеїда · онбординг":"Aeneid · onboarding",
 "Головний герой. Гравець завжди керує ним кодом.":"The main hero. The player always controls him with code.",
-"Оселедець закручений у дужку {. Головна впізнавана риса і основа логотипа.":"His Cossack forelock curls into a { brace — his signature look and the base of the logo.",
+"Козацький оселедець і вуса. Голова Енея — основа логотипа.":"A Cossack forelock and moustache. Aeneas’s head is the base of the logo.",
 "Вишиванка росте з гравцем: кожен уламок додає візерунок.":"His embroidered shirt grows with the player: every shard adds a pattern.",
 "Статний, руки в боки, шабля при боці.":"Broad-shouldered, hands on hips, sabre at his side.",
 "Основний":"Default","На старті":"At the start","Чиста сорочка, світ 0.":"Plain shirt, world 0.","У жупані":"In a zhupan","Холодні світи і мандри.":"Cold worlds and travel.","До бою":"Ready to fight","Фінальні задачі, двобій з Турном.":"Final problems, the duel with Turnus.","На бенкеті":"At the feast","Після кожного уламка.":"After every shard.",
@@ -351,6 +351,25 @@ const DICT={
 "Цариця Карфагена з волячою шкурою.":"Queen of Carthage with an ox hide.","Задача Дидони = Container With Most Water.":"Dido's problem = Container With Most War."
 };
 DICT["Задача Дидони = Container With Most Water."]="Dido's problem = Container With Most Water.";
+DICT["Еволюція"]="Evolution";
+DICT["Аркуш 11 · Як розвивався арт"]="Sheet 11 · How the art evolved";
+DICT["Від першого спрайта до світла й руху"]="From the first sprite to light and motion";
+DICT["Арт малюється кодом, тож кожне покращення одразу проходить крізь усіх героїв і всі світи. Потягни повзунок, щоб порівняти, як було і як стало."]="The art is drawn by code, so every improvement runs through all the heroes and worlds at once. Drag the slider to compare before and after.";
+DICT["До"]="Before";
+DICT["Після"]="After";
+DICT["До і після"]="Before and after";
+DICT["Сирий спрайт"]="Raw sprite";
+DICT["HD · до"]="HD · before";
+DICT["HD · після"]="HD · after";
+DICT["Сирий спрайт Енея"]="Aeneas’s raw sprite";
+DICT["Зсув відтінку"]="Hue shift";
+DICT["Світло тепліє до кремового, тінь холоднішає до фіолетового, а не просто біліє чи чорніє."]="Light warms towards cream and shadow cools towards violet, instead of just going white or black.";
+DICT["Вибірковий контур"]="Selective outline";
+DICT["Зі світлого боку контур м'якший, з тіньового — глибокий."]="The outline is softer on the lit side and deep on the shadow side.";
+DICT["Свічення"]="Glow";
+DICT["Піксельні кільця з кроком 2 px, без розмиття: сонця, місяць, вогнища, кузня."]="Pixel rings in 2 px steps, no blur: suns, the moon, campfires, the forge.";
+DICT["Небо й рух"]="Sky and motion";
+DICT["Дизеринг Байєра замість смуг, мерехтливі зірки, хода на 4 кадри."]="Bayer dithering instead of bands, twinkling stars, a 4-frame walk.";
 DICT["Фішки"]="Features";
 DICT["Колобок"]="The Bun";
 DICT["Дід і ріпка"]="Grandpa and the turnip";

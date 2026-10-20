@@ -10,7 +10,7 @@ import { Download, LaunchEnd, More, NewAbc, NewWorlds, Playtest, Release, Ship }
 
 export type LaunchProps = { readonly lang: Lang };
 
-/* Відео до релізу v0.3: відправка → «Вийшла» → що нового → завантаження → плейтест. */
+/* Відео до релізу: відправка → «Вийшла» → що нового → завантаження → плейтест. */
 export const Launch: React.FC<LaunchProps> = ({ lang }) => (
   <AbsoluteFill style={{ background: '#000' }}>
     <Track name="Scenes">

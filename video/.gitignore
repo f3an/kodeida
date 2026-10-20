@@ -6,6 +6,7 @@ dist
 # Ignore the output video from Git but not videos you import into src/.
 out
 
-# Згенероване й завантажене: відтворюється скриптами
+# Згенероване й завантажене: відтворюється скриптами (art — npm run art)
 public/*.wav
 public/*.mp4
+public/art

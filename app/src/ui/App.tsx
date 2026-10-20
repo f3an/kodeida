@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { LevelScreen } from './LevelScreen.tsx';
 import { MapScreen } from './MapScreen.tsx';
 import { VoyageScreen } from './Voyage.tsx';
 import { AbetkaScreen } from './Abetka.tsx';
+// dev-панель вантажиться лише під `vite dev` — у збірку гри вона не потрапляє
+const DevScreen = import.meta.env.DEV ? lazy(() => import('./DevScreen.tsx').then((m) => ({ default: m.DevScreen }))) : null;
 import { ABC_INTRO, ABC_TO_TROY, ALGO_INTRO } from './story.ts';
 import type { Lang } from '../engine/types.ts';
 import { Menu, StartScreen, Onboarding, BookScreen, ShirtScreen, SettingsScreen, updateText, INTRO_SCENES, DEPARTURE_SCENES } from './screens.tsx';
@@ -14,8 +16,10 @@ import { setUiLang, L } from '../i18n.ts';
 import { wt } from '../levels/text.ts';
 
 export type Screen =
-  | { name: 'menu' } | { name: 'onboarding'; story?: Story } | { name: 'departure' } | { name: 'voyage'; from: number } | { name: 'map' } | { name: 'level'; id: string }
-  | { name: 'book' } | { name: 'shirt' } | { name: 'settings' } | { name: 'abetka'; lang?: Lang } | { name: 'start' };
+  | { name: 'menu' } | { name: 'onboarding'; story?: Story } | { name: 'departure' } | { name: 'voyage'; from: number; dev?: boolean } | { name: 'map' } | { name: 'level'; id: string }
+  | { name: 'book' } | { name: 'shirt' } | { name: 'settings' } | { name: 'abetka'; lang?: Lang } | { name: 'start' }
+  /* лише dev: панель і перегляд будь-якої заставки без зміни прогресу */
+  | { name: 'dev' } | { name: 'cutscene'; scenes: number[] };
 
 /** Смуга, за яку тягнуть вікно на екранах без панелі заголовка (меню, заставки). */
 /** Вступи для різних шляхів. */
@@ -29,13 +33,19 @@ export function App() {
   const [settings, setSettings] = useSettings();
   const updates = useUpdates();
   setUiLang(settings.ui);
-  const [screen, setScreen] = useState<Screen>(() => load<Screen>('screen', { name: 'menu' }));
+  const [screen, setScreen] = useState<Screen>(() => {
+    const s = load<Screen>('screen', { name: 'menu' });
+    return !import.meta.env.DEV && (s.name === 'dev' || s.name === 'cutscene') ? { name: 'menu' } : s;
+  });
   useEffect(() => save('screen', screen), [screen]);
   // меню застосунку й діалоги оновлень говорять мовою гри
   useEffect(() => { bridge?.setLang?.(settings.ui); }, [settings.ui]);
   // платформа для стилів вікна: місце під «світлофор» macOS і кнопки Windows
   useEffect(() => { document.body.dataset.platform = bridge?.platform ?? 'web'; }, []);
   const go = (s: Screen) => setScreen(s);
+  // список вправ ліворуч схований і виїжджає, коли навести на ліве меню; клік по ☰ закріплює його (пам'ятаємо вибір)
+  const [sideOpen, setSideOpen] = useState<boolean>(() => load<boolean>('side.pinned', false));
+  useEffect(() => save('side.pinned', sideOpen), [sideOpen]);
   // «Абетка» пам'ятає обрану мову
   const [abcLang, setAbcLang] = useState<Lang>(() => load<Lang>('abetka.lang', 'py'));
   useEffect(() => save('abetka.lang', abcLang), [abcLang]);
@@ -77,13 +87,19 @@ export function App() {
     return <><DragStrip /><Onboarding scenes={DEPARTURE_SCENES} finishLabel={L('До мапи світів ▸', 'To the world map ▸')} onDone={sail} /></>;
   }
 
+  if (screen.name === 'cutscene') {
+    const back = () => go({ name: 'dev' });
+    return <><DragStrip /><Onboarding key={screen.scenes.join()} scenes={screen.scenes} finishLabel="До dev-панелі ▸" onDone={back} onSkip={back} /></>;
+  }
+  if (screen.name === 'voyage' && screen.dev) return <><DragStrip /><VoyageScreen key={screen.from} from={screen.from} onDone={() => go({ name: 'dev' })} /></>;
+
   if (screen.name === 'voyage') {
     // після заставки — перша вправа нового світу; позначаємо, що дорогу вже бачили
     const arrive = () => { setProgress((p) => ({ ...p, voyages: [...new Set([...(p.voyages ?? []), screen.from])] })); go({ name: 'level', id: worlds[screen.from + 1].levels[0].id }); };
     return <><DragStrip /><VoyageScreen from={screen.from} onDone={arrive} /></>;
   }
 
-  const nav: [Screen['name'], string, string][] = [['level', '☰', L('Вправи', 'Exercises')], ['map', '◈', L('Мапа світів', 'World map')], ['abetka', L('А', 'A'), L('Абетка: мова з нуля', 'The ABC: a language from scratch')], ['book', '✦', L('Книга хитрощів', 'Book of Tricks')], ['shirt', '✚', L('Вишиванка', 'Embroidered shirt')], ['settings', '⚙', L('Налаштування', 'Settings')]];
+  const nav: [Screen['name'], string, string][] = [['level', '☰', L('Вправи', 'Exercises')], ['map', '◈', L('Мапа світів', 'World map')], ['abetka', L('А', 'A'), L('Абетка: мова з нуля', 'The ABC: a language from scratch')], ['book', '✦', L('Книга хитрощів', 'Book of Tricks')], ['shirt', '✚', L('Вишиванка', 'Embroidered shirt')], ['settings', '⚙', L('Налаштування', 'Settings')], ...(import.meta.env.DEV ? [['dev', '🛠', 'Dev'] as [Screen['name'], string, string]] : [])];
   const lastLevel = level?.id ?? progress.last ?? worlds[0].levels[0].id;
   const showUpdate = updates && ['available', 'downloading', 'preparing', 'downloaded', 'installing'].includes(updates.stage);
 
@@ -100,11 +116,11 @@ export function App() {
           </span>
         )}
       </header>
-      <div className={`body${level ? '' : ' page-body'}`}>
+      <div className={`body${level ? '' : ' page-body'}${level && !sideOpen ? ' side-closed' : ''}`}>
         <nav className="act" aria-label={L('Розділи', 'Sections')}>
           {nav.map(([name, icon, title]) => (
-            <button key={name} title={title} aria-label={title} className={screen.name === name ? 'on' : ''} aria-current={screen.name === name ? 'page' : undefined}
-              onClick={() => go(name === 'level' ? { name: 'level', id: lastLevel } : ({ name } as Screen))}>{icon}</button>
+            <button key={name} title={name === 'level' && level ? (sideOpen ? L('Відкріпити список вправ', 'Unpin the exercise list') : L('Закріпити список вправ', 'Pin the exercise list')) : title} aria-label={title} aria-expanded={name === 'level' && level ? sideOpen : undefined} className={screen.name === name ? 'on' : ''} aria-current={screen.name === name ? 'page' : undefined}
+              onClick={() => (name === 'level' && level ? setSideOpen((o) => !o) : go(name === 'level' ? { name: 'level', id: lastLevel } : ({ name } as Screen)))}>{icon}</button>
           ))}
         </nav>
         {level && (
@@ -115,6 +131,7 @@ export function App() {
         {screen.name === 'map' && <MapScreen progress={progress} go={go} />}
         {screen.name === 'book' && <BookScreen progress={progress} />}
         {screen.name === 'shirt' && <ShirtScreen progress={progress} />}
+        {screen.name === 'dev' && DevScreen && <Suspense><DevScreen go={go} /></Suspense>}
         {screen.name === 'settings' && <SettingsScreen settings={settings} setSettings={setSettings} updates={updates} onReset={reset} go={go} progress={progress} />}
       </div>
     </div>

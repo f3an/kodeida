@@ -5,6 +5,7 @@
  */
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PixelCanvas } from './PixelCanvas.tsx';
+import { portraitFrames } from '../world/art.ts';
 import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod, makeAnchises, makeTrojan, makeLion, makeMitten, makeSotnyk, makeAcestes, makeOx, makeCharon } from '../world/sprites.js';
 
 export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon';
@@ -14,6 +15,9 @@ type Sprite = { w: number; h: number; draw: (...a: unknown[]) => void };
 const cache = new Map<string, Sprite[]>();
 /** Два кадри на персонажа: звичайний і «кліп» — так портрет живе, поки говорить. */
 function frames(who: Speaker, fox: string): Sprite[] {
+  // новий арт (PNG); поки він не завантажений — старі спрайти нижче
+  const art = portraitFrames(who, fox);
+  if (art) return art as unknown as Sprite[];
   const key = who === 'fox' ? `fox:${fox}` : who;
   if (cache.has(key)) return cache.get(key)!;
   const f: Sprite[] = (() => {
@@ -80,7 +84,7 @@ export function Speech({ who, name, text, tone, fox, seq, enter, action }: Props
   const talking = shown < text.length;
   const spr = frames(who, fox);
   const draw = (ctx: CanvasRenderingContext2D, f: number) => {
-    const s = spr[talking ? f % 2 : f % 23 === 0 ? 1 : 0];
+    const s = spr[talking ? f % 2 : 0];
     // погруддя: голова й плечі, по центру рамки
     // широкі спрайти (рукавичка) малюємо вдвічі менше, щоб вмістилися в рамку портрета
     const scale = s.w > 60 ? 1 : 2, w = s.w * scale;

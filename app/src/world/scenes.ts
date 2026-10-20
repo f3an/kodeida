@@ -8,9 +8,13 @@ import type { SceneSpec } from '../engine/level.ts';
 import type { StreetCell, WorldEvent } from '../engine/types.ts';
 import { L } from '../i18n.ts';
 import { paintTroyNight } from '../ui/story.ts';
+import { drawBgFx } from './bgfx.ts';
+import { eneiFrames, foxFrames, crewFrames, CREW_ART, worldBg, still, mirror, artImage, TALE_ART, TALE_BG, type ArtSprite } from './art.ts';
 import { makeSibyl, makeDido, makeEnei, makeFox, makeWolf, makeEol, makeAnchises, Spr, hash, ruins, sky, sea, drawSack, TROJANS, artOf, fxLayer, pixelGlow, walkCycle, breathCycle, makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk } from './sprites.js';
 
 export const W = 600, H = 390;
+/** Світи, де холодно: Еней у жупані (Рукавичка). */
+export const COLD_WORLDS = [4];
 
 export type Actor = 'heroes' | 'wolf';
 
@@ -30,6 +34,40 @@ const ENEI = makeEnei(1), ENEI_BLINK = makeEnei(1, { blink: true });
 const WOLF = makeWolf({ drool: 2 });
 const SIBYL = makeSibyl();
 /** Герої казок «Абетки», по одному на розділ (розділ 1 — Колобок, він котиться окремо). */
+/** Хто з'являється в задачах розділу «Абетки», за вправами (індекс — номер вправи в розділі). */
+const TALE_CAST: Record<string, string[][]> = {
+  kolobok: [[], [], ['zayets', 'wolf', 'vedmid'], ['zayets', 'wolf', 'vedmid', 'fox']],
+  ripka: [['babka'], ['babka', 'onuchka', 'zhuchka'], ['babka', 'onuchka', 'zhuchka', 'kishka', 'myshka'], ['babka', 'onuchka', 'zhuchka', 'kishka', 'myshka']],
+  horoshko: [[], ['zmiy'], ['zmiy'], ['zmiy']],
+  koza: [[], ['zayets', 'wolf', 'rak'], ['zayets', 'wolf', 'vedmid'], ['zayets', 'rak']],
+  bychok: [[], ['vedmid'], ['did', 'babka'], ['vedmid', 'wolf', 'zayets']],
+  kotsky: [['wolf', 'kaban', 'zayets'], ['wolf', 'vedmid', 'zayets'], ['wolf', 'kaban', 'zayets'], ['wolf', 'vedmid', 'kaban']],
+  lysychka: [['komora'], ['komora'], ['komora'], ['wolf', 'zayets']],
+  telesyk: [['mama'], ['mama'], ['mama', 'vidma'], ['mama', 'vidma', 'gusy']],
+};
+/** Імена в рядках виводу → персонаж: «Привіт, Заєць!» приводить зайця, а не наступного в списку. */
+const CAST_NAMES: [RegExp, string][] = [
+  [/за[єй]ц|зайчик|hare|bunny/i, 'zayets'], [/вовк|wolf/i, 'wolf'], [/ведмід|ведмед|bear/i, 'vedmid'], [/лис|fox/i, 'fox'],
+  [/баб|grandma/i, 'babka'], [/онук|внучк|granddaughter/i, 'onuchka'], [/жучк|dog/i, 'zhuchka'], [/кішк|кіт|cat/i, 'kishka'],
+  [/мишк|mouse/i, 'myshka'], [/змі[йя]|dragon/i, 'zmiy'], [/кабан|boar/i, 'kaban'], [/\bрак|crayfish|crab/i, 'rak'],
+  [/мам|мати|mother|mom/i, 'mama'], [/відьм|witch/i, 'vidma'], [/гус|geese|goose/i, 'gusy'], [/\bдід|grandpa/i, 'did'],
+];
+/** Хто вийшов на сцену: по одному на кожен рядок сувою — названий у рядку (лише з героїв цієї казки), інакше наступний зі списку вправи. */
+function castFor(list: string[], tale: string[], lines: string[]): string[] {
+  const out: string[] = [];
+  for (const line of lines) {
+    const named = CAST_NAMES.find(([re, who]) => tale.includes(who) && re.test(line) && !out.includes(who))?.[1];
+    const next = named ?? list.find((who) => !out.includes(who));
+    if (next) out.push(next);
+  }
+  return out;
+}
+/** Звір чи персонаж казки дивиться ліворуч — на героя; дикі вовк і лис намальовані праворуч, тож дзеркалимо. */
+function castSprite(who: string): ArtSprite | null {
+  if (who === 'wolf' || who === 'fox') { const s = still(`cut/${who}Wild-E`); return s ? mirror(s) : null; }
+  return still(`tales/${who}`);
+}
+
 const TALE_HEROES: (() => Sprite)[] = [makeRipka, makeKotyhoroshko, makeGoat, makeStrawBull, makeKotsky, makeVixen, makeIvasyk];
 const CREW = TROJANS.map((trojan, i) => i === 2 ? makeAnchises() : trojan);
 const foxes = new Map<string, [Sprite, Sprite]>();
@@ -49,6 +87,14 @@ abstract class SceneBase {
   protected crew = 0;
   /** Світ, чиї частинки й світло живуть поверх фону (як на мапі світів); -1 — без них. */
   protected ambient = -1;
+  /** Живі ефекти нового фону (bgfx.ts): ключ фону, напр. 'world-05'; без нього — старі ефекти світу. */
+  protected fxKey: string | null = null;
+  /** Передній шар ефектів поверх сцени; false — усе за сценою (Абетка: сніг не має сипатися на текст сувою). */
+  protected fxOnTop = true;
+  /** Кадр Енея, що перекриває ходу й спокій (підбирає мішок тощо). */
+  protected eneiPose: ArtSprite | null = null;
+  /** Холодний світ: Еней у жупані. */
+  protected cold = false;
   /** Реакція на вердикт: помилка — червоний спалах і тремтіння, перемога — стрибок та іскри. */
   private fx: { kind: 'fail' | 'win'; at: number } | null = null;
   private acc = 0;
@@ -119,10 +165,12 @@ abstract class SceneBase {
 
   /** Частинки й світло світу. Ефекти описано для полотна 400×260, тож масштабуємо до сцени. */
   private ambientLayer(now: number, which: 'back' | 'front') {
-    if (this.ambient < 0) return;
-    const c = this.ctx;
+    if (this.ambient < 0 && !this.fxKey) return;
+    const c = this.ctx, t = this.reduced ? 0 : now / 1000;
     c.save(); c.scale(W / 400, H / 260);
-    fxLayer(c, this.ambient, this.reduced ? 0 : now / 1000, which, true);
+    // новий фон має свої живі ефекти (під його місяць, вогнища, воду); старий — ефекти світу з sprites.js
+    const layers: ('back' | 'front')[] = this.fxOnTop ? [which] : which === 'back' ? ['back', 'front'] : [];
+    for (const l of layers) if (!(this.fxKey && worldBg(0) && drawBgFx(c, this.fxKey, t, l)) && this.ambient >= 0) fxLayer(c, this.ambient, t, l, true);
     c.restore();
   }
 
@@ -162,13 +210,19 @@ abstract class SceneBase {
     const c = this.ctx, t = this.reduced ? 0 : now / 1000;
     // помилка: Еней тремтить і над ним «!»; перемога: Еней підстрибує
     const fail = this.fxPhase(now, 'fail', 900), win = this.fxPhase(now, 'win', 900);
+    const moving = (w: Walker) => !this.reduced && Math.abs(w.tx - w.x) > 1;
+    /* новий арт: кадр анімації за часом; стрибок перемоги — за фазою ефекту (у кадрах уже є підскок) */
+    const at = (fr: ArtSprite[] | null, fps: number) => (fr ? fr[this.reduced ? 0 : Math.floor(t * fps) % fr.length] : null);
+    const jump = win >= 0 && !this.reduced ? eneiFrames('jump', false, this.cold) : null;
+    const eneiArt = this.eneiPose ?? (jump ? jump[Math.min(jump.length - 1, Math.floor(win * jump.length))]
+      : at(eneiFrames(moving(enei) ? 'walk' : 'idle', false, this.cold), moving(enei) ? 10 : 2.5));
     if (fail >= 0 || win >= 0) {
       enei = { ...enei };
       if (fail >= 0 && !this.reduced) enei.x += Math.round(Math.sin(fail * 40) * 5 * (1 - fail));
-      if (win >= 0 && !this.reduced) enei.y -= Math.round(Math.abs(Math.sin(win * Math.PI * 2)) * 18);
+      if (win >= 0 && !this.reduced && !jump) enei.y -= Math.round(Math.abs(Math.sin(win * Math.PI * 2)) * 18);
     }
     if (fail >= 0 && !wolf) {
-      const bx = Math.round(enei.x - 8), by = Math.round(enei.y - ENEI.h * 2 - 34 - Math.sin(fail * Math.PI) * 6);
+      const bx = Math.round(enei.x - 8), by = Math.round(enei.y - (eneiArt ?? ENEI).h * 2 - 34 - Math.sin(fail * Math.PI) * 6);
       c.fillStyle = '#1f1b16'; c.fillRect(bx - 2, by - 2, 24, 28);
       c.fillStyle = '#b3202a'; c.fillRect(bx, by, 20, 24);
       c.fillStyle = '#ffffff'; c.fillRect(bx + 8, by + 4, 4, 10); c.fillRect(bx + 8, by + 17, 4, 4);
@@ -180,17 +234,25 @@ abstract class SceneBase {
       if (Math.abs(w.tx - w.x) > 1) { const [s, dy] = (walkCycle(spr, hip, mid) as [Sprite, number][])[Math.floor(t * 8) % 4]; return [s, dy * 2]; }
       return [(breathCycle(spr, hip) as Sprite[])[Math.floor(t / 1.1) % 2], 0];
     };
-    if (wolf) { drawFacing(c, WOLF, enei.x - WOLF.w, enei.y - WOLF.h * 2 - bob(enei), enei.face); return; }
+    if (wolf) { const wf = (still('cast/wolf-SE') ?? WOLF) as Sprite; drawFacing(c, wf, enei.x - wf.w, enei.y - wf.h * 2 - bob(enei), enei.face); return; }
     // ватага йде слідом за Енеєм
     for (let k = this.crew - 1; k >= 0; k--) {
-      const tj = CREW[k] as Sprite, x = Math.max(tj.w * 2 + 4 + (this.crew - 1 - k) * 34, enei.x - ENEI.w - 28 - k * 40);
-      // ледь помітне «дихання» (~4 с), кожен у своїй фазі — без смикання
-      tj.draw(c, Math.round(x - tj.w * 2), Math.round(enei.y - tj.h * 2 + Math.sin(t * 1.6 + k * 1.3)), 2);
+      const art = at(crewFrames(CREW_ART[k], moving(enei)), 10 + k);
+      const tj = (art ?? CREW[k]) as Sprite, x = Math.max(tj.w * 2 + 4 + (this.crew - 1 - k) * 34, enei.x - (eneiArt ?? ENEI).w - 28 - k * 40);
+      // у спокої стоять статично
+      tj.draw(c, Math.round(x - tj.w * 2), Math.round(enei.y - tj.h * 2), 2);
     }
-    const blink = Math.floor(t * 10) % 37 === 0;
-    const [es, edy] = pose(enei, blink ? ENEI_BLINK : ENEI, 50, 23);
-    drawFacing(c, es, enei.x - ENEI.w, enei.y - ENEI.h * 2 + edy, 1);
-    if (fox) { const [a, b] = foxOf(this.fox); const [fs, fdy] = pose(fox, Math.floor(t) % 2 ? b : a, 44, 18); drawFacing(c, fs, fox.x - a.w, fox.y - a.h * 2 + fdy, 1); }
+    if (eneiArt) drawFacing(c, eneiArt as unknown as Sprite, enei.x - eneiArt.w, enei.y - eneiArt.h * 2, 1);
+    else {
+      const blink = Math.floor(t * 10) % 37 === 0;
+      const [es, edy] = pose(enei, blink ? ENEI_BLINK : ENEI, 50, 23);
+      drawFacing(c, es, enei.x - ENEI.w, enei.y - ENEI.h * 2 + edy, 1);
+    }
+    if (fox) {
+      const fa = at(foxFrames(this.fox, moving(fox) ? 'walk' : 'idle'), moving(fox) ? 10 : 2.5);
+      if (fa) drawFacing(c, fa as unknown as Sprite, fox.x - fa.w, fox.y - fa.h * 2, 1);
+      else { const [a, b] = foxOf(this.fox); const [fs, fdy] = pose(fox, Math.floor(t) % 2 ? b : a, 44, 18); drawFacing(c, fs, fox.x - a.w, fox.y - a.h * 2 + fdy, 1); }
+    }
   }
 
   protected crewLabel() {
@@ -244,6 +306,8 @@ export class ArrayScene extends SceneBase {
     super(canvas, onState, fox);
     paintBackground(this.bg.getContext('2d')!, world, skin);
     this.ambient = world;
+    this.fxKey = skin === 'post' ? 'carthage' : `world-${String(world).padStart(2, '0')}`;
+    this.cold = COLD_WORLDS.includes(world);
     // Микита стоїть праворуч від останнього предмета — лишаємо йому місце
     if (mode !== 'scan') this.x1 = W - 80;
     if (world === 1) { this.base = 300; this.path = 386; }
@@ -356,10 +420,16 @@ export class ArrayScene extends SceneBase {
     }
     overlay?.();
 
-    if (this.world === 2) { const d = makeDidoOnce(); d.draw(c, 4, this.path - d.h * 2, 2); }
-    if (this.world >= 3) { const a = artOf(this.world); if (a.npc) { const k = a.npc.w > 60 ? 1 : 2; a.npc.draw(c, 6, this.path - a.npc.h * k, k); } }
+    if (this.world === 2) { const d = (still('cast/dido') ?? makeDidoOnce()) as Sprite; d.draw(c, 4, this.path - d.h * 2, 2); }
+    if (this.world >= 3) {
+      // мешканець світу: новий арт ×2 (стоїть ліворуч, тож дивиться праворуч — на сцену), інакше старий спрайт
+      const art = still(`npc/w${this.world}`);
+      if (art) mirror(art).draw(c, 6, this.path - art.h * 2, 2);
+      else { const a = artOf(this.world); if (a.npc) { const k = a.npc.w > 60 ? 1 : 2; a.npc.draw(c, 6, this.path - a.npc.h * k, k); } }
+    }
     if (this.mem.size || this.memTouch) this.drawChest(now);
-    if (this.world === 1) { const e = makeEolOnce(); e.draw(c, 18, 26 + Math.round(Math.sin(t * 1.5) * 3), 2); }
+    // Еол сидить на хмарі ліворуч і дивиться на море
+    if (this.world === 1) { const art = still('cast/eol'); const e = (art ? mirror(art) : makeEolOnce()) as Sprite; e.draw(c, 18, 26, 2); }
     this.drawHeroes(now, this.enei, this.actor === 'wolf' ? null : this.foxW, this.actor === 'wolf');
 
     if (this.result && this.k >= this.events.length) {
@@ -502,7 +572,7 @@ export class ArrayScene extends SceneBase {
       }
       case 'stone': default: {
         const word = typeof v === 'string';
-        if (word && (v === 'троянець' || v === 'trojan')) { const tj = TROJANS[i % TROJANS.length] as Sprite; tj.draw(c, x + 3 - tj.w / 2, base - tj.h, 1); }
+        if (word && (v === 'троянець' || v === 'trojan')) { const tj = (crewFrames(CREW_ART[i % 4], false)?.[0] ?? TROJANS[i % TROJANS.length]) as Sprite; tj.draw(c, x + 3 - tj.w / 2, base - tj.h, 1); }
         else if (word && (v === 'мішок' || v === 'sack')) { drawSack(c, x + 3, base); }
         else if (word && (v === 'попіл' || v === 'ash')) { c.fillStyle = '#4a4440'; c.fillRect(x - 9, base - 8, 24, 8); c.fillStyle = '#6a625c'; c.fillRect(x - 5, base - 13, 16, 5); c.fillStyle = '#f08a2a'; if (Math.floor(t * 3 + i) % 2) c.fillRect(x + 1, base - 15, 2, 2); }
         else {
@@ -538,6 +608,8 @@ export class StreetScene extends SceneBase {
   private enei: Walker = { x: 0, tx: 0, y: 0, ty: 0, face: 1 };
   private foxW: Walker = { x: 0, tx: 0, y: 0, ty: 0, face: -1 };
   private jumpAt = 0;
+  /** Коли Еней підняв мішок: грає анімація підбору. */
+  private takeAt = 0;
   private x0 = 70; private x1 = W - 170;
   private ground = 360;
 
@@ -545,6 +617,7 @@ export class StreetScene extends SceneBase {
     super(canvas, onState, fox);
     paintBackground(this.bg.getContext('2d')!, 0, 'street');
     this.ambient = 0;
+    this.fxKey = 'world-00';
   }
 
   load(cells: StreetCell[], events: WorldEvent[]) {
@@ -574,7 +647,7 @@ export class StreetScene extends SceneBase {
     if (!e.ok) { this.fail = { at: performance.now(), note: e.note ?? '' }; if (e.name === 'move' || e.name === 'jump') this.enei.tx = this.cx(this.pos) + 18; return; }
     if (e.name === 'move') this.pos++;
     if (e.name === 'jump') { this.pos += 2; if (!silent) this.jumpAt = performance.now(); }
-    if (e.name === 'take' && this.cells[this.pos] === 'sack') { this.cells[this.pos] = 'empty'; this.bag++; }
+    if (e.name === 'take' && this.cells[this.pos] === 'sack') { this.cells[this.pos] = 'empty'; this.bag++; if (!silent) this.takeAt = performance.now(); }
     if (this.cells[this.pos] === 'trojan') { this.cells[this.pos] = 'empty'; this.met++; }
     this.enei.tx = this.cx(this.pos);
   }
@@ -595,8 +668,8 @@ export class StreetScene extends SceneBase {
       c.font = '11px "Fira Code", monospace'; c.fillStyle = '#cfc4b8';
       c.fillText(String(i), x - c.measureText(String(i)).width / 2, g + 20);
       const cell = this.cells[i];
-      if (cell === 'sack') drawSack(c, x, g - 4);
-      if (cell === 'trojan') { const tj = TROJANS[i % TROJANS.length] as Sprite; tj.draw(c, x - tj.w / 2, g - 4 - tj.h, 1); }
+      if (cell === 'sack') { const sk = still('obj/sack'); if (sk) sk.draw(c, x - sk.w, g - 4 - sk.h * 2, 2); else drawSack(c, x, g - 4); }
+      if (cell === 'trojan') { const tj = (crewFrames(CREW_ART[i % 4], false)?.[0] ?? TROJANS[i % TROJANS.length]) as Sprite; tj.draw(c, x - tj.w / 2, g - 4 - tj.h, 1); }
       if (cell === 'well') {
         c.fillStyle = '#7d7670'; c.fillRect(x - 16, g - 26, 32, 22);
         c.fillStyle = '#9a928a'; c.fillRect(x - 16, g - 26, 32, 4);
@@ -617,7 +690,11 @@ export class StreetScene extends SceneBase {
     this.enei.y = this.ground - 4 - (jp < 1 ? Math.round(Math.sin(jp * Math.PI) * 46) : 0);
     this.enei.ty = this.enei.y;
     this.foxW.y = this.foxW.ty = this.ground - 4;
-    this.drawHeroes(now, { ...this.enei, x: this.enei.x + 26 }, this.foxW);
+    // зсув на 26 px — і для цілі теж, інакше moving() бачить різницю і Еней «іде» на місці
+    // підбір мішка: кадри нахилу за час кроку
+    const pick = eneiFrames('pickup'), since = now - this.takeAt, dur = Math.min(700, this.stepMs());
+    this.eneiPose = pick && this.takeAt && since < dur && !this.reduced ? pick[Math.min(pick.length - 1, Math.floor((since / dur) * pick.length))] : null;
+    this.drawHeroes(now, { ...this.enei, x: this.enei.x + 26, tx: this.enei.tx + 26 }, this.foxW);
 
     this.crewLabel();
     if (this.fail) {
@@ -633,7 +710,11 @@ export class StreetScene extends SceneBase {
 
 /* ============================== фони ============================== */
 
+
 function paintBackground(c: CanvasRenderingContext2D, world: number, skin: Skin | 'street') {
+  // новий фон світу (200×136): верхні 6 рядків неба зайві, земля для героїв лишається внизу; Карфаген зі стовпами — свій
+  const art = skin === 'post' ? artImage('bg/carthage') : worldBg(world);
+  if (art) { c.imageSmoothingEnabled = false; c.drawImage(art, 0, art.height - 130, 200, 130, 0, 0, W, H); return; }
   if (world === 2) return paintCarthage(c, skin === 'post');
   // світи 3+: фон тієї ж сцени, що на мапі й сайті (200×130), збільшений утричі
   if (world >= 3) { const sp = new Spr(200, 130); artOf(world).bg(sp, 0); sp.draw(c, 0, 0, 3); return; }
@@ -692,19 +773,30 @@ function paintCarthage(c: CanvasRenderingContext2D, posts: boolean) {
 export class ScrollScene extends SceneBase {
   private lines: string[] = [];
   private shownAt: number[] = [];
-  private foxW: Walker = { x: W - 52, tx: W - 52, y: 300, ty: 300, face: -1 };
+  private foxW: Walker = { x: W - 52, tx: W - 52, y: H - 8, ty: H - 8, face: -1 };
   private dummy: Walker = { x: 0, tx: 0, y: 0, ty: 0, face: 1 };
   /** Колобок котиться низом сцени (розділ 1). */
   private bun: boolean;
   /** Герой казки інших розділів: стоїть унизу ліворуч і підстрибує на кожен новий рядок. */
   private hero: Sprite | null;
+  private chapter: number;
 
-  constructor(canvas: HTMLCanvasElement, onState: (s: SceneState) => void, fox: string, chapter: number) {
+  /** Номер вправи в розділі: у «Ріпці» за дідом шикується щоразу більше помічників. */
+  private lesson: number;
+
+  constructor(canvas: HTMLCanvasElement, onState: (s: SceneState) => void, fox: string, chapter: number, lesson = 0) {
     super(canvas, onState, fox);
     this.bun = chapter === 0;
+    this.chapter = chapter;
+    this.lesson = lesson;
+    this.fxKey = `abc-${TALE_BG[chapter]}`;
+    this.fxOnTop = false;
     this.hero = chapter > 0 && TALE_HEROES[chapter - 1] ? TALE_HEROES[chapter - 1]() : null;
     const c = this.bg.getContext('2d')!;
-    const sp = new Spr(200, 130); paintTroyNight(sp, 0); sp.draw(c, 0, 0, 3);
+    // фон казки розділу (новий арт), інакше нічна Троя; трохи притемнений, щоб сувій читався
+    const art = artImage(`bg/abc-${TALE_BG[chapter]}`) ?? artImage('bg/troy-night');
+    if (art) { c.imageSmoothingEnabled = false; c.drawImage(art, 0, art.height - 130, 200, 130, 0, 0, W, H); }
+    else { const sp = new Spr(200, 130); paintTroyNight(sp, 0); sp.draw(c, 0, 0, 3); }
     c.fillStyle = 'rgba(8,10,20,.25)'; c.fillRect(0, 0, W, H);
   }
 
@@ -727,7 +819,8 @@ export class ScrollScene extends SceneBase {
   protected draw(now: number) {
     const c = this.ctx, t = this.reduced ? 0 : now / 1000;
     // сувій: пергамент між двома валиками
-    const x0 = 36, x1 = W - 118, y0 = 60, rows = 8, lh = 25, y1 = y0 + 30 + rows * lh;
+    // сувій на 6 рядків: під ним стоять герої казки ×2
+    const x0 = 36, x1 = W - 118, y0 = 44, rows = 6, lh = 25, y1 = y0 + 30 + rows * lh;
     c.fillStyle = '#1f1b16'; c.fillRect(x0 - 2, y0 - 2, x1 - x0 + 4, y1 - y0 + 4);
     c.fillStyle = '#efe2c0'; c.fillRect(x0, y0, x1 - x0, y1 - y0);
     c.fillStyle = '#e2d1a6'; for (let y = y0 + 6; y < y1; y += 8) c.fillRect(x0 + ((y * 7) % 23), y, 3, 2);
@@ -755,28 +848,64 @@ export class ScrollScene extends SceneBase {
       c.fillStyle = i === this.lines.length - 1 && this.playing ? '#7a1f1f' : '#2b2118';
       c.fillText(shown, x0 + 44, y);
     }
-    // Колобок котиться туди й назад
-    if (this.bun) {
-      const span = W - 220, ph = (t * 40) % (span * 2), bx = 40 + (ph < span ? ph : span * 2 - ph), by = H - 36;
-      this.drawBun(bx, by, ph < span ? 1 : -1, t);
-    }
-    // герой казки: погойдується, а коли з'являється рядок — підстрибує
+    const last = this.shownAt[this.shownAt.length - 1] ?? 0, since = now - last;
+    const hop = last && since < 360 && !this.reduced ? Math.sin((since / 360) * Math.PI) * 10 : 0;
+    const tale = TALE_BG[this.chapter];
+    // Івасик-Телесик пливе човником по воді фону (лівий нижній кут)
+    const river = tale === 'telesyk' && !!still('tales/ivasyk');
+    // герой казки стоїть, а коли з'являється рядок — підстрибує
+    let x = 100;
     if (this.hero) {
-      const hr = this.hero, last = this.shownAt[this.shownAt.length - 1] ?? 0, since = now - last;
-      const hop = last && since < 360 && !this.reduced ? Math.sin((since / 360) * Math.PI) * 10 : 0;
-      const bob = Math.round(Math.sin(t * 2) * 1.5);
-      hr.draw(c, 64, Math.round(H - 8 - hr.h - bob - hop), 1);
+      // новий арт резолвимо під час малювання: кеш у art.ts, а старий спрайт — запасний
+      const hr = (still(`tales/${TALE_ART[this.chapter - 1]}`) ?? this.hero) as Sprite, k = hr === this.hero ? 1 : 2;
+      // човен (з бризками) має лягти на найширшу смугу води фону: ліворуч, нижній край ~342 px
+      const hx = river ? 10 : 40, bottom = river ? H - 48 : H - 8;
+      hr.draw(c, hx, Math.round(bottom - hr.h * k - hop), k);
+      x = hx + hr.w * k - 18;
+    }
+    // на березі, а не на воді
+    if (river) x = Math.max(x, 200);
+    // хто ще є в задачах розділу: спершу нікого, кожен новий рядок на сувої приводить ще одного
+    // (у «Ріпці» за дідом шикується ланцюжок); новенький з'являється стрибком
+    const cast = castFor(TALE_CAST[tale]?.[this.lesson] ?? [], (TALE_CAST[tale] ?? []).flat(), this.lines);
+    for (const [k, who] of cast.entries()) {
+      const s = castSprite(who);
+      if (!s) continue;
+      const at = this.shownAt[k] ?? 0, age = now - at;
+      if (at && age < 360 && !this.reduced) { c.globalAlpha = Math.min(1, age / 200); }
+      // гуси-лебеді летять над землею
+      const lift = who === 'gusy' ? 34 + Math.round(Math.sin(t * 3) * 3) : 0;
+      const pop = at && age < 360 && !this.reduced ? Math.sin((age / 360) * Math.PI) * 14 : 0;
+      s.draw(c, Math.round(x), Math.round(H - 8 - s.h * 2 - pop - lift), 2);
+      c.globalAlpha = 1;
+      x += s.w * 2 - 10;
+    }
+    // Колобок котиться туди й назад — перед усіма
+    if (this.bun) {
+      const span = W - 300, ph = (t * 40) % (span * 2), bx = 70 + (ph < span ? ph : span * 2 - ph), by = H - 24;
+      this.drawBun(bx, by, ph < span ? 1 : -1, t);
     }
     // місяць над Троєю світиться і повільно «дихає»
     pixelGlow(c, 547, 121, 66, '230,232,205', 0.2 * (0.88 + 0.12 * Math.sin(t * 0.7)));
     // Сивілла біля сувою
-    const sy = SIBYL as Sprite;
-    sy.draw(c, Math.round(this.foxW.x - sy.w), Math.round(this.foxW.y - sy.h * 2 + Math.sin(t * 1.4) * 2), 2);
+    const sy = (still('cast/sibyl') ?? SIBYL) as Sprite;
+    sy.draw(c, Math.round(this.foxW.x - sy.w), Math.round(this.foxW.y - sy.h * 2), 2);
     if (this.events.length && this.k >= this.events.length && !this.playing) this.label(L('Вивід на сувої', 'Output on the scroll'), (x0 + x1) / 2, y1 + 16, true);
   }
 
   private drawBun(x: number, y: number, dir: number, t: number) {
     const c = this.ctx, r = 16;
+    const kb = still('tales/kolobok');
+    if (kb) {
+      // новий Колобок (~45 px) — ×2, як і решта героїв казок; дивиться туди, куди котиться
+      const s = 2, w = kb.w * s, h = kb.h * s, top = Math.round(y + r - h);
+      if (dir === 1) kb.draw(c, Math.round(x - w / 2), top, s);
+      else { c.save(); c.translate(Math.round(x + w / 2), 0); c.scale(-1, 1); kb.draw(c, 0, top, s); c.restore(); }
+      c.fillStyle = 'rgba(255,250,230,.85)';
+      const ny = Math.round(top - 10 - ((t * 16) % 14));
+      c.fillRect(x + dir * 30, ny, 2, 8); c.fillRect(x + dir * 30 - 3, ny + 7, 4, 3);
+      return;
+    }
     for (let dy = -r; dy <= r; dy += 2) for (let dx = -r; dx <= r; dx += 2) {
       const d = dx * dx + dy * dy;
       if (d > r * r) continue;

@@ -51,9 +51,14 @@ export function useSettings() {
 export const starsOf = (p: Progress, l: Level) => p.levels[l.id]?.stars ?? 0;
 export const solved = (p: Progress, l: Level) => starsOf(p, l) >= 1;
 
+/** Dev-режим: «відкрити все» — будь-який світ і вправа доступні без проходження (лише `vite dev`). */
+let unlockAll = import.meta.env.DEV && load('dev.unlock', true);
+export const devUnlocked = () => unlockAll;
+export function setDevUnlock(on: boolean) { unlockAll = import.meta.env.DEV && on; save('dev.unlock', on); }
+
 /** Світ відкрито, якщо розв'язано фінальну задачу попереднього. */
 export function worldOpen(p: Progress, w: World): boolean {
-  if (w.n === 0) return true;
+  if (w.n === 0 || unlockAll) return true;
   // «Так, хочу задач»: світ 1 відкрито одразу, світ 0 лишається для повторення
   if (w.n === 1 && !w.track && p.path === 'algo') return true;
   const prev = (w.track ? tracks[w.track] : worlds)[w.n - 1];
@@ -64,7 +69,7 @@ export function worldOpen(p: Progress, w: World): boolean {
 export function levelOpen(p: Progress, l: Level): boolean {
   const w = worldOf(l);
   if (!worldOpen(p, w)) return false;
-  if (w.n === 0 && !w.track && p.skipBasics) return true;
+  if (unlockAll || (w.n === 0 && !w.track && p.skipBasics)) return true;
   const i = w.levels.indexOf(l);
   // пройдене лишається відкритим, навіть якщо перед ним з'явилася нова вправа
   return i === 0 || solved(p, l) || solved(p, w.levels[i - 1]);

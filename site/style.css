@@ -805,3 +805,118 @@ html.snap .wrap{padding-block:0}
 .evo-steps .line{padding:10px 12px;gap:4px;align-content:start}
 .evo-steps p{margin:0;font-size:.84rem;line-height:1.4}
 @media (max-width:900px){.evo{grid-template-columns:1fr}.evo-steps{grid-template-columns:1fr}}
+
+/* новий арт (newart.js): картинка на місці полотна, пікселі без згладжування */
+.na-hidden{display:none!important}
+img.na{display:block;image-rendering:pixelated;width:100%;height:auto}
+img.na-hero{max-width:720px;margin:0 auto}
+img.na-char{width:auto;max-width:100%;height:300px;object-fit:contain;object-position:50% 100%;margin:0 auto}
+.j-card img.na-world{aspect-ratio:400/260;max-height:clamp(170px,30vh,290px);object-fit:cover;object-position:50% 100%}
+.journey.pinned .j-card img.na-world{max-height:34vh}
+img.na-ob{aspect-ratio:400/260}
+@media (max-width:640px){img.na-char{height:220px}}
+/* аркуш «Редизайн» */
+.rd{display:grid;gap:14px}
+.rd-h{font:700 18px var(--display,inherit);margin:18px 0 0}
+.rd img{image-rendering:pixelated;max-width:100%;height:auto;display:block}
+.rd-strip{overflow-x:auto;border-radius:10px}
+.rd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.rd-grid figure{margin:0}
+.rd-grid img{width:100%;border-radius:8px}
+.rd-grid figcaption{font-size:13px;opacity:.8;margin-top:4px}
+.rd-anim{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.rd-anim img{background:#efe6d2}
+.rd-wide{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.rd-list{display:grid;gap:10px}
+.rd-list figure{margin:0;display:grid;grid-template-columns:180px 1fr;align-items:center;gap:12px;background:var(--card,rgba(0,0,0,.04));border-radius:10px;padding:6px 10px;overflow-x:auto}
+.rd-list figure img{width:auto;max-width:none;height:auto}
+.rd-list figcaption{order:-1;font-weight:600}
+.rd-small{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.rd-small img,.rd-grid figure img[width]{width:auto;max-width:100%;margin:0 auto}
+.rd-grid figure{background:var(--card,rgba(0,0,0,.04));border-radius:10px;padding:8px;display:grid;align-content:end}
+.rd-ba{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.rd-ba .ba{margin:0;padding:0}
+@media (max-width:640px){.rd-list figure{grid-template-columns:1fr}}
+.rd-rot2{grid-template-columns:repeat(auto-fill,minmax(520px,1fr));gap:8px}
+.rd-rot2 figure{grid-template-columns:150px 1fr;display:grid;align-items:end;padding:4px 8px}
+.rd-rot2 figcaption{order:-1;align-self:center;font-weight:600}
+.rd-rot2 img{max-width:100%;height:auto}
+.rd-cutgrid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.rd-cutgrid img{width:100%}
+
+/* ===== «Редизайн»: переглядачі, що вміщаються в екран ===== */
+.rd .ba{max-width:min(760px,100%);margin-inline:auto}
+.rd-tabs{display:grid;gap:12px}
+.rd-tabbar{display:flex;flex-wrap:wrap;gap:6px}
+.rd-tabbar button{font:600 13px var(--mono,monospace);padding:6px 12px;border-radius:999px;border:1px solid var(--line,rgba(0,0,0,.15));background:transparent;color:inherit;cursor:pointer}
+.rd-tabbar button.on{background:var(--ink,#1f1b16);color:var(--paper,#f4ecda)}
+.rd-pane{display:none}.rd-pane.on{display:block}
+.rd-view{display:grid;gap:10px}
+.rd-stage{position:relative;display:grid;place-items:center;min-height:min(52vh,420px)}
+.rd-slide{display:none;text-align:center}.rd-slide.on{display:grid;justify-items:center;gap:6px;animation:rdIn .35s ease}
+@keyframes rdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rd-slide img.rd-big,.rd-slide .ba.rd-big{width:min(640px,100%,calc(52vh * 400 / 260));height:auto;image-rendering:pixelated;border-radius:10px}
+.rd-cap{font:600 13px var(--mono,monospace);opacity:.8}
+.rd-rail{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.rd-rail button{flex:0 0 auto;padding:0;border:2px solid transparent;border-radius:6px;background:none;cursor:pointer;opacity:.6}
+.rd-rail button.on{border-color:var(--red,#b3202a);opacity:1}
+.rd-rail button img{display:block;width:72px;height:47px;object-fit:cover;image-rendering:pixelated;border-radius:4px}
+.rd-fox .rd-rail{justify-content:center}
+.rd-fox .rd-rail i{display:block;width:26px;height:26px;border-radius:50%;border:2px solid rgba(0,0,0,.35)}
+.rd-fox-big{height:min(44vh,320px);width:auto;image-rendering:pixelated}
+.rd-turntable{display:grid;grid-template-columns:minmax(220px,1fr) 2fr;gap:16px;align-items:center}
+.rd-tt-stage{display:grid;justify-items:center;gap:10px;background:var(--card,rgba(0,0,0,.04));border-radius:12px;padding:16px}
+.rd-tt-img{height:min(46vh,340px);width:auto;image-rendering:pixelated}
+.rd-tt-dirs{display:flex;gap:6px}.rd-tt-dirs i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.2}.rd-tt-dirs i.on{opacity:1;background:var(--red,#b3202a)}
+.rd-tt-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;max-height:56vh;overflow:auto}
+.rd-tt-list button{display:flex;align-items:center;gap:8px;padding:4px 8px;border:1px solid transparent;border-radius:8px;background:var(--card,rgba(0,0,0,.04));color:inherit;font:600 12px var(--body,inherit);text-align:left;cursor:pointer}
+.rd-tt-list button.on{border-color:var(--red,#b3202a)}
+.rd-tt-list img{height:34px;width:auto;image-rendering:pixelated}
+.rd-states{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.rd-portraits,.rd-cast{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.rd-portraits img,.rd-cast img{max-height:120px;width:auto;margin:0 auto}
+.rd-anim{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.rd-anim img{max-height:min(38vh,280px);width:auto;margin:0 auto}
+@media (max-width:760px){.rd-turntable{grid-template-columns:1fr}}
+/* розміри переглядачів сильніші за загальне .rd img */
+.rd .rd-slide.on{width:100%}
+.rd .rd-slide img.rd-big,.rd .rd-slide .ba.rd-big{width:min(680px,100%,calc(50vh * 400 / 260));height:auto}
+.rd .rd-fox-big{height:min(42vh,340px);width:auto}
+.rd .rd-tt-img{height:min(44vh,340px);width:auto;max-width:none}
+.rd .rd-tt-list img{height:34px;width:auto}
+.rd .rd-rail button img{width:72px;height:47px}
+.rd .rd-states img{max-height:20vh;width:auto;margin:0 auto}
+.rd .rd-anim img{max-height:min(34vh,260px);width:auto}
+#redesign .ba{max-width:min(620px,100%,calc(44vh * 800 / 520))}
+#redesign .rd-strip img{max-height:12vh;width:auto;margin:0 auto}
+#rd-rejected .rd-wide img{max-height:24vh;width:auto;margin:0 auto}
+/* нові картинки замість полотен (аркуші 1–4) */
+#sheets-new .cloth{display:grid;place-items:end center;min-height:min(19vh,170px)}
+#sheets-new img{max-height:min(18vh,160px);width:auto;image-rendering:pixelated}
+.prog .cloth .na-shirt{height:min(42vh,340px);width:auto;image-rendering:pixelated;margin:0 auto;display:block}
+.na-egg{display:grid;place-items:center}
+.na-egg img{height:min(30vh,260px);width:auto;image-rendering:pixelated}
+.pys .na-storm{width:100%;height:auto;max-height:34vh;object-fit:contain;image-rendering:pixelated}
+.na-fl-egg{height:90px;width:auto;image-rendering:pixelated;margin:0 auto;display:block}
+.na-fl-prof{height:72px;width:auto;image-rendering:pixelated}
+#history-v1 .sheets canvas{max-height:14vh}
+/* повзунок «до/після»: ручка зі стрілками на лінії, щоб було видно, що її тягнуть */
+.ba::before{content:"‹ ›";position:absolute;top:50%;left:var(--p);z-index:2;width:44px;height:44px;margin:-22px 0 0 -22px;display:grid;place-items:center;
+  border-radius:50%;background:#f2d27a;color:#1f1b16;font:700 18px/1 var(--mono,monospace);letter-spacing:2px;box-shadow:0 0 0 3px #1f1b16,0 6px 18px rgba(0,0,0,.35);pointer-events:none;transition:transform .15s}
+.ba:hover::before{transform:scale(1.12)}
+.ba.ba-nudge{animation:baNudge 1.6s ease-in-out 2}
+@keyframes baNudge{0%,100%{--p:50%}30%{--p:38%}65%{--p:62%}}
+@property --p{syntax:'<percentage>';inherits:true;initial-value:50%}
+/* аркуш 1: клітинки нижчі, щоб чотири ряди вмістились */
+#sheets-new .cloth{min-height:min(14vh,130px)}
+#sheets-new img{max-height:min(13vh,120px)}
+#sheets-new{gap:6px 12px;padding:12px}
+/* аркуш 12.4: усі клітинки анімацій одного розміру — кремове поле, герой ступнями внизу */
+.rd .rd-anim{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));align-items:start}
+.rd .rd-anim figure{background:transparent;padding:0;align-content:start}
+.rd .rd-anim img{width:100%;height:min(30vh,240px);max-height:none;object-fit:contain;object-position:50% 100%;background:#efe6d2;border-radius:10px;padding:10px;box-sizing:border-box}
+.rd .rd-anim figcaption{min-height:2.6em}
+/* галерея героїв: видно полотно з «дощем», картинка лише для скринрідерів */
+img.na-sr{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden;clip-path:inset(50%)}
+canvas.na-rain{display:block;width:auto;height:300px;aspect-ratio:288/320;margin:0 auto;image-rendering:pixelated}
+@media (max-width:640px){canvas.na-rain{height:220px}}

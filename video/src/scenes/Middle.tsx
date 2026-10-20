@@ -4,7 +4,7 @@ import { AbsoluteFill, Interactive, interpolate, staticFile, useCurrentFrame, us
 import { BAR, BEAT } from '../timeline.mjs';
 import { beatPulse, clamp, IN, OUT, pop, ramp, shake } from '../lib/anim';
 import { COPY, type Lang } from '../lib/copy';
-import { S, Sprite, WorldArt } from '../lib/PixelCanvas';
+import { art, S, Sprite, WorldArt } from '../lib/PixelCanvas';
 import { BODY, C, HEAD, MONO } from '../lib/theme';
 import { Bg, Burst, Chip, Screen, Words } from '../lib/ui';
 
@@ -13,10 +13,10 @@ type Props = { readonly lang: Lang };
 const FOX_COLS: string[] = S.ALL_WORLDS.map((w: any) => w.fox).filter((c: string) => c !== 'rainbow');
 
 const HEROES = [
-  { spr: () => S.makeEnei(2, { pose: 'sabre' }), bg: ['#3d66b8', '#121f3d'], accent: C.gold, scale: 9 },
-  { spr: (beat: number) => S.foxFor(S.ALL_WORLDS[beat % 15]), bg: ['#e2702b', '#4a1c06'], accent: C.ink, scale: 10 },
-  { spr: () => S.makeWolf(), bg: ['#5b5468', '#16131c'], accent: '#c9b8ff', scale: 9 },
-  { spr: () => S.makeSibyl(), bg: ['#4f8a6a', '#0e2218'], accent: C.gold, scale: 9 },
+  { spr: () => art('enei/static-SE'), bg: ['#3d66b8', '#121f3d'], accent: C.gold, scale: 9 },
+  { spr: (beat: number) => art(`site/chars/fox-${String(beat % 15).padStart(2, '0')}`), bg: ['#e2702b', '#4a1c06'], accent: C.ink, scale: 10 },
+  { spr: () => art('cast/wolf-SE'), bg: ['#5b5468', '#16131c'], accent: '#c9b8ff', scale: 9 },
+  { spr: () => art('cast/sibyl'), bg: ['#4f8a6a', '#0e2218'], accent: C.gold, scale: 9 },
 ];
 
 /* Герої: по такту на кожного. Спрайт підскакує на долю, у Микити щодолі нова фарба світу. */
@@ -167,8 +167,8 @@ const WolfInner: React.FC<Props> = ({ lang }) => {
   return (
     <AbsoluteFill style={{ translate: shake(frame, 6 * BEAT, 30) }}>
       <AbsoluteFill style={{ flexDirection: 'row' }}>
-        {side(wolfN, t.wolf, S.makeWolf(), 'linear-gradient(160deg,#3b3644,#121016)', '#c9b8ff', false)}
-        {side(foxN, t.fox, S.FOX_GINGER ?? S.makeFox(C.fox), 'linear-gradient(200deg,#e2702b,#5a2306)', C.ink, true)}
+        {side(wolfN, t.wolf, art('cast/wolf-SE'), 'linear-gradient(160deg,#3b3644,#121016)', '#c9b8ff', false)}
+        {side(foxN, t.fox, art('fox/static-SW'), 'linear-gradient(200deg,#e2702b,#5a2306)', C.ink, true)}
       </AbsoluteFill>
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
         <div

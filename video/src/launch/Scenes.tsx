@@ -4,7 +4,7 @@ import { AbsoluteFill, Interactive, interpolate, staticFile, useCurrentFrame, us
 import { BAR, BEAT } from '../launch-timeline.mjs';
 import { beatPulse, clamp, IN, OUT, pop, ramp, shake } from '../lib/anim';
 import type { Lang } from '../lib/copy';
-import { S, Sprite, WorldArt } from '../lib/PixelCanvas';
+import { art, S, Sprite, WorldArt } from '../lib/PixelCanvas';
 import { BODY, C, CODE, HEAD, MONO } from '../lib/theme';
 import { Bg, Burst, Chip, Logo, Screen, Words } from '../lib/ui';
 import { LCOPY } from './copy';
@@ -15,7 +15,7 @@ type Props = { readonly lang: Lang };
 const ShipInner: React.FC<Props> = ({ lang }) => {
   const t = LCOPY[lang];
   const frame = useCurrentFrame();
-  const cmd = '$ git tag v0.3.0 && git push --tags';
+  const cmd = `$ git tag v${t.version}.0 && git push --tags`;
   const typed = Math.floor(interpolate(frame, [0, 14], [0, cmd.length], clamp));
   const zoom = interpolate(frame, [2 * BAR - 12, 2 * BAR], [1, 3.5], { ...clamp, easing: IN });
   return (
@@ -56,7 +56,7 @@ const ShipInner: React.FC<Props> = ({ lang }) => {
             );
           })}
           <div style={{ marginTop: 20, color: C.gold, opacity: ramp(frame, BAR + BEAT, 6) }}>
-            {frame >= BAR + BEAT ? `★ ${t.published}: v0.3.0` : ''}
+            {frame >= BAR + BEAT ? `★ ${t.published}: v${t.version}.0` : ''}
           </div>
         </div>
       </AbsoluteFill>
@@ -64,7 +64,7 @@ const ShipInner: React.FC<Props> = ({ lang }) => {
   );
 };
 
-/* Удар: «Вийшла» і величезне 0.3. */
+/* Удар: «Вийшла» і величезний номер версії. */
 const ReleaseInner: React.FC<Props> = ({ lang }) => {
   const t = LCOPY[lang];
   const frame = useCurrentFrame();
@@ -322,7 +322,7 @@ const MoreInner: React.FC<Props> = ({ lang }) => {
         })}
       </div>
       <Sprite
-        spr={S.makeSibyl()}
+        spr={art('cast/sibyl')}
         scale={10}
         style={{ position: 'absolute', right: 120, bottom: 90, translate: `${(1 - pop(frame, fps, 2, 12)) * 500}px ${-pulse * 20}px` }}
       />
@@ -397,7 +397,7 @@ const PlaytestInner: React.FC<Props> = ({ lang }) => {
       <Bg from="#2d4a33" to="#07100a" />
       <AbsoluteFill style={{ scale: `${build}` }}>
         <Sprite
-          spr={S.makeFox(C.fox)}
+          spr={art('fox/static-SW')}
           scale={11}
           style={{ position: 'absolute', left: 140, bottom: 110, translate: `${(1 - pop(frame, fps, 0, 12)) * -500}px ${-beatPulse(frame, BEAT * 2) * 16}px` }}
         />

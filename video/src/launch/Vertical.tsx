@@ -4,7 +4,7 @@ import { AbsoluteFill, Interactive, interpolate, Sequence, staticFile, Track, us
 import { BAR, BEAT } from '../launch-timeline.mjs';
 import { beatPulse, clamp, IN, OUT, pop, ramp, shake } from '../lib/anim';
 import { COPY, type Lang } from '../lib/copy';
-import { S, Sprite, WorldArt } from '../lib/PixelCanvas';
+import { art, S, Sprite, WorldArt } from '../lib/PixelCanvas';
 import { BODY, C, CODE, HEAD, MONO } from '../lib/theme';
 import { Bg, Burst, Chip, Logo, Screen, Words } from '../lib/ui';
 import { Flash, Grade, Wipe } from '../Trailer';
@@ -64,8 +64,8 @@ export const CoverInner: React.FC<Props> = ({ lang }) => {
         </div>
       </Center>
       <div style={{ position: 'absolute', top: 1110, left: 0, width: W, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 30 }}>
-        <Sprite spr={S.makeEnei(2, { pose: 'sabre' })} scale={4} />
-        <Sprite spr={S.makeFox(C.fox)} scale={4} style={{ scale: '-1 1' }} />
+        <Sprite spr={art('enei/static-SE')} scale={4} />
+        <Sprite spr={art('fox/static-SW')} scale={4} style={{ scale: '-1 1' }} />
       </div>
       <Center top={1420} style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}>
         <div style={{ padding: '14px 28px', background: C.ink, color: C.linen, fontFamily: HEAD, fontWeight: 700, fontSize: 40, borderRadius: 14 }}>
@@ -82,7 +82,7 @@ export const CoverInner: React.FC<Props> = ({ lang }) => {
 const VShipInner: React.FC<Props> = ({ lang }) => {
   const t = LCOPY[lang];
   const frame = useCurrentFrame();
-  const cmd = '$ git tag v0.3.0';
+  const cmd = `$ git tag v${t.version}.0`;
   const cmd2 = '$ git push --tags';
   const typed = Math.floor(interpolate(frame, [0, 16], [0, cmd.length + cmd2.length], clamp));
   const zoom = interpolate(frame, [2 * BAR - 12, 2 * BAR], [1, 3.5], { ...clamp, easing: IN });
@@ -186,8 +186,8 @@ const VReleaseInner: React.FC<Props> = ({ lang }) => {
         </div>
       </Center>
       <div style={{ position: 'absolute', top: 1200, left: 0, width: W, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 30 }}>
-        <Sprite spr={S.makeEnei(2, { pose: 'sabre' })} scale={5} style={{ translate: `0 ${(1 - pop(frame, fps, BAR, 12)) * 700 - pulse * 14}px` }} />
-        <Sprite spr={S.makeFox(C.fox)} scale={5} style={{ scale: '-1 1', translate: `0 ${(1 - pop(frame, fps, BAR + 3, 12)) * 700 - pulse * 14}px` }} />
+        <Sprite spr={art('enei/static-SE')} scale={5} style={{ translate: `0 ${(1 - pop(frame, fps, BAR, 12)) * 700 - pulse * 14}px` }} />
+        <Sprite spr={art('fox/static-SW')} scale={5} style={{ scale: '-1 1', translate: `0 ${(1 - pop(frame, fps, BAR + 3, 12)) * 700 - pulse * 14}px` }} />
       </div>
       <Burst at={BEAT} x={540} y={900} n={60} power={1.3} colors={[C.linen, C.gold, C.ink, C.crystal]} />
     </AbsoluteFill>
@@ -456,7 +456,7 @@ const VPlaytestInner: React.FC<Props> = ({ lang }) => {
           <Words text={t.ptTitle} size={100} step={3} accent={C.fox} accentFrom={1} style={{ justifyContent: 'center', width: CW }} />
         </Center>
         <div style={{ position: 'absolute', top: 640, width: W, display: 'flex', justifyContent: 'center' }}>
-          <Sprite spr={S.makeFox(C.fox)} scale={10} style={{ translate: `0 ${(1 - pop(frame, fps, 0, 12)) * 900 - beatPulse(frame, BEAT * 2) * 16}px` }} />
+          <Sprite spr={art('fox/static-SW')} scale={10} style={{ translate: `0 ${(1 - pop(frame, fps, 0, 12)) * 900 - beatPulse(frame, BEAT * 2) * 16}px` }} />
         </div>
         <Center top={1290}>
           <div

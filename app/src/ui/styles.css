@@ -439,3 +439,24 @@ canvas { image-rendering: pixelated; }
 .abc-troy b { font: 700 16px var(--display); }
 .abc-troy p { margin: 2px 0 0; }
 .abc-troy.ready { border-style: solid; border-color: var(--fox); background: rgba(226, 112, 43, .07); }
+
+/* dev-панель (лише vite dev) */
+.dev h2 { font: 700 18px var(--display); margin: 26px 0 10px; }
+.dev-toggle { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.dev-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
+.dev-row b { min-width: 150px; }
+.dev-world { margin: 12px 0; }
+.dev-world .eyebrow .btn { margin-left: 4px; }
+.dev-worlds { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 18px; }
+.dev-worlds figure { margin: 0; display: grid; gap: 6px; }
+.dev-worlds figcaption { display: flex; gap: 8px; align-items: center; }
+.dev-worlds canvas { width: 100%; image-rendering: pixelated; }
+
+/* список вправ схований: виїжджає поверх редактора, коли навести на ліве меню або на сам список */
+.body { position: relative; }
+.body.side-closed { grid-template-columns: 46px minmax(440px, 1fr) minmax(460px, 1fr); }
+.body.side-closed .side { position: absolute; left: 46px; top: 0; bottom: 24px; width: 220px; z-index: 30; box-shadow: 8px 0 24px rgba(0,0,0,.35);
+  transform: translateX(-105%); visibility: hidden; transition: transform .16s ease, visibility 0s linear .16s; }
+.body.side-closed:has(.act:hover) .side, .body.side-closed .side:hover, .body.side-closed .side:focus-within {
+  transform: none; visibility: visible; transition: transform .16s ease; }
+@media (prefers-reduced-motion: reduce) { .body.side-closed .side { transition: none; } }

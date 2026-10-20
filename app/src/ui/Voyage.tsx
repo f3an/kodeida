@@ -9,6 +9,7 @@ import { L, uiLang } from '../i18n.ts';
 import { worlds } from '../levels/index.ts';
 import { VOYAGES, type Who } from '../levels/voyages.ts';
 import { ALL_WORLDS, MW, MH, MS, SW, SH_, paintJourney, paintWorldArt, routePoint, foxFor } from '../world/sprites.js';
+import { paintWorldNew } from '../world/cutscenes.ts';
 
 const VOICE: Record<Who, [Speaker, string, string]> = {
   fox: ['fox', 'Микита', 'Mykyta'], enei: ['enei', 'Еней', 'Aeneas'], juno: ['juno', 'Юнона', 'Juno'], wolf: ['wolf', 'Вовк Неситий', 'Greedy Wolf'],
@@ -60,8 +61,9 @@ export function VoyageScreen({ from, onDone }: { from: number; onDone: () => voi
   const since = () => (reduced() ? 1e9 : performance.now() - t0.current);
   // «лад відновлено» і «новий світ»: сцена світу; у новому Микита перефарбовується з кольору попереднього
   const drawArt = (ctx: CanvasRenderingContext2D, f: number) => {
-    if (k === 0) paintWorldArt(ctx, from, f, null, 1);
-    else paintWorldArt(ctx, to, f, foxFor(ALL_WORLDS[from]), Math.min(1, Math.max(0, (since() - 500) / 1200)));
+    const p = Math.min(1, Math.max(0, (since() - 500) / 1200));
+    if (k === 0) { if (!paintWorldNew(ctx, from, null, 1)) paintWorldArt(ctx, from, f, null, 1); }
+    else if (!paintWorldNew(ctx, to, ALL_WORLDS[from].fox, p)) paintWorldArt(ctx, to, f, foxFor(ALL_WORLDS[from]), p);
   };
   // «у дорогу»: кораблик пливе від світу до світу
   const drawMap = (ctx: CanvasRenderingContext2D, f: number) => {
@@ -72,7 +74,8 @@ export function VoyageScreen({ from, onDone }: { from: number; onDone: () => voi
   const line = s.lines[ln];
   const [speaker, uk, enName] = line ? VOICE[line[0]] : ['enei' as Speaker, '', ''];
   const prev = ln > 0 ? VOICE[s.lines[ln - 1][0]][0] : null;
-  const fox = (k === 2 ? worlds[to] : worlds[from]).fox;
+  // у dev можна глянути дорогу й до ще не реалізованого світу — тоді колір з мапи
+  const fox = (k === 2 ? worlds[to] ?? ALL_WORLDS[to] : worlds[from]).fox;
 
   return (
     <div className="onboarding voyage">

@@ -4,7 +4,7 @@ import { AbsoluteFill, Interactive, interpolate, staticFile, useCurrentFrame, us
 import { BAR, BEAT } from '../timeline.mjs';
 import { beatPulse, clamp, OUT, pop, ramp, shake } from '../lib/anim';
 import { COPY, type Lang } from '../lib/copy';
-import { S, Sprite } from '../lib/PixelCanvas';
+import { art, Sprite } from '../lib/PixelCanvas';
 import { BODY, C, HEAD, MONO } from '../lib/theme';
 import { Bg, Burst, Chip, Logo, Screen, Words } from '../lib/ui';
 
@@ -213,11 +213,11 @@ const FeaturesInner: React.FC<Props> = ({ lang }) => {
 };
 
 const LINEUP = [
-  { spr: () => S.makeSibyl(), s: 6 },
-  { spr: () => S.makeEnei(2, { pose: 'akimbo' }), s: 7 },
-  { spr: () => S.foxFor(S.ALL_WORLDS[15]), s: 7 },
-  { spr: () => S.makeWolf(), s: 6 },
-  { spr: () => S.makeDido(), s: 6 },
+  { spr: () => art('cast/sibyl'), s: 6 },
+  { spr: () => art('enei/static-SE'), s: 7 },
+  { spr: () => art('site/chars/fox-15'), s: 7 },
+  { spr: () => art('cast/wolf-SE'), s: 6 },
+  { spr: () => art('cast/dido'), s: 6 },
 ];
 
 /* Фінал: усі герої в ряд, слоган. */

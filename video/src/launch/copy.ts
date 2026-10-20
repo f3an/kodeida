@@ -1,22 +1,22 @@
 import type { Lang } from '../lib/copy';
 
-// Тексти відео до релізу v0.3. Що нового — з git log v0.2.0..v0.3.1.
+// Тексти відео до релізу з редизайном: новий арт героїв і світів, живі фони, заставки з анімаціями.
 const uk = {
   builds: ['macOS · Apple Silicon + Intel', 'Windows 10 / 11', 'Linux · AppImage'],
   published: 'Реліз опубліковано',
   out: 'Вийшла',
   name: 'Кодеїда',
-  version: '0.3',
+  version: '0.5',
   newBadge: 'Нове',
   abcTitle: 'Абетка',
-  abcSub: 'Для тих, хто ще не написав жодного рядка коду',
-  abcChapter: 'Розділ 1 «Колобок» · 4 уроки на кожну мову',
-  worldsBadge: '+5 світів',
+  abcSub: 'У кожної казки свій фон, а герої виходять на сцену разом із виводом програми',
+  abcChapter: '8 казок · Python, JavaScript і TypeScript',
+  worldsBadge: 'Новий арт',
   worldNames: ['Рукавичка', 'Конотоп', 'Сицилія', 'Чумацький шлях', 'Пекло'],
   topics: ['Stack', 'Binary Search', 'Sliding Window · Heap', 'Linked List', 'Recursion · Backtracking'],
-  worldsSum: 'Світи 0–8 · 54 вправи',
-  moreTitle: 'А ще в 0.3',
-  more: ['Кат-сцени між світами', 'Сивілла показує інтерфейс', 'Задачі аж до Combination Sum', 'Новий пролог з Абеткою'],
+  worldsSum: '33 живі фони',
+  moreTitle: 'А ще в 0.5',
+  more: ['Заставки з анімаціями', 'Герої казок виходять на сцену', 'Еней у жупані в холодних світах', 'Портрети всіх героїв'],
   dlTitle: 'Безкоштовно для всіх систем',
   platforms: [
     ['macOS', 'підписано й нотаризовано'],
@@ -26,7 +26,7 @@ const uk = {
   dlNote: 'Гра оновлюється сама',
   ptTitle: 'Шукаємо плейтестерів',
   ptSub: 'Пройди задачу Дидони й натисни «Залишити відгук»',
-  endLine: 'v0.3 · уже можна грати',
+  endLine: 'v0.5 · новий вигляд',
 };
 
 const en: typeof uk = {
@@ -34,17 +34,17 @@ const en: typeof uk = {
   published: 'Release published',
   out: 'Out now',
   name: 'Kodeida',
-  version: '0.3',
+  version: '0.5',
   newBadge: 'New',
   abcTitle: 'The ABC',
-  abcSub: "For people who haven't written a line of code yet",
-  abcChapter: 'Chapter 1 “The Bun” · 4 lessons per language',
-  worldsBadge: '+5 worlds',
+  abcSub: 'Every tale has its own backdrop, and the heroes step on stage as the program prints',
+  abcChapter: '8 tales · Python, JavaScript and TypeScript',
+  worldsBadge: 'New art',
   worldNames: ['The Mitten', 'Konotop', 'Sicily', 'The Chumak Way', 'Hell'],
   topics: ['Stack', 'Binary Search', 'Sliding Window · Heap', 'Linked List', 'Recursion · Backtracking'],
-  worldsSum: 'Worlds 0–8 · 54 exercises',
-  moreTitle: 'Also in 0.3',
-  more: ['Cutscenes between worlds', 'The Sibyl shows you around', 'Problems up to Combination Sum', 'A new prologue with the ABC'],
+  worldsSum: '33 living backgrounds',
+  moreTitle: 'Also in 0.5',
+  more: ['Animated cutscenes', 'Fairy-tale heroes step on stage', 'Aeneas in a zhupan in cold worlds', 'Portraits of every hero'],
   dlTitle: 'Free on every system',
   platforms: [
     ['macOS', 'signed and notarized'],
@@ -54,7 +54,7 @@ const en: typeof uk = {
   dlNote: 'The game updates itself',
   ptTitle: "We're looking for playtesters",
   ptSub: 'Play through Dido’s problem and press “Leave feedback”',
-  endLine: 'v0.3 · playable now',
+  endLine: 'v0.5 · a new look',
 };
 
 export const LCOPY: Record<Lang, typeof uk> = { uk, en };
