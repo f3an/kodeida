@@ -337,9 +337,12 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go, pr
               <option value="system">{L('Системний моноширинний', 'System monospace')}</option>
             </select>
           </label>
-          <label className="row check">
-            <input type="checkbox" checked={settings.fontLigatures} onChange={(e) => setSettings((s) => ({ ...s, fontLigatures: e.target.checked }))} />
-            {L('Ліґатури', 'Ligatures')}
+          <label className="row">{L('Ліґатури', 'Ligatures')}
+            <select value={settings.fontLigatures} onChange={(e) => setSettings((s) => ({ ...s, fontLigatures: e.target.value as Settings['fontLigatures'] }))}>
+              <option value="off">{L('Вимкнено', 'Off')}</option>
+              <option value="standard">{L('Стандартні', 'Standard')}</option>
+              <option value="all">{L('Усі', 'All')}</option>
+            </select>
           </label>
         </section>
 
