@@ -6,6 +6,8 @@ import type { Lang } from '../engine/types.ts';
 interface Props {
   value: string;
   lang: Lang;
+  fontFamily: string;
+  fontLigatures: boolean;
   /** Помилка з рядком: підкреслюється в редакторі. */
   error?: { message: string; line?: number } | null;
   onChange: (v: string) => void;
@@ -13,7 +15,7 @@ interface Props {
   onRun: () => void;
 }
 
-export function Editor({ value, lang, error, onChange, onCursor, onRun }: Props) {
+export function Editor({ value, lang, fontFamily, fontLigatures, error, onChange, onCursor, onRun }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const ed = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const cb = useRef({ onChange, onCursor, onRun });
@@ -23,8 +25,8 @@ export function Editor({ value, lang, error, onChange, onCursor, onRun }: Props)
   useEffect(() => {
     const editor = monaco.editor.create(host.current!, {
       theme: 'mykyta-dark',
-      fontFamily: '"Fira Code", ui-monospace, Menlo, monospace',
-      fontLigatures: true,
+      fontFamily,
+      fontLigatures,
       fontSize: 14,
       lineHeight: 22,
       minimap: { enabled: false },
@@ -43,6 +45,10 @@ export function Editor({ value, lang, error, onChange, onCursor, onRun }: Props)
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => cb.current.onRun());
     return () => { editor.getModel()?.dispose(); editor.dispose(); };
   }, []);
+
+  useEffect(() => {
+    ed.current?.updateOptions({ fontFamily, fontLigatures });
+  }, [fontFamily, fontLigatures]);
 
   // Нова модель для кожної мови: TS і JS мають різні перевірки типів.
   useEffect(() => {

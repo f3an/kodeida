@@ -25,7 +25,8 @@ export interface Progress {
   prologue?: boolean;
 }
 export type Path = 'abc' | 'basics' | 'algo';
-export interface Settings { lang: Lang; speed: number; /** Мова інтерфейсу. */ ui: UiLang }
+export type EditorFont = 'fira-code' | 'system';
+export interface Settings { lang: Lang; speed: number; /** Мова інтерфейсу. */ ui: UiLang; editorFont: EditorFont; fontLigatures: boolean }
 
 const EMPTY: Progress = { levels: {}, onboarded: false };
 
@@ -43,7 +44,7 @@ export function useProgress() {
 }
 
 export function useSettings() {
-  const [settings, setSettings] = useState<Settings>(() => ({ lang: 'ts', speed: 1, ui: detectLang(), ...load<Partial<Settings>>('settings', {}) }));
+  const [settings, setSettings] = useState<Settings>(() => ({ lang: 'ts', speed: 1, ui: detectLang(), editorFont: 'fira-code', fontLigatures: false, ...load<Partial<Settings>>('settings', {}) }));
   useEffect(() => save('settings', settings), [settings]);
   return [settings, setSettings] as const;
 }

@@ -322,6 +322,8 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
         <div className="center">
           <div className={`pane${tab === 'code' ? '' : ' hidden'}`}>
             <Editor value={code[lang]} lang={lang} error={error}
+              fontFamily={settings.editorFont === 'fira-code' ? '"Fira Code", ui-monospace, Menlo, monospace' : 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'}
+              fontLigatures={settings.fontLigatures}
               onChange={(v) => { if (v === code[lang]) return; setCode((c) => ({ ...c, [lang]: v })); setError(null); }}
               onCursor={(line, col) => setCursor({ line, col })} onRun={run} />
           </div>
