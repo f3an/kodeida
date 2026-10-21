@@ -549,11 +549,11 @@ export const LEVELS_EN: Record<string, LevelEn> = {
   },
   'carthage.dups': {
     title: 'Measures without repeats', topic: 'slow and fast pointers',
-    brief: '<b>Measures without repeats.</b> On an ordered tape of measures remove the repeats in place and return how many different ones are left.',
+    brief: '<b>Measures without repeats.</b> Remove repeats from <code>nums</code> in place and return the number <code>k</code> of different measures, not a new array.',
     statement: [
       'The shard tangled the measures: some repeat on the tape <code>nums</code>. The tape is ordered, so equal measures stand next to each other.',
-      'Keep each measure once <b>in place</b>: the first <code>k</code> elements of the array must be the different measures in the same order. Return <code>k</code>. What’s left after them doesn’t matter.',
-      'For <code>[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]</code> return <code>5</code>, and the array must start with <code>[0, 1, 2, 3, 4]</code>. You need two pointers: one reads the tape, the other shows where to write the next new measure.',
+      'Change the <code>nums</code> array itself <b>in place</b>: its first <code>k</code> elements must contain the different measures in their original order. Return the number <code>k</code>, not a new array. Only the first <code>k</code> elements are checked.',
+      'Before the call: <code>nums = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4]</code>. After the call: <code>nums = [0, 1, 2, 3, 4, 2, 2, 3, 3, 4]</code>, and the returned value is <code>k = 5</code>. Only the first <code>k</code> elements are checked: <code>[0, 1, 2, 3, 4]</code>. You need two pointers: one reads the tape, the other shows where to write the next new measure.',
     ],
     hints: ['Repeats stand next to each other. Where should the next new measure go?', 'k is the length of the clean part. The fast pointer i looks for a measure different from nums[k−1].', 'k = 1; for (i = 1..n−1) if (nums[i] !== nums[k−1]) nums[k++] = nums[i]; return k.'],
     lesson: 'The slow pointer keeps the clean part, the fast one looks for something new — and no tail shifting.',
