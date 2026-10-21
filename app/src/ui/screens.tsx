@@ -330,6 +330,23 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go, pr
         </section>
 
         <section>
+          <h2>{L('Редактор', 'Editor')}</h2>
+          <label className="row">{L('Шрифт', 'Font')}
+            <select value={settings.editorFont} onChange={(e) => setSettings((s) => ({ ...s, editorFont: e.target.value as Settings['editorFont'] }))}>
+              <option value="fira-code">Fira Code</option>
+              <option value="system">{L('Системний моноширинний', 'System monospace')}</option>
+            </select>
+          </label>
+          <label className="row">{L('Ліґатури', 'Ligatures')}
+            <select value={settings.fontLigatures} onChange={(e) => setSettings((s) => ({ ...s, fontLigatures: e.target.value as Settings['fontLigatures'] }))}>
+              <option value="off">{L('Вимкнено', 'Off')}</option>
+              <option value="standard">{L('Стандартні', 'Standard')}</option>
+              <option value="all">{L('Усі', 'All')}</option>
+            </select>
+          </label>
+        </section>
+
+        <section>
           <h2>{L('Оновлення', 'Updates')}</h2>
           <p className="muted">{L('Версія', 'Version')} {APP_VERSION}.</p>
           {bridge && updates?.supported ? (
