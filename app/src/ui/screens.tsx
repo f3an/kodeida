@@ -327,7 +327,7 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go, pr
               <option value={1}>1×</option><option value={2}>2×</option><option value={4}>4×</option>
             </select>
           </label>
-          <div className="row">{L('Звук під час Запуску й Суду', 'Sound on Run and Judgement')}
+          <div className="row">{L('Звук', 'Sound')}
             <button className="switch" role="switch" aria-checked={settings.sound} aria-label={L('Звук', 'Sound')} onClick={() => setSettings((s) => ({ ...s, sound: !s.sound }))}><span /></button>
           </div>
         </section>
