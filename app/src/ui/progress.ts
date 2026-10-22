@@ -27,7 +27,7 @@ export interface Progress {
 export type Path = 'abc' | 'basics' | 'algo';
 export type EditorLigatures = 'off' | 'standard' | 'all';
 export type EditorFont = 'fira-code' | 'system';
-export interface Settings { lang: Lang; speed: number; /** Мова інтерфейсу. */ ui: UiLang; editorFont: EditorFont; fontLigatures: EditorLigatures }
+export interface Settings { lang: Lang; speed: number; /** Мова інтерфейсу. */ ui: UiLang; editorFont: EditorFont; fontLigatures: EditorLigatures; /** Сигнали Суду. */ sound: boolean }
 
 const EMPTY: Progress = { levels: {}, onboarded: false };
 
@@ -48,7 +48,7 @@ export function useSettings() {
   const [settings, setSettings] = useState<Settings>(() => {
     const stored = load<Partial<Omit<Settings, 'fontLigatures'>> & { fontLigatures?: EditorLigatures | boolean }>('settings', {});
     const fontLigatures = stored.fontLigatures === true ? 'all' : stored.fontLigatures === false ? 'off' : stored.fontLigatures ?? 'off';
-    return { lang: 'ts', speed: 1, ui: detectLang(), editorFont: 'fira-code', ...stored, fontLigatures };
+    return { lang: 'ts', speed: 1, ui: detectLang(), editorFont: 'fira-code', sound: true, ...stored, fontLigatures };
   });
   useEffect(() => save('settings', settings), [settings]);
   return [settings, setSettings] as const;

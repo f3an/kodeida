@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Editor } from './Editor.tsx';
 import { WorldView, type WorldHandle } from './WorldView.tsx';
 import { runInSandbox, preloadPython } from '../engine/runner.ts';
+import { chime } from './sfx.ts';
 import { planJudge, verdictOf, short, expectedOf, judgeCall, gotOf, clone } from '../engine/judge.ts';
 import type { Level } from '../engine/level.ts';
 import type { JudgeReport, Lang } from '../engine/types.ts';
@@ -196,6 +197,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     const out = await runInSandbox({ code: code[lang], lang, entry: level.entry, calls }, { timeoutMs: 4000, eventLimit: 0 });
     const rep = verdictOf(level, planned, out);
     setBusy(''); setReport(rep); setLogs(rep.logs);
+    chime(rep.verdict === 'fox' ? (level.big ? 'optimal' : 'correct') : rep.verdict === 'wolf' ? 'correct' : 'wrong', settings.sound);
     if (rep.verdict === 'error') stumble(rep.error!);
     else if (rep.verdict === 'wrong') {
       const badIdx = rep.cases.findIndex((c) => c.verdict === 'wrong');
@@ -226,7 +228,7 @@ export function LevelScreen({ level, progress, setProgress, patchLevel, settings
     const stars = rep.verdict === 'fox' ? (mine.hintsUsed === 0 ? 3 : 2) : rep.verdict === 'wolf' ? 1 : 0;
     if (stars > 0) { patchLevel(level.id, { stars }); setJustSolved(true); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [busy, code, lang, level, progress, mine.hintsUsed]);
+  }, [busy, code, lang, level, progress, mine.hintsUsed, settings.sound]);
 
   const watchWolf = async () => {
     if (busy || !level.wolf) return;
