@@ -329,7 +329,7 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go, pr
           </label>
           <label className="row check">
             <input type="checkbox" checked={settings.sound} onChange={(e) => setSettings((s) => ({ ...s, sound: e.target.checked }))} />
-            {L('Звук під час Суду', 'Sound on Judgement')}
+            {L('Звук під час Запуску й Суду', 'Sound on Run and Judgement')}
           </label>
         </section>
 

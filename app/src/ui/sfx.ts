@@ -1,4 +1,4 @@
-/* Короткі сигнали Суду, синтезовані на льоту: жодних файлів, звучить як стара приставка. */
+/* Короткі сигнали Запуску й Суду, синтезовані на льоту: жодних файлів, звучить як стара приставка. */
 export type Chime = 'optimal' | 'correct' | 'wrong';
 
 // [частота, початок у секундах, тривалість]
@@ -9,8 +9,12 @@ const NOTES: Record<Chime, { wave: OscillatorType; notes: [number, number, numbe
 };
 
 let ctx: AudioContext | null = null;
+let on = true;
 
-export function chime(kind: Chime, on = true) {
+/** Налаштування «Звук» вмикає й вимикає всі сигнали. */
+export function setSound(v: boolean) { on = v; }
+
+export function chime(kind: Chime) {
   if (!on) return;
   try {
     ctx ??= new AudioContext();
