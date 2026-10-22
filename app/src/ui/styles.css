@@ -219,6 +219,9 @@ a { color: var(--fox-soft); }
 .settings h2 { font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin: 0 0 10px; }
 .settings .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0; }
 .settings .row.check { justify-content: flex-start; }
+.settings .seg { display: flex; gap: 2px; background: var(--bar); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.settings .seg button { font: 600 12px var(--mono); padding: 3px 10px; border-radius: 999px; color: var(--mute); }
+.settings .seg button.on { background: var(--fox); color: #1a120b; }
 .settings select { background: var(--bar); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font: 12px var(--mono); }
 .row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
