@@ -506,16 +506,15 @@ export class ArrayScene extends SceneBase {
   private drawItem(i: number, v: unknown, glow: number, write: boolean, t: number) {
     const c = this.ctx, x = this.ix(i), base = this.base;
     const hl = glow > 0 ? (write ? `rgba(255,139,126,${glow * 0.45})` : `rgba(255,236,150,${glow * 0.4})`) : null;
-    const caption = (s: string, y: number) => {
-      c.font = '600 12px "Fira Code", monospace';
-      c.fillStyle = this.world === 1 ? '#e7f2fb' : '#3e2c16';
-      c.fillText(s, x + 3 - c.measureText(s).width / 2, y);
+    // числа на темній підкладці: фони світів різнобарвні, без неї напис губиться
+    const plated = (s: string, y: number, font: string, fg: string) => {
+      c.font = font;
+      const tw = Math.ceil(c.measureText(s).width), px = Math.round(x + 3 - tw / 2);
+      c.fillStyle = 'rgba(20,27,23,.78)'; c.fillRect(px - 3, Math.round(y) - 11, tw + 6, 15);
+      c.fillStyle = fg; c.fillText(s, px, y);
     };
-    const index = (y: number) => {
-      c.font = '11px "Fira Code", monospace';
-      c.fillStyle = this.world === 1 ? '#9fc4e0' : '#8a6a40';
-      c.fillText(String(i), x + 3 - c.measureText(String(i)).width / 2, y);
-    };
+    const caption = (s: string, y: number) => plated(s, y, '600 12px "Fira Code", monospace', '#efe6cf');
+    const index = (y: number) => plated(String(i), y, '11px "Fira Code", monospace', '#c9b48a');
     switch (this.skin) {
       case 'post': {
         const h = this.postH(this.num(v));
@@ -560,6 +559,7 @@ export class ArrayScene extends SceneBase {
       case 'letter': {
         const ch = String(v);
         const ok = /[a-z0-9]/i.test(ch);
+        c.fillStyle = '#2a1e10'; c.fillRect(x - 11, base - 36, 28, 34);
         c.fillStyle = ok ? '#e9d9a6' : '#c9b88a'; c.fillRect(x - 9, base - 34, 24, 30);
         c.fillStyle = '#7a5a32'; c.fillRect(x - 9, base - 6, 24, 2);
         if (hl) { c.fillStyle = hl; c.fillRect(x - 13, base - 38, 32, 38); }
@@ -579,6 +579,8 @@ export class ArrayScene extends SceneBase {
           // камінець завширшки як напис: назви кіл чи товарів не обрізаються
           c.font = '700 13px "Fira Code", monospace';
           const s = String(v), bw = Math.max(32, Math.ceil(c.measureText(s).width) + 10), bx = x + 3 - bw / 2;
+          // темний контур відділяє камінець від пісочного тла
+          c.fillStyle = '#2a1e10'; c.fillRect(bx - 2, base - 28, bw + 4, 30);
           c.fillStyle = '#b8a07a'; c.fillRect(bx, base - 26, bw, 26);
           c.fillStyle = '#d4bf96'; c.fillRect(bx, base - 26, bw, 4);
           c.fillStyle = '#8a7656'; c.fillRect(bx, base - 3, bw, 3);
@@ -665,8 +667,10 @@ export class StreetScene extends SceneBase {
       const x = this.cx(i), g = this.ground;
       c.fillStyle = i % 2 ? '#625a54' : '#5a524c'; c.fillRect(x - 22, g - 4, 44, 8);
       c.fillStyle = '#3e3834'; c.fillRect(x - 22, g + 4, 44, 2);
-      c.font = '11px "Fira Code", monospace'; c.fillStyle = '#cfc4b8';
-      c.fillText(String(i), x - c.measureText(String(i)).width / 2, g + 20);
+      c.font = '11px "Fira Code", monospace';
+      const iw = Math.ceil(c.measureText(String(i)).width), ix = Math.round(x - iw / 2);
+      c.fillStyle = 'rgba(20,27,23,.78)'; c.fillRect(ix - 3, g + 9, iw + 6, 15);
+      c.fillStyle = '#cfc4b8'; c.fillText(String(i), ix, g + 20);
       const cell = this.cells[i];
       if (cell === 'sack') { const sk = still('obj/sack'); if (sk) sk.draw(c, x - sk.w, g - 4 - sk.h * 2, 2); else drawSack(c, x, g - 4); }
       if (cell === 'trojan') { const tj = (crewFrames(CREW_ART[i % 4], false)?.[0] ?? TROJANS[i % TROJANS.length]) as Sprite; tj.draw(c, x - tj.w / 2, g - 4 - tj.h, 1); }
