@@ -219,9 +219,12 @@ a { color: var(--fox-soft); }
 .settings h2 { font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin: 0 0 10px; }
 .settings .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0; }
 .settings .row.check { justify-content: flex-start; }
-.settings .seg { display: flex; gap: 2px; background: var(--bar); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
-.settings .seg button { font: 600 12px var(--mono); padding: 3px 10px; border-radius: 999px; color: var(--mute); }
-.settings .seg button.on { background: var(--fox); color: #1a120b; }
+.switch { position: relative; width: 44px; height: 26px; flex: none; padding: 0; border-radius: 999px; background: var(--bar); border: 1px solid var(--line); transition: background .2s; }
+.switch span { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--mute); box-shadow: 0 1px 3px rgba(0, 0, 0, .35); transition: transform .2s, background .2s; }
+.switch[aria-checked="true"] { background: var(--fox); border-color: var(--fox); }
+.switch[aria-checked="true"] span { transform: translateX(18px); background: #fff; }
+.switch:focus-visible { outline: 2px solid var(--fox); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .switch, .switch span { transition: none; } }
 .settings select { background: var(--bar); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font: 12px var(--mono); }
 .row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 

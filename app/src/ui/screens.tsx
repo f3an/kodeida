@@ -328,10 +328,7 @@ export function SettingsScreen({ settings, setSettings, updates, onReset, go, pr
             </select>
           </label>
           <div className="row">{L('Звук під час Запуску й Суду', 'Sound on Run and Judgement')}
-            <div className="seg" role="group" aria-label={L('Звук', 'Sound')}>
-              <button className={settings.sound ? 'on' : ''} aria-pressed={settings.sound} onClick={() => setSettings((s) => ({ ...s, sound: true }))}>🔊 {L('Звук', 'On')}</button>
-              <button className={settings.sound ? '' : 'on'} aria-pressed={!settings.sound} onClick={() => setSettings((s) => ({ ...s, sound: false }))}>🔇 {L('Тиша', 'Mute')}</button>
-            </div>
+            <button className="switch" role="switch" aria-checked={settings.sound} aria-label={L('Звук', 'Sound')} onClick={() => setSettings((s) => ({ ...s, sound: !s.sound }))}><span /></button>
           </div>
         </section>
 
