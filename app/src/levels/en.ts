@@ -1979,6 +1979,134 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     ],
     quip: 'Aeneas! I knew you’d come. Well, I hoped. Look — I’m every colour again!',
   },
+  'forge.stairs': {
+    title: 'Stairs to the forge', topic: 'DP: the answer from the two before',
+    brief: '<b>Stairs to the forge.</b> Red-hot stairs lead to Vulcan’s forge. Climb them and get burned as little as possible.',
+    statement: [
+      'The forge stands at the top of the stairs. <code>cost[i]</code> — how much step <code>i</code> burns when you tread on it. You can step to the next step or jump over one. You may start from step zero or step one, and the forge is right after the last step.',
+      'Return the smallest total heat on the way to the forge. For <code>[10, 15, 20]</code> — <code>15</code>: step on the first and jump to the forge. For <code>[1, 100, 1, 1, 1, 100, 1, 1, 100, 1]</code> — <code>6</code>.',
+      'The cheapest way onto step <code>i</code> is the cheaper of the ways onto the two steps before it plus the step itself. Count every step <b>once</b> and lean on what’s already counted: that is <b>dynamic programming</b>.',
+    ],
+    tool: {
+      name: 'dynamic programming',
+      text: [
+        'Split the problem into smaller overlapping ones and solve them from the smallest. Write down each answer — the next ones will lean on it instead of recounting.',
+        'Here <code>best[i]</code> is the least heat to stand <b>on</b> step <code>i</code>: <code>cost[i] + min(best[i - 1], best[i - 2])</code>. The forge is after the last: the smaller of the last two <code>best</code>.',
+      ],
+      code: '// cost = [10, 15, 20]\n// best = [10, 15, 30]\n// to the forge: min(15, 30) = 15',
+    },
+    hints: ['From where can you step onto step i?', 'best[0] = cost[0], best[1] = cost[1]; for i ≥ 2: best[i] = cost[i] + min(best[i - 1], best[i - 2]). The answer is the min of the last two.', 'for (let i = 0; i < cost.length; i++) best[i] = cost[i] + (i < 2 ? 0 : Math.min(best[i - 1], best[i - 2])); return Math.min(best[cost.length - 1], best[cost.length - 2]);'],
+    lesson: 'The answer for step i is built from the already written answers for steps i − 1 and i − 2: every step is counted once.',
+    doc: ['Stairs to the forge', 'cost[i] — the heat of step i. A move is 1 or 2 steps, starting from 0 or 1.', 'Return the least heat on the way to the forge (past the last step).'],
+    talk: [
+      'Vulcan, my love, forge my son a weapon. Please!',
+      'But the forge has gone out! The shard! Every blow is like the first. First at least get to the forge, the stairs are red-hot.',
+      'Let’s count every step once and write it down. The next one only looks at the two before.',
+    ],
+    quip: 'You made it and didn’t get singed. Well, almost: the fox’s tail caught fire.',
+  },
+  'forge.iron': {
+    title: 'Iron from the carts', topic: 'DP: take or skip',
+    brief: '<b>Iron from the carts.</b> Carts of iron stand along the forge. Take as much as you can without taking from two neighbouring carts.',
+    statement: [
+      'The Cyclopes have brought iron: <code>nums[i]</code> — how much is on cart <code>i</code>. The carts stand in a row, and the carters are watchful: take from two <b>neighbouring</b> carts and they’ll raise a fuss.',
+      'Return the most iron you can take. For <code>[2, 7, 9, 3, 1]</code> — <code>12</code> (2 + 9 + 1).',
+      'There can be up to 10,000 carts. For every cart the choice is: <b>take</b> (then not the previous one, so it adds to the best up to cart <code>i − 2</code>) or <b>skip</b> (then the best up to <code>i − 1</code> stays). Keep those two numbers and move on.',
+    ],
+    tool: {
+      name: 'two variables instead of a table',
+      text: [
+        '<code>best(i) = max(best(i − 1), best(i − 2) + nums[i])</code>. No table needed: it’s enough to remember the last two answers — <code>prev2</code> and <code>prev1</code>.',
+        'At every cart: <code>cur = max(prev1, prev2 + nums[i])</code>, then shift: <code>prev2 = prev1</code>, <code>prev1 = cur</code>.',
+      ],
+      code: '// [2, 7, 9, 3, 1]\n// best: 2, 7, 11, 11, 12',
+    },
+    hints: ['What is the best up to cart i if you take it? And if you skip it?', 'For every x: cur = max(prev1, prev2 + x); prev2 = prev1; prev1 = cur.', 'for (const x of nums) { const cur = Math.max(prev1, prev2 + x); prev2 = prev1; prev1 = cur; }'],
+    lesson: 'The “take or skip” DP: the best up to i is the larger of “skip” (i − 1) and “take” (i − 2 + nums[i]). Two numbers, one pass.',
+    doc: ['Iron from the carts', 'nums[i] — the iron on cart i. You can’t take from two neighbouring carts.', 'Return the most iron.'],
+    talk: [
+      'We need a lot of iron, and the carters are cross. They won’t give from neighbouring carts.',
+      'For every cart I’ll recount everything from the very start! Every piece from scratch, the way Vulcan forges now!',
+      'And we’ll remember what we’ve already counted. Two numbers — and onward.',
+    ],
+    quip: 'What a heap! And not a squeak from the carters.',
+  },
+  'forge.coins': {
+    title: 'Paying for the metal', topic: 'DP: a table of sums',
+    brief: '<b>Paying for the metal.</b> Vulcan asks exactly <code>amount</code> coins for a rare metal. Pay with as few coins as possible.',
+    statement: [
+      'Aeneas’s weapon needs a rare metal. Vulcan charges exactly <code>amount</code>. <code>coins</code> are the coin values Aeneas has, any number of each.',
+      'Return the fewest coins that add up to <code>amount</code>, or <code>-1</code> if it can’t be made. For <code>[1, 2, 5]</code> and <code>11</code> — <code>3</code> (5 + 5 + 1); for <code>[2]</code> and <code>3</code> — <code>-1</code>.',
+      'Greedy (biggest first) won’t do: for <code>[1, 3, 4]</code> and <code>6</code> greedy gives 4 + 1 + 1, but 3 + 3 is better. Count a table: <code>dp[a]</code> — the fewest coins for the sum <code>a</code>, from 0 to <code>amount</code>.',
+    ],
+    tool: {
+      name: 'a table of sums',
+      text: [
+        '<code>dp[0] = 0</code>, the rest are <code>Infinity</code> for now. For every sum <code>a</code> try every coin <code>c ≤ a</code>: the last coin is <code>c</code>, and the rest is the already counted <code>dp[a − c]</code>.',
+        '<code>dp[a] = min(dp[a], dp[a − c] + 1)</code>. At the end <code>dp[amount]</code> is the answer, unless it is <code>Infinity</code>.',
+      ],
+      code: '// coins = [1, 3, 4], amount = 6\n// dp: 0  1  2  1  1  2  2\n//     0  1  2  3  4  5  6',
+    },
+    hints: ['What could the last coin be in the best set for the sum a?', 'For a from 1 to amount: for every coin c ≤ a — dp[a] = min(dp[a], dp[a - c] + 1).', 'for (let a = 1; a <= amount; a++) for (const c of coins) if (c <= a) dp[a] = Math.min(dp[a], dp[a - c] + 1);'],
+    lesson: 'When the greedy choice fails, count a table of all smaller sums: each leans on the ones already counted.',
+    doc: ['Paying for the metal', 'Return the fewest coins from coins (any number of each) that make amount, or -1.'],
+    talk: [
+      'The metal is rare, the price is fair. But I don’t like being paid a handful of small change. The fewest coins!',
+      'Biggest first isn’t always best. Let’s count for every sum from zero, and build the bigger ones from the smaller.',
+    ],
+    quip: 'Exactly that much, and not one coin too many. Charon would weep with envy.',
+  },
+  'forge.lcs': {
+    title: 'A shared melody', topic: 'DP: a table for two strings',
+    brief: '<b>A shared melody.</b> Two Cyclopes forge to different rhythms. Find the longest shared melody of their songs.',
+    statement: [
+      'The Cyclopes sing so their hammers strike in time. The songs are strings of notes <code>text1</code> and <code>text2</code>. A shared melody is notes that occur in both songs <b>in the same order</b>, though not necessarily in a row.',
+      'Return the length of the longest shared melody. For <code>"abcde"</code> and <code>"ace"</code> — <code>3</code> (“ace”); for <code>"abc"</code> and <code>"def"</code> — <code>0</code>.',
+      'Keep a table <code>dp[i][j]</code> — the answer for the first <code>i</code> notes of the first song and the first <code>j</code> of the second. If the last notes are equal — it’s <code>dp[i − 1][j − 1] + 1</code>. Otherwise drop one of them: <code>max(dp[i − 1][j], dp[i][j − 1])</code>.',
+    ],
+    tool: {
+      name: 'a table for two strings',
+      text: [
+        'Row 0 and column 0 of the table are zeros: there’s nothing shared with an empty song. Fill it row by row, left to right: every cell looks at three neighbours already counted.',
+        'The answer is in the bottom-right corner: <code>dp[text1.length][text2.length]</code>.',
+      ],
+      code: '//       ""  a  c  e\n//  ""    0  0  0  0\n//  a     0  1  1  1\n//  b     0  1  1  1\n//  c     0  1  2  2\n//  d     0  1  2  2\n//  e     0  1  2  3',
+    },
+    hints: ['What can you say if the last notes of both beginnings are equal? And if they differ?', 'For i from 1 and j from 1: if text1[i - 1] === text2[j - 1] — dp[i][j] = dp[i - 1][j - 1] + 1, otherwise max(dp[i - 1][j], dp[i][j - 1]).', 'for (let i = 1; i <= text1.length; i++) for (let j = 1; j <= text2.length; j++) dp[i][j] = text1[i - 1] === text2[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1]);'],
+    lesson: 'For two strings the table dp[i][j] holds the answer for every pair of beginnings: equal ends — diagonal +1, different — the larger neighbour.',
+    doc: ['A shared melody', 'Return the length of the longest common subsequence of text1 and text2.'],
+    talk: [
+      'My Cyclopes don’t strike in time! One sings one thing, the other another. Find a shared melody, let them forge to it.',
+      'We’ll count every pair of song beginnings once and write it in a table. The rest will be built from them.',
+    ],
+    quip: 'Hear that? They strike together! Now that’s a forge!',
+  },
+  'forge.lis': {
+    title: 'The longest blade', topic: 'DP: the best that ends here',
+    brief: '<b>The longest blade.</b> A blade is forged from plates, each harder than the one before. What’s the most plates the blade can take?',
+    statement: [
+      'Vulcan forges Aeneas a sword. Plates lie in a row on the anvil: <code>nums[i]</code> — the hardness of plate <code>i</code>. A blade is made of plates <b>in the order</b> they lie, and every next one must be <b>strictly harder</b> than the previous. Plates may be skipped.',
+      'Return the most plates that go into the blade. For <code>[10, 9, 2, 5, 3, 7, 101, 18]</code> — <code>4</code> (for example, 2, 3, 7, 18).',
+      'There can be up to 500 plates. For every plate <code>i</code> count <code>dp[i]</code> — the longest blade that <b>ends</b> on it: 1 plus the best <code>dp[j]</code> among the earlier, softer plates. The answer is the largest of all <code>dp</code>.',
+    ],
+    tool: {
+      name: 'the best that ends here',
+      text: [
+        'It’s often handy to ask not “what’s the answer for the first i?”, but “what’s the best answer that ends exactly at i?”. Then the last element is known, and it’s easy to extend with earlier ones.',
+        '<code>dp[i] = 1 + max(dp[j])</code> over all <code>j &lt; i</code> with <code>nums[j] &lt; nums[i]</code> (or just 1 if there are none).',
+      ],
+      code: '// nums = [2, 5, 3, 7]\n// dp   = [1, 2, 2, 3]   (7 extends 2→5 or 2→3)',
+    },
+    hints: ['What can the longest blade ending exactly at plate i be?', 'dp[i] = 1. For every j < i: if nums[j] < nums[i] — dp[i] = max(dp[i], dp[j] + 1). The answer is max(dp).', 'for (let i = 0; i < nums.length; i++) for (let j = 0; j < i; j++) if (nums[j] < nums[i]) dp[i] = Math.max(dp[i], dp[j] + 1);'],
+    lesson: 'dp[i] is the best that ends at i: O(n²) instead of trying every set. And if you keep the smallest “tails” of blades and search by halves — it even becomes O(n log n).',
+    doc: ['The longest blade', 'Return the length of the longest strictly increasing subsequence of nums.'],
+    talk: [
+      'The forge is burning again! Now for the main thing: the blade. The plates harden one after another, that way and no other.',
+      '(somewhere in Turnus’s camp) I’m forging too! Every blade from scratch, every possible set of plates… Oops, the recursion blew up.',
+      'For every plate — the longest blade that ends on it. Write it down — and move on, re-forging nothing.',
+    ],
+    quip: 'What a weapon! Son, now you’re ready for Turnus. And I’ll thank Vulcan… separately.',
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1990,6 +2118,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
   7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
+  14: { host: { who: 'Vulcan', line: 'The forge has gone out, and every blow is like the first! Learn not to forge the same thing twice.' }, trick: 'The honeycomb: dynamic programming' },
   13: { host: { who: 'Turnus', line: 'The fox is mine, Trojan. Look for him at night, among my guards — if you can find the way.' } },
   12: { host: { who: 'Kyrylo Kozhumyaka', line: 'I harnessed the Serpent to a plough and ploughed these walls. And the shard cut them into scraps!' }, trick: 'The zigzag: intervals and the greedy choice' },
   11: { host: { who: 'Molfar', line: 'Fog has wrapped the meadows, and the trembitas are silent. Give the mountains back their voice.' }, trick: 'The rosette: walking a graph' },
@@ -2070,6 +2199,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['The data are stretches [start, end]: walls, meetings, serpents.', 'You need to merge, insert or remove overlaps.', 'The best choice right now never spoils the future: the farthest jump, the earliest end.'],
     idea: 'Sort the intervals: by start to merge, by end to keep the most or to shoot the fewest arrows. After sorting, every new interval only needs to be compared with the last one. A greedy algorithm makes the best local choice at every step and never goes back — it works when that choice can be proven not to spoil the answer.',
     complexity: 'Time O(n log n) for sorting plus O(n) for the pass. Memory O(1)–O(n).',
+  },
+  14: {
+    title: 'The honeycomb: dynamic programming',
+    when: ['The problem breaks into smaller ones that repeat: the same step is counted many times.', 'You need the best (min, max) or the number of ways, and the choices depend on earlier ones.', 'Brute force grows exponentially, but the number of distinct states is small.'],
+    idea: 'Name the state (best[i], dp[a], dp[i][j]) and the transition: how the answer for a state is built from smaller ones. Solve states from the smallest and write them in a table, so nothing is forged twice. Often only the last couple of values are needed — then two variables are enough. A handy question: “what is the best that ends exactly here?”.',
+    complexity: 'Time = number of states × the cost of a transition: O(n), O(n · amount), O(n · m), O(n²). Memory — the table or a couple of variables.',
   },
 };
 

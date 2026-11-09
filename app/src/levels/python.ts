@@ -663,6 +663,44 @@ export const PY: Record<string, PyPart> = {
       text: { 0: ['<code>best[r][c]</code> — найменше відоме зусилля, з яким можна дійти до клітинки. У купі <code>heapq</code> — <code>(зусилля, r, c)</code>, найменше першим.', '<code>best[r][c]</code> — the smallest known effort to reach the cell. The <code>heapq</code> heap holds <code>(effort, r, c)</code>, the smallest first.'], 1: ['Перехід до сусіда коштує <code>max(зусилля, abs(різниця висот))</code>. Якщо це менше за <code>best</code> сусіда — онови й <code>heapq.heappush</code>. Дістав кінцеву клітинку — відповідь.', 'Moving to a neighbour costs <code>max(effort, abs(height difference))</code>. If that’s less than the neighbour’s <code>best</code> — update it and <code>heapq.heappush</code>. Popped the final cell — that’s the answer.'] },
     },
   },
+  'forge.stairs': {
+    body: `    best = []\n${HERE}\n    return 0\n`,
+    solution: 'def min_cost_climbing_stairs(cost):\n    best = []\n    for i in range(len(cost)):\n        best.append(cost[i] + (0 if i < 2 else min(best[i - 1], best[i - 2])))\n    return min(best[-1], best[-2])\n',
+    hint: 'for i in range(len(cost)):\n    best.append(cost[i] + (0 if i < 2 else min(best[i - 1], best[i - 2])))\nreturn min(best[-1], best[-2])',
+  },
+  'forge.iron': {
+    body: `    prev2, prev1 = 0, 0\n${HERE}\n    return prev1\n`,
+    solution: 'def rob(nums):\n    prev2, prev1 = 0, 0\n    for x in nums:\n        prev2, prev1 = prev1, max(prev1, prev2 + x)\n    return prev1\n',
+    wolf: 'def rob(nums):\n    answer = 0\n    for end in range(len(nums)):\n        prev2, prev1 = 0, 0\n        for i in range(end + 1):\n            prev2, prev1 = prev1, max(prev1, prev2 + nums[i])\n        answer = prev1\n    return answer\n',
+    hint: 'for x in nums:\n    prev2, prev1 = prev1, max(prev1, prev2 + x)',
+    tool: {
+      code: '# [2, 7, 9, 3, 1]\n# best: 2, 7, 11, 11, 12',
+      text: { 1: ['На кожному возі зсунь обидва числа в один рядок: <code>prev2, prev1 = prev1, max(prev1, prev2 + x)</code>.', 'At every cart shift both numbers in one line: <code>prev2, prev1 = prev1, max(prev1, prev2 + x)</code>.'] },
+    },
+  },
+  'forge.coins': {
+    body: `    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n${HERE}\n    return -1 if dp[amount] == float('inf') else dp[amount]\n`,
+    solution: "def coin_change(coins, amount):\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n    for a in range(1, amount + 1):\n        for c in coins:\n            if c <= a:\n                dp[a] = min(dp[a], dp[a - c] + 1)\n    return -1 if dp[amount] == float('inf') else dp[amount]\n",
+    hint: 'for a in range(1, amount + 1):\n    for c in coins:\n        if c <= a: dp[a] = min(dp[a], dp[a - c] + 1)',
+    tool: {
+      code: '# coins = [1, 3, 4], amount = 6\n# dp: 0  1  2  1  1  2  2\n#     0  1  2  3  4  5  6',
+      text: {
+        0: ['<code>dp[0] = 0</code>, решта поки <code>float(\'inf\')</code>. Для кожної суми <code>a</code> спробуй кожну монету <code>c ≤ a</code>: остання монета <code>c</code>, а решта — вже пораховане <code>dp[a − c]</code>.', '<code>dp[0] = 0</code>, the rest are <code>float(\'inf\')</code> for now. For every sum <code>a</code> try every coin <code>c ≤ a</code>: the last coin is <code>c</code>, and the rest is the already counted <code>dp[a − c]</code>.'],
+        1: ['<code>dp[a] = min(dp[a], dp[a − c] + 1)</code>. Наприкінці <code>dp[amount]</code> — відповідь, якщо вона не <code>float(\'inf\')</code>.', '<code>dp[a] = min(dp[a], dp[a − c] + 1)</code>. At the end <code>dp[amount]</code> is the answer, unless it is <code>float(\'inf\')</code>.'],
+      },
+    },
+  },
+  'forge.lcs': {
+    body: `    dp = [[0] * (len(text2) + 1) for _ in range(len(text1) + 1)]\n${HERE}\n    return dp[len(text1)][len(text2)]\n`,
+    solution: 'def longest_common_subsequence(text1, text2):\n    dp = [[0] * (len(text2) + 1) for _ in range(len(text1) + 1)]\n    for i in range(1, len(text1) + 1):\n        for j in range(1, len(text2) + 1):\n            if text1[i - 1] == text2[j - 1]:\n                dp[i][j] = dp[i - 1][j - 1] + 1\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n    return dp[len(text1)][len(text2)]\n',
+    hint: 'for i in range(1, len(text1) + 1):\n    for j in range(1, len(text2) + 1):\n        if text1[i - 1] == text2[j - 1]: dp[i][j] = dp[i - 1][j - 1] + 1\n        else: dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])',
+  },
+  'forge.lis': {
+    body: `    dp = [1] * len(nums)\n${HERE}\n    return max(dp) if nums else 0\n`,
+    solution: 'def length_of_lis(nums):\n    dp = [1] * len(nums)\n    for i in range(len(nums)):\n        for j in range(i):\n            if nums[j] < nums[i]:\n                dp[i] = max(dp[i], dp[j] + 1)\n    return max(dp) if nums else 0\n',
+    wolf: 'def length_of_lis(nums):\n    best = 0\n    for end in range(len(nums)):\n        dp = [1] * (end + 1)\n        for i in range(end + 1):\n            for j in range(i):\n                if nums[j] < nums[i]:\n                    dp[i] = max(dp[i], dp[j] + 1)\n        best = max(best, dp[end])\n    return best\n',
+    hint: 'for i in range(len(nums)):\n    for j in range(i):\n        if nums[j] < nums[i]: dp[i] = max(dp[i], dp[j] + 1)',
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None'], [/\bnull\b/g, 'None']];

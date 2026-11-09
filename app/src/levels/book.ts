@@ -202,4 +202,19 @@ for (const [s, e] of intervals) {
     complexity: 'Час O(n log n) на сортування плюс O(n) на прохід. Пам\'ять O(1)–O(n).',
     problems: ['56. Merge Intervals', '57. Insert Interval', '55. Jump Game', '435. Non-overlapping Intervals', '452. Minimum Number of Arrows to Burst Balloons'],
   },
+  {
+    world: 14,
+    title: 'Соти: динамічне програмування',
+    motif: 'combs',
+    when: ['Задача розкладається на менші, що повторюються: той самий крок рахується багато разів.', 'Треба найкраще (мін, макс) або кількість способів, і вибір залежить від попередніх.', 'Перебір росте експоненційно, а різних станів небагато.'],
+    idea: 'Назви стан (best[i], dp[a], dp[i][j]) і перехід: як відповідь для стану складається з менших. Розв\'язуй стани від найменших і записуй у таблицю — нічого не кується двічі. Часто потрібні лише кілька останніх значень — тоді досить двох змінних. Зручне питання: «яке найкраще закінчується саме тут?».',
+    template: `const dp = new Array(n + 1).fill(0);
+dp[0] = /* базовий випадок */;
+for (let i = 1; i <= n; i++) {
+  dp[i] = /* з dp[i - 1], dp[i - 2], … */;
+}
+return dp[n];`,
+    complexity: 'Час = кількість станів × ціна переходу: O(n), O(n · amount), O(n · m), O(n²). Пам\'ять — таблиця або кілька змінних.',
+    problems: ['746. Min Cost Climbing Stairs', '70. Climbing Stairs', '198. House Robber', '322. Coin Change', '1143. Longest Common Subsequence', '300. Longest Increasing Subsequence'],
+  },
 ];

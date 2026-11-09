@@ -22,6 +22,7 @@ const VOICE: Record<Who, [Speaker, string, string]> = {
   kozhumyaka: ['kozhumyaka', 'Кирило Кожум\'яка', 'Kyrylo Kozhumyaka'],
   turn: ['turn', 'Турн', 'Turnus'],
   vulcan: ['vulcan', 'Вулкан', 'Vulcan'],
+  venus: ['venus', 'Венера', 'Venus'],
 };
 
 const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);

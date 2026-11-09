@@ -4,7 +4,7 @@
  * На межі пісень у «дорозі» — інтерлюдія Юнони з Вовком (наскрізна лінія з docs/STORY.md).
  * Репліка: [хто, укр, англ]; «хто» — ключ портрета в VOICE (ui/Voyage.tsx).
  */
-export type Who = 'fox' | 'enei' | 'juno' | 'wolf' | 'sibyl' | 'eol' | 'dido' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon' | 'anchises' | 'mavka' | 'molfar' | 'kozhumyaka' | 'turn' | 'vulcan';
+export type Who = 'fox' | 'enei' | 'juno' | 'wolf' | 'sibyl' | 'eol' | 'dido' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon' | 'anchises' | 'mavka' | 'molfar' | 'kozhumyaka' | 'turn' | 'vulcan' | 'venus';
 export interface Slide { title: [string, string]; narr: [string, string]; lines: [Who, string, string][] }
 export interface Voyage { leave: Slide; sail: Slide; arrive: Slide }
 
@@ -326,6 +326,33 @@ export const VOYAGES: Record<number, Voyage> = {
       lines: [
         ['turn', 'Лис у мене, троянцю. Хочеш назад — приходь сам.', 'The fox is mine, Trojan. Want him back — come yourself.'],
         ['enei', 'Прийду. І цього разу без підказок.', 'I will. And this time without hints.'],
+      ],
+    },
+  },
+  13: {
+    leave: {
+      title: ['Микита на волі', 'Mykyta is free'],
+      narr: ['Мотузки розрізано, і Микита спалахує всіма кольорами одразу. Вовк дивиться на порожню клітку й чухає потилицю.', 'The ropes are cut, and Mykyta flares up in every colour at once. The Wolf stares at the empty cage and scratches his head.'],
+      lines: [
+        ['fox', 'Енею! Ти прийшов сам, без моїх підказок. Я майже ображений. Майже.', 'Aeneas! You came on your own, without my hints. I’m almost offended. Almost.'],
+        ['wolf', 'Юнона знову скаже, що я винен. А я ж стеріг! Усіма стежками одразу…', 'Juno will say it’s my fault again. But I was guarding! Every path at once…'],
+      ],
+    },
+    sail: {
+      title: ['Прохання Венери', 'Venus’s plea'],
+      narr: ['До двобою з Турном лишилось кілька днів. Венера біжить до свого чоловіка, кульгавого коваля Вулкана.', 'Only a few days remain before the duel with Turnus. Venus runs to her husband, the lame smith Vulcan.'],
+      lines: [
+        ['venus', 'Мій син іде на Турна з голими руками. Вулкане, тільки ти можеш допомогти.', 'My son is going against Turnus empty-handed. Vulcan, only you can help.'],
+        ['enei', 'Мамо, я впораюсь…', 'Mother, I’ll manage…'],
+        ['venus', 'Впораєшся. У новій зброї.', 'You will. In new armour.'],
+      ],
+    },
+    arrive: {
+      title: ['Кузня Вулкана', 'Vulcan’s forge'],
+      narr: ['Кузня під вулканом мала б гриміти день і ніч. Але уламок погасив горн: кожен удар доводиться повторювати з нуля, і жодна деталь не встигає вистигнути.', 'The forge beneath the volcano should thunder day and night. But a shard has put out the fire: every blow has to be repeated from scratch, and no piece has time to cool.'],
+      lines: [
+        ['vulcan', 'Знову ти, Венеро? І з цілим військом. Ну, проходьте… обережно, тут гаряче.', 'You again, Venus? And with a whole army. Well, come in… careful, it’s hot here.'],
+        ['fox', 'Я розжарений помаранчевий. Нарешті колір, у якому мені тепло.', 'I’m red-hot orange. At last a colour I feel warm in.'],
       ],
     },
   },
