@@ -168,4 +168,22 @@ while (node && node.val !== target) {
     complexity: 'Пошук і вставка O(h): O(log n) у збалансованому дереві. Inorder O(n).',
     problems: ['700. Search in a Binary Search Tree', '701. Insert into a Binary Search Tree', '98. Validate Binary Search Tree', '230. Kth Smallest Element in a BST', '235. Lowest Common Ancestor of a BST'],
   },
+  {
+    world: 11,
+    title: 'Розетка: обхід графа',
+    motif: 'rose',
+    when: ['Речі з\'єднані між собою: клітинки сітки, села й дороги, ремесла та їхні вимоги.', 'Треба все, до чого можна дійти від точки, або кількість окремих груп.', 'Треба відстань у кроках або порядок без кіл.'],
+    idea: 'Обхід вглиб (стос або рекурсія) заходить у все досяжне; познач відвідане, щоб не ходити колами. Обхід ушир іде хвилями, і номер хвилі — це відстань. Обхід від кожної клітинки часто можна замінити одним — від цілей назад. Топологічне сортування: бери те, що нічого не чекає, і відмикай наступне; що лишилось — коло.',
+    template: `const seen = new Set([start]);
+let wave = [start], steps = 0;
+while (wave.length) {
+  const next = [];
+  for (const v of wave)
+    for (const u of neighbours(v))
+      if (!seen.has(u)) { seen.add(u); next.push(u); }
+  wave = next; steps++;
+}`,
+    complexity: 'Час O(V + E): кожна клітинка чи вершина і кожен зв\'язок один раз. Пам\'ять O(V).',
+    problems: ['733. Flood Fill', '200. Number of Islands', '994. Rotting Oranges', '207. Course Schedule', '417. Pacific Atlantic Water Flow'],
+  },
 ];

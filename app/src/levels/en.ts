@@ -1623,6 +1623,133 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     ],
     quip: 'The forest has woken. Did you hear me sing? Now this song is yours too.',
   },
+  'karp.fill': {
+    title: 'The trembita’s voice', topic: 'a graph: filling from a cell',
+    brief: '<b>The trembita’s voice.</b> A trembita sounded on the meadow. Paint the whole area its voice reaches.',
+    statement: [
+      'Fog has wrapped the mountain meadows. The map is a grid <code>image</code>: every number is the colour of a patch. A trembita sounds from cell <code>[sr, sc]</code>, and its voice flies to neighbouring patches of the same colour: up, down, left and right (not diagonally). And from them — further.',
+      'Paint every cell the voice reaches with colour <code>color</code> and return the grid. For <code>[[1, 1, 1], [1, 1, 0], [1, 0, 1]]</code>, start <code>[1, 1]</code> and colour <code>2</code> you get <code>[[2, 2, 2], [2, 2, 0], [2, 0, 1]]</code>: the bottom-right corner is cut off by zeros.',
+      'Cells with neighbours form a <b>graph</b>. Walk it from the start: keep a stack of cells still to visit, and paint each one as soon as you reach it.',
+    ],
+    tool: {
+      name: 'walking a grid with a stack',
+      text: [
+        'Put the start on the stack. While the stack isn’t empty: take a cell; if it’s outside the grid or the wrong colour — skip it. Otherwise paint it and push its four neighbours.',
+        'A painted cell is no longer the old colour, so you won’t visit it twice. Just be careful when the new colour equals the old one.',
+      ],
+      code: 'const stack = [[sr, sc]];\nwhile (stack.length) {\n  const [r, c] = stack.pop();\n  // check bounds and colour, paint\n  stack.push([r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]);\n}',
+    },
+    hints: ['Where can the voice fly from one cell?', 'stack = [[sr, sc]]. While there’s something to take: [r, c] = pop; if out of bounds or image[r][c] !== old — continue; paint and push 4 neighbours.', 'while (stack.length) { const [r, c] = stack.pop(); if (r < 0 || c < 0 || r >= image.length || c >= image[0].length || image[r][c] !== old) continue; image[r][c] = color; stack.push([r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]); }'],
+    lesson: 'A grid is a graph: a cell is connected to four neighbours. A stack walk enters every cell once.',
+    doc: ['The trembita’s voice', 'Paint with color every cell of the same colour as [sr, sc] that can be reached up, down, left or right.', 'Return the grid.'],
+    talk: [
+      'The fog is so thick the Hutsuls can’t see the next house. Let the trembita sound — wherever its voice reaches, it will clear.',
+      'From a cell to its neighbour, from the neighbour on. Like gossip through a village.',
+    ],
+    quip: 'Hear it echo? Where it reached, you can already see the houses.',
+  },
+  'karp.islands': {
+    title: 'Islands of meadows', topic: 'a graph: connected components',
+    brief: '<b>Islands of meadows.</b> Patches of meadow show through the fog. Count how many separate islands there are.',
+    statement: [
+      'The molfar looks from above: <code>1</code> — meadow, <code>0</code> — fog. Neighbouring meadows (up, down, left, right) are one island, however winding it is.',
+      'Return the number of islands. <code>[[1, 1, 0, 0], [1, 0, 0, 1], [0, 0, 1, 1]]</code> has <code>2</code>.',
+      'Meadows can be 50 × 50 cells. Go through the grid row by row. Hit a meadow — it’s a new island: count it and at once “flood” the whole of it with fog so you never hit it again.',
+    ],
+    tool: {
+      name: 'found it — flood it',
+      text: [
+        'Every island must be counted exactly once. For that, as soon as you find an island’s first cell, walk all of it (as in “The trembita’s voice”) and mark what you’ve walked: <code>grid[r][c] = 0</code>.',
+        'Then the outer loop only hits islands not yet seen, and every cell is visited a constant number of times.',
+      ],
+      code: 'for (let r = 0; r < grid.length; r++)\n  for (let c = 0; c < grid[0].length; c++)\n    if (grid[r][c] === 1) {\n      count++;\n      // flood the whole island from [r, c]\n    }',
+    },
+    hints: ['How do you count an island exactly once, though it has many cells?', 'A double loop over the cells. Found a 1 — count++ and walk the island with a stack, putting 0 on every walked cell.', 'if (grid[r][c] === 1) { count++; const st = [[r, c]]; while (st.length) { const [a, b] = st.pop(); if (a < 0 || b < 0 || a >= grid.length || b >= grid[0].length || grid[a][b] !== 1) continue; grid[a][b] = 0; st.push([a + 1, b], [a - 1, b], [a, b + 1], [a, b - 1]); } }'],
+    lesson: 'The number of islands is the number of walks you start: found a new cell — walk and mark the whole island. O(cells) in total.',
+    doc: ['Islands of meadows', '1 — meadow, 0 — fog. Return the number of islands.'],
+    talk: [
+      'From above you can see patches of meadow. As many as there are, so many communities that can’t hear each other.',
+      'I’ll walk the whole island again from every meadow cell! And so for each one. I won’t miss a thing!',
+      'But you’ll walk every island as many times as it has cells. Found an island — flood it, and it won’t bother you again.',
+    ],
+    quip: 'So many communities. Now we know whom to send the trembita’s call to.',
+  },
+  'karp.rot': {
+    title: 'Spoiled bryndza', topic: 'a graph: breadth-first in waves',
+    brief: '<b>Spoiled bryndza.</b> The bryndza cheese on a shelf in the hut has gone bad. In how many minutes will all of it spoil?',
+    statement: [
+      'Bryndza cheeses lie on the shelves of a shepherd’s hut: <code>0</code> — empty, <code>1</code> — a fresh cheese, <code>2</code> — a spoiled one. Every minute a spoiled cheese spoils its fresh neighbours (up, down, left, right).',
+      'Return in how many minutes no fresh cheese will be left. If some cheese never spoils (it can’t be reached) — <code>-1</code>. If there is no fresh cheese at the start — <code>0</code>. For <code>[[2, 1, 1], [1, 1, 0], [0, 1, 1]]</code> — <code>4</code>.',
+      'Spoiling goes in <b>waves</b>, like the trembita’s voice: all the spoiled ones together are the first wave, everyone they touched is the second. This is a <b>breadth-first search</b> (BFS): keep the current wave and gather the next from it.',
+    ],
+    tool: {
+      name: 'breadth-first over a grid',
+      text: [
+        'First gather all spoiled cheeses into <code>wave</code> and count the fresh ones. Every minute: for every cell of the wave look at its 4 neighbours; spoil a fresh one, decrease the fresh counter and put it into <code>next</code>.',
+        'The wave is over — <code>wave = next</code>, minutes +1. Stop when the wave is empty or no fresh ones are left.',
+      ],
+      code: '// minute 0:  2 1 1     minute 1:  2 2 1\n//            1 1 0                2 1 0\n//            0 1 1                0 1 1',
+    },
+    hints: ['What does every minute do to all the spoiled cheeses at once?', 'Gather all 2s into wave, count the 1s. While wave isn’t empty and fresh > 0: next = []; for every [r, c] in wave — 4 neighbours, spoil the fresh ones (= 2, fresh--, into next); wave = next; minutes++.', 'while (wave.length && fresh) { const next = []; for (const [r, c] of wave) for (const [x, y] of [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]) if (x >= 0 && y >= 0 && x < grid.length && y < grid[0].length && grid[x][y] === 1) { grid[x][y] = 2; fresh--; next.push([x, y]); } wave = next; minutes++; }'],
+    lesson: 'A breadth-first search goes in waves from all sources at once: the wave number is the distance, that is, the minutes.',
+    doc: ['Spoiled bryndza', '0 — empty, 1 — fresh, 2 — spoiled. Every minute a spoiled one spoils 4 neighbours.', 'Return in how many minutes no fresh ones are left, or -1.'],
+    talk: [
+      'The shepherds went looking for each other in the fog and left the bryndza behind. One cheese has already gone bad…',
+      'And it spoils its neighbours in waves. Let’s count waves, not cheeses — it’ll be faster.',
+    ],
+    quip: 'Now we know how much time is left for supper. I’d hurry.',
+  },
+  'karp.crafts': {
+    title: 'The order of crafts', topic: 'a graph: dependencies without a loop',
+    brief: '<b>The order of crafts.</b> To become a molfar you must learn the crafts in the right order. Is it even possible?',
+    statement: [
+      'A molfar’s apprentice must master <code>numCourses</code> crafts numbered from 0. A pair <code>[a, b]</code> in <code>prerequisites</code> means: to learn <code>a</code>, you must first learn <code>b</code>.',
+      'Return <code>true</code> if everything can be learned. The shard may have tangled the requirements into a loop: “carving is needed for pysanky, pysanky for the trembita, and the trembita for carving”. Then — <code>false</code>. For <code>2</code> and <code>[[1, 0]]</code> — <code>true</code>; for <code>2</code> and <code>[[1, 0], [0, 1]]</code> — <code>false</code>.',
+      'Start with crafts that need nothing. Learned a craft — remove it from the others’ requirements. Whoever is left without requirements can now be learned too. If you learn them all this way — there’s no loop.',
+    ],
+    tool: {
+      name: 'in-degree and a queue of ready ones',
+      text: [
+        '<code>need[a]</code> — how many crafts must still be learned before <code>a</code>. <code>after[b]</code> — the list of crafts waiting for <code>b</code>.',
+        'Put every craft with <code>need = 0</code> into <code>ready</code>. Take a craft from there — count it learned and decrease <code>need</code> for each one in <code>after</code>; whoever reached zero goes into <code>ready</code>. This is <b>topological sorting</b>.',
+      ],
+      code: '// [[1, 0], [2, 1]]: 0 → 1 → 2\n// need = [0, 1, 1], ready = [0]\n// learned 0 → need[1] = 0 → ready = [1]\n// learned 1 → need[2] = 0 → ready = [2] → all ✓',
+    },
+    hints: ['Which craft can you start with?', 'need[a]++ and after[b].push(a) for every pair. ready = crafts with need 0. While ready isn’t empty: take x, done++, for every y in after[x]: if --need[y] === 0 — into ready. Answer: done === numCourses.', 'for (const [a, b] of prerequisites) { need[a]++; after[b].push(a); } const ready = []; for (let i = 0; i < numCourses; i++) if (!need[i]) ready.push(i); let done = 0; while (ready.length) { const x = ready.pop(); done++; for (const y of after[x]) if (--need[y] === 0) ready.push(y); } return done === numCourses;'],
+    lesson: 'Topological sorting: learn what waits for nothing and unlock the next. If you couldn’t learn everything — the requirements have a loop.',
+    doc: ['The order of crafts', '[a, b] — to learn a, you must first learn b.', 'true if all numCourses crafts can be learned.'],
+    talk: [
+      'Crafts in the mountains are passed on in turn: one is needed for another. But the shard mixed them up, and the apprentices go in circles.',
+      'Let’s start with what can be learned right away. Every craft learned unlocks the next ones.',
+    ],
+    quip: 'There is an order. One day you too, fox, will become a molfar. Maybe.',
+  },
+  'karp.flow': {
+    title: 'The Cheremosh and the Prut', topic: 'a graph: walking back from the shores',
+    brief: '<b>The Cheremosh and the Prut.</b> Rain falls on the mountains. From which peaks will water flow into both the Cheremosh and the Prut?',
+    statement: [
+      'The mountain map is a grid of heights <code>heights</code>. The Cheremosh flows along the <b>top and left</b> edges of the map, the Prut along the <b>bottom and right</b> ones. Water flows from a cell to a neighbour (up, down, left, right) if it isn’t higher. From an edge cell water gets into the river of that edge.',
+      'Return all cells <code>[r, c]</code> from which water can reach <b>both</b> rivers. Order doesn’t matter. For <code>[[1, 2, 2, 3, 5], [3, 2, 3, 4, 4], [2, 4, 5, 3, 1], [6, 7, 1, 4, 5], [5, 1, 1, 2, 4]]</code> there are seven such cells: <code>[0, 4]</code>, <code>[1, 3]</code>, <code>[1, 4]</code>, <code>[2, 2]</code>, <code>[3, 0]</code>, <code>[3, 1]</code>, <code>[4, 0]</code>.',
+      'Letting water run from every peak is the Wolf’s way. It’s craftier to go <b>backwards</b>: from the river uphill, to neighbours that aren’t lower. One walk from the banks of the Cheremosh, another from the banks of the Prut. The cells both reached are the answer.',
+    ],
+    tool: {
+      name: 'walking back from the goal',
+      text: [
+        'Instead of “where will water flow from here?” ask “where could water have come here from?”. From the bank climb to a neighbour if it is <b>not lower</b>.',
+        'Gather the set of reachable cells for each river separately (as in “The trembita’s voice”, only with a height condition). The answer is their intersection.',
+      ],
+      code: '// from the Cheremosh (top and left edge) — up the slopes\n// from the Prut (bottom and right edge)   — up the slopes\n// both reached a cell → water from it flows into both rivers',
+    },
+    hints: ['Where could water have come from to reach the bank of the Cheremosh?', 'reach(starts): a stack walk from the edge cells; go to a neighbour if heights[neighbour] ≥ heights[current]; remember the visited. Do it for both edges and take the cells visited by both.', 'const reach = (starts) => { const seen = new Set(), st = starts; while (st.length) { const [r, c] = st.pop(); if (seen.has(r * C + c)) continue; seen.add(r * C + c); for (const [x, y] of [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]) if (x >= 0 && y >= 0 && x < R && y < C && heights[x][y] >= heights[r][c]) st.push([x, y]); } return seen; };'],
+    lesson: 'When there are many sources and few goals — walk back from the goals. Two walks from the banks replace a walk from every peak.',
+    doc: ['The Cheremosh and the Prut', 'The Cheremosh is the top and left edge, the Prut the bottom and right. Water flows to a neighbour that isn’t higher.', 'Return the cells [r, c] from which water reaches both rivers.'],
+    talk: [
+      'When the fog lifts, it will rain. The Hutsuls want to know from which peaks water reaches both the Cheremosh and the Prut. That’s where they’ll put the trembitas.',
+      'I’ll drop water from every peak and follow it! Everywhere! Oh, I’m soaked…',
+      'And we’ll go from the rivers uphill. Twice — and we’ll meet on the right peaks.',
+    ],
+    quip: 'The trembitas have sounded from every peak. Hear that? The meadows are talking again.',
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1634,6 +1761,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
   7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
+  11: { host: { who: 'Molfar', line: 'Fog has wrapped the meadows, and the trembitas are silent. Give the mountains back their voice.' }, trick: 'The rosette: walking a graph' },
   10: { host: { who: 'Mavka', line: 'Every tree had its place: younger to the left, older to the right. Bring order back to the forest — and it will wake.' }, trick: 'The periwinkle: a search tree' },
   9: { host: { who: 'Anchises', line: 'Here is your line, son. The branches got tangled — help me untangle them.' }, trick: 'The tree of life: binary trees' },
   8: { host: { who: 'Charon', line: 'A boat for two, and the weight is limited. Who rows with whom is for you to decide.' }, trick: 'The spiral: recursion and backtracking' },
@@ -1699,6 +1827,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['The data is a tree where everything on the left is smaller and everything on the right bigger.', 'You need to find, insert or check a value without walking everything.', 'You need values in order: the k-th smallest, the next one, a range.'],
     idea: 'Every comparison tells you which branch to go to, so search and insert take as many steps as the tree has storeys. A new node always becomes a leaf. Checking the order needs bounds that narrow from the top, not just parent–child comparisons. An inorder walk (left, node, right) yields the values in increasing order.',
     complexity: 'Search and insert O(h): O(log n) in a balanced tree. Inorder O(n).',
+  },
+  11: {
+    title: 'The rosette: walking a graph',
+    when: ['Things are connected: grid cells, villages and roads, crafts and their requirements.', 'You need everything reachable from a point, or the number of separate groups.', 'You need the distance in steps, or an order without loops.'],
+    idea: 'A depth-first walk (stack or recursion) visits everything reachable; mark the visited so you don’t walk in circles. A breadth-first walk goes in waves, and the wave number is the distance. A walk from every cell can often be replaced by one from the goals backwards. Topological sorting: take what waits for nothing and unlock the next; whatever is left over is a loop.',
+    complexity: 'Time O(V + E): every cell or vertex and every link once. Memory O(V).',
   },
 };
 

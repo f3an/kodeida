@@ -561,6 +561,38 @@ export const PY: Record<string, PyPart> = {
     hint: 'if not node or count >= k: return\nvisit(node.left)\ncount += 1\nif count == k: answer = node.val\nvisit(node.right)',
     tool: { code: 'def visit(node):\n    if not node:\n        return\n    visit(node.left)\n    print(node.val)   # за зростанням!\n    visit(node.right)' },
   },
+  'karp.fill': {
+    body: `    old = image[sr][sc]\n    if old == color:\n        return image\n${HERE}\n    return image\n`,
+    solution: 'def flood_fill(image, sr, sc, color):\n    old = image[sr][sc]\n    if old == color:\n        return image\n    stack = [(sr, sc)]\n    while stack:\n        r, c = stack.pop()\n        if r < 0 or c < 0 or r >= len(image) or c >= len(image[0]) or image[r][c] != old:\n            continue\n        image[r][c] = color\n        stack += [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]\n    return image\n',
+    hint: 'stack = [(sr, sc)]\nwhile stack:\n    r, c = stack.pop()\n    if r < 0 or c < 0 or r >= len(image) or c >= len(image[0]) or image[r][c] != old: continue\n    image[r][c] = color\n    stack += [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]',
+    tool: { code: 'stack = [(sr, sc)]\nwhile stack:\n    r, c = stack.pop()\n    # перевір межі й колір, пофарбуй\n    stack += [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]' },
+  },
+  'karp.islands': {
+    body: `    count = 0\n${HERE}\n    return count\n`,
+    solution: 'def num_islands(grid):\n    count = 0\n    for r in range(len(grid)):\n        for c in range(len(grid[0])):\n            if grid[r][c] != 1:\n                continue\n            count += 1\n            st = [(r, c)]\n            while st:\n                a, b = st.pop()\n                if a < 0 or b < 0 or a >= len(grid) or b >= len(grid[0]) or grid[a][b] != 1:\n                    continue\n                grid[a][b] = 0\n                st += [(a + 1, b), (a - 1, b), (a, b + 1), (a, b - 1)]\n    return count\n',
+    wolf: 'def num_islands(grid):\n    R, C = len(grid), len(grid[0])\n    count = 0\n    for r in range(R):\n        for c in range(C):\n            if grid[r][c] != 1:\n                continue\n            seen = {r * C + c}\n            stack = [(r, c)]\n            first = True\n            while stack:\n                a, b = stack.pop()\n                if a * C + b < r * C + c:\n                    first = False\n                for x, y in ((a + 1, b), (a - 1, b), (a, b + 1), (a, b - 1)):\n                    if x < 0 or y < 0 or x >= R or y >= C or x * C + y in seen or grid[x][y] != 1:\n                        continue\n                    seen.add(x * C + y)\n                    stack.append((x, y))\n            if first:\n                count += 1\n    return count\n',
+    hint: 'if grid[r][c] == 1:\n    count += 1\n    st = [(r, c)]\n    while st:\n        a, b = st.pop()\n        if a < 0 or b < 0 or a >= len(grid) or b >= len(grid[0]) or grid[a][b] != 1: continue\n        grid[a][b] = 0\n        st += [(a + 1, b), (a - 1, b), (a, b + 1), (a, b - 1)]',
+    tool: { code: 'for r in range(len(grid)):\n    for c in range(len(grid[0])):\n        if grid[r][c] == 1:\n            count += 1\n            # затопи весь острів від (r, c)' },
+  },
+  'karp.rot': {
+    body: `    wave, fresh, minutes = [], 0, 0\n${HERE}\n    return -1 if fresh else minutes\n`,
+    solution: 'def oranges_rotting(grid):\n    wave, fresh, minutes = [], 0, 0\n    for r in range(len(grid)):\n        for c in range(len(grid[0])):\n            if grid[r][c] == 2:\n                wave.append((r, c))\n            if grid[r][c] == 1:\n                fresh += 1\n    while wave and fresh:\n        nxt = []\n        for r, c in wave:\n            for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n                if 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] == 1:\n                    grid[x][y] = 2\n                    fresh -= 1\n                    nxt.append((x, y))\n        wave = nxt\n        minutes += 1\n    return -1 if fresh else minutes\n',
+    hint: 'while wave and fresh:\n    nxt = []\n    for r, c in wave:\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] == 1:\n                grid[x][y] = 2; fresh -= 1; nxt.append((x, y))\n    wave = nxt; minutes += 1',
+    tool: {
+      code: '# хвилина 0:  2 1 1     хвилина 1:  2 2 1\n#             1 1 0                 2 1 0\n#             0 1 1                 0 1 1',
+      text: { 0: ['Спершу збери в <code>wave</code> усі зіпсовані головки й порахуй свіжі. Кожна хвилина: для кожної клітинки хвилі глянь на 4 сусідів; свіжу псуй, зменшуй лічильник свіжих і клади в <code>nxt</code>.', 'First gather all spoiled cheeses into <code>wave</code> and count the fresh ones. Every minute: for every cell of the wave look at its 4 neighbours; spoil a fresh one, decrease the fresh counter and put it into <code>nxt</code>.'], 1: ['Хвиля скінчилась — <code>wave = nxt</code>, хвилин +1. Зупиняйся, коли хвиля порожня або свіжих не лишилось.', 'The wave is over — <code>wave = nxt</code>, minutes +1. Stop when the wave is empty or no fresh ones are left.'] },
+    },
+  },
+  'karp.crafts': {
+    body: `    need = [0] * num_courses\n    after = [[] for _ in range(num_courses)]\n${HERE}\n    return False\n`,
+    solution: 'def can_finish(num_courses, prerequisites):\n    need = [0] * num_courses\n    after = [[] for _ in range(num_courses)]\n    for a, b in prerequisites:\n        need[a] += 1\n        after[b].append(a)\n    ready = [i for i in range(num_courses) if need[i] == 0]\n    done = 0\n    while ready:\n        x = ready.pop()\n        done += 1\n        for y in after[x]:\n            need[y] -= 1\n            if need[y] == 0:\n                ready.append(y)\n    return done == num_courses\n',
+    hint: 'for a, b in prerequisites: need[a] += 1; after[b].append(a)\nready = [i for i in range(num_courses) if need[i] == 0]\ndone = 0\nwhile ready:\n    x = ready.pop(); done += 1\n    for y in after[x]:\n        need[y] -= 1\n        if need[y] == 0: ready.append(y)\nreturn done == num_courses',
+  },
+  'karp.flow': {
+    body: `    R, C = len(heights), len(heights[0])\n${HERE}\n    return []\n`,
+    solution: 'def pacific_atlantic(heights):\n    R, C = len(heights), len(heights[0])\n    def reach(starts):\n        seen = set()\n        st = starts\n        while st:\n            r, c = st.pop()\n            if (r, c) in seen:\n                continue\n            seen.add((r, c))\n            for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n                if 0 <= x < R and 0 <= y < C and heights[x][y] >= heights[r][c]:\n                    st.append((x, y))\n        return seen\n    a = reach([(r, 0) for r in range(R)] + [(0, c) for c in range(C)])\n    b = reach([(r, C - 1) for r in range(R)] + [(R - 1, c) for c in range(C)])\n    return [[r, c] for r in range(R) for c in range(C) if (r, c) in a and (r, c) in b]\n',
+    hint: 'def reach(starts):\n    seen, st = set(), starts\n    while st:\n        r, c = st.pop()\n        if (r, c) in seen: continue\n        seen.add((r, c))\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= x < R and 0 <= y < C and heights[x][y] >= heights[r][c]: st.append((x, y))\n    return seen',
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None'], [/\bnull\b/g, 'None']];

@@ -250,4 +250,30 @@ export const VOYAGES: Record<number, Voyage> = {
       ],
     },
   },
+  10: {
+    leave: {
+      title: ['Ліс прокинувся', 'The forest wakes'],
+      narr: ['Сопілка Лукаша будить дерева одне за одним, і ліс шумить, як колись. На вишиванці розцвітає «барвінок».', 'Lukash’s pipe wakes the trees one by one, and the forest rustles as it used to. A “periwinkle” blooms on the shirt.'],
+      lines: [
+        ['mavka', 'Я не вмираю, поки ліс співає. Ідіть, і несіть пісню далі.', 'I don’t die while the forest sings. Go, and carry the song on.'],
+        ['fox', 'Я б лишився… але зелений мені не дуже личить.', 'I’d stay… but green doesn’t really suit me.'],
+      ],
+    },
+    sail: {
+      title: ['Через перевал', 'Over the pass'],
+      narr: ['Стежка піднімається в гори. Унизу шумить Черемош, а вище — лише туман і мовчазні полонини.', 'The path climbs into the mountains. Below, the Cheremosh roars, and above there is only fog and silent meadows.'],
+      lines: [
+        ['enei', 'Тихо як. Навіть вівці не мекають.', 'How quiet. Even the sheep aren’t bleating.'],
+        ['fox', 'Бо не чують одна одну. Тут хтось має озватися першим.', 'Because they can’t hear each other. Someone here has to call out first.'],
+      ],
+    },
+    arrive: {
+      title: ['Карпати', 'The Carpathians'],
+      narr: ['Полонини оповив туман: гуцули не можуть знайти одне одного, а трембіти мовчать. На скелі сидить мольфар і щось шепоче вітрові.', 'Fog has wrapped the meadows: the Hutsuls can’t find each other, and the trembitas are silent. A molfar sits on a rock and whispers something to the wind.'],
+      lines: [
+        ['molfar', 'Знаю, чого ви прийшли. Уламок сховався в тумані. Знайдете — туман зійде.', 'I know why you came. The shard is hiding in the fog. Find it — and the fog will lift.'],
+        ['fox', 'Я хвойний смарагд. У тумані мене не видно, зате я все чую.', 'I’m pine emerald. You can’t see me in the fog, but I hear everything.'],
+      ],
+    },
+  },
 };
