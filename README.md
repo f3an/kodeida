@@ -59,7 +59,7 @@ You write a function with a real LeetCode signature. The world runs it step by s
 
 <p align="center"><img src="docs/media/intro-en.gif" width="760" alt="Opening cutscenes: the gods feast on Olympus, Juno plots with Aeolus, a storm shatters the Pysanka and the shards fly into books, Venus asks Zeus for help"></p>
 
-**Sixteen worlds, six songs.** Each world is one technique, from arrays and two pointers to graphs and dynamic programming. Nine of them are playable now: worlds 0–8.
+**Sixteen worlds, six songs.** Each world is one technique, from arrays and two pointers to graphs and dynamic programming. All sixteen are playable now, with an epilogue.
 
 <p align="center"><img src="docs/media/map-en.gif" width="680" alt="World map: islands for each song, a ship sailing between worlds, and a card with the world's scene, technique and LeetCode problem"></p>
 
@@ -107,7 +107,7 @@ The game updates itself. It checks for a new version on start and every 6 hours,
 
 **Pre-alpha, ready for the first playtest.**
 
-- **Playable (v0.5.0):** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and worlds 0–8. That is 54 exercises, from the first `enei.move()` to *Combination Sum* in hell, with tests, hints, stars and the Wolf comparison. Cutscenes between worlds. Every problem is written so a 15-year-old can follow it: new terms explained, a worked example, no 10⁴-style constraints.
+- **Playable:** the onboarding (10 cutscenes, a first run in the real editor, a guided tour by the Sibyl) and all worlds 0–15. That is 87 exercises, from the first `enei.move()` to *3Sum* in the duel with Turnus, with tests, hints, stars and the Wolf comparison. Cutscenes between worlds. Every problem is written so a 15-year-old can follow it: new terms explained, a worked example, no 10⁴-style constraints.
 - **The ABC:** all eight chapters, 4 lessons each in Python, JavaScript and TypeScript: *The Bun* (output), *The Turnip* (variables and numbers), *Kotyhoroshko* (strings), *The Goat Dereza* (conditions), *The Straw Bull* (loops), *Lord Kotsky* (lists), *Sister Fox* (dictionaries and objects), *Ivasyk-Telesyk* (functions). Chapters 2–8 arrived in v0.4.0.
 - **New look (v0.5.0):** every hero, world and opening cutscene redrawn as pixel art: 33 living backgrounds with glow, water, smoke and snow, animated cutscenes (the gods' feast, Aeolus's winds, the Pysanka shattering), a backdrop for each ABC tale where the characters step on stage as your program prints, and Aeneas in a zhupan in cold worlds.
 - **Designed:** the full story, 16 worlds mapped to techniques, characters and pixel art, the brand. See the [artbook](https://f3an.github.io/kodeida/artbook.html).
@@ -178,7 +178,7 @@ app/                  the game: Electron + React + TypeScript + Monaco
   build/              icons, DMG background, installer art, entitlements
   scripts/            selftest (engine and every level), sync-sprites (site → game)
   src/engine/         sandbox Worker, runner, judge, no UI
-  src/levels/         worlds 0–8 as data, the ABC (abetka.ts), English texts, Book of Tricks
+  src/levels/         worlds 0–15 as data, the ABC (abetka.ts), English texts, Book of Tricks
   src/assets/art/     PNG sprites, animations and backgrounds (the new pixel art)
   src/world/          art.ts (loads the art), scenes.ts (levels), cutscenes.ts, bgfx.ts (living backgrounds), sprites.js (generated from site/app.js)
   src/ui/             screens: menu, onboarding, level, map, ABC, book, shirt, settings; story.ts — ABC cutscenes; DevScreen.tsx — dev panel (any level or cutscene, dev builds only)

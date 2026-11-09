@@ -228,13 +228,13 @@ export function BookScreen({ progress }: { progress: Progress }) {
       <div className="book">
         {BOOK.map((t) => {
           const open = shardOf(progress, worlds[t.world]);
-          const rows = (MOTIFS as Record<string, string[]>)[t.motif];
+          const rows = MOTIF_ROWS[t.motif];
           const en = uiLang() === 'en' ? BOOK_EN[t.world] : null;
           const tx = { title: en?.title ?? t.title, when: en?.when ?? t.when, idea: en?.idea ?? t.idea, complexity: en?.complexity ?? t.complexity };
           const fin = worlds[t.world].levels[worlds[t.world].levels.length - 1];
           return (
             <article key={t.title} className={`trick${open ? '' : ' locked'}`}>
-              <PixelCanvas width={54} height={54} draw={(ctx) => drawMotif(ctx, rows, 0, 0, 6, open ? '#b3202a' : '#3a4a40')} className="motif" label={L(`Візерунок «${(MOTIF_NAMES as Record<string, string>)[t.motif]}»`, 'Pattern')} />
+              <PixelCanvas width={54} height={54} draw={(ctx) => drawMotif(ctx, rows, 0, 0, 6, open ? '#b3202a' : '#3a4a40')} className="motif" label={L(`Візерунок «${MOTIF_UK[t.motif]}»`, 'Pattern')} />
               <div>
                 <div className="eyebrow">{L('Світ', 'World')} {t.world} · {wt(worlds[t.world]).name}</div>
                 <h2>{open ? tx.title : '???'}</h2>
@@ -260,9 +260,12 @@ export function BookScreen({ progress }: { progress: Progress }) {
 
 /* ============================== Вишиванка ============================== */
 
-const MOTIF_ORDER = Object.keys(MOTIFS as Record<string, string[]>);
+/** Мотиви з сайту плюс «писанка» фіналу; порядок — за світами, що їх дають. */
+const MOTIF_ROWS: Record<string, string[]> = { ...(MOTIFS as Record<string, string[]>), egg: ['...xxx...', '..x...x..', '.x.x.x.x.', '.xxxxxxx.', '.x.x.x.x.', '..x...x..', '...xxx...'] };
+const MOTIF_UK: Record<string, string> = { ...(MOTIF_NAMES as Record<string, string>), key: 'ключ', egg: 'писанка' };
+const MOTIF_ORDER = worlds.flatMap((w) => (w.motif ? [w.motif] : []));
 const MOTIF_EN: Record<string, string> = {
-  waves: 'waves', rhombs: 'two meeting rhombs', chest: 'chest with cells', tower: 'tower', halved: 'halved rhomb', frame: 'frame',
+  key: 'key', egg: 'pysanka', waves: 'waves', rhombs: 'two meeting rhombs', chest: 'chest with cells', tower: 'tower', halved: 'halved rhomb', frame: 'frame',
   chain: 'chain', spiral: 'spiral', tree: 'tree of life', periwinkle: 'periwinkle', rose: 'rosette', zigzag: 'zigzag', combs: 'honeycomb',
 };
 
@@ -284,8 +287,8 @@ export function ShirtScreen({ progress }: { progress: Progress }) {
           <div className="motifs">
             {MOTIF_ORDER.map((m) => (
               <figure key={m} className={got.has(m) ? 'on' : ''}>
-                <PixelCanvas width={54} height={54} draw={(ctx) => drawMotif(ctx, (MOTIFS as Record<string, string[]>)[m], 0, 0, 6, got.has(m) ? '#b3202a' : '#33413a')} label={L((MOTIF_NAMES as Record<string, string>)[m], MOTIF_EN[m] ?? m)} />
-                <figcaption>{got.has(m) ? L((MOTIF_NAMES as Record<string, string>)[m], MOTIF_EN[m] ?? m) : '···'}</figcaption>
+                <PixelCanvas width={54} height={54} draw={(ctx) => drawMotif(ctx, MOTIF_ROWS[m], 0, 0, 6, got.has(m) ? '#b3202a' : '#33413a')} label={L(MOTIF_UK[m], MOTIF_EN[m] ?? m)} />
+                <figcaption>{got.has(m) ? L(MOTIF_UK[m], MOTIF_EN[m] ?? m) : '···'}</figcaption>
               </figure>
             ))}
           </div>

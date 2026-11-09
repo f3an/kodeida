@@ -28,8 +28,8 @@ const VOICE: Record<Who, [Speaker, string, string]> = {
 const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** Чи є заставка переходу після світу from (і чи вже існує наступний світ). */
-export const hasVoyage = (from: number) => !!VOYAGES[from] && !!worlds[from + 1];
+/** Чи є заставка переходу після світу from (і чи вже існує наступний світ). Після останнього світу — епілог. */
+export const hasVoyage = (from: number) => !!VOYAGES[from] && (!!worlds[from + 1] || from === worlds.length - 1);
 
 export function VoyageScreen({ from, onDone }: { from: number; onDone: () => void }) {
   const v = VOYAGES[from];
@@ -43,7 +43,9 @@ export function VoyageScreen({ from, onDone }: { from: number; onDone: () => voi
   const s = slides[k];
   const lastLine = ln >= s.lines.length - 1;
   const isLast = k === slides.length - 1 && lastLine;
-  const to = from + 1;
+  // епілог після останнього світу: усі три сцени — у ньому ж
+  const end = !worlds[from + 1];
+  const to = end ? from : from + 1;
 
   const next = () => {
     if (!lastLine) { setLn(ln + 1); setSeq((n) => n + 1); return; }
@@ -82,7 +84,7 @@ export function VoyageScreen({ from, onDone }: { from: number; onDone: () => voi
   const [speaker, uk, enName] = line ? VOICE[line[0]] : ['enei' as Speaker, '', ''];
   const prev = ln > 0 ? VOICE[s.lines[ln - 1][0]][0] : null;
   // у dev можна глянути дорогу й до ще не реалізованого світу — тоді колір з мапи
-  const fox = (k === 2 ? worlds[to] ?? ALL_WORLDS[to] : worlds[from]).fox;
+  const fox = end && k > 0 ? '#e2702b' : (k === 2 ? worlds[to] ?? ALL_WORLDS[to] : worlds[from]).fox;
 
   return (
     <div className="onboarding voyage">
@@ -92,7 +94,7 @@ export function VoyageScreen({ from, onDone }: { from: number; onDone: () => voi
           : <PixelCanvas key={`art${k}`} width={SW * 2} height={SH_ * 2} draw={drawArt} interval={170} smooth className="ob-canvas" label={`${s.title[en]}. ${s.narr[en]}`} />}
       </div>
       <div className="ob-text">
-        <div className="eyebrow">{L('Сцена', 'Scene')} {k + 1} {L('з', 'of')} 3 · {L('дорога між світами', 'between worlds')}</div>
+        <div className="eyebrow">{L('Сцена', 'Scene')} {k + 1} {L('з', 'of')} 3 · {end ? L('епілог', 'epilogue') : L('дорога між світами', 'between worlds')}</div>
         <h2 key={`t${k}`} className="ob-title">{s.title[en]}</h2>
         <p key={`n${k}`} className="narr">{s.narr[en]}</p>
         {line && <Speech who={speaker} name={en ? enName : uk} text={line[1 + en]} tone="say" fox={fox} seq={seq} enter={prev === speaker ? 'nod' : 'in'} />}
@@ -104,7 +106,7 @@ export function VoyageScreen({ from, onDone }: { from: number; onDone: () => voi
           <button className="btn" onClick={onDone}>{L('Пропустити', 'Skip')}</button>
           <span className="grow" />
           {(k > 0 || ln > 0) && <button className="btn" onClick={back}>{L('← Назад', '← Back')}</button>}
-          <button className="btn run" onClick={next}>{isLast ? `${L('До світу', 'To world')} ${to} ▸` : L('Далі →', 'Next →')}</button>
+          <button className="btn run" onClick={next}>{isLast ? (end ? L('Кінець ▸', 'The end ▸') : `${L('До світу', 'To world')} ${to} ▸`) : L('Далі →', 'Next →')}</button>
         </div>
       </div>
     </div>

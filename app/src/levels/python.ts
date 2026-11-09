@@ -701,6 +701,35 @@ export const PY: Record<string, PyPart> = {
     wolf: 'def length_of_lis(nums):\n    best = 0\n    for end in range(len(nums)):\n        dp = [1] * (end + 1)\n        for i in range(end + 1):\n            for j in range(i):\n                if nums[j] < nums[i]:\n                    dp[i] = max(dp[i], dp[j] + 1)\n        best = max(best, dp[end])\n    return best\n',
     hint: 'for i in range(len(nums)):\n    for j in range(i):\n        if nums[j] < nums[i]: dp[i] = max(dp[i], dp[j] + 1)',
   },
+  'duel.product': {
+    body: `    out = [1] * len(nums)\n${HERE}\n    return out\n`,
+    solution: 'def product_except_self(nums):\n    out = [1] * len(nums)\n    p = 1\n    for i in range(len(nums)):\n        out[i] = p\n        p *= nums[i]\n    p = 1\n    for i in range(len(nums) - 1, -1, -1):\n        out[i] *= p\n        p *= nums[i]\n    return out\n',
+    wolf: 'def product_except_self(nums):\n    out = []\n    for i in range(len(nums)):\n        p = 1\n        for j in range(len(nums)):\n            if j != i:\n                p *= nums[j]\n        out.append(p)\n    return out\n',
+    hint: 'p = 1\nfor i in range(len(nums)): out[i] = p; p *= nums[i]\np = 1\nfor i in range(len(nums) - 1, -1, -1): out[i] *= p; p *= nums[i]',
+  },
+  'duel.rotated': {
+    body: `    lo, hi = 0, len(nums) - 1\n${HERE}\n    return nums[lo]\n`,
+    solution: 'def find_min(nums):\n    lo, hi = 0, len(nums) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] > nums[hi]:\n            lo = mid + 1\n        else:\n            hi = mid\n    return nums[lo]\n',
+    wolf: 'def find_min(nums):\n    best = nums[0]\n    for i in range(1, len(nums)):\n        if nums[i] < best:\n            best = nums[i]\n    return best\n',
+    hint: 'while lo < hi:\n    mid = (lo + hi) // 2\n    if nums[mid] > nums[hi]: lo = mid + 1\n    else: hi = mid',
+  },
+  'duel.streak': {
+    body: `    best = 0\n${HERE}\n    return best\n`,
+    solution: 'def longest_consecutive(nums):\n    seen = set(nums)\n    best = 0\n    for x in seen:\n        if x - 1 in seen:\n            continue\n        y = x\n        while y + 1 in seen:\n            y += 1\n        best = max(best, y - x + 1)\n    return best\n',
+    wolf: 'def longest_consecutive(nums):\n    best = 0\n    for x in nums:\n        length = 1\n        while x + length in nums:\n            length += 1\n        best = max(best, length)\n    return best\n',
+    hint: 'seen = set(nums)\nfor x in seen:\n    if x - 1 in seen: continue\n    y = x\n    while y + 1 in seen: y += 1\n    best = max(best, y - x + 1)',
+  },
+  'duel.view': {
+    body: `    out = []\n${HERE}\n    return out\n`,
+    solution: 'def right_side_view(root):\n    out = []\n    level = [root] if root else []\n    while level:\n        out.append(level[-1].val)\n        level = [c for n in level for c in (n.left, n.right) if c]\n    return out\n',
+    hint: 'level = [root] if root else []\nwhile level:\n    out.append(level[-1].val)\n    level = [c for n in level for c in (n.left, n.right) if c]',
+  },
+  'duel.three': {
+    body: `    out = []\n${HERE}\n    return out\n`,
+    solution: 'def three_sum(nums):\n    a = sorted(nums)\n    out = []\n    for i in range(len(a)):\n        if i and a[i] == a[i - 1]:\n            continue\n        l, r = i + 1, len(a) - 1\n        while l < r:\n            s = a[i] + a[l] + a[r]\n            if s < 0:\n                l += 1\n            elif s > 0:\n                r -= 1\n            else:\n                out.append([a[i], a[l], a[r]])\n                while l < r and a[l] == a[l + 1]:\n                    l += 1\n                l += 1\n                r -= 1\n    return out\n',
+    wolf: 'def three_sum(nums):\n    seen, out = set(), []\n    for i in range(len(nums)):\n        for j in range(i + 1, len(nums)):\n            for k in range(j + 1, len(nums)):\n                if nums[i] + nums[j] + nums[k] == 0:\n                    t = tuple(sorted((nums[i], nums[j], nums[k])))\n                    if t not in seen:\n                        seen.add(t)\n                        out.append(list(t))\n    return out\n',
+    hint: 'a = sorted(nums)\nfor i in range(len(a)):\n    if i and a[i] == a[i - 1]: continue\n    l, r = i + 1, len(a) - 1\n    while l < r:\n        s = a[i] + a[l] + a[r]\n        if s < 0: l += 1\n        elif s > 0: r -= 1\n        else:\n            out.append([a[i], a[l], a[r]])\n            while l < r and a[l] == a[l + 1]: l += 1\n            l += 1; r -= 1',
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None'], [/\bnull\b/g, 'None']];

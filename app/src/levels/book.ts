@@ -203,6 +203,24 @@ for (const [s, e] of intervals) {
     problems: ['56. Merge Intervals', '57. Insert Interval', '55. Jump Game', '435. Non-overlapping Intervals', '452. Minimum Number of Arrows to Burst Balloons'],
   },
   {
+    world: 13,
+    title: 'Ключ: найкоротший шлях',
+    motif: 'key',
+    when: ['Треба найменше кроків або найдешевший шлях від точки до точки.', 'Усі кроки однакові (сітка, лабіринт) — або мають різну ціну (дороги, гінці).', 'Відстані потрібні від багатьох джерел одразу.'],
+    idea: 'Однакові кроки — обхід ушир: перший дотик до вершини — найкоротший. Кілька джерел — поклади їх усіх у першу хвилю. Різна ціна кроків — Дейкстра: кандидати в купі, і найближчий, якого дістали, уже має остаточну відстань. «Ціною» може бути не лише сума, а й найбільший крок на шляху.',
+    template: `const dist = new Map([[start, 0]]);
+const heap = new MinPriorityQueue((x) => x[0]);
+heap.enqueue([0, start]);
+while (heap.size()) {
+  const [d, u] = heap.dequeue();
+  if (d > dist.get(u)) continue;
+  for (const [v, w] of adj[u])
+    if (d + w < (dist.get(v) ?? Infinity)) { dist.set(v, d + w); heap.enqueue([d + w, v]); }
+}`,
+    complexity: 'Обхід ушир O(V + E). Дейкстра з купою O(E log V).',
+    problems: ['1091. Shortest Path in Binary Matrix', '743. Network Delay Time', '542. 01 Matrix', '1631. Path With Minimum Effort', '787. Cheapest Flights Within K Stops'],
+  },
+  {
     world: 14,
     title: 'Соти: динамічне програмування',
     motif: 'combs',
@@ -216,5 +234,19 @@ for (let i = 1; i <= n; i++) {
 return dp[n];`,
     complexity: 'Час = кількість станів × ціна переходу: O(n), O(n · amount), O(n · m), O(n²). Пам\'ять — таблиця або кілька змінних.',
     problems: ['746. Min Cost Climbing Stairs', '70. Climbing Stairs', '198. House Robber', '322. Coin Change', '1143. Longest Common Subsequence', '300. Longest Increasing Subsequence'],
+  },
+  {
+    world: 15,
+    title: 'Писанка: як упізнати прийом',
+    motif: 'egg',
+    when: ['На співбесіді задача не каже своєї теми — її кажуть сигнали в умові.', 'Відсортовано або шукаєш пару → два вказівники чи пошук навпіл. «Чи вже бачив?» → хеш-мапа.', 'Відрізки поспіль → вікно. Наступний більший, дужки → стек. Вузли й зачіпки → список, дерево, граф.', 'Усі варіанти → backtracking. Найкраще чи кількість способів із повторюваними кроками → DP. Найкоротший → обхід ушир чи Дейкстра.'],
+    idea: 'Почни з перебору і його ціни, а тоді спитай: що він повторює? Що можна запам\'ятати (мапа, таблиця)? Що можна пропустити (сортування, навпіл, вікно)? Назви прийом уголос, напиши шаблон, потім підлаштуй. Перевір крайні випадки: порожньо, один елемент, повтори, від\'ємні.',
+    template: `// 1. Перебір і його ціна: O(n²)? O(2ⁿ)?
+// 2. Що повторюється? → запам'ятай (Map, dp)
+// 3. Що можна відкинути? → sort, навпіл, вікно, два вказівники
+// 4. Шаблон прийому → підлаштуй під задачу
+// 5. Крайні випадки: [], [x], повтори, від'ємні`,
+    complexity: 'Знай ціль: n до 10⁴–10⁵ зазвичай вимагає O(n log n) або краще; до 500 дозволяє O(n²); до 20 — навіть O(2ⁿ).',
+    problems: ['238. Product of Array Except Self', '153. Find Minimum in Rotated Sorted Array', '128. Longest Consecutive Sequence', '199. Binary Tree Right Side View', '15. 3Sum'],
   },
 ];

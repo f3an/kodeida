@@ -95,7 +95,7 @@ export function App() {
 
   if (screen.name === 'voyage') {
     // після заставки — перша вправа нового світу; позначаємо, що дорогу вже бачили
-    const arrive = () => { setProgress((p) => ({ ...p, voyages: [...new Set([...(p.voyages ?? []), screen.from])] })); go({ name: 'level', id: worlds[screen.from + 1].levels[0].id }); };
+    const arrive = () => { setProgress((p) => ({ ...p, voyages: [...new Set([...(p.voyages ?? []), screen.from])] })); go(worlds[screen.from + 1] ? { name: 'level', id: worlds[screen.from + 1].levels[0].id } : { name: 'map' }); };
     return <><DragStrip /><VoyageScreen from={screen.from} onDone={arrive} /></>;
   }
 

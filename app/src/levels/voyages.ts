@@ -332,7 +332,7 @@ export const VOYAGES: Record<number, Voyage> = {
   13: {
     leave: {
       title: ['Микита на волі', 'Mykyta is free'],
-      narr: ['Мотузки розрізано, і Микита спалахує всіма кольорами одразу. Вовк дивиться на порожню клітку й чухає потилицю.', 'The ropes are cut, and Mykyta flares up in every colour at once. The Wolf stares at the empty cage and scratches his head.'],
+      narr: ['Мотузки розрізано, і Микита спалахує всіма кольорами одразу. Вовк дивиться на порожню клітку й чухає потилицю. На вишиванці — «ключ» від тієї клітки.', 'The ropes are cut, and Mykyta flares up in every colour at once. The Wolf stares at the empty cage and scratches his head. On the shirt — “a key” to that cage.'],
       lines: [
         ['fox', 'Енею! Ти прийшов сам, без моїх підказок. Я майже ображений. Майже.', 'Aeneas! You came on your own, without my hints. I’m almost offended. Almost.'],
         ['wolf', 'Юнона знову скаже, що я винен. А я ж стеріг! Усіма стежками одразу…', 'Juno will say it’s my fault again. But I was guarding! Every path at once…'],
@@ -353,6 +353,59 @@ export const VOYAGES: Record<number, Voyage> = {
       lines: [
         ['vulcan', 'Знову ти, Венеро? І з цілим військом. Ну, проходьте… обережно, тут гаряче.', 'You again, Venus? And with a whole army. Well, come in… careful, it’s hot here.'],
         ['fox', 'Я розжарений помаранчевий. Нарешті колір, у якому мені тепло.', 'I’m red-hot orange. At last a colour I feel warm in.'],
+      ],
+    },
+  },
+  14: {
+    leave: {
+      title: ['Зброя готова', 'The weapon is ready'],
+      narr: ['Горн палає, циклопи б\'ють у лад, і Вулкан вручає Енеєві меч і щит. На вишиванці — «соти». Лишився один уламок.', 'The forge blazes, the Cyclopes strike in time, and Vulcan hands Aeneas a sword and shield. On the shirt — “honeycomb”. One shard is left.'],
+      lines: [
+        ['vulcan', 'Найкраща моя робота. Ну, після сітки для Марса.', 'My best work. Well, after the net for Mars.'],
+        ['venus', 'Тепер іди, сину. І повернись.', 'Now go, son. And come back.'],
+      ],
+    },
+    sail: {
+      title: ['Остання пісня', 'The last song'],
+      narr: ['На Олімпі Юнона віддає Турнові останній уламок як оберіг. А Вовк сидить у кутку й рахує, скільки разів йому обіцяли ліс.', 'On Olympus Juno gives Turnus the last shard as a charm. And the Wolf sits in a corner counting how many times he was promised a forest.'],
+      lines: [
+        ['juno', 'Тримай, Турне. Поки він у тебе — троянець не переможе.', 'Take it, Turnus. While you hold it — the Trojan won’t win.'],
+        ['wolf', 'Чотирнадцять. Чотирнадцять разів «ліс на обід». А обіду так і нема.', 'Fourteen. Fourteen times “a forest for dinner”. And still no dinner.'],
+      ],
+    },
+    arrive: {
+      title: ['Двобій з Турном', 'The duel with Turnus'],
+      narr: ['Два війська стоять одне проти одного. Турн виходить наперед: задачі цього двобою незнайомі, і ніхто не скаже, яка в них хитрість. Тепер — тільки Еней.', 'Two armies stand facing each other. Turnus steps forward: the problems of this duel are unfamiliar, and nobody will say which trick they need. Now it’s Aeneas alone.'],
+      lines: [
+        ['turn', 'Ну що, троянцю, без лиса й без підказок? Почнімо.', 'Well, Trojan, without the fox and without hints? Let’s begin.'],
+        ['fox', 'Я тут, я веселковий! Підказувати не буду. Тільки вболівати.', 'I’m here, I’m rainbow! I won’t hint. Only cheer.'],
+      ],
+    },
+  },
+  15: {
+    leave: {
+      title: ['Писанка ціла', 'The Pysanka is whole'],
+      narr: ['Оберіг вилітає з рук Турна, і тринадцять уламків злітаються докупи. Писанка знову сяє, межі між книжками стають на місце. Вишиванка Енея вишита до останнього стібка.', 'The charm flies out of Turnus’s hands, and the thirteen shards fly together. The Pysanka shines again, the borders between the books fall into place. Aeneas’s shirt is embroidered to the last stitch.'],
+      lines: [
+        ['turn', 'Як у Вергілія… Я програв. Але чесно.', 'Just like in Virgil… I lost. But fairly.'],
+        ['juno', 'Добре. Цього разу — ваша взяла.', 'Fine. This time — you win.'],
+      ],
+    },
+    sail: {
+      title: ['Бенкет', 'The feast'],
+      narr: ['Як у Котляревського — бенкет на всю губу: варенуха, галушки, ковбаси, пиріжки, книші й узвар. За столом — троянці, Сивілла, Дидона, Мавка, Кожум\'яка… і Вовк, якого нарешті нагодували.', 'As in Kotliarevsky — a feast to burst: varenukha, halushky, sausages, pies, knyshi and uzvar. At the table — the Trojans, the Sibyl, Dido, Mavka, Kozhumyaka… and the Wolf, fed at last.'],
+      lines: [
+        ['wolf', 'Ось він, обід! Не ліс, але краще. Енею, я з вами назавжди. Принаймні до вечері.', 'Here it is, dinner! Not a forest, but better. Aeneas, I’m with you forever. At least until supper.'],
+        ['fox', 'А я знову рудий. Без жодної фарби. Додому, до лісу, — але спершу пиріжок.', 'And I’m ginger again. No paint at all. Home to the forest — but first a pie.'],
+      ],
+    },
+    arrive: {
+      title: ['Одна порожня комірка', 'One empty cell'],
+      narr: ['Еней засновує нову землю. Але пізно вночі Микита дивиться на Писанку й бачить: одна комірка порожня. Юнона встигла сховати ще один уламок…', 'Aeneas founds a new land. But late at night Mykyta looks at the Pysanka and sees: one cell is empty. Juno managed to hide one more shard…'],
+      lines: [
+        ['fox', 'Енею… ти це бачиш? Тут бракує шматочка.', 'Aeneas… do you see this? A piece is missing here.'],
+        ['enei', 'Бачу. Значить, наша дорога ще не скінчилась.', 'I see it. So our road isn’t over yet.'],
+        ['juno', 'Далі буде.', 'To be continued.'],
       ],
     },
   },

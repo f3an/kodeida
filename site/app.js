@@ -1901,7 +1901,7 @@ const MW=240,MH=110,MS=4;
 let _mapBase=null;
 function mapBase(){if(_mapBase)return _mapBase;const sp=new Spr(MW,MH);ISLES.forEach((is,i)=>{sp.fill(ell(is.c[0],is.c[1],is.r[0]+2,is.r[1]+2).filter(([x,y])=>hash(x,y+i)>0.08||Math.hypot((x-is.c[0])/is.r[0],(y-is.c[1])/is.r[1])<0.85),'#e3c58e');sp.fill(ell(is.c[0],is.c[1],is.r[0],is.r[1]).filter(([x,y])=>hash(x+3,y)>0.05),(x,y)=>(x+y)%5===0?shade(is.land,-0.15):is.land);});return _mapBase=sp;}
 const routePts=[];for(let i=0;i<NODES.length-1;i++){const [a,b]=NODES[i],[c,d]=NODES[i+1];routePts.push(line(a,b,c,d));}
-function worldCol(i,f=0){const w=ALL_WORLDS[i];return w.fox==='rainbow'?RAINBOW[f%RAINBOW.length]:w.fox;}
+function worldCol(i,f=0){const w=ALL_WORLDS[i];return w.fox==='rainbow'?RAINBOW[Math.floor(Math.abs(f))%RAINBOW.length]:w.fox;}
 /* Точка на маршруті між світами from і to, p = 0..1 (для кораблика). */
 function routePoint(from,to,p){
   if(from===to||p>=1)return NODES[to];

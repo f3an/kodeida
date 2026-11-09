@@ -50,7 +50,7 @@ export function DevScreen({ go }: { go: (s: Screen) => void }) {
       <h2>Дороги між світами</h2>
       <div className="dev-row">
         {Object.keys(VOYAGES).map(Number).map((from) => (
-          <button key={from} className="btn" onClick={() => go({ name: 'voyage', from, dev: true })}>{from} → {from + 1}: {ALL[from + 1]?.name ?? '?'}</button>
+          <button key={from} className="btn" onClick={() => go({ name: 'voyage', from, dev: true })}>{ALL[from + 1] ? `${from} → ${from + 1}: ${ALL[from + 1].name}` : `${from}: епілог`}</button>
         ))}
       </div>
 

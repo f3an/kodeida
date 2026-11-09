@@ -2107,6 +2107,93 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     ],
     quip: 'What a weapon! Son, now you’re ready for Turnus. And I’ll thank Vulcan… separately.',
   },
+  'duel.product': {
+    title: 'The crew’s strength', topic: 'interview: recognise the technique yourself',
+    brief: '<b>The crew’s strength.</b> Round one. For every warrior, compute the strength of the whole crew without them.',
+    statement: [
+      'Before the duel Turnus demands to see the Trojans’ strength. <code>nums[i]</code> is the strength of warrior <code>i</code>. The crew’s strength is the <b>product</b> of the strengths.',
+      'Return an array where position <code>i</code> holds the product of all <code>nums</code> except <code>nums[i]</code>. No division: strengths can be zero. For <code>[1, 2, 3, 4]</code> — <code>[24, 12, 8, 6]</code>.',
+      'There can be up to 10,000 warriors. Which trick to use is up to you.',
+    ],
+    hints: ['The trick is prefixes: the product of everything left of i times the product of everything right of it.', 'First pass from the left: out[i] = the product of everything before i. Second from the right: keep p — the product to the right, out[i] *= p.', 'let p = 1; for (let i = 0; i < nums.length; i++) { out[i] = p; p *= nums[i]; } p = 1; for (let i = nums.length - 1; i >= 0; i--) { out[i] *= p; p *= nums[i]; }'],
+    lesson: 'Prefixes and suffixes: “everything except i” = “everything to the left” × “everything to the right”. Two passes, O(n).',
+    doc: ['The crew’s strength', 'Return an array: at position i — the product of all nums except nums[i]. No division.'],
+    talk: [
+      'Show me, Trojan, what your crew is worth. And no division — I’m an honest warrior.',
+      'You know every trick already. I’m just keeping my fingers crossed. All four paws.',
+    ],
+    quip: 'Hm. You can count. We’ll see what comes next.',
+  },
+  'duel.rotated': {
+    title: 'The shield’s weak spot', topic: 'interview: recognise the technique yourself',
+    brief: '<b>The shield’s weak spot.</b> Round two. Turnus’s shield spins. Find its thinnest plate.',
+    statement: [
+      'Turnus’s shield is made of plates whose thickness went in increasing order. But the shield spins, so the row <code>nums</code> is shifted in a circle: <code>[3, 4, 5, 1, 2]</code> is <code>[1, 2, 3, 4, 5]</code> shifted by three. All thicknesses are different.',
+      'Return the smallest thickness — that’s where to strike. For <code>[4, 5, 6, 7, 0, 1, 2]</code> — <code>0</code>.',
+      'There can be up to 10,000 plates, and the shield spins fast: you can’t look at them all. Which trick to use is up to you.',
+    ],
+    hints: ['The trick is halving: compare the middle with the right end, and it’s clear which half holds the break.', 'While lo < hi: mid = (lo + hi) >> 1. If nums[mid] > nums[hi] — the break is to the right: lo = mid + 1. Otherwise hi = mid.', 'while (lo < hi) { const mid = (lo + hi) >> 1; if (nums[mid] > nums[hi]) lo = mid + 1; else hi = mid; }'],
+    lesson: 'Binary search works on a shifted row too: comparing with the right end tells which half holds the break.',
+    doc: ['The shield’s weak spot', 'nums is an increasing row shifted in a circle. Return the smallest value.'],
+    talk: [
+      'My shield was forged by Vulcan himself… for me. Strike, if you can find where.',
+      'You’ve seen something like this in Konotop. Well, almost. I’m quiet, I’m quiet!',
+    ],
+    quip: 'A hit! The thinnest one! Who taught you, Trojan?',
+  },
+  'duel.streak': {
+    title: 'The longest rank', topic: 'interview: recognise the technique yourself',
+    brief: '<b>The longest rank.</b> Round three. From the scattered numbers of the warriors, build the longest consecutive rank.',
+    statement: [
+      'Turnus’s army has scattered, and the warriors have numbers on their shields. <code>nums</code> are the numbers in the order they were seen (they may repeat).',
+      'Return the length of the longest run of numbers that come <b>in a row</b>: x, x + 1, x + 2… The order in <code>nums</code> doesn’t matter. For <code>[100, 4, 200, 1, 3, 2]</code> — <code>4</code> (1, 2, 3, 4).',
+      'There can be up to 10,000 numbers, and there’s no time to sort (and <code>sort</code> is forbidden in this exercise). Which trick to use is up to you.',
+    ],
+    hints: ['The trick is the chest (a Set): “is x + 1 there?” is answered instantly.', 'Put everything into a Set. For every x that has no x − 1 (the start of a run), count upward while x + 1, x + 2… exist.', 'const set = new Set(nums); for (const x of set) if (!set.has(x - 1)) { let y = x; while (set.has(y + 1)) y++; best = Math.max(best, y - x + 1); }'],
+    lesson: 'A Set answers “is it there?” instantly, and counting only from the starts of runs makes it all O(n).',
+    doc: ['The longest rank', 'Return the length of the longest run of consecutive numbers (x, x + 1, …) in nums. No sorting.'],
+    talk: [
+      'My warriors have scattered? No matter, I’ll gather the longest rank without them… I mean, from them.',
+      'Aeneas! Psst! I… I’ve been thinking. Juno never gave me the forest. And they say Kotliarevsky has a feast. I’m on your side!',
+      'The Wolf on our side? Fine. But you’re the one solving the problem.',
+    ],
+    quip: 'I’d have searched for every number across the whole army. As always. Good thing I’m with you now.',
+  },
+  'duel.view': {
+    title: 'The view from the right flank', topic: 'interview: recognise the technique yourself',
+    brief: '<b>The view from the right flank.</b> Round four. Turnus’s army stands like a tree. Who can be seen from the right side?',
+    statement: [
+      'Turnus has drawn up his army like a family tree: <code>root</code> is Turnus himself, every commander has at most two subordinates, <code>left</code> and <code>right</code>.',
+      'Aeneas looks at the army from the right flank: on every level he sees only the rightmost one. Return the values he sees, top to bottom. For <code>[1, 2, 3, null, 5, null, 4]</code> — <code>[1, 3, 4]</code>; for <code>[1, 2, 3, 4]</code> — <code>[1, 3, 4]</code>: the third level has only 4.',
+      'Which trick to use is up to you.',
+    ],
+    hints: ['The trick is a breadth-first walk by levels, as in Elysium: take the last one from every level.', 'level = [root]. While the level isn’t empty: out.push(the last in level), then gather the children into next.', 'let level = root ? [root] : []; while (level.length) { out.push(level[level.length - 1].val); const next = []; for (const n of level) { if (n.left) next.push(n.left); if (n.right) next.push(n.right); } level = next; }'],
+    lesson: 'A breadth-first walk by levels: the last node of every level is the one seen from the right.',
+    doc: ['The view from the right flank', 'Return the values of the rightmost nodes on every level, top to bottom.'],
+    talk: [
+      'My army is like a tree: I’m the root, and then the branches. Go on, count whom you see.',
+      'You’ve seen trees like this. In Elysium. I told you, I’m only cheering!',
+    ],
+    quip: 'You see everyone standing at the edge. You’re dangerous, Trojan.',
+  },
+  'duel.three': {
+    title: 'The final blow', topic: 'interview: recognise the technique yourself',
+    brief: '<b>The final blow.</b> The final round. Find every triple of blows that together make a balance.',
+    statement: [
+      'Turnus fights Aeneas one on one. <code>nums</code> are the strengths of the blows: positive ones are Aeneas’s, negative ones Turnus’s. To knock Juno’s charm-shard out of Turnus’s hands, you need three blows that add up to exactly <code>0</code>.',
+      'Return all <b>different</b> triples <code>[a, b, c]</code> from different places in <code>nums</code> with <code>a + b + c = 0</code>. Triples with the same numbers count as one. Order doesn’t matter. For <code>[-1, 0, 1, 2, -1, -4]</code> — <code>[[-1, -1, 2], [-1, 0, 1]]</code>.',
+      'There can be up to 500 blows, and trying every triple is over a hundred thousand… for every second of the duel. Which trick to use is up to you.',
+    ],
+    hints: ['The trick is from Carthage: sort the blows and for every first one look for a pair with two pointers moving towards each other.', 'Sort a copy. For every i (skipping equal neighbours): l = i + 1, r = the end; sum < 0 — l++, > 0 — r--, 0 — record it and skip equal ones.', 'for (let i = 0; i < a.length; i++) { if (i && a[i] === a[i - 1]) continue; let l = i + 1, r = a.length - 1; while (l < r) { const s = a[i] + a[l] + a[r]; if (s < 0) l++; else if (s > 0) r--; else { out.push([a[i], a[l], a[r]]); while (l < r && a[l] === a[l + 1]) l++; l++; r--; } } }'],
+    lesson: 'Sorting + two pointers turn an O(n³) search over triples into O(n²). In an interview the main thing is to recognise a familiar technique in a new problem.',
+    doc: ['The final blow', 'Return all different triples of numbers from nums that add up to 0 (any order).'],
+    talk: [
+      'Well then, Trojan. One on one. Juno’s charm is with me — try to knock it out.',
+      'Aeneas, I’m holding Juno back! I mean… I’m looking at her. Menacingly. Strike!',
+      'You already know everything you need. Carthage, Konotop, the chest… Choose. I believe in you.',
+    ],
+    quip: 'I yield… The charm is yours. Juno, you promised he wouldn’t manage!',
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -2119,7 +2206,8 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
   7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
   14: { host: { who: 'Vulcan', line: 'The forge has gone out, and every blow is like the first! Learn not to forge the same thing twice.' }, trick: 'The honeycomb: dynamic programming' },
-  13: { host: { who: 'Turnus', line: 'The fox is mine, Trojan. Look for him at night, among my guards — if you can find the way.' } },
+  13: { host: { who: 'Turnus', line: 'The fox is mine, Trojan. Look for him at night, among my guards — if you can find the way.' }, trick: 'The key: shortest paths' },
+  15: { host: { who: 'Turnus', line: 'The last shard is mine, Trojan. Juno gave it to me as a charm. Win it — if you can.' }, trick: 'The Pysanka: how to recognise a technique' },
   12: { host: { who: 'Kyrylo Kozhumyaka', line: 'I harnessed the Serpent to a plough and ploughed these walls. And the shard cut them into scraps!' }, trick: 'The zigzag: intervals and the greedy choice' },
   11: { host: { who: 'Molfar', line: 'Fog has wrapped the meadows, and the trembitas are silent. Give the mountains back their voice.' }, trick: 'The rosette: walking a graph' },
   10: { host: { who: 'Mavka', line: 'Every tree had its place: younger to the left, older to the right. Bring order back to the forest — and it will wake.' }, trick: 'The periwinkle: a search tree' },
@@ -2200,11 +2288,23 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     idea: 'Sort the intervals: by start to merge, by end to keep the most or to shoot the fewest arrows. After sorting, every new interval only needs to be compared with the last one. A greedy algorithm makes the best local choice at every step and never goes back — it works when that choice can be proven not to spoil the answer.',
     complexity: 'Time O(n log n) for sorting plus O(n) for the pass. Memory O(1)–O(n).',
   },
+  13: {
+    title: 'The key: shortest paths',
+    when: ['You need the fewest steps or the cheapest way from one point to another.', 'All steps are equal (a grid, a maze) — or they have different costs (roads, runners).', 'Distances are needed from many sources at once.'],
+    idea: 'Equal steps — breadth-first search: the first touch of a vertex is the shortest. Several sources — put them all into the first wave. Different step costs — Dijkstra: keep candidates in a heap, and the nearest one popped already has its final distance. The “cost” can be not only a sum but also the largest step on the path.',
+    complexity: 'BFS O(V + E). Dijkstra with a heap O(E log V).',
+  },
   14: {
     title: 'The honeycomb: dynamic programming',
     when: ['The problem breaks into smaller ones that repeat: the same step is counted many times.', 'You need the best (min, max) or the number of ways, and the choices depend on earlier ones.', 'Brute force grows exponentially, but the number of distinct states is small.'],
     idea: 'Name the state (best[i], dp[a], dp[i][j]) and the transition: how the answer for a state is built from smaller ones. Solve states from the smallest and write them in a table, so nothing is forged twice. Often only the last couple of values are needed — then two variables are enough. A handy question: “what is the best that ends exactly here?”.',
     complexity: 'Time = number of states × the cost of a transition: O(n), O(n · amount), O(n · m), O(n²). Memory — the table or a couple of variables.',
+  },
+  15: {
+    title: 'The Pysanka: how to recognise a technique',
+    when: ['In an interview the problem never says its topic — the signals in the statement do.', 'Sorted, or a pair to find → two pointers or binary search. “Have I seen it?” → a hash map.', 'Consecutive stretches → a window. Next greater, brackets → a stack. Nodes and links → a list, a tree, a graph.', 'All variants → backtracking. Best or count of ways with repeating steps → DP. Shortest → BFS or Dijkstra.'],
+    idea: 'Start with the brute force and its cost, then ask: what is it repeating? What could it remember (a map, a table)? What could it skip (sorting, halving, a window)? Name the technique out loud, write a template, then adapt it. Check edge cases: empty, one element, repeats, negatives.',
+    complexity: 'Know the target: n up to 10⁴–10⁵ usually needs O(n log n) or better; up to 500 allows O(n²); up to 20 — even O(2ⁿ).',
   },
 };
 
