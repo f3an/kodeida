@@ -1395,6 +1395,132 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     lesson: 'start keeps the order: coins only forward — so no set repeats, and go(i, …) lets you take the same coin again.',
     doc: ['Charon’s fare', 'Return all different sets from candidates (with repeats) that add up to target.'],
   },
+  'anc.depth': {
+    title: 'How many generations', topic: 'a tree: recursion in depth',
+    brief: '<b>How many generations.</b> Anchises unrolls the family tree. Count how many generations it has.',
+    statement: [
+      'In Elysium Anchises shows Aeneas his descendants. The family tree is a <b>binary tree</b>: every node has <code>node.val</code> — the descendant’s number-name, and <code>node.left</code> and <code>node.right</code> — their two children (or <code>null</code> if there is no child).',
+      'You are given the root — <code>root</code>, Aeneas himself. Return how many generations the longest branch has: from the root to the farthest descendant. For the tree <code>[3, 9, 20, null, null, 15, 7]</code> it is <code>3</code>. An empty tree gives <code>0</code>.',
+      'A tree is easy to walk with recursion, like the circles of hell: the depth of a node is 1 plus the deeper of its children’s depths.',
+    ],
+    tool: {
+      name: 'a binary tree',
+      text: [
+        'Every node knows its value <code>val</code> and two children: <code>left</code> and <code>right</code>. A node without children is called a <b>leaf</b>.',
+        'Almost every tree problem is recursion: solve it for the left branch, for the right one, then build the answer for the node itself. The base case is <code>null</code>: an empty branch.',
+      ],
+      code: '//      3\n//     / \\\n//    9   20\n//       /  \\\n//      15   7\n// level by level: [3, 9, 20, null, null, 15, 7]',
+    },
+    hints: ['What is the depth of an empty branch?', 'If root is null — 0. Otherwise 1 + the larger of the depths of root.left and root.right.', 'if (!root) return 0; return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));'],
+    lesson: 'The answer for a node is built from the answers for its children. The base case is an empty branch.',
+    doc: ['How many generations', 'node.val — a descendant, node.left and node.right — their children or null.', 'Return the number of generations in the longest branch.'],
+    talk: [
+      'Son, here is your line. From you come children, from them grandchildren… The branches got tangled, and I no longer remember how many generations there are.',
+      'Ask each branch how deep it is. Add yourself to the deeper one.',
+    ],
+    quip: 'So many generations! And all from you. Well, and a little from me.',
+  },
+  'anc.invert': {
+    title: 'The family tree in a mirror', topic: 'a tree: swapping children',
+    brief: '<b>The family tree in a mirror.</b> A shard has mirrored the family tree. Mirror it back.',
+    statement: [
+      'A shard flipped the family tree as if in a mirror: whoever should be on the left ended up on the right. It has to be mirrored once more to put everything back.',
+      'In every node swap the left and the right child — and so for the whole tree. Return the root. <code>[4, 2, 7, 1, 3, 6, 9]</code> must become <code>[4, 7, 2, 9, 6, 3, 1]</code>.',
+      'Don’t create new nodes, only rearrange the children.',
+    ],
+    tool: {
+      name: 'a swap through a variable',
+      text: [
+        'To swap two things, first remember one of them: <code>const t = node.left; node.left = node.right; node.right = t;</code>',
+        'Swap the children in the node, then mirror each branch with the same function.',
+      ],
+      code: '//    2         2\n//   / \\   →   / \\\n//  1   3      3   1',
+    },
+    hints: ['What must be done with the node itself, and what with its branches?', 'If root is null — return null. Swap root.left and root.right, then call invertTree on both.', 'if (!root) return null; const t = root.left; root.left = root.right; root.right = t; invertTree(root.left); invertTree(root.right); return root;'],
+    lesson: 'A tree’s mirror = swapping the children in every node. Recursion visits every node exactly once.',
+    doc: ['The family tree in a mirror', 'Swap left and right in every node. Return the root.'],
+    talk: [
+      'I look at the family tree — and everything is the wrong way round. My younger grandson is somehow older than his brother.',
+      'That’s the shard playing with a mirror. Let’s swap lefts and rights in every node — and the tree will be as it was.',
+    ],
+    quip: 'Mirrored twice — and everything is as before. Mirrors always scared me a little.',
+  },
+  'anc.levels': {
+    title: 'Generation by generation', topic: 'a tree: breadth-first walk',
+    brief: '<b>Generation by generation.</b> List the descendants by generation: children first, then grandchildren, then great-grandchildren.',
+    statement: [
+      'Anchises wants to write the family tree into a book: each generation on its own line, left to right.',
+      'Return an array of generations: each holds the values of the nodes of that level, in order. For <code>[3, 9, 20, null, null, 15, 7]</code> you get <code>[[3], [9, 20], [15, 7]]</code>.',
+      'Recursion in depth is awkward here: it runs to the very bottom of one branch. It’s better to go <b>in breadth</b>: keep all the descendants of the current generation and gather the next one from them.',
+    ],
+    tool: {
+      name: 'a breadth-first walk',
+      text: [
+        'Keep an array <code>level</code> — the nodes of the current generation. Record their values, then gather their children into a new array <code>next</code> — that is the next generation.',
+        'When the current generation is empty, the tree is done.',
+      ],
+      code: 'let level = [root];\nwhile (level.length) {\n  // level — one generation\n  const next = [];\n  for (const node of level) {\n    if (node.left) next.push(node.left);\n    if (node.right) next.push(node.right);\n  }\n  level = next;\n}',
+    },
+    hints: ['How do you get the next generation from the current one?', 'level = [root]. While level isn’t empty: out.push(the values of level); gather the children of all nodes into next; level = next.', 'let level = [root]; while (level.length) { out.push(level.map((n) => n.val)); const next = []; for (const n of level) { if (n.left) next.push(n.left); if (n.right) next.push(n.right); } level = next; }'],
+    lesson: 'A breadth-first walk goes level by level: from the current level you gather the next. That’s how a tree is read generation by generation.',
+    doc: ['Generation by generation', 'Return the node values level by level: [[root], [children], [grandchildren], …].'],
+    talk: [
+      'Let’s write the line into the book. Not branch by branch, but generation by generation: that’s how our descendants will read it.',
+      'We take all the children together, then all the grandchildren together. Like the queue to Charon, only merrier.',
+    ],
+    quip: 'Now the family tree reads like a chronicle. Line by line.',
+  },
+  'anc.same': {
+    title: 'Two identical branches', topic: 'a tree: two recursions together',
+    brief: '<b>Two identical branches.</b> Anchises found two records of the family tree. Is it the same line?',
+    statement: [
+      'Two scrolls with the family tree lie in Elysium. Anchises suspects the shard forged one of them.',
+      'Return <code>true</code> if the trees <code>p</code> and <code>q</code> are identical: the same shape and the same values in the same places. Otherwise — <code>false</code>. <code>[1, 2, 3]</code> and <code>[1, 2, 3]</code> are identical, but <code>[1, 2]</code> and <code>[1, null, 2]</code> are not: the two is on different sides.',
+      'Walk both trees at once: compare the roots, then the left children with each other and the right ones with each other.',
+    ],
+    tool: {
+      name: 'recursion on two trees',
+      text: [
+        'The function gets one node from each tree. If both are <code>null</code> — identical. If only one is — not. Otherwise the values must match, and so must the branches.',
+      ],
+      code: '//  1     1\n// /       \\\n// 2       2     different: the two is on different sides',
+    },
+    hints: ['When are two empty nodes identical, and when not?', 'Both null — true. One null — false. Otherwise p.val === q.val and identical left and right branches.', 'if (!p || !q) return p === q; return p.val === q.val && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);'],
+    lesson: 'Two trees are compared with parallel recursion: the roots, then the left branches, then the right ones.',
+    doc: ['Two identical branches', 'true if the trees p and q are identical in shape and values.'],
+    talk: [
+      'Two scrolls, and one line. Or not? The shard can forge handwriting.',
+      'Let’s compare node with node, branch with branch. A single mismatch — and the forgery is exposed.',
+      '(from behind the gate of Elysium) I’m here, I’m not eavesdropping! They didn’t let me in, so at least I’ll listen.',
+    ],
+    quip: 'The real scroll stays, the forgery goes into the Lethe.',
+  },
+  'anc.lca': {
+    title: 'The common ancestor', topic: 'a tree: the answer rises from below',
+    brief: '<b>The common ancestor.</b> Two descendants argue about how they are related. Find their lowest common ancestor.',
+    statement: [
+      'Two descendants, <code>p</code> and <code>q</code>, met in Elysium and can’t work out how they are related. The answer is their <b>lowest common ancestor</b>: the lowest node whose branch contains both.',
+      'The values in the tree are distinct, and <code>p</code> and <code>q</code> are surely in it. Return the ancestor node (or its value). A node can be its own ancestor: for <code>p = 5</code> and <code>q = 4</code> in the tree <code>[3, 5, 1, 6, 2, 0, 8, null, null, 7, 4]</code> the answer is <code>5</code>.',
+      'Ask every branch: “do you hold <code>p</code> or <code>q</code>?” If something is found both on the left and on the right — the ancestor is right here. If only on one side — the answer is there.',
+    ],
+    tool: {
+      name: 'the answer rises from below',
+      text: [
+        'The function returns the node it found or <code>null</code>. Hit <code>p</code> or <code>q</code> — return it at once: there’s no need to look deeper.',
+        'At a node, look at what the children brought. Both branches brought something — this node is the common ancestor. One brought something — pass its find up.',
+      ],
+      code: '//        3\n//      /   \\\n//     5     1      p = 6, q = 4\n//    / \\          6 is left of 5, 4 is right\n//   6   2         → ancestor 5\n//      / \\\n//     7   4',
+    },
+    hints: ['What should the function return if the node is p or q itself?', 'If root is null, p or q — return root. Otherwise search left and right: both finds exist — return root, otherwise the one that exists.', 'if (!root || root.val === p || root.val === q) return root; const l = lowestCommonAncestor(root.left, p, q), r = lowestCommonAncestor(root.right, p, q); return l && r ? root : l ?? r;'],
+    lesson: 'Branches carry their finds upward; where two meet is the common ancestor. One walk, O(n).',
+    doc: ['The common ancestor', 'p and q are the values of two nodes of the tree.', 'Return their lowest common ancestor (a node or a value).'],
+    talk: [
+      'Here are two of my descendants. They argue about whose line is older. And the answer lies in their common ancestor.',
+      'Let each branch say whom it found. Where both answers meet — there’s the ancestor.',
+      '(behind the gate) A common ancestor… Do I have a common ancestor with the fox? No? Good.',
+    ],
+    quip: 'The line is whole again. Go, son. Your descendants will build Rome — and I’ll watch from here.',
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1406,6 +1532,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
   7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
+  9: { host: { who: 'Anchises', line: 'Here is your line, son. The branches got tangled — help me untangle them.' }, trick: 'The tree of life: binary trees' },
   8: { host: { who: 'Charon', line: 'A boat for two, and the weight is limited. Who rows with whom is for you to decide.' }, trick: 'The spiral: recursion and backtracking' },
 };
 
@@ -1457,6 +1584,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['A problem breaks into the same problem, only smaller.', 'You need all variants: subsets, orders, combinations.', 'The answer is built step by step, and a wrong step must be undone.'],
     idea: 'A recursive function needs a base case and a step towards it. What happens before the call is on the way down; after — on the way back. Backtracking walks a tree of decisions: make a choice, go deeper, come back and undo it. Put a copy of the path into the answer. A start index keeps the same set from being counted twice.',
     complexity: 'Subsets O(2ⁿ · n), permutations O(n! · n): the answers themselves are that many.',
+  },
+  9: {
+    title: 'The tree of life: binary trees',
+    when: ['Data comes as nodes with two children: a family tree, a hierarchy, a tournament.', 'The answer for a node is built from the answers for its branches: depth, sum, “is it here?”.', 'You need to walk a tree level by level.'],
+    idea: 'Recursion in depth: solve it for the left branch, for the right one, then combine at the node; the base case is null. Breadth-first walk: keep the current level and gather the next from it. Answers can rise from below: a branch returns what it found, and where two finds meet is the ancestor.',
+    complexity: 'Time O(n): every node is visited once. Memory O(h) for recursion (h — the height) or O(width) for a level.',
   },
 };
 

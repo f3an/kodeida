@@ -25,7 +25,7 @@ type Who = 'host' | 'fox' | 'juno' | 'sibyl' | 'system' | 'enei' | 'anchises' | 
 /** Текст — функція, щоб після перемикання мови репліка теж перекладалась. */
 interface Bubble { who: Who; text: () => string; tone: Tone; seq: number; enter: 'in' | 'nod' }
 /** Хто говорить за «господаря» світу: Микита на попелищі, Еол у морі, Дидона в Карфагені. */
-const HOST_SPRITE: Speaker[] = ['fox', 'eol', 'dido', 'lion', 'mitten', 'sotnyk', 'acestes', 'ox', 'charon'];
+const HOST_SPRITE: Speaker[] = ['fox', 'eol', 'dido', 'lion', 'mitten', 'sotnyk', 'acestes', 'ox', 'charon', 'anchises'];
 const LANG_NAME: Record<Lang, string> = { ts: 'TypeScript', js: 'JavaScript', py: 'Python' };
 type Tab = 'code' | 'statement' | 'hints' | 'sheet';
 type Panel = 'tests' | 'console';

@@ -497,6 +497,40 @@ export const PY: Record<string, PyPart> = {
     hint: 'def go(start, left):\n    if left == 0: out.append(path[:]); return\n    if left < 0: return\n    for i in range(start, len(candidates)):\n        path.append(candidates[i]); go(i, left - candidates[i]); path.pop()',
     tool: { code: '# candidates = [2, 3], target = 7\n# 2 + 2 + 3 = 7 ✓\n# 2 + 3 + … — 3 + 2 вже не беремо: лише вперед\n# відповідь: [[2, 2, 3]]' },
   },
+  'anc.depth': {
+    body: `${HERE}    return 0\n`,
+    solution: 'def max_depth(root):\n    if not root:\n        return 0\n    return 1 + max(max_depth(root.left), max_depth(root.right))\n',
+    hint: 'if not root: return 0\nreturn 1 + max(max_depth(root.left), max_depth(root.right))',
+  },
+  'anc.invert': {
+    body: `${HERE}    return root\n`,
+    solution: 'def invert_tree(root):\n    if not root:\n        return None\n    root.left, root.right = root.right, root.left\n    invert_tree(root.left)\n    invert_tree(root.right)\n    return root\n',
+    hint: 'if not root: return None\nroot.left, root.right = root.right, root.left\ninvert_tree(root.left); invert_tree(root.right)\nreturn root',
+    tool: {
+      code: '#    2         2\n#   / \\   →   / \\\n#  1   3      3   1',
+      name: ['обмін в один рядок', 'a one-line swap'],
+      text: { 0: ['У Python дві речі міняють місцями в один рядок: <code>node.left, node.right = node.right, node.left</code>.', 'In Python two things swap in one line: <code>node.left, node.right = node.right, node.left</code>.'] },
+    },
+  },
+  'anc.levels': {
+    body: `    out = []\n    if not root:\n        return out\n${HERE}\n    return out\n`,
+    solution: 'def level_order(root):\n    out = []\n    if not root:\n        return out\n    level = [root]\n    while level:\n        out.append([n.val for n in level])\n        nxt = []\n        for n in level:\n            if n.left:\n                nxt.append(n.left)\n            if n.right:\n                nxt.append(n.right)\n        level = nxt\n    return out\n',
+    hint: 'level = [root]\nwhile level:\n    out.append([n.val for n in level])\n    level = [c for n in level for c in (n.left, n.right) if c]',
+    tool: {
+      code: 'level = [root]\nwhile level:\n    # level — одне покоління\n    nxt = []\n    for node in level:\n        if node.left:\n            nxt.append(node.left)\n        if node.right:\n            nxt.append(node.right)\n    level = nxt',
+      text: { 0: ['Тримай список <code>level</code> — вузли поточного покоління. Запиши їхні значення, а тоді збери їхніх дітей у новий список <code>nxt</code> — це наступне покоління.', 'Keep a list <code>level</code> — the nodes of the current generation. Record their values, then gather their children into a new list <code>nxt</code> — that is the next generation.'] },
+    },
+  },
+  'anc.same': {
+    body: `${HERE}    return False\n`,
+    solution: 'def is_same_tree(p, q):\n    if not p or not q:\n        return p is q\n    return p.val == q.val and is_same_tree(p.left, q.left) and is_same_tree(p.right, q.right)\n',
+    hint: 'if not p or not q: return p is q\nreturn p.val == q.val and is_same_tree(p.left, q.left) and is_same_tree(p.right, q.right)',
+  },
+  'anc.lca': {
+    body: `${HERE}    return None\n`,
+    solution: 'def lowest_common_ancestor(root, p, q):\n    if not root or root.val == p or root.val == q:\n        return root\n    l = lowest_common_ancestor(root.left, p, q)\n    r = lowest_common_ancestor(root.right, p, q)\n    return root if l and r else (l or r)\n',
+    hint: 'if not root or root.val in (p, q): return root\nl = lowest_common_ancestor(root.left, p, q)\nr = lowest_common_ancestor(root.right, p, q)\nreturn root if l and r else (l or r)',
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None'], [/\bnull\b/g, 'None']];

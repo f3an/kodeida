@@ -4,7 +4,7 @@
  * На межі пісень у «дорозі» — інтерлюдія Юнони з Вовком (наскрізна лінія з docs/STORY.md).
  * Репліка: [хто, укр, англ]; «хто» — ключ портрета в VOICE (ui/Voyage.tsx).
  */
-export type Who = 'fox' | 'enei' | 'juno' | 'wolf' | 'sibyl' | 'eol' | 'dido' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon';
+export type Who = 'fox' | 'enei' | 'juno' | 'wolf' | 'sibyl' | 'eol' | 'dido' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon' | 'anchises';
 export interface Slide { title: [string, string]; narr: [string, string]; lines: [Who, string, string][] }
 export interface Voyage { leave: Slide; sail: Slide; arrive: Slide }
 
@@ -193,6 +193,32 @@ export const VOYAGES: Record<number, Voyage> = {
       lines: [
         ['charon', 'Живі? У моєму човні? Платіть.', 'The living? In my boat? Pay up.'],
         ['fox', 'Я вугільно-червоний. Тут це, здається, звичайний колір.', 'I’m coal-red. That seems to be an ordinary colour down here.'],
+      ],
+    },
+  },
+  8: {
+    leave: {
+      title: ['Пекло відпускає', 'Hell lets go'],
+      narr: ['Грішники сидять у своїх котлах, Харон рахує плату. На вишиванці Енея закручується «спіраль».', 'The sinners sit in their own cauldrons, Charon counts the fare. A “spiral” curls onto Aeneas’s shirt.'],
+      lines: [
+        ['charon', 'Рідко хто виходить звідси з решткою. Пливіть, поки я добрий.', 'Few leave here with change. Off you go while I’m kind.'],
+        ['fox', 'То я ношу в собі частку Писанки… Тепер ясно, чого мене так перефарбовує.', 'So I carry a piece of the Pysanka inside me… Now it’s clear why I keep changing colour.'],
+      ],
+    },
+    sail: {
+      title: ['Луги Елісію', 'The meadows of Elysium'],
+      narr: ['За пеклом — тихі луги, де живуть праведні душі. Анхіз іде попереду й не озирається.', 'Beyond hell lie quiet meadows where the righteous souls live. Anchises walks ahead and doesn’t look back.'],
+      lines: [
+        ['anchises', 'Сюди Вовка не пустять. Тут лише ті, хто вміє повертатися.', 'They won’t let the Wolf in here. Only those who know how to come back.'],
+        ['wolf', '(здалеку) Я й не хотів! Я біля брами посиджу…', '(from afar) I didn’t want to anyway! I’ll sit by the gate…'],
+      ],
+    },
+    arrive: {
+      title: ['Родовід Анхіза', 'The family tree of Anchises'],
+      narr: ['Анхіз показує Енеєві його нащадків, аж до тих, хто збудує Рим. Але уламок переплутав гілки родоводу.', 'Anchises shows Aeneas his descendants, all the way to those who will build Rome. But a shard has tangled the branches of the family tree.'],
+      lines: [
+        ['anchises', 'Ось твій рід, сину. Тільки хтось переставив гілки.', 'Here is your line, son. Only someone has rearranged the branches.'],
+        ['fox', 'Я золотавий, як листя на родовому дереві. Почнімо з коріння.', 'I’m golden, like the leaves on a family tree. Let’s start from the roots.'],
       ],
     },
   },

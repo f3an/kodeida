@@ -16,6 +16,7 @@ const VOICE: Record<Who, [Speaker, string, string]> = {
   sibyl: ['sibyl', 'Сивілла', 'Sibyl'], eol: ['eol', 'Еол', 'Aeolus'], dido: ['dido', 'Дидона', 'Dido'], lion: ['lion', 'Цар Лев', 'King Lion'],
   mitten: ['mitten', 'Мишка-шкряботушка', 'Mousie-Scratcher'], sotnyk: ['sotnyk', 'Сотник Забрьоха', 'Captain Zabrokha'],
   acestes: ['acestes', 'Ацест', 'Acestes'], ox: ['ox', 'Віл Половий', 'Pale Ox'], charon: ['charon', 'Харон', 'Charon'],
+  anchises: ['anchises', 'Анхіз', 'Anchises'],
 };
 
 const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);

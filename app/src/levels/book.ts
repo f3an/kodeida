@@ -139,4 +139,19 @@ go(0);`,
     complexity: 'Підмножини O(2ⁿ · n), перестановки O(n! · n): стільки відповідей і є.',
     problems: ['78. Subsets', '46. Permutations', '39. Combination Sum', '881. Boats to Save People', '17. Letter Combinations of a Phone Number'],
   },
+  {
+    world: 9,
+    title: 'Дерево життя: двійкові дерева',
+    motif: 'tree',
+    when: ['Дані — вузли з двома дітьми: родовід, ієрархія, турнірна сітка.', 'Відповідь для вузла складається з відповідей для гілок: глибина, сума, «чи є тут?».', 'Треба пройти дерево рівень за рівнем.'],
+    idea: 'Рекурсія вглиб: розв\'яжи для лівої гілки, для правої, а у вузлі склади; базовий випадок — null. Обхід ушир: тримай поточний рівень і збирай з нього наступний. Відповідь може підніматися знизу: гілка повертає, що знайшла, а де зійшлися дві знахідки — там предок.',
+    template: `function solve(node) {
+  if (!node) return /* відповідь для порожньої гілки */;
+  const l = solve(node.left);
+  const r = solve(node.right);
+  return /* відповідь для вузла з l і r */;
+}`,
+    complexity: 'Час O(n): кожен вузол один раз. Пам\'ять O(h) на рекурсію (h — висота) або O(ширини) на рівень.',
+    problems: ['104. Maximum Depth of Binary Tree', '226. Invert Binary Tree', '102. Binary Tree Level Order Traversal', '100. Same Tree', '236. Lowest Common Ancestor of a Binary Tree'],
+  },
 ];

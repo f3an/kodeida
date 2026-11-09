@@ -86,6 +86,89 @@ class _WNode(ListNode):
         j = v.__dict__['_i'] if isinstance(v, _WNode) and v.__dict__['_n'] == self._n else -1
         _push({'t': 'write', 'arr': self._n, 'i': self._i, 'v': {'next': j}})
 
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class _WTree(TreeNode):
+    # вузол дерева: val, left і right рахують погляди
+    def __init__(self, val, name, i):
+        self.__dict__.update({'_v': val, '_l': None, '_r': None, '_n': name, '_i': i})
+    def _link(self, v):
+        return {'next': v.__dict__['_i'] if isinstance(v, _WTree) and v.__dict__['_n'] == self._n else -1}
+    @property
+    def val(self):
+        _read(self._n, self._i)
+        return self.__dict__['_v']
+    @val.setter
+    def val(self, v):
+        self.__dict__['_v'] = v
+        _push({'t': 'write', 'arr': self._n, 'i': self._i, 'v': _plain(v)})
+    @property
+    def left(self):
+        _read(self._n, self._i)
+        return self.__dict__['_l']
+    @left.setter
+    def left(self, v):
+        self.__dict__['_l'] = v
+        _push({'t': 'write', 'arr': self._n, 'i': self._i, 'v': self._link(v)})
+    @property
+    def right(self):
+        _read(self._n, self._i)
+        return self.__dict__['_r']
+    @right.setter
+    def right(self, v):
+        self.__dict__['_r'] = v
+        _push({'t': 'write', 'arr': self._n, 'i': self._i, 'v': self._link(v)})
+
+def _kids(n):
+    if isinstance(n, _WTree):
+        return n.__dict__['_v'], n.__dict__['_l'], n.__dict__['_r']
+    return n.val, n.left, n.right
+
+def _tree_plain(root):
+    # дерево в масив по рівнях без підрахунку поглядів; хвостові None обрізано
+    out, q, seen, k = [], [root], set(), 0
+    while k < len(q) and len(out) < 20000:
+        n = q[k]
+        k += 1
+        if n is None or id(n) in seen:
+            out.append(None)
+            continue
+        seen.add(id(n))
+        v, l, r = _kids(n)
+        out.append(_plain(v))
+        q.append(l)
+        q.append(r)
+    while out and out[-1] is None:
+        out.pop()
+    return out
+
+def _make_tree(a, name):
+    v = a['$tree']
+    if not v or v[0] is None:
+        return None
+    mk = (lambda x, i: _WTree(x, name, i)) if name else (lambda x, i: TreeNode(x))
+    nodes = [mk(v[0], 0)]
+    q, k = 0, 1
+    while q < len(nodes) and k < len(v):
+        p = nodes[q]
+        q += 1
+        for side in ('_l', '_r'):
+            if k < len(v) and v[k] is not None:
+                c = mk(v[k], len(nodes))
+                nodes.append(c)
+                if name:
+                    p.__dict__[side] = c
+                elif side == '_l':
+                    p.left = c
+                else:
+                    p.right = c
+            k += 1
+    return nodes[0]
+
 def _nodes_plain(h):
     # список у масив значень без підрахунку поглядів; цикл обриваємо
     out, seen = [], set()
@@ -127,6 +210,8 @@ def _plain(v, d=0):
         return v if (v == v and v not in (float('inf'), float('-inf'))) else str(v)
     if isinstance(v, ListNode):
         return _nodes_plain(v)
+    if isinstance(v, TreeNode):
+        return _tree_plain(v)
     if d > 6:
         return '…'
     if isinstance(v, list):
@@ -144,28 +229,30 @@ def _plain(v, d=0):
     return '[function]' if callable(v) else repr(v)
 
 class _WList(list):
-    def __init__(self, data, name):
+    # off — зсув номерів для рядка сітки: усі клітинки показано одним рядом
+    def __init__(self, data, name, off=0):
         list.__init__(self, data)
         self._n = name
+        self._o = off
     def __getitem__(self, i):
         n = list.__len__(self)
         if isinstance(i, slice):
             for k in range(*i.indices(n)):
-                _read(self._n, k)
+                _read(self._n, self._o + k)
             return list.__getitem__(self, i)
         v = list.__getitem__(self, i)
-        _read(self._n, i + n if i < 0 else i)
+        _read(self._n, self._o + (i + n if i < 0 else i))
         return v
     def __iter__(self):
         k = 0
         while k < list.__len__(self):
-            _read(self._n, k)
+            _read(self._n, self._o + k)
             yield list.__getitem__(self, k)
             k += 1
     def __reversed__(self):
         _ban('reversed')
         for k in range(list.__len__(self) - 1, -1, -1):
-            _read(self._n, k)
+            _read(self._n, self._o + k)
             yield list.__getitem__(self, k)
     def __contains__(self, x):
         for v in self:
@@ -188,11 +275,11 @@ class _WList(list):
             for k in range(min(len(old), list.__len__(self))):
                 cur = list.__getitem__(self, k)
                 if old[k] != cur:
-                    _push({'t': 'write', 'arr': self._n, 'i': k, 'v': _plain(cur)})
+                    _push({'t': 'write', 'arr': self._n, 'i': self._o + k, 'v': _plain(cur)})
             return
         n = list.__len__(self)
         list.__setitem__(self, i, v)
-        _push({'t': 'write', 'arr': self._n, 'i': i + n if i < 0 else i, 'v': _plain(v)})
+        _push({'t': 'write', 'arr': self._n, 'i': self._o + (i + n if i < 0 else i), 'v': _plain(v)})
     def reverse(self):
         _ban('reverse')
         i, j = 0, list.__len__(self) - 1
@@ -471,7 +558,7 @@ def _compile(code, entry, en):
         co = compile(tree, SOURCE, 'exec')
     except SyntaxError as e:
         return json.dumps({'error': {'message': _tr_syntax(e.msg or 'SyntaxError'), 'line': e.lineno}})
-    ns = {'__name__': '__main__', '_WDict': _WDict, '_WSet': _WSet, 'print': _print, 'sorted': _sorted, 'ListNode': ListNode}
+    ns = {'__name__': '__main__', '_WDict': _WDict, '_WSet': _WSet, 'print': _print, 'sorted': _sorted, 'ListNode': ListNode, 'TreeNode': TreeNode}
     _S.reads = 0
     _S.over = False
     _S.budget = float('inf')
@@ -512,6 +599,14 @@ def _call(args_json, spec_json):
             args.append(street)
         elif isinstance(a, dict) and isinstance(a.get('$list'), list):
             args.append(_make_list(a, name))
+        elif isinstance(a, dict) and isinstance(a.get('$tree'), list):
+            args.append(_make_tree(a, name))
+        elif isinstance(a, list) and name and a and all(isinstance(r, list) for r in a):
+            rows, off = [], 0
+            for r in a:
+                rows.append(_WList(r, name, off))
+                off += len(r)
+            args.append(rows)
         elif isinstance(a, list) and name:
             args.append(_WList(a, name))
         elif isinstance(a, str) and name:

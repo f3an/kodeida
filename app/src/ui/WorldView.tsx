@@ -33,9 +33,13 @@ export const WorldView = forwardRef<WorldHandle, Props>(function WorldView({ lev
     if (s instanceof ScrollScene) s.load(events);
     else if (s instanceof StreetScene) s.load((tc.args[0] as ActorArg).setup.cells, events);
     else if (s instanceof ArrayScene) {
-      const arg = tc.args[observed] as unknown[] | string | ListArg;
+      const arg = tc.args[observed] as unknown[] | string | ListArg | { $tree: (number | null)[] };
+      const name = level.observe[observed]!;
+      // дерево: вузли по рівнях (як їх пронумерував рушій); сітка: клітинки рядок за рядком
+      if (arg && typeof arg === 'object' && '$tree' in arg) s.load(arg.$tree.filter((v) => v !== null), name, events, actor, result);
+      else if (Array.isArray(arg) && arg.length && arg.every(Array.isArray)) s.load(arg.flat(), name, events, actor, result);
       // зв'язний список: значення возів і зачіпки (останній — на pos, якщо валка замкнена)
-      if (arg && typeof arg === 'object' && !Array.isArray(arg)) {
+      else if (arg && typeof arg === 'object' && !Array.isArray(arg)) {
         const n = arg.$list.length, pos = arg.pos ?? -1;
         s.load(arg.$list, level.observe[observed]!, events, actor, result, arg.$list.map((_, i) => (i + 1 < n ? i + 1 : pos)));
       } else s.load(arg, level.observe[observed]!, events, actor, result);

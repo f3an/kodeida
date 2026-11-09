@@ -113,6 +113,29 @@ function listToArray(head: ListNode | null): unknown[] {
   for (let n = head; n; n = n.next) { if (seen.has(n) || out.length > 20000) { out.push('…'); break; } seen.add(n); out.push(n.val); }
   return out;
 }
+/** Вузол двійкового дерева, як на LeetCode. */
+export class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+  constructor(val = 0, left: TreeNode | null = null, right: TreeNode | null = null) { this.val = val; this.left = left; this.right = right; }
+}
+const isTreeArg = (a: unknown): a is { $tree: (number | null)[] } => !!a && typeof a === 'object' && Array.isArray((a as { $tree?: unknown }).$tree);
+/** Дерево в масив по рівнях, як пише LeetCode: [3, 9, 20, null, null, 15, 7]; хвостові null обрізано. */
+function treeToArray(root: TreeNode | null): unknown[] {
+  const out: unknown[] = [];
+  const q: (TreeNode | null)[] = [root];
+  const seen = new Set<TreeNode>();
+  for (let k = 0; k < q.length && out.length < 20000; k++) {
+    const n = q[k];
+    if (!n || seen.has(n)) { out.push(null); continue; }
+    seen.add(n); out.push(n.val); q.push(n.left, n.right);
+  }
+  while (out.length && out[out.length - 1] === null) out.pop();
+  return out;
+}
+/** Сітка або список пар: масив масивів, за кожною клітинкою світ стежить окремо. */
+const isGrid = (a: unknown): a is unknown[][] => Array.isArray(a) && a.length > 0 && a.every(Array.isArray);
 class MinPriorityQueue<T> extends PriorityQueue<T> { constructor(prio: (x: T) => number = asNum) { super(prio, 1); } }
 class MaxPriorityQueue<T> extends PriorityQueue<T> { constructor(prio: (x: T) => number = asNum) { super(prio, -1); } }
 
@@ -124,10 +147,10 @@ export function compile(code: string, lang: Lang, entry: string): { fn: PlayerFn
     return { error: errorOf(err) };
   }
   // Обгортка стоїть на першому рядку коду, тож номери рядків у стеку збігаються з редактором.
-  const src = `(function(console,MinPriorityQueue,MaxPriorityQueue,ListNode){"use strict";${js}\n;return typeof ${entry}==="function"?${entry}:undefined;})\n//# sourceURL=${SOURCE_URL}`;
+  const src = `(function(console,MinPriorityQueue,MaxPriorityQueue,ListNode,TreeNode){"use strict";${js}\n;return typeof ${entry}==="function"?${entry}:undefined;})\n//# sourceURL=${SOURCE_URL}`;
   let fn: unknown;
   try {
-    fn = (0, eval)(src)(playerConsole, MinPriorityQueue, MaxPriorityQueue, ListNode);
+    fn = (0, eval)(src)(playerConsole, MinPriorityQueue, MaxPriorityQueue, ListNode, TreeNode);
   } catch (err) {
     return { error: errorOf(err) };
   }
@@ -231,17 +254,18 @@ export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallR
     if (reads > budget) { overBudget = true; throw new OverBudget(); }
     push({ t: 'read', arr: name, i });
   };
-  const watch = (arr: unknown[], name: string) =>
+  // off — зсув номерів: рядок r сітки показується в спільному ряду клітинок після попередніх рядків
+  const watch = (arr: unknown[], name: string, off = 0) =>
     new Proxy(arr, {
       get(target, prop, recv) {
         if (counting && typeof prop === 'string') {
-          if (isIndex(prop)) read(name, Number(prop));
+          if (isIndex(prop)) read(name, off + Number(prop));
           else if (forbid.has(prop)) throw new WorldError(M(`У цій вправі метод ${prop}() заборонено — зроби це сам.`, `The ${prop}() method is forbidden in this exercise — do it yourself.`));
         }
         return Reflect.get(target, prop, recv);
       },
       set(target, prop, value, recv) {
-        if (counting && typeof prop === 'string' && isIndex(prop)) push({ t: 'write', arr: name, i: Number(prop), v: value });
+        if (counting && typeof prop === 'string' && isIndex(prop)) push({ t: 'write', arr: name, i: off + Number(prop), v: value });
         return Reflect.set(target, prop, value, recv);
       },
     });
@@ -263,11 +287,36 @@ export function runCall(fn: PlayerFn, spec: CallSpec, eventLimit: number): CallR
     return nodes[0] ?? null;
   };
 
+  /** Дерево з масиву по рівнях; вузли пронумеровано в тому ж порядку, і val, left, right рахують погляди. */
+  const makeTree = (a: { $tree: (number | null)[] }, name: string | null) => {
+    const v = a.$tree;
+    if (!v.length || v[0] === null) return null;
+    const nodes: TreeNode[] = [new TreeNode(v[0]!)];
+    for (let q = 0, k = 1; q < nodes.length && k < v.length; q++) {
+      const p = nodes[q];
+      if (k < v.length && v[k] !== null) nodes.push(p.left = new TreeNode(v[k]!)); k++;
+      if (k < v.length && v[k] !== null) nodes.push(p.right = new TreeNode(v[k]!)); k++;
+    }
+    const index = new Map<TreeNode, number>();
+    nodes.forEach((n, i) => index.set(n, i));
+    if (name) nodes.forEach((n, i) => {
+      const box: Record<string, unknown> = { val: n.val, left: n.left, right: n.right };
+      for (const key of ['val', 'left', 'right']) Object.defineProperty(n, key, {
+        get() { if (counting) read(name, i); return box[key]; },
+        set(x) { box[key] = x; if (counting) push({ t: 'write', arr: name, i, v: key === 'val' ? x : { next: x ? index.get(x as TreeNode) ?? -1 : -1 } }); },
+        enumerable: true,
+      });
+    });
+    return nodes[0];
+  };
+
   let street: StreetState | undefined;
-  const raw = spec.args.map((a) => (Array.isArray(a) ? a.slice() : a));
+  const raw = spec.args.map((a) => (isGrid(a) ? a.map((r) => r.slice()) : Array.isArray(a) ? a.slice() : a));
   const args = raw.map((a, i) => {
     if (isActor(a)) { const s = makeStreet(a.setup, push); street = s.st; return s.api; }
     if (isListArg(a)) return makeList(a, spec.observe[i]);
+    if (isTreeArg(a)) return makeTree(a, spec.observe[i]);
+    if (isGrid(a) && spec.observe[i]) { let off = 0; return a.map((r) => { const w = watch(r, spec.observe[i]!, off); off += r.length; return w; }); }
     if (Array.isArray(a) && spec.observe[i]) return watch(a, spec.observe[i]!);
     if (typeof a === 'string' && spec.observe[i] && spec.record) return watchString(a, spec.observe[i]!, read);
     return a;
@@ -328,6 +377,7 @@ function isIndex(p: string): boolean {
 function plain(v: unknown, depth = 0): unknown {
   if (v === null || typeof v !== 'object') return typeof v === 'function' ? '[function]' : v;
   if (v instanceof ListNode) return listToArray(v);
+  if (v instanceof TreeNode) return treeToArray(v);
   if (depth > 6) return '…';
   if (Array.isArray(v)) return Array.from(v, (x) => plain(x, depth + 1));
   const out: Record<string, unknown> = {};
