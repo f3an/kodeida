@@ -302,4 +302,31 @@ export const VOYAGES: Record<number, Voyage> = {
       ],
     },
   },
+  12: {
+    leave: {
+      title: ['Вали стоять', 'The walls stand'],
+      narr: ['Змії відбиті, вали цілі, а Кожум\'яка вже лагодить плуг. На вишиванці — «зигзаг». Попереду — Лаціум, кінець дороги.', 'The serpents are beaten back, the walls are whole, and Kozhumyaka is already mending his plough. On the shirt — “a zigzag”. Ahead lies Latium, the end of the road.'],
+      lines: [
+        ['kozhumyaka', 'Добре стріляєте. Як буде скрута — кличте, я Змія ще раз запряжу.', 'You shoot well. If you’re ever in trouble — call me, I’ll harness the Serpent again.'],
+        ['fox', 'Лаціум… Звідти пахне чимось недобрим. І вовком.', 'Latium… Something bad smells from there. And wolf.'],
+      ],
+    },
+    sail: {
+      title: ['Пісня VI. Лаціум', 'Song VI. Latium'],
+      narr: ['Уночі, поки всі сплять, Вовк крадеться до табору троянців. Юнона дивиться згори.', 'At night, while everyone sleeps, the Wolf creeps into the Trojan camp. Juno watches from above.'],
+      lines: [
+        ['juno', 'Лис носить у собі Писанку. Принеси мені лиса — і вони ніколи її не зберуть.', 'The fox carries the Pysanka inside him. Bring me the fox — and they will never put it together.'],
+        ['wolf', 'Пробач, руда… тобто темно-синя. Я голодний, а вона обіцяла ліс.', 'Sorry, ginger… I mean, navy. I’m hungry, and she promised me a forest.'],
+        ['fox', 'Енею-у-у!..', 'Aeneas-s-s!..'],
+      ],
+    },
+    arrive: {
+      title: ['Табір Турна', 'Turnus’s camp'],
+      narr: ['Еней прокидається — а Микити немає. Його тримають у таборі Турна, на пагорбах за частоколом. Уперше Еней мусить іти без лиса. Але з ним Низ і Евріал.', 'Aeneas wakes up — and Mykyta is gone. He is held in Turnus’s camp, on the hills behind the palisade. For the first time Aeneas has to go without the fox. But Nisus and Euryalus are with him.'],
+      lines: [
+        ['turn', 'Лис у мене, троянцю. Хочеш назад — приходь сам.', 'The fox is mine, Trojan. Want him back — come yourself.'],
+        ['enei', 'Прийду. І цього разу без підказок.', 'I will. And this time without hints.'],
+      ],
+    },
+  },
 };

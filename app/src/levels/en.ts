@@ -1877,6 +1877,108 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     ],
     quip: 'We fought them off! Now I’ll harness them to the plough again.',
   },
+  'camp.sneak': {
+    title: 'Past the guards', topic: 'shortest path: breadth-first',
+    brief: '<b>Past the guards.</b> Turnus’s camp at night. Sneak from the top-left corner to the bottom-right by the shortest path.',
+    statement: [
+      'Mykyta has been kidnapped and is held in Turnus’s camp. Aeneas, Nisus and Euryalus creep in at night. The camp is a square grid <code>grid</code>: <code>0</code> — shadow you can pass through, <code>1</code> — a campfire with guards.',
+      'You can move in <b>eight</b> directions: straight and diagonally. Return how many cells the shortest path from <code>[0, 0]</code> to the bottom-right corner has (both ends count), or <code>-1</code> if there is no path. For <code>[[0, 1], [1, 0]]</code> — <code>2</code>, diagonally.',
+      'The shortest path in a grid where every step is the same is found with a <b>breadth-first search</b>, as in the Carpathians: wave after wave, and the number of the wave that first touches a cell is its distance.',
+    ],
+    tool: {
+      name: 'distance = wave number',
+      text: [
+        'Keep <code>dist[r][c]</code> — the length of the shortest path to the cell (0 — not reached yet). The start is 1.',
+        'For every cell of the wave look at its 8 neighbours. If a neighbour is shadow and has no distance yet, its distance is 1 more. The first touch is always the shortest, so nothing needs rewriting.',
+      ],
+      code: '// 0 0 0     1 2 3\n// 1 1 0  →  · · 3\n// 1 1 0     · · 4   → answer 4',
+    },
+    hints: ['Which wave will touch the final cell first?', 'dist = a grid of zeros, dist[0][0] = 1, wave = [[0, 0]]. While there’s a wave: for every cell and its 8 neighbours — if shadow and dist 0, dist = +1 and into next. Answer: dist of the end or -1.', 'for (const [r, c] of wave) for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) { const x = r + dr, y = c + dc; if (x >= 0 && y >= 0 && x < n && y < n && grid[x][y] === 0 && !dist[x][y]) { dist[x][y] = dist[r][c] + 1; next.push([x, y]); } }'],
+    lesson: 'When all steps are equal, breadth-first search gives the shortest path: the first touch of a cell is the shortest.',
+    doc: ['Past the guards', '0 — shadow, 1 — guards. You can move in 8 directions.', 'Return the number of cells in the shortest path from [0, 0] to the bottom-right corner, or -1.'],
+    talk: [
+      'I’m Nisus, and this is Euryalus. We know the camp: campfires with guards, and shadows between them. Follow us, Aeneas.',
+      'It’s strange without Mykyta. Nobody grumbling in my ear. All right — in waves, like in the mountains.',
+    ],
+    quip: 'The guards didn’t even stir. It’ll get harder from here.',
+  },
+  'camp.signal': {
+    title: 'News through the posts', topic: 'shortest path: Dijkstra with a heap',
+    brief: '<b>News through the posts.</b> If the guards raise the alarm, how long until it reaches every post in the camp?',
+    statement: [
+      'The camp has <code>n</code> guard posts numbered 1 to <code>n</code>. <code>times[i] = [u, v, w]</code>: a runner from post <code>u</code> to post <code>v</code> takes <code>w</code> minutes (one way only). The alarm is raised at post <code>k</code>.',
+      'Return in how many minutes the news reaches <b>every</b> post, or <code>-1</code> if some post is never reached. For <code>[[2, 1, 1], [2, 3, 1], [3, 4, 1]]</code>, <code>n = 4</code>, <code>k = 2</code> — <code>2</code>.',
+      'Now the steps have different lengths, so waves won’t help. <b>Dijkstra’s algorithm</b> will: always take the nearest post not yet handled. The nearest is easy to get from a <b>heap</b> — as at Acestes’s games.',
+    ],
+    tool: {
+      name: 'Dijkstra',
+      text: [
+        'Gather each post’s runners: <code>adj[u] = [[v, w], …]</code>. Into a heap <code>new MinPriorityQueue((x) =&gt; x[0])</code> put <code>[0, k]</code>: “to k — 0 minutes”.',
+        'Take the nearest <code>[d, u]</code> from the heap. If <code>u</code> is already done — skip it. Otherwise remember its time and put <code>[d + w, v]</code> into the heap for every runner from <code>u</code>.',
+      ],
+      code: 'const heap = new MinPriorityQueue((x) => x[0]);\nheap.enqueue([0, k]);\nwhile (heap.size()) {\n  const [d, u] = heap.dequeue();   // the nearest\n  // seen u already? — move on\n  // otherwise: its time is d, and its neighbours go into the heap\n}',
+    },
+    hints: ['Whose time can be considered final when you take it from the heap?', 'heap.enqueue([0, k]). While the heap isn’t empty: [d, u] = dequeue; if done has u — continue; done.set(u, d); for [v, w] in adj[u] — enqueue([d + w, v]). If done.size < n — -1, otherwise the largest time.', 'while (heap.size()) { const [d, u] = heap.dequeue(); if (done.has(u)) continue; done.set(u, d); for (const [v, w] of adj[u]) if (!done.has(v)) heap.enqueue([d + w, v]); } return done.size === n ? Math.max(...done.values()) : -1;'],
+    lesson: 'Dijkstra: the nearest from the heap already has its final distance. Steps of different lengths — a heap instead of waves.',
+    doc: ['News through the posts', 'times[i] = [u, v, w] — a runner from u to v in w minutes. Posts 1 to n, the alarm at k.', 'Return when the news reaches everyone, or -1.'],
+    talk: [
+      'Here the posts pass the alarm by runners. If we’re spotted — how long until the whole camp knows?',
+      '(from afar, barely audible) …the nearest — first… from the heap…',
+      'That’s Mykyta! Hear that? He’s signalling.',
+    ],
+    quip: 'Now we know how much time we have. Not much.',
+  },
+  'camp.exits': {
+    title: 'To the nearest exit', topic: 'breadth-first from many sources',
+    brief: '<b>To the nearest exit.</b> For every tent, find how many steps it is to the nearest way out of the camp.',
+    statement: [
+      'Nisus draws a retreat map. <code>mat</code> is the camp grid: <code>0</code> — an exit (a gap in the palisade), <code>1</code> — a tent. You move up, down, left, right.',
+      'Return a grid of the same size: for every cell — how many steps to the <b>nearest</b> zero. Zeros get 0. For <code>[[0, 0, 0], [0, 1, 0], [1, 1, 1]]</code> you get <code>[[0, 0, 0], [0, 1, 0], [1, 2, 1]]</code>.',
+      'Looking for an exit separately from every tent takes long. Send waves <b>from all exits at once</b>: the first wave is the exits’ neighbours (1 step), the second their neighbours (2 steps), and so on. Remember the spoiled bryndza.',
+    ],
+    tool: {
+      name: 'waves from many sources',
+      text: [
+        'Start with all the zeros in the first wave; for the rest the distance is unknown for now (<code>Infinity</code>).',
+        'Wave after wave: a neighbour with an unknown distance gets the current cell’s distance + 1 and goes into the next wave.',
+      ],
+      code: '// 0 0 0      0 0 0\n// 0 1 0  →   0 1 0\n// 1 1 1      1 2 1',
+    },
+    hints: ['Where should the waves start so every cell at once gets the distance to the nearest exit?', 'wave = all cells with 0. While there’s a wave: for every [r, c] and 4 neighbours — if the neighbour’s dist is Infinity, it’s dist[r][c] + 1 and into next.', 'for (const [r, c] of wave) for (const [x, y] of [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]) if (x >= 0 && y >= 0 && x < mat.length && y < mat[0].length && dist[x][y] === Infinity) { dist[x][y] = dist[r][c] + 1; next.push([x, y]); }'],
+    lesson: 'The distance to the nearest of many sources is one breadth-first search started from all sources at once.',
+    doc: ['To the nearest exit', '0 — an exit, 1 — a tent. Return the grid of distances to the nearest 0 (steps in 4 directions).'],
+    talk: [
+      'Once we free the fox, we’ll have to run fast. From every tent — to the nearest gap.',
+      'Let’s send waves from all the gaps together. Like the bryndza in the Carpathians, only the other way round — it saves.',
+    ],
+    quip: 'The retreat map is ready. Euryalus, memorise it.',
+  },
+  'camp.effort': {
+    title: 'The easiest path to Mykyta', topic: 'Dijkstra on a grid',
+    brief: '<b>The easiest path to Mykyta.</b> The camp is on hills. Find a path to the prisoner whose steepest climb or drop is as gentle as possible.',
+    statement: [
+      'Mykyta is held in the bottom-right corner of the camp. <code>heights[r][c]</code> is the height of a hill. You move up, down, left, right. The <b>effort</b> of a path is the largest height difference between two neighbouring cells on it: the steepest spot is exactly where you can slip and make noise.',
+      'Return the smallest possible effort of a path from <code>[0, 0]</code> to the bottom-right corner. For <code>[[1, 2, 2], [3, 8, 2], [5, 3, 5]]</code> — <code>2</code>: the path 1 → 3 → 5 → 3 → 5 never jumps by more than 2.',
+      'The camp can be 50 × 50. It’s Dijkstra again, but the “distance” is now not the sum of steps but the <b>largest</b> step on the path. Take the cell with the smallest effort from the heap — for it the effort is already final.',
+    ],
+    tool: {
+      name: 'Dijkstra with a maximum',
+      text: [
+        '<code>best[r][c]</code> — the smallest known effort to reach the cell. The heap holds <code>[effort, r, c]</code>, the smallest on top.',
+        'Moving to a neighbour costs <code>max(effort, |height difference|)</code>. If that’s less than the neighbour’s <code>best</code> — update it and push it into the heap. Popped the final cell — that’s the answer.',
+      ],
+      code: 'const heap = new MinPriorityQueue((x) => x[0]);\nheap.enqueue([0, 0, 0]);\n// [e, r, c] = heap.dequeue()\n// to a neighbour: Math.max(e, Math.abs(h[x][y] - h[r][c]))',
+    },
+    hints: ['What does “distance” to a cell mean if we count the steepest step rather than the sum?', 'While the heap isn’t empty: [e, r, c] = dequeue; if it’s the end — return e; if e > best[r][c] — skip. For 4 neighbours: ne = max(e, |difference|); if ne < best — update and enqueue.', 'while (heap.size()) { const [e, r, c] = heap.dequeue(); if (r === R - 1 && c === C - 1) return e; if (e > best[r][c]) continue; for (const [x, y] of [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]) { if (x < 0 || y < 0 || x >= R || y >= C) continue; const ne = Math.max(e, Math.abs(heights[x][y] - heights[r][c])); if (ne < best[x][y]) { best[x][y] = ne; heap.enqueue([ne, x, y]); } } }'],
+    lesson: 'Dijkstra works with any “cost” that never decreases along a path: a sum, or here — the largest step.',
+    doc: ['The easiest path to Mykyta', 'The effort of a path is the largest height difference between neighbouring cells.', 'Return the smallest effort of a path from [0, 0] to the bottom-right corner.'],
+    talk: [
+      'Looking for the fox? I have him. But the camp is on hills: one careless step — and the whole guard is on its feet.',
+      'I’m guarding the fox! I walk every path at once… and get nowhere in time. Who’s there?',
+      '(from captivity) Aeneas! Not the shortest — the gentlest! The steepest spot decides everything!',
+    ],
+    quip: 'Aeneas! I knew you’d come. Well, I hoped. Look — I’m every colour again!',
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1888,6 +1990,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
   7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
+  13: { host: { who: 'Turnus', line: 'The fox is mine, Trojan. Look for him at night, among my guards — if you can find the way.' } },
   12: { host: { who: 'Kyrylo Kozhumyaka', line: 'I harnessed the Serpent to a plough and ploughed these walls. And the shard cut them into scraps!' }, trick: 'The zigzag: intervals and the greedy choice' },
   11: { host: { who: 'Molfar', line: 'Fog has wrapped the meadows, and the trembitas are silent. Give the mountains back their voice.' }, trick: 'The rosette: walking a graph' },
   10: { host: { who: 'Mavka', line: 'Every tree had its place: younger to the left, older to the right. Bring order back to the forest — and it will wake.' }, trick: 'The periwinkle: a search tree' },
