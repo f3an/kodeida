@@ -55,7 +55,7 @@ export interface Level {
 }
 
 /** Хто говорить у діалогах вправ. */
-export type Voice = 'enei' | 'fox' | 'sibyl' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'juno' | 'wolf' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon';
+export type Voice = 'enei' | 'fox' | 'sibyl' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'eol' | 'dido' | 'juno' | 'wolf' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon' | 'mavka' | 'molfar' | 'kozhumyaka' | 'turn' | 'vulcan';
 export interface Line { who: Voice; text: string }
 
 export interface Tool {

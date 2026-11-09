@@ -154,4 +154,18 @@ go(0);`,
     complexity: 'Час O(n): кожен вузол один раз. Пам\'ять O(h) на рекурсію (h — висота) або O(ширини) на рівень.',
     problems: ['104. Maximum Depth of Binary Tree', '226. Invert Binary Tree', '102. Binary Tree Level Order Traversal', '100. Same Tree', '236. Lowest Common Ancestor of a Binary Tree'],
   },
+  {
+    world: 10,
+    title: 'Барвінок: дерево пошуку',
+    motif: 'periwinkle',
+    when: ['Дані — дерево, де все ліворуч менше, а все праворуч більше.', 'Треба знайти, вставити чи перевірити значення, не обходячи всього.', 'Потрібні значення по порядку: k-те найменше, наступне, діапазон.'],
+    idea: 'Кожне порівняння каже, в яку гілку йти, тож пошук і вставка займають стільки кроків, скільки в дереві поверхів. Новий вузол завжди стає листком. Перевірка порядку потребує меж, що звужуються згори, а не лише порівняння батька з дитиною. Обхід inorder (ліво, вузол, право) видає значення за зростанням.',
+    template: `let node = root;
+while (node && node.val !== target) {
+  node = target < node.val ? node.left : node.right;
+}
+// inorder: visit(left); робота з node; visit(right)`,
+    complexity: 'Пошук і вставка O(h): O(log n) у збалансованому дереві. Inorder O(n).',
+    problems: ['700. Search in a Binary Search Tree', '701. Insert into a Binary Search Tree', '98. Validate Binary Search Tree', '230. Kth Smallest Element in a BST', '235. Lowest Common Ancestor of a BST'],
+  },
 ];

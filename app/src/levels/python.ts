@@ -531,6 +531,36 @@ export const PY: Record<string, PyPart> = {
     solution: 'def lowest_common_ancestor(root, p, q):\n    if not root or root.val == p or root.val == q:\n        return root\n    l = lowest_common_ancestor(root.left, p, q)\n    r = lowest_common_ancestor(root.right, p, q)\n    return root if l and r else (l or r)\n',
     hint: 'if not root or root.val in (p, q): return root\nl = lowest_common_ancestor(root.left, p, q)\nr = lowest_common_ancestor(root.right, p, q)\nreturn root if l and r else (l or r)',
   },
+  'song.search': {
+    body: `    node = root\n${HERE}\n    return node\n`,
+    solution: 'def search_bst(root, val):\n    node = root\n    while node and node.val != val:\n        node = node.left if val < node.val else node.right\n    return node\n',
+    wolf: 'def search_bst(root, val):\n    found = None\n    def visit(node):\n        nonlocal found\n        if not node:\n            return\n        if node.val == val:\n            found = node\n        visit(node.left)\n        visit(node.right)\n    visit(root)\n    return found\n',
+    hint: 'while node and node.val != val:\n    node = node.left if val < node.val else node.right',
+  },
+  'song.insert': {
+    body: `    if not root:\n        return TreeNode(val)\n${HERE}\n    return root\n`,
+    solution: 'def insert_into_bst(root, val):\n    if not root:\n        return TreeNode(val)\n    node = root\n    while True:\n        if val < node.val:\n            if not node.left:\n                node.left = TreeNode(val)\n                break\n            node = node.left\n        else:\n            if not node.right:\n                node.right = TreeNode(val)\n                break\n            node = node.right\n    return root\n',
+    hint: 'node = root\nwhile True:\n    if val < node.val:\n        if not node.left: node.left = TreeNode(val); break\n        node = node.left\n    else:\n        if not node.right: node.right = TreeNode(val); break\n        node = node.right',
+    tool: {
+      code: 'leaf = TreeNode(5)\nnode.right = leaf   # тепер 5 — права дитина node',
+      text: { 0: ['<code>TreeNode(val)</code> створює вузол без дітей. Щоб посадити його, причепи до батька: <code>node.left = …</code> або <code>node.right = …</code>.', '<code>TreeNode(val)</code> creates a node without children. To plant it, hook it to a parent: <code>node.left = …</code> or <code>node.right = …</code>.'] },
+    },
+  },
+  'song.valid': {
+    body: `    def ok(node, lo, hi):\n${HERE.replace('    #', '        #')}        return True\n    return ok(root, float('-inf'), float('inf'))\n`,
+    solution: "def is_valid_bst(root):\n    def ok(node, lo, hi):\n        if not node:\n            return True\n        if node.val <= lo or node.val >= hi:\n            return False\n        return ok(node.left, lo, node.val) and ok(node.right, node.val, hi)\n    return ok(root, float('-inf'), float('inf'))\n",
+    hint: 'if not node: return True\nif node.val <= lo or node.val >= hi: return False\nreturn ok(node.left, lo, node.val) and ok(node.right, node.val, hi)',
+    tool: {
+      code: '#      5\n#     / \\\n#    1   4        4 < 5 — праворуч не може бути!\n#       / \\\n#      3   6',
+      text: { 0: ['Функція <code>ok(node, lo, hi)</code> перевіряє, що все в гілці лежить строго між <code>lo</code> і <code>hi</code>. Корінь перевіряють між <code>float(\'-inf\')</code> і <code>float(\'inf\')</code>.', 'The function <code>ok(node, lo, hi)</code> checks that everything in the branch lies strictly between <code>lo</code> and <code>hi</code>. The root is checked between <code>float(\'-inf\')</code> and <code>float(\'inf\')</code>.'] },
+    },
+  },
+  'song.kth': {
+    body: `    count = 0\n    answer = -1\n    def visit(node):\n        nonlocal count, answer\n${HERE.replace('    #', '        #')}        pass\n    visit(root)\n    return answer\n`,
+    solution: 'def kth_smallest(root, k):\n    count = 0\n    answer = -1\n    def visit(node):\n        nonlocal count, answer\n        if not node or count >= k:\n            return\n        visit(node.left)\n        count += 1\n        if count == k:\n            answer = node.val\n        visit(node.right)\n    visit(root)\n    return answer\n',
+    hint: 'if not node or count >= k: return\nvisit(node.left)\ncount += 1\nif count == k: answer = node.val\nvisit(node.right)',
+    tool: { code: 'def visit(node):\n    if not node:\n        return\n    visit(node.left)\n    print(node.val)   # за зростанням!\n    visit(node.right)' },
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None'], [/\bnull\b/g, 'None']];

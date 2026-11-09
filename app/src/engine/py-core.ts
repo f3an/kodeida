@@ -17,7 +17,7 @@ export interface PyEngine {
 }
 
 /** Ім'я функції в Python: camelCase рівня → snake_case. */
-export const pyEntry = (entry: string) => entry.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
+export const pyEntry = (entry: string) => entry.replace(/[A-Z]+(?![a-z])|[A-Z]/g, (c) => '_' + c.toLowerCase());
 
 /** Заборони рівня (імена JS-методів) → імена Python-методів і функцій. */
 const FORBID: Record<string, string[]> = { reverse: ['reverse', 'reversed'], toReversed: ['reversed'], sort: ['sort', 'sorted'], toSorted: ['sorted'] };

@@ -6,9 +6,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PixelCanvas } from './PixelCanvas.tsx';
 import { portraitFrames } from '../world/art.ts';
-import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod, makeAnchises, makeTrojan, makeLion, makeMitten, makeSotnyk, makeAcestes, makeOx, makeCharon } from '../world/sprites.js';
+import { makeEnei, makeFox, makeJuno, makeSibyl, makeDido, makeEol, makeWolf, makeGod, makeAnchises, makeTrojan, makeLion, makeMitten, makeSotnyk, makeAcestes, makeOx, makeCharon, makeMavka, makeMolfar, makeKozhumyaka, makeTurn, makeVulcan } from '../world/sprites.js';
 
-export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon';
+export type Speaker = 'enei' | 'fox' | 'juno' | 'sibyl' | 'dido' | 'eol' | 'wolf' | 'zeus' | 'apollo' | 'bacchus' | 'neptune' | 'venus' | 'anchises' | 'warrior' | 'sailor' | 'woman' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon' | 'mavka' | 'molfar' | 'kozhumyaka' | 'turn' | 'vulcan';
 export type Tone = 'say' | 'error' | 'win' | 'taunt';
 
 type Sprite = { w: number; h: number; draw: (...a: unknown[]) => void };
@@ -36,6 +36,11 @@ function frames(who: Speaker, fox: string): Sprite[] {
       case 'acestes': return [makeAcestes(), makeAcestes()];
       case 'ox': return [makeOx(), makeOx()];
       case 'charon': return [makeCharon(), makeCharon()];
+      case 'mavka': return [makeMavka(), makeMavka()];
+      case 'molfar': return [makeMolfar(), makeMolfar()];
+      case 'kozhumyaka': return [makeKozhumyaka(), makeKozhumyaka()];
+      case 'turn': return [makeTurn(), makeTurn()];
+      case 'vulcan': return [makeVulcan(), makeVulcan()];
       case 'warrior': case 'sailor': case 'woman': return [makeTrojan(who), makeTrojan(who)];
       // боги жестикулюють, поки говорять: кадр з піднятою рукою
       default: return [makeGod(who), makeGod(who, { raise: true })];

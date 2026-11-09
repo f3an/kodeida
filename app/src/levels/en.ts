@@ -1521,6 +1521,108 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     ],
     quip: 'The line is whole again. Go, son. Your descendants will build Rome — and I’ll watch from here.',
   },
+  'song.search': {
+    title: 'A tree of the right age', topic: 'BST: smaller left, bigger right',
+    brief: '<b>A tree of the right age.</b> The forest is ordered: younger trees to the left, older to the right. Find the tree that is exactly <code>val</code> years old.',
+    statement: [
+      'In Mavka’s forest every tree knows its place. It is a <b>binary search tree</b>: in every node everything in the left branch is younger than it, and everything in the right branch is older. <code>node.val</code> is the tree’s age.',
+      'Find the node whose <code>val</code> equals the age you’re looking for, and return it (the engine will show its branch). If there is no such tree — return <code>null</code>. For the forest <code>[4, 2, 7, 1, 3]</code> and <code>val = 2</code> the answer is the branch <code>[2, 1, 3]</code>.',
+      'There can be up to 10,000 trees. Don’t walk the whole forest: compare the age with the current tree and go only to the side where it can be. Just like in Konotop: every look discards half the forest.',
+    ],
+    tool: {
+      name: 'a search tree',
+      text: [
+        'The BST rule: left branch &lt; node &lt; right branch — in every node.',
+        'Smaller than the node — go left, bigger — go right, equal — found. Reached <code>null</code> — there’s no such tree. There are as many steps as there are storeys in the tree.',
+      ],
+      code: '//        8\n//      /   \\\n//     4     12      looking for 6:\n//    / \\           6 < 8 → left\n//   2   6          6 > 4 → right → found',
+    },
+    hints: ['How do you decide left or right by looking at just one tree?', 'While node exists and node.val !== val: if val < node.val — node = node.left, otherwise node = node.right.', 'while (node && node.val !== val) node = val < node.val ? node.left : node.right;'],
+    lesson: 'In a search tree every comparison discards a whole branch: there are as many steps as storeys, not as trees.',
+    doc: ['A tree of the right age', 'Younger to the left, older to the right. Return the node aged val or null.'],
+    talk: [
+      'The forest is falling asleep. Every tree had its place, and now nobody can find even the oldest hornbeam.',
+      'But the order still holds: younger to the left, older to the right. So let’s search like in Konotop — by halves.',
+      'And I’ll just walk around every tree. And sniff each one. And maybe nibble a little.',
+    ],
+    quip: 'Found in a few steps, and not a single tree cut down. The forest will remember.',
+  },
+  'song.insert': {
+    title: 'A new sapling', topic: 'BST: inserting into a leaf',
+    brief: '<b>A new sapling.</b> Lukash brought a sapling aged <code>val</code>. Plant it so the forest stays in order.',
+    statement: [
+      'Lukash grew a sapling and wants to plant it in Mavka’s forest. The sapling is <code>val</code> years old, and there is no tree of that age in the forest yet.',
+      'Find it a place, as when searching: smaller — left, bigger — right, until you come to an empty spot. Plant a new node <code>new TreeNode(val)</code> there. Return the root of the forest.',
+      'For the forest <code>[4, 2, 7, 1, 3]</code> and <code>val = 5</code> you get <code>[4, 2, 7, 1, 3, 5]</code>: 5 is bigger than 4 — right, smaller than 7 — left of 7, and it’s empty there. If there is no forest at all, the sapling becomes the root.',
+    ],
+    tool: {
+      name: 'a new node',
+      text: [
+        '<code>new TreeNode(val)</code> creates a node without children. To plant it, hook it to a parent: <code>node.left = …</code> or <code>node.right = …</code>.',
+        'Go down as when searching, but stop one step earlier: when the needed child is <code>null</code>.',
+      ],
+      code: 'const leaf = new TreeNode(5);\nnode.right = leaf;   // now 5 is the right child of node',
+    },
+    hints: ['How do you find the place where the new tree isn’t yet?', 'node = root. An endless loop: if val < node.val — if node.left is empty, plant and stop, otherwise node = node.left; the same on the right.', 'let node = root; for (;;) { if (val < node.val) { if (!node.left) { node.left = new TreeNode(val); break; } node = node.left; } else { if (!node.right) { node.right = new TreeNode(val); break; } node = node.right; } }'],
+    lesson: 'Inserting into a BST is a search that stops at an empty spot. The new node always becomes a leaf.',
+    doc: ['A new sapling', 'Plant a node new TreeNode(val) without breaking the order. Return the root.'],
+    talk: [
+      'Lukash brought a sapling. Plant it in the wrong spot — and the whole forest gets tangled again.',
+      'We’ll go as if we were searching for it. Where the search runs into emptiness — that’s where it will grow.',
+    ],
+    quip: 'It took root. Hear that? The forest woke up a little.',
+  },
+  'song.valid': {
+    title: 'Is the forest in order', topic: 'BST: bounds from above and below',
+    brief: '<b>Is the forest in order.</b> Check whether every tree stands in its place.',
+    statement: [
+      'Before Lukash plays his pipe, we must make sure the forest is in order again. Return <code>true</code> if the tree is a real search tree, and <code>false</code> if not.',
+      'The trap: it isn’t enough to check that the left child is smaller than the parent and the right one bigger. The rule applies to the <b>whole</b> branch. In <code>[5, 1, 4, null, null, 3, 6]</code> there is a 3 to the right of 5 (a grandchild), and that’s already a broken forest. All ages are distinct; treat equal ones as a violation.',
+      'Go down with <b>bounds</b>: every tree must be bigger than the lower bound and smaller than the upper one. Going left, the parent becomes the upper bound; going right — the lower one.',
+    ],
+    tool: {
+      name: 'bounds lo and hi',
+      text: [
+        'The function <code>ok(node, lo, hi)</code> checks that everything in the branch lies strictly between <code>lo</code> and <code>hi</code>. The root is checked between <code>-Infinity</code> and <code>Infinity</code>.',
+        'Left child: <code>ok(node.left, lo, node.val)</code>. Right: <code>ok(node.right, node.val, hi)</code>.',
+      ],
+      code: '//      5\n//     / \\\n//    1   4        4 < 5 — it can’t be on the right!\n//       / \\\n//      3   6',
+    },
+    hints: ['What must every node in the root’s left branch be like? And in the right one?', 'ok(node, lo, hi): empty — true. If node.val ≤ lo or ≥ hi — false. Otherwise ok(left, lo, node.val) and ok(right, node.val, hi).', 'if (!node) return true; if (node.val <= lo || node.val >= hi) return false; return ok(node.left, lo, node.val) && ok(node.right, node.val, hi);'],
+    lesson: 'The BST rule applies to the whole branch, so check bounds that narrow from top to bottom, not just neighbours.',
+    doc: ['Is the forest in order', 'true if in every node the whole left branch is smaller and the whole right branch bigger.'],
+    talk: [
+      'Everything seems to stand as it should. But the shard is cunning: it could hide a stranger deep in a branch.',
+      'Then we give every tree bounds: no younger than this one and no older than that one. And so on down.',
+    ],
+    quip: 'Now I’m sure. Lukash, play!',
+  },
+  'song.kth': {
+    title: 'The pipe’s song', topic: 'BST: in-order walk',
+    brief: '<b>The pipe’s song.</b> Lukash’s pipe wakes the trees from the youngest. Which tree wakes up <code>k</code>-th?',
+    statement: [
+      'Lukash plays, and the forest wakes up: first the youngest tree, then an older one, and so on by age. Mavka wants to know who will wake up <code>k</code>-th.',
+      'Return the <code>k</code>-th smallest age in the search tree (counting from 1). For <code>[3, 1, 4, null, 2]</code> and <code>k = 1</code> it’s <code>1</code>; for <code>[5, 3, 6, 2, 4, null, null, 1]</code> and <code>k = 3</code> — <code>3</code>.',
+      'A search tree has a magic walk: “left branch, the node itself, right branch”. It yields the ages exactly in increasing order. So follow that walk and count until you reach <code>k</code>.',
+    ],
+    tool: {
+      name: 'in-order walk (inorder)',
+      text: [
+        'First the whole left branch, then the node itself, then the whole right branch. In a BST the nodes come out from smallest to largest this way.',
+        'Keep a counter: every time you “visit” a node, increase it. Reached <code>k</code> — remember the answer, there’s no need to go further.',
+      ],
+      code: 'const visit = (node) => {\n  if (!node) return;\n  visit(node.left);\n  console.log(node.val);   // in increasing order!\n  visit(node.right);\n};',
+    },
+    hints: ['In what order do you walk the tree so the ages go up?', 'visit(node): if node is empty or the answer is found — back. visit(left); count++; if count === k — answer = node.val; visit(right).', 'if (!node || count >= k) return; visit(node.left); if (++count === k) answer = node.val; visit(node.right);'],
+    lesson: 'An inorder walk of a BST yields values in increasing order: the k-th smallest is the k-th visited node.',
+    doc: ['The pipe’s song', 'Return the k-th smallest age in the search tree (k counts from 1).'],
+    talk: [
+      'Listen to Lukash playing. The trees wake up in turn, from the youngest.',
+      'And I’ll chop them all down, pile them up, sort them and count! Oh… and He Who Sits in the Rock is already looking at me.',
+      'Don’t chop anything. Left branch, node, right branch — and they’ll line up by age by themselves.',
+    ],
+    quip: 'The forest has woken. Did you hear me sing? Now this song is yours too.',
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1532,6 +1634,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
   7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
+  10: { host: { who: 'Mavka', line: 'Every tree had its place: younger to the left, older to the right. Bring order back to the forest — and it will wake.' }, trick: 'The periwinkle: a search tree' },
   9: { host: { who: 'Anchises', line: 'Here is your line, son. The branches got tangled — help me untangle them.' }, trick: 'The tree of life: binary trees' },
   8: { host: { who: 'Charon', line: 'A boat for two, and the weight is limited. Who rows with whom is for you to decide.' }, trick: 'The spiral: recursion and backtracking' },
 };
@@ -1590,6 +1693,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['Data comes as nodes with two children: a family tree, a hierarchy, a tournament.', 'The answer for a node is built from the answers for its branches: depth, sum, “is it here?”.', 'You need to walk a tree level by level.'],
     idea: 'Recursion in depth: solve it for the left branch, for the right one, then combine at the node; the base case is null. Breadth-first walk: keep the current level and gather the next from it. Answers can rise from below: a branch returns what it found, and where two finds meet is the ancestor.',
     complexity: 'Time O(n): every node is visited once. Memory O(h) for recursion (h — the height) or O(width) for a level.',
+  },
+  10: {
+    title: 'The periwinkle: a search tree',
+    when: ['The data is a tree where everything on the left is smaller and everything on the right bigger.', 'You need to find, insert or check a value without walking everything.', 'You need values in order: the k-th smallest, the next one, a range.'],
+    idea: 'Every comparison tells you which branch to go to, so search and insert take as many steps as the tree has storeys. A new node always becomes a leaf. Checking the order needs bounds that narrow from the top, not just parent–child comparisons. An inorder walk (left, node, right) yields the values in increasing order.',
+    complexity: 'Search and insert O(h): O(log n) in a balanced tree. Inorder O(n).',
   },
 };
 

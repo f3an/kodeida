@@ -4,7 +4,7 @@
  * На межі пісень у «дорозі» — інтерлюдія Юнони з Вовком (наскрізна лінія з docs/STORY.md).
  * Репліка: [хто, укр, англ]; «хто» — ключ портрета в VOICE (ui/Voyage.tsx).
  */
-export type Who = 'fox' | 'enei' | 'juno' | 'wolf' | 'sibyl' | 'eol' | 'dido' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon' | 'anchises';
+export type Who = 'fox' | 'enei' | 'juno' | 'wolf' | 'sibyl' | 'eol' | 'dido' | 'lion' | 'mitten' | 'sotnyk' | 'acestes' | 'ox' | 'charon' | 'anchises' | 'mavka' | 'molfar' | 'kozhumyaka' | 'turn' | 'vulcan';
 export interface Slide { title: [string, string]; narr: [string, string]; lines: [Who, string, string][] }
 export interface Voyage { leave: Slide; sail: Slide; arrive: Slide }
 
@@ -219,6 +219,34 @@ export const VOYAGES: Record<number, Voyage> = {
       lines: [
         ['anchises', 'Ось твій рід, сину. Тільки хтось переставив гілки.', 'Here is your line, son. Only someone has rearranged the branches.'],
         ['fox', 'Я золотавий, як листя на родовому дереві. Почнімо з коріння.', 'I’m golden, like the leaves on a family tree. Let’s start from the roots.'],
+      ],
+    },
+  },
+  9: {
+    leave: {
+      title: ['Рід цілий', 'The line is whole'],
+      narr: ['Гілки родоводу знову на своїх місцях, і Анхіз прощається з сином. На вишиванці проростає «дерево життя».', 'The branches of the family tree are back in place, and Anchises bids his son farewell. A “tree of life” grows on the shirt.'],
+      lines: [
+        ['anchises', 'Іди, сину. І бережи лиса: він носить у собі більше, ніж здається.', 'Go, son. And look after the fox: he carries more inside him than it seems.'],
+        ['fox', 'Я лише трохи золотавий. Ну, і трохи Писанки.', 'I’m just a little golden. Well, and a little Pysanka.'],
+      ],
+    },
+    sail: {
+      title: ['Пісня V. Ліси й гори', 'Song V. Forests and mountains'],
+      narr: ['На Олімпі Юнона слухає, що підслухав Вовк біля брами Елісію. І вперше всміхається.', 'On Olympus Juno listens to what the Wolf overheard by the gate of Elysium. And for the first time she smiles.'],
+      lines: [
+        ['wolf', 'Лис носить у собі частку Писанки! Я сам чув!', 'The fox carries a piece of the Pysanka inside him! I heard it myself!'],
+        ['juno', 'Отже, лис і є уламок. Цікаво… Поки що хай збирають. Чим більше зберуть — тим більше заберу я.', 'So the fox is a shard. Interesting… Let them gather for now. The more they gather, the more I take.'],
+        ['wolf', 'А ліс на обід?', 'And the forest for dinner?'],
+        ['juno', 'Ось тобі ліс. Лісова пісня. Тільки не з\'їж Мавку.', 'Here’s a forest for you. The Forest Song. Just don’t eat Mavka.'],
+      ],
+    },
+    arrive: {
+      title: ['Лісова пісня', 'The Forest Song'],
+      narr: ['У лісі Мавки кожне дерево мало своє місце: молодші ліворуч, старші праворуч. Уламок пересадив дерева, і ліс засинає.', 'In Mavka’s forest every tree had its place: younger to the left, older to the right. A shard has replanted the trees, and the forest is falling asleep.'],
+      lines: [
+        ['mavka', 'Хто ви? Не рубайте нічого. Ліс і так ледве дихає.', 'Who are you? Don’t cut anything. The forest can barely breathe as it is.'],
+        ['fox', 'Я весняний зелений. Мене тут ніхто не помітить — і це вперше добре.', 'I’m spring green. Nobody will notice me here — and for once that’s good.'],
       ],
     },
   },
