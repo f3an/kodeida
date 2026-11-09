@@ -1750,6 +1750,133 @@ export const LEVELS_EN: Record<string, LevelEn> = {
     ],
     quip: 'The trembitas have sounded from every peak. Hear that? The meadows are talking again.',
   },
+  'val.merge': {
+    title: 'Join the walls', topic: 'intervals: sort and join',
+    brief: '<b>Join the walls.</b> A shard has cut the Serpent’s Walls into pieces that overlap. Join them into solid walls.',
+    statement: [
+      'Long ago Kyrylo Kozhumyaka ploughed the land with the Serpent and raised walls. Now the walls are pieces <code>[start, end]</code> that overlap, and the defenders get lost in them.',
+      'Merge all pieces that overlap or touch and return solid walls sorted by start. <code>[[1, 3], [2, 6], [8, 10], [15, 18]]</code> becomes <code>[[1, 6], [8, 10], [15, 18]]</code>; <code>[1, 4]</code> and <code>[4, 5]</code> touch, so they become <code>[1, 5]</code>.',
+      'There can be up to 10,000 pieces. Comparing every one with every other takes long. Sort the pieces by start: then a new piece can only overlap the <b>last</b> joined wall.',
+    ],
+    tool: {
+      name: 'sorting by start',
+      text: [
+        '<code>intervals.sort((a, b) => a[0] - b[0])</code> lines the walls up by start. Then walk through them keeping the last joined wall.',
+        'Does the new one start no later than the last one ends? Then join them: the end is the larger of the two. No — it’s a new separate wall.',
+      ],
+      code: '// after sorting: [1, 3] [2, 6] [8, 10]\n// [2, 6] starts before [1, 3] ends → [1, 6]\n// [8, 10] — after 6 → a new wall',
+    },
+    hints: ['If the walls are sorted by start, which of the joined ones can a new one overlap?', 'Sort by v[0]. For each v: if out isn’t empty and v[0] ≤ the end of the last — stretch the end to the max; otherwise out.push([v[0], v[1]]).', 'intervals.sort((a, b) => a[0] - b[0]); for (const v of intervals) { const last = out[out.length - 1]; if (last && v[0] <= last[1]) last[1] = Math.max(last[1], v[1]); else out.push([v[0], v[1]]); }'],
+    lesson: 'Intervals sorted by start overlap only with the last joined one: an O(n log n) sort and one pass.',
+    doc: ['Join the walls', 'Merge walls [start, end] that overlap or touch.', 'Return solid walls in increasing order of start.'],
+    talk: [
+      'I ploughed these walls with a plough, and the Serpent pulled it. They were straight, solid! And now — scraps, one on top of another.',
+      'Let’s line the scraps up by start. Then each new one is either sewn onto the last or starts a new wall.',
+    ],
+    quip: 'Now that’s a wall! I could harness the Serpent again.',
+  },
+  'val.insert': {
+    title: 'A new wall', topic: 'intervals: before, overlap, after',
+    brief: '<b>A new wall.</b> The walls are joined and in order. Kozhumyaka raises one more — insert it without breaking the order.',
+    statement: [
+      '<code>intervals</code> are solid walls that don’t overlap and go in increasing order of start. Kozhumyaka raises a new wall <code>newInterval</code>.',
+      'Insert it and merge it with the walls it overlaps or touches. Return the walls in increasing order. For <code>[[1, 3], [6, 9]]</code> and <code>[2, 5]</code> you get <code>[[1, 5], [6, 9]]</code>; for <code>[[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]]</code> and <code>[4, 8]</code> — <code>[[1, 2], [3, 10], [12, 16]]</code>.',
+      'The walls are already in order, so there’s no need to sort. Make one pass: first those entirely <b>before</b> the new one, then those that <b>overlap</b> it (merge them into the new one), and then all that come <b>after</b>.',
+    ],
+    tool: {
+      name: 'three parts of one pass',
+      text: [
+        'Before: the wall ends before the new one starts (<code>v[1] &lt; start</code>) — copy it as is.',
+        'Overlap: the wall starts no later than the new one ends — stretch the new one: the start is the smaller, the end the larger. The rest come after: add the new one, then everything left.',
+      ],
+      code: '// [[1, 2], [3, 5], [6, 7], [8, 10]] + [4, 8]\n// before:  [1, 2]\n// overlap: [3, 5] [6, 7] [8, 10] → [3, 10]\n// after:   —',
+    },
+    hints: ['Which walls will the new one certainly not touch?', 'While intervals[i][1] < start — into out as is. While intervals[i][0] ≤ end — start = min, end = max. Then out.push([start, end]) and the rest.', 'while (i < intervals.length && intervals[i][1] < start) out.push(intervals[i++]); while (i < intervals.length && intervals[i][0] <= end) { start = Math.min(start, intervals[i][0]); end = Math.max(end, intervals[i][1]); i++; } out.push([start, end]); while (i < intervals.length) out.push(intervals[i++]);'],
+    lesson: 'Sorted intervals split into three parts — before, overlap, after — and inserting takes one O(n) pass.',
+    doc: ['A new wall', 'intervals are sorted walls without overlaps. Insert newInterval and merge as needed.'],
+    talk: [
+      'I’ll raise one more wall. Only where? I don’t want everything tangled again.',
+      'The earlier ones we don’t touch. The overlapping ones we merge with the new one. The later ones we just add.',
+    ],
+    quip: 'It fits like a glove. My plough, give me my plough!',
+  },
+  'val.jump': {
+    title: 'Jumping the ditches', topic: 'greedy: the farthest reachable point',
+    brief: '<b>Jumping the ditches.</b> In front of the walls there are ditches with planks. Can Aeneas jump to the last plank?',
+    statement: [
+      'Ditches have been dug in front of the walls, with planks laid across. <code>nums[i]</code> — how many planks forward you can jump <b>at most</b> from plank <code>i</code> (fewer is fine too). Aeneas stands on the first one.',
+      'Return <code>true</code> if the last plank can be reached. <code>[2, 3, 1, 1, 4]</code> — <code>true</code> (1 → 2 → 5 or 1 → 3 → 4 → 5). <code>[3, 2, 1, 0, 4]</code> — <code>false</code>: every path runs into the plank with a zero.',
+      'There can be up to 10,000 planks. Don’t try every path. Go left to right and keep the <b>farthest</b> plank you can already jump to. If you’re on a plank you can’t reach — there’s no way further.',
+    ],
+    tool: {
+      name: 'a greedy step',
+      text: [
+        'A greedy algorithm makes the best choice right now at every step and never goes back. Here the best choice is to remember how far you can reach: <code>far = max(far, i + nums[i])</code>.',
+        'If <code>i &gt; far</code> — plank <code>i</code> can’t be reached, and neither can the rest.',
+      ],
+      code: '// [2, 3, 1, 1, 4]\n// i = 0: far = 2\n// i = 1: far = 4 — the last one is already reachable!',
+    },
+    hints: ['What is enough to remember about all the planks already passed?', 'For every i: if i > far — false. Otherwise far = max(far, i + nums[i]). Passed everything — true.', 'for (let i = 0; i < nums.length; i++) { if (i > far) return false; far = Math.max(far, i + nums[i]); } return true;'],
+    lesson: 'Greedy: keep the farthest reachable point. One O(n) pass instead of trying every path.',
+    doc: ['Jumping the ditches', 'nums[i] — the longest jump from plank i.', 'true if the last plank can be reached from the first.'],
+    talk: [
+      'There are ditches before the walls, and planks over them. From some you can jump far, from others not a step.',
+      'I’ll try every jump from every plank! And then every jump from wherever I landed…',
+      'It’s enough to know how far you can reach. I go plank by plank and push that limit.',
+    ],
+    quip: 'Jumped over and didn’t get my feet wet. Almost.',
+  },
+  'val.erase': {
+    title: 'Extra walls', topic: 'greedy: keep the one that ends first',
+    brief: '<b>Extra walls.</b> Some walls get in each other’s way. Remove as few as possible so the rest don’t overlap.',
+    statement: [
+      'Kozhumyaka wants the walls to stand side by side without overlapping: a defender must pass between them. <code>intervals[i] = [start, end]</code>; walls that only touch (<code>[1, 2]</code> and <code>[2, 3]</code>) don’t get in the way.',
+      'Return the <b>smallest</b> number of walls to remove. For <code>[[1, 2], [2, 3], [3, 4], [1, 3]]</code> — <code>1</code> (remove <code>[1, 3]</code>); for <code>[[1, 2], [1, 2], [1, 2]]</code> — <code>2</code>.',
+      'The trick is to keep as many walls as possible. Sort by <b>end</b> and take a wall every time it starts no earlier than the last taken one ended. A wall that ends earlier leaves more room for the rest.',
+    ],
+    tool: {
+      name: 'sorting by end',
+      text: [
+        '<code>intervals.sort((a, b) => a[1] - b[1])</code>. Keep <code>end</code> — the end of the last wall kept.',
+        'The wall starts no earlier than <code>end</code> — keep it and update <code>end</code>. Otherwise — it’s extra. The answer: how many were removed.',
+      ],
+      code: '// by end: [1, 2] [2, 3] [1, 3] [3, 4]\n// [1, 2] ✓  [2, 3] ✓  [1, 3] ✗ (1 < 3)  [3, 4] ✓\n// removed 1',
+    },
+    hints: ['Of two overlapping walls, which is better to keep?', 'Sort by end. For every [l, r]: if l ≥ end — end = r (keep it), otherwise removed++.', 'intervals.sort((a, b) => a[1] - b[1]); for (const [l, r] of intervals) { if (l >= end) end = r; else removed++; }'],
+    lesson: 'To keep the most intervals, always take the one that ends first: sort by end and one pass.',
+    doc: ['Extra walls', 'Return the smallest number of walls to remove so the rest don’t overlap.'],
+    talk: [
+      'I raised too many — now the walls are on top of each other, and you can’t pass between them.',
+      'Let’s keep the wall that ends first. It leaves the most room for the others.',
+    ],
+    quip: 'Now even a cart can pass between the walls. But not the Serpent.',
+  },
+  'val.arrows': {
+    title: 'Arrows at the serpents', topic: 'greedy: shoot at the end',
+    brief: '<b>Arrows at the serpents.</b> Serpents crawl in waves, each spanning a stretch above the wall. What’s the fewest arrows to hit them all?',
+    statement: [
+      'Serpents crawl through the gaps in the walls. Each serpent stretches above the wall from <code>points[i][0]</code> to <code>points[i][1]</code>. An arrow shot straight up at point <code>x</code> hits every serpent with <code>start ≤ x ≤ end</code>.',
+      'Return the fewest arrows needed to hit every serpent. For <code>[[10, 16], [2, 8], [1, 6], [7, 12]]</code> — <code>2</code>: an arrow at 6 hits <code>[2, 8]</code> and <code>[1, 6]</code>, an arrow at 12 hits <code>[10, 16]</code> and <code>[7, 12]</code>.',
+      'Sort the serpents by <b>end</b>. The first arrow goes into the end of the first serpent: that way it catches as many others as possible. A new arrow is needed only when a serpent starts to the right of the last arrow.',
+    ],
+    tool: {
+      name: 'an arrow into the earliest end',
+      text: [
+        'Someone has to hit the serpent that ends first. It pays most to shoot right at its end: further right is impossible, and further left catches fewer.',
+        'Keep <code>at</code> — the point of the last arrow. A serpent starts after <code>at</code>? A new arrow into its end.',
+      ],
+      code: '// by end: [1, 6] [2, 8] [7, 12] [10, 16]\n// arrow at 6: [1, 6] [2, 8]\n// 7 > 6 → arrow at 12: [7, 12] [10, 16]\n// 2 arrows',
+    },
+    hints: ['Where is it best to shoot the serpent that ends first?', 'Sort by end. For every [l, r]: if l > at — arrows++, at = r.', 'points.sort((a, b) => a[1] - b[1]); for (const [l, r] of points) if (l > at) { arrows++; at = r; }'],
+    lesson: 'Shoot at the earliest end: it hits everyone who has already started. Sort by end and one pass.',
+    doc: ['Arrows at the serpents', 'points[i] = [start, end] — a serpent. An arrow at x hits if start ≤ x ≤ end.', 'Return the fewest arrows.'],
+    talk: [
+      'Here they come! Wave after wave! We’re short of arrows — every one must hit as many as possible.',
+      'I’ll try every point on the wall and every set of arrows! Oh, they’re already here…',
+      'Shoot at the end of the serpent that finishes first. One arrow — a whole pack.',
+    ],
+    quip: 'We fought them off! Now I’ll harness them to the plough again.',
+  },
 };
 
 export const WORLDS_EN: Record<number, { host: { who: string; line: string }; trick?: string }> = {
@@ -1761,6 +1888,7 @@ export const WORLDS_EN: Record<number, { host: { who: string; line: string }; tr
   5: { host: { who: 'Captain Zabrokha', line: 'We throw every one of them into the pond in turn! What do you mean, “split in half”? Well, go on, try.' }, trick: 'The halved rhombus: binary search' },
   6: { host: { who: 'Acestes', line: 'Games in honour of Anchises! Only the scoreboard is broken. So who won?' }, trick: 'The frame: a sliding window and a heap' },
   7: { host: { who: 'Pale Ox', line: 'The train has been going in circles for the third night. I’m slow and the fox is quick — let them see whether we meet.' }, trick: 'The chain: a linked list' },
+  12: { host: { who: 'Kyrylo Kozhumyaka', line: 'I harnessed the Serpent to a plough and ploughed these walls. And the shard cut them into scraps!' }, trick: 'The zigzag: intervals and the greedy choice' },
   11: { host: { who: 'Molfar', line: 'Fog has wrapped the meadows, and the trembitas are silent. Give the mountains back their voice.' }, trick: 'The rosette: walking a graph' },
   10: { host: { who: 'Mavka', line: 'Every tree had its place: younger to the left, older to the right. Bring order back to the forest — and it will wake.' }, trick: 'The periwinkle: a search tree' },
   9: { host: { who: 'Anchises', line: 'Here is your line, son. The branches got tangled — help me untangle them.' }, trick: 'The tree of life: binary trees' },
@@ -1833,6 +1961,12 @@ export const BOOK_EN: Record<number, { title: string; when: string[]; idea: stri
     when: ['Things are connected: grid cells, villages and roads, crafts and their requirements.', 'You need everything reachable from a point, or the number of separate groups.', 'You need the distance in steps, or an order without loops.'],
     idea: 'A depth-first walk (stack or recursion) visits everything reachable; mark the visited so you don’t walk in circles. A breadth-first walk goes in waves, and the wave number is the distance. A walk from every cell can often be replaced by one from the goals backwards. Topological sorting: take what waits for nothing and unlock the next; whatever is left over is a loop.',
     complexity: 'Time O(V + E): every cell or vertex and every link once. Memory O(V).',
+  },
+  12: {
+    title: 'The zigzag: intervals and the greedy choice',
+    when: ['The data are stretches [start, end]: walls, meetings, serpents.', 'You need to merge, insert or remove overlaps.', 'The best choice right now never spoils the future: the farthest jump, the earliest end.'],
+    idea: 'Sort the intervals: by start to merge, by end to keep the most or to shoot the fewest arrows. After sorting, every new interval only needs to be compared with the last one. A greedy algorithm makes the best local choice at every step and never goes back — it works when that choice can be proven not to spoil the answer.',
+    complexity: 'Time O(n log n) for sorting plus O(n) for the pass. Memory O(1)–O(n).',
   },
 };
 

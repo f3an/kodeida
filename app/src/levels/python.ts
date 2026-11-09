@@ -593,6 +593,42 @@ export const PY: Record<string, PyPart> = {
     solution: 'def pacific_atlantic(heights):\n    R, C = len(heights), len(heights[0])\n    def reach(starts):\n        seen = set()\n        st = starts\n        while st:\n            r, c = st.pop()\n            if (r, c) in seen:\n                continue\n            seen.add((r, c))\n            for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n                if 0 <= x < R and 0 <= y < C and heights[x][y] >= heights[r][c]:\n                    st.append((x, y))\n        return seen\n    a = reach([(r, 0) for r in range(R)] + [(0, c) for c in range(C)])\n    b = reach([(r, C - 1) for r in range(R)] + [(R - 1, c) for c in range(C)])\n    return [[r, c] for r in range(R) for c in range(C) if (r, c) in a and (r, c) in b]\n',
     hint: 'def reach(starts):\n    seen, st = set(), starts\n    while st:\n        r, c = st.pop()\n        if (r, c) in seen: continue\n        seen.add((r, c))\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= x < R and 0 <= y < C and heights[x][y] >= heights[r][c]: st.append((x, y))\n    return seen',
   },
+  'val.merge': {
+    body: `    out = []\n${HERE}\n    return out\n`,
+    solution: 'def merge(intervals):\n    out = []\n    for s, e in sorted(intervals, key=lambda v: v[0]):\n        if out and s <= out[-1][1]:\n            out[-1][1] = max(out[-1][1], e)\n        else:\n            out.append([s, e])\n    return out\n',
+    wolf: 'def merge(intervals):\n    root = list(range(len(intervals)))\n    def find(x):\n        while root[x] != x:\n            x = root[x]\n        return x\n    for i in range(len(intervals)):\n        for j in range(i + 1, len(intervals)):\n            if intervals[i][0] <= intervals[j][1] and intervals[j][0] <= intervals[i][1]:\n                root[find(i)] = find(j)\n    walls = {}\n    for i in range(len(intervals)):\n        r = find(i)\n        lo, hi = walls.get(r, (float(\'inf\'), float(\'-inf\')))\n        walls[r] = (min(lo, intervals[i][0]), max(hi, intervals[i][1]))\n    return sorted([list(w) for w in walls.values()])\n',
+    hint: 'for s, e in sorted(intervals, key=lambda v: v[0]):\n    if out and s <= out[-1][1]: out[-1][1] = max(out[-1][1], e)\n    else: out.append([s, e])',
+    tool: {
+      code: '# після сортування: [1, 3] [2, 6] [8, 10]\n# [2, 6] починається до кінця [1, 3] → [1, 6]\n# [8, 10] — після 6 → новий вал',
+      text: { 0: ['<code>sorted(intervals, key=lambda v: v[0])</code> шикує вали за початком. Після цього йди по них і тримай останній зшитий вал <code>out[-1]</code>.', '<code>sorted(intervals, key=lambda v: v[0])</code> lines the walls up by start. Then walk through them keeping the last joined wall <code>out[-1]</code>.'] },
+    },
+  },
+  'val.insert': {
+    body: `    out = []\n    start, end = new_interval\n    i = 0\n${HERE}\n    return out\n`,
+    solution: 'def insert(intervals, new_interval):\n    out = []\n    start, end = new_interval\n    i = 0\n    while i < len(intervals) and intervals[i][1] < start:\n        out.append([intervals[i][0], intervals[i][1]])\n        i += 1\n    while i < len(intervals) and intervals[i][0] <= end:\n        start = min(start, intervals[i][0])\n        end = max(end, intervals[i][1])\n        i += 1\n    out.append([start, end])\n    while i < len(intervals):\n        out.append([intervals[i][0], intervals[i][1]])\n        i += 1\n    return out\n',
+    hint: 'while i < len(intervals) and intervals[i][1] < start: out.append(intervals[i]); i += 1\nwhile i < len(intervals) and intervals[i][0] <= end:\n    start = min(start, intervals[i][0]); end = max(end, intervals[i][1]); i += 1\nout.append([start, end])\nout += intervals[i:]',
+  },
+  'val.jump': {
+    body: `    far = 0\n${HERE}\n    return False\n`,
+    solution: 'def can_jump(nums):\n    far = 0\n    for i in range(len(nums)):\n        if i > far:\n            return False\n        far = max(far, i + nums[i])\n    return True\n',
+    wolf: 'def can_jump(nums):\n    ok = [False] * len(nums)\n    ok[0] = True\n    for i in range(1, len(nums)):\n        for j in range(i):\n            if ok[j] and j + nums[j] >= i:\n                ok[i] = True\n                break\n    return ok[-1]\n',
+    hint: 'for i in range(len(nums)):\n    if i > far: return False\n    far = max(far, i + nums[i])\nreturn True',
+  },
+  'val.erase': {
+    body: `    end, removed = float('-inf'), 0\n${HERE}\n    return removed\n`,
+    solution: "def erase_overlap_intervals(intervals):\n    end, removed = float('-inf'), 0\n    for l, r in sorted(intervals, key=lambda v: v[1]):\n        if l >= end:\n            end = r\n        else:\n            removed += 1\n    return removed\n",
+    hint: 'for l, r in sorted(intervals, key=lambda v: v[1]):\n    if l >= end: end = r\n    else: removed += 1',
+    tool: {
+      code: '# за кінцем: [1, 2] [2, 3] [1, 3] [3, 4]\n# [1, 2] ✓  [2, 3] ✓  [1, 3] ✗ (1 < 3)  [3, 4] ✓\n# прибрали 1',
+      text: { 0: ['<code>sorted(intervals, key=lambda v: v[1])</code> — вали за кінцем. Тримай <code>end</code> — кінець останнього залишеного валу.', '<code>sorted(intervals, key=lambda v: v[1])</code> — the walls by end. Keep <code>end</code> — the end of the last wall kept.'] },
+    },
+  },
+  'val.arrows': {
+    body: `    arrows, at = 0, float('-inf')\n${HERE}\n    return arrows\n`,
+    solution: "def find_min_arrow_shots(points):\n    arrows, at = 0, float('-inf')\n    for l, r in sorted(points, key=lambda v: v[1]):\n        if l > at:\n            arrows += 1\n            at = r\n    return arrows\n",
+    wolf: 'def find_min_arrow_shots(points):\n    hit = [False] * len(points)\n    arrows = 0\n    while True:\n        first = -1\n        for i in range(len(points)):\n            if not hit[i] and (first < 0 or points[i][1] < points[first][1]):\n                first = i\n        if first < 0:\n            return arrows\n        x = points[first][1]\n        arrows += 1\n        for i in range(len(points)):\n            if points[i][0] <= x <= points[i][1]:\n                hit[i] = True\n',
+    hint: 'for l, r in sorted(points, key=lambda v: v[1]):\n    if l > at: arrows += 1; at = r',
+  },
 };
 
 const TYPES: [RegExp, string][] = [[/number\[\]\[\]/g, 'list[list[int]]'], [/string\[\]\[\]/g, 'list[list[str]]'], [/boolean\[\]/g, 'list[bool]'], [/number\[\]/g, 'list[int]'], [/string\[\]/g, 'list[str]'], [/\bnumber\b/g, 'int'], [/\bstring\b/g, 'str'], [/\bboolean\b/g, 'bool'], [/\bvoid\b/g, 'None'], [/\bnull\b/g, 'None']];

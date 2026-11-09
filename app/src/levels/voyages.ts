@@ -276,4 +276,30 @@ export const VOYAGES: Record<number, Voyage> = {
       ],
     },
   },
+  11: {
+    leave: {
+      title: ['Трембіти озвались', 'The trembitas sound'],
+      narr: ['Туман сходить, і з кожної вершини озивається трембіта. Полонини знову перегукуються. На вишиванці — «розетка».', 'The fog lifts, and a trembita sounds from every peak. The meadows call to each other again. On the shirt — “a rosette”.'],
+      lines: [
+        ['molfar', 'Вітер каже, що далі вас чекає степ і старі вали. І Змій, що ще не забув свого плуга.', 'The wind says that ahead lie the steppe and the old walls. And a Serpent who hasn’t forgotten his plough.'],
+        ['fox', 'Змій? Енею, а ти колись орав на змієві?', 'A Serpent? Aeneas, have you ever ploughed with a serpent?'],
+      ],
+    },
+    sail: {
+      title: ['Униз до степу', 'Down to the steppe'],
+      narr: ['З гір стежка спускається в степ. На обрії, наче шрами на землі, тягнуться довгі вали.', 'From the mountains the path descends into the steppe. On the horizon long walls stretch like scars on the earth.'],
+      lines: [
+        ['enei', 'Хто ж насипав такі вали?', 'Who raised walls like these?'],
+        ['fox', 'Кажуть, їх проорав Змій. Під батогом одного кожум\'яки.', 'They say a Serpent ploughed them. Under the whip of one tanner.'],
+      ],
+    },
+    arrive: {
+      title: ['Змієві вали', 'The Serpent’s Walls'],
+      narr: ['Кирило Кожум\'яка заорав Змія й проклав вали від моря до моря. Але уламок порізав їх на шматки, що налазять один на один, і змії лізуть крізь щілини.', 'Kyrylo Kozhumyaka harnessed the Serpent and ploughed walls from sea to sea. But a shard cut them into overlapping pieces, and serpents crawl through the gaps.'],
+      lines: [
+        ['kozhumyaka', 'Вали мої посічено! А зміїне кодло вже лізе. Допоможете — нагодую.', 'My walls are cut to pieces! And the serpent brood is already crawling in. Help me — and I’ll feed you.'],
+        ['fox', 'Я теракотовий, як зорана земля. Тут я майже свій.', 'I’m terracotta, like ploughed earth. I almost belong here.'],
+      ],
+    },
+  },
 };

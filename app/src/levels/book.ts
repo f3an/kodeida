@@ -186,4 +186,20 @@ while (wave.length) {
     complexity: 'Час O(V + E): кожна клітинка чи вершина і кожен зв\'язок один раз. Пам\'ять O(V).',
     problems: ['733. Flood Fill', '200. Number of Islands', '994. Rotting Oranges', '207. Course Schedule', '417. Pacific Atlantic Water Flow'],
   },
+  {
+    world: 12,
+    title: 'Зигзаг: інтервали й жадібний вибір',
+    motif: 'zigzag',
+    when: ['Дані — відрізки [start, end]: вали, зустрічі, змії.', 'Треба злити, вставити чи прибрати перекриття.', 'Найкращий вибір зараз ніколи не псує майбутнього: найдальший стрибок, найраніший кінець.'],
+    idea: 'Впорядкуй інтервали: за початком — щоб зливати, за кінцем — щоб лишити найбільше або випустити найменше стріл. Після сортування кожен новий інтервал досить порівняти лише з останнім. Жадібний алгоритм на кожному кроці робить найкращий місцевий вибір і не повертається — він працює, коли можна довести, що цей вибір не зіпсує відповіді.',
+    template: `intervals.sort((a, b) => a[0] - b[0]);
+const out = [];
+for (const [s, e] of intervals) {
+  const last = out[out.length - 1];
+  if (last && s <= last[1]) last[1] = Math.max(last[1], e);
+  else out.push([s, e]);
+}`,
+    complexity: 'Час O(n log n) на сортування плюс O(n) на прохід. Пам\'ять O(1)–O(n).',
+    problems: ['56. Merge Intervals', '57. Insert Interval', '55. Jump Game', '435. Non-overlapping Intervals', '452. Minimum Number of Arrows to Burst Balloons'],
+  },
 ];
